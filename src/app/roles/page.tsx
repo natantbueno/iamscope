@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import RolesTable, { FilterType } from '@/components/RolesTable'
 import ExportMenu from '@/components/ExportMenu'
-import { ROLES } from '@/data/roles'
+import { ROLES, RoleCategory } from '@/data/roles'
 
-const TIER_VALUES = ['ControlPlane', 'ManagementPlane', 'WorkloadPlane', 'UserAccess', 'Unclassified']
+const TIER_VALUES = ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified']
+const CATEGORY_VALUES: RoleCategory[] = ['Identity', 'Application', 'Security', 'Compliance', 'M365', 'Device', 'Other']
 
 function RolesContent() {
   const searchParams = useSearchParams()
@@ -18,30 +19,44 @@ function RolesContent() {
   const tierParam = searchParams.get('tier')
   const filterParam = searchParams.get('filter')
 
-  // Determina o filtro ativo a partir da URL
-  const initialFilter: FilterType =
+  // Tier e category são filtros independentes
+  const initialTier: FilterType =
     filterParam === 'privileged' ? 'privileged'
     : tierParam && TIER_VALUES.includes(tierParam) ? (tierParam as FilterType)
-    : categoryParam ? (categoryParam as FilterType)
     : 'all'
 
-  const [activeFilter, setActiveFilter] = useState<FilterType>(initialFilter)
+  const initialCategory: RoleCategory | null =
+    categoryParam && CATEGORY_VALUES.includes(categoryParam as RoleCategory)
+      ? (categoryParam as RoleCategory)
+      : null
 
-  // Sincroniza quando a URL muda
+  const [activeTier, setActiveTier] = useState<FilterType>(initialTier)
+  const [activeCategory, setActiveCategory] = useState<RoleCategory | null>(initialCategory)
+
   useEffect(() => {
-    setActiveFilter(initialFilter)
-  }, [initialFilter])
+    setActiveTier(initialTier)
+    setActiveCategory(initialCategory)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()])
 
-  const handleFilterChange = (f: FilterType) => {
-    setActiveFilter(f)
-    // Atualiza a URL para refletir o filtro
+  const syncUrl = (tier: FilterType, category: RoleCategory | null, search: string) => {
     const params = new URLSearchParams()
-    if (q) params.set('q', q)
-    if (f === 'privileged') params.set('filter', 'privileged')
-    else if (TIER_VALUES.includes(f)) params.set('tier', f)
-    else if (f !== 'all') params.set('category', f)
+    if (search) params.set('q', search)
+    if (tier === 'privileged') params.set('filter', 'privileged')
+    else if (tier !== 'all') params.set('tier', tier)
+    if (category) params.set('category', category)
     const qs = params.toString()
     router.replace(`/roles${qs ? '?' + qs : ''}`)
+  }
+
+  const handleTierChange = (f: FilterType) => {
+    setActiveTier(f)
+    syncUrl(f, activeCategory, q)
+  }
+
+  const handleCategoryChange = (c: RoleCategory | null) => {
+    setActiveCategory(c)
+    syncUrl(activeTier, c, q)
   }
 
   const filteredRoles = useMemo(() => {
@@ -54,18 +69,19 @@ function RolesContent() {
         r.id.toLowerCase().includes(query) ||
         r.permissions.some((p) => p.action.toLowerCase().includes(query))
 
-      let matchFilter = true
-      if (activeFilter === 'privileged') matchFilter = r.isPrivileged
-      else if (activeFilter === 'all') matchFilter = true
-      else if (TIER_VALUES.includes(activeFilter)) matchFilter = r.eamTier === activeFilter
-      else matchFilter = r.category === activeFilter
+      const matchTier =
+        activeTier === 'all' ? true
+        : activeTier === 'privileged' ? r.isPrivileged
+        : r.eamTier === activeTier
 
-      return matchSearch && matchFilter
+      const matchCategory = !activeCategory || r.category === activeCategory
+
+      return matchSearch && matchTier && matchCategory
     }).sort((a, b) => {
-      const order = { ControlPlane: 0, ManagementPlane: 1, WorkloadPlane: 2, UserAccess: 3, Unclassified: 4 }
-      return order[a.eamTier] - order[b.eamTier]
+      const order = { ControlPlane: 0, ManagementPlane: 1, UserAccess: 2, Unclassified: 3 }
+      return (order[a.eamTier] ?? 99) - (order[b.eamTier] ?? 99)
     })
-  }, [q, activeFilter])
+  }, [q, activeTier, activeCategory])
 
   const subtitle = q
     ? `Resultados para "${q}" — ${filteredRoles.length} roles`
@@ -78,7 +94,13 @@ function RolesContent() {
       headerActions={<ExportMenu roles={filteredRoles} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
-        <RolesTable roles={filteredRoles} activeFilter={activeFilter} onFilterChange={handleFilterChange} />
+        <RolesTable
+          roles={filteredRoles}
+          activeTier={activeTier}
+          activeCategory={activeCategory}
+          onTierChange={handleTierChange}
+          onCategoryChange={handleCategoryChange}
+        />
       </div>
     </AppShell>
   )
