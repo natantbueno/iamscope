@@ -1,0 +1,22 @@
+# dependências
+node_modules/
+/.pnp
+.pnp.js
+
+# build / output
+.next/
+out/
+build/
+
+# ambiente
+.env*.local
+.env
+
+# logs
+*.log
+npm-debug.log*
+
+# misc
+.DS_Store
+*.pem
+.vercel
