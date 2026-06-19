@@ -1,12 +1,16 @@
 'use client'
 
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ChevronRight, X } from 'lucide-react'
+import { AlertTriangle, ChevronRight, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { EntraRole, RoleCategory, EamTier } from '@/data/roles'
 import CategoryBadge from './CategoryBadge'
 import EamTierBadge from './EamTierBadge'
 
 export type FilterType = 'all' | 'privileged' | EamTier
+
+type SortCol = 'name' | 'tier' | 'category' | 'count' | 'privileged'
+type SortDir = 'asc' | 'desc'
 
 interface RolesTableProps {
   roles: EntraRole[]
@@ -24,7 +28,31 @@ const TIER_FILTERS: { label: string; value: FilterType }[] = [
   { label: 'Privilegiadas', value: 'privileged' },
 ]
 
+const TIER_ORDER: Record<EamTier, number> = {
+  ControlPlane: 0, ManagementPlane: 1, UserAccess: 2, Unclassified: 3,
+}
+
 export default function RolesTable({ roles, activeTier, activeCategory, onTierChange, onCategoryChange }: RolesTableProps) {
+  const [sortCol, setSortCol] = useState<SortCol>('tier')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+
+  const toggleSort = useCallback((col: SortCol) => {
+    if (sortCol === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    else { setSortCol(col); setSortDir('asc') }
+  }, [sortCol])
+
+  const sorted = useMemo(() => {
+    return [...roles].sort((a, b) => {
+      let cmp = 0
+      if (sortCol === 'name') cmp = a.name.localeCompare(b.name)
+      else if (sortCol === 'tier') cmp = (TIER_ORDER[a.eamTier] ?? 99) - (TIER_ORDER[b.eamTier] ?? 99)
+      else if (sortCol === 'category') cmp = a.category.localeCompare(b.category)
+      else if (sortCol === 'count') cmp = a.permissionCount - b.permissionCount
+      else if (sortCol === 'privileged') cmp = Number(b.isPrivileged) - Number(a.isPrivileged)
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [roles, sortCol, sortDir])
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center gap-2 flex-wrap">
@@ -32,14 +60,12 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
         {activeCategory && (
           <button
             onClick={() => onCategoryChange(null)}
-            className="inline-flex items-center gap-1 text-[12px] px-3 py-1 rounded-full border bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium"
-          >
+            className="inline-flex items-center gap-1 text-[12px] px-3 py-1 rounded-full border bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium">
             {activeCategory}
             <X size={11} className="opacity-70" />
           </button>
         )}
 
-        {/* Separador visual se categoria ativa */}
         {activeCategory && (
           <span className="text-gray-300 dark:text-gray-700 text-[12px]">·</span>
         )}
@@ -67,17 +93,19 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
           <table className="w-full text-[13px] border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                <Th className="w-56">Role</Th>
-                <Th>Descrição</Th>
-                <Th className="w-20">Ações</Th>
-                <Th className="w-32">EAM Tier</Th>
-                <Th className="w-24">Categoria</Th>
-                <Th className="w-16">Priv.</Th>
-                <Th className="w-8"></Th>
+                <SortTh col="name" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-56">Role</SortTh>
+                <th className="text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5">
+                  Descrição
+                </th>
+                <SortTh col="count" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-20">Ações</SortTh>
+                <SortTh col="tier" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-32">EAM Tier</SortTh>
+                <SortTh col="category" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-24">Categoria</SortTh>
+                <SortTh col="privileged" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-16">Priv.</SortTh>
+                <th className="w-8"></th>
               </tr>
             </thead>
             <tbody>
-              {roles.map((role) => (
+              {sorted.map((role) => (
                 <tr key={role.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                   <td className="px-4 py-3 align-top">
                     <Link href={`/roles/${role.slug}`} className="block">
@@ -119,10 +147,22 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
   )
 }
 
-function Th({ children, className = '' }: { children?: React.ReactNode; className?: string }) {
+function SortTh({ col, active, dir, onSort, children, className = '' }: {
+  col: SortCol; active: SortCol; dir: SortDir
+  onSort: (col: SortCol) => void
+  children: React.ReactNode; className?: string
+}) {
+  const isActive = active === col
   return (
-    <th className={`text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 ${className}`}>
-      {children}
+    <th onClick={() => onSort(col)}
+      className={`text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none ${className}`}>
+      <span className="inline-flex items-center gap-1">
+        {children}
+        {isActive
+          ? (dir === 'asc' ? <ChevronUp size={11} /> : <ChevronDown size={11} />)
+          : <ChevronsUpDown size={11} className="opacity-30" />
+        }
+      </span>
     </th>
   )
 }

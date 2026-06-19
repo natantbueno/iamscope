@@ -1,10 +1,11 @@
 'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Sidebar from './Sidebar'
 import { ROLES, RoleCategory } from '@/data/roles'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
+import { getRoleActions } from '@/lib/roleActions'
 
 export default function AppShell({
   children,
@@ -21,22 +22,28 @@ export default function AppShell({
   const pathname = usePathname()
   const [search, setSearch] = useState('')
 
+  const totalRoleActions = useMemo(() => getRoleActions().length, [])
+
   const view =
     pathname === '/' ? 'dashboard' :
     pathname.startsWith('/api-permissions') ? 'apiPermissions' :
+    pathname.startsWith('/role-actions') ? 'roleActions' :
     'roles'
 
-  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions') => {
+  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions') => {
     if (v === 'dashboard') router.push('/')
     else if (v === 'roles') router.push('/roles')
-    else router.push('/api-permissions')
+    else if (v === 'apiPermissions') router.push('/api-permissions')
+    else router.push('/role-actions')
   }
 
   const handleSearchChange = (val: string) => {
     setSearch(val)
     if (val) {
-      // direciona busca para a página de roles com query
-      const target = view === 'apiPermissions' ? '/api-permissions' : '/roles'
+      const target =
+        view === 'apiPermissions' ? '/api-permissions' :
+        view === 'roleActions' ? '/role-actions' :
+        '/roles'
       router.push(`${target}?q=${encodeURIComponent(val)}`)
     }
   }
@@ -52,6 +59,7 @@ export default function AppShell({
         search={search}
         totalRoles={ROLES.length}
         totalApiPerms={API_PERMISSIONS.length}
+        totalRoleActions={totalRoleActions}
         onViewChange={handleViewChange}
         onSearchChange={handleSearchChange}
         onCategoryFilter={handleCategoryFilter}
