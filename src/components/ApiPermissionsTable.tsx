@@ -127,7 +127,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
   )
 }
 
-function Th({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function Th({ children, className = '' }: { children?: React.ReactNode; className?: string }) {
   return (
     <th className={`text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 ${className}`}>
       {children}
