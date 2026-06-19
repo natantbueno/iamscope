@@ -2,18 +2,19 @@
 
 import {
   Search, LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
-  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers,
+  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers, ListTree,
 } from 'lucide-react'
 import { RoleCategory } from '@/data/roles'
 import { useTheme } from './ThemeProvider'
 
-export type View = 'dashboard' | 'roles' | 'apiPermissions'
+export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions'
 
 interface SidebarProps {
   view: View
   search: string
   totalRoles: number
   totalApiPerms: number
+  totalRoleActions: number
   onViewChange: (v: View) => void
   onSearchChange: (s: string) => void
   onCategoryFilter: (cat: RoleCategory) => void
@@ -29,7 +30,7 @@ const categoryItems: { label: string; cat: RoleCategory; icon: React.ReactNode }
 ]
 
 export default function Sidebar({
-  view, search, totalRoles, totalApiPerms,
+  view, search, totalRoles, totalApiPerms, totalRoleActions,
   onViewChange, onSearchChange, onCategoryFilter,
 }: SidebarProps) {
   const { theme, toggleTheme } = useTheme()
@@ -77,6 +78,9 @@ export default function Sidebar({
           <NavItem icon={<ShieldCheck size={15} />} label="Built-in Roles"
             active={view === 'roles'} badge={String(totalRoles)}
             onClick={() => onViewChange('roles')} />
+          <NavItem icon={<ListTree size={15} />} label="Role Actions"
+            active={view === 'roleActions'} badge={String(totalRoleActions)}
+            onClick={() => onViewChange('roleActions')} />
           <NavItem icon={<KeyRound size={15} />} label="API Permissions"
             active={view === 'apiPermissions'} badge={String(totalApiPerms)}
             onClick={() => onViewChange('apiPermissions')} />
