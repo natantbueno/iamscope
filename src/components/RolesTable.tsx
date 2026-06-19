@@ -55,7 +55,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center gap-2 flex-wrap">
+      <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 flex items-center gap-2 flex-wrap">
         {/* Categoria ativa como chip removível */}
         {activeCategory && (
           <button
@@ -76,7 +76,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
             className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
               activeTier === f.value
                 ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
             {f.label}
           </button>
@@ -92,7 +92,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
         ) : (
           <table className="w-full text-[13px] border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
                 <SortTh col="name" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-56">Role</SortTh>
                 <th className="text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5">
                   Descrição

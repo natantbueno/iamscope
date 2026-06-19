@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
   ArrowLeft, AlertTriangle, Copy, CheckCheck, ExternalLink, Shield, Hash, Tag, Layers, BookOpen,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { getRoleBySlug, getRelatedRoles } from '@/lib/roles'
 import { EAM_META } from '@/data/roles'
 import { useTheme } from '@/components/ThemeProvider'
@@ -12,6 +12,7 @@ import CategoryBadge from '@/components/CategoryBadge'
 import EamTierBadge from '@/components/EamTierBadge'
 import RolePermissionsList from '@/components/RolePermissionsList'
 import ThemeToggle from '@/components/ThemeToggle'
+import StatsBar from '@/components/StatsBar'
 
 export default function RolePageClient({ slug }: { slug: string }) {
   const role = getRoleBySlug(slug)
@@ -23,6 +24,16 @@ export default function RolePageClient({ slug }: { slug: string }) {
   const eam = EAM_META[role.eamTier]
   const related = getRelatedRoles(role)
   const docsUrl = `https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#${role.docsSlug ?? slug}`
+
+  // stats por tier das permissões desta role
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const permStats = useMemo(() => ({
+    total:      role.permissions.length,
+    control:    role.permissions.filter((p) => p.tier === 'ControlPlane').length,
+    management: role.permissions.filter((p) => p.tier === 'ManagementPlane').length,
+    userAccess: role.permissions.filter((p) => p.tier === 'UserAccess').length,
+    unclassified: role.permissions.filter((p) => p.tier === 'Unclassified').length,
+  }), [role])
 
   const copyId = () => {
     navigator.clipboard.writeText(role.id)
@@ -37,9 +48,9 @@ export default function RolePageClient({ slug }: { slug: string }) {
     .filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#eef1f5] dark:bg-gray-950">
       {/* Top bar */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-20">
+      <header className="bg-white dark:bg-gray-900 border-b border-[#dde3ec] dark:border-gray-800 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/roles" className="flex items-center gap-1.5 text-[13px] text-gray-500 dark:text-gray-400 hover:text-[#0078d4] dark:hover:text-[#85b7eb] transition-colors">
             <ArrowLeft size={15} /> Voltar para roles
@@ -47,6 +58,17 @@ export default function RolePageClient({ slug }: { slug: string }) {
           <ThemeToggle />
         </div>
       </header>
+
+      {/* Stats bar da role */}
+      <StatsBar stats={[
+        { label: 'Role actions', value: permStats.total, color: 'blue' },
+        { label: 'Control Plane', value: permStats.control, color: 'red' },
+        { label: 'Management Plane', value: permStats.management, color: 'orange' },
+        { label: 'User Access', value: permStats.userAccess, color: 'green' },
+        { label: 'Não classificadas', value: permStats.unclassified, color: 'gray' },
+        { label: 'Categoria', value: role.category },
+        { label: 'EAM Tier', value: eam.label },
+      ]} />
 
       <main className="max-w-5xl mx-auto px-6 py-6">
         {/* Title block */}
@@ -104,7 +126,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
         </section>
 
         {/* Description */}
-        <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5 mb-6">
+        <section className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5 mb-6">
           <h2 className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 mb-3">Descrição</h2>
           {richLines.length > 1 ? (
             <ul className="space-y-1.5">
@@ -127,7 +149,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
         </section>
 
         {/* Full permissions */}
-        <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5 mb-6">
+        <section className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5 mb-6">
           <h2 className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 mb-1">
             Permissões completas
           </h2>
@@ -139,14 +161,14 @@ export default function RolePageClient({ slug }: { slug: string }) {
 
         {/* Code snippets */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5">
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5">
             <h3 className="text-[12px] font-semibold text-gray-700 dark:text-gray-200 mb-2">PowerShell</h3>
             <pre className="text-[11px] font-mono bg-gray-900 dark:bg-black text-green-400 rounded-md p-3 overflow-x-auto leading-relaxed border border-gray-800">
 {`Get-MgRoleManagementDirectoryRoleDefinition \`
   -UnifiedRoleDefinitionId "${role.id}"`}
             </pre>
           </div>
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5">
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5">
             <h3 className="text-[12px] font-semibold text-gray-700 dark:text-gray-200 mb-2">Microsoft Graph</h3>
             <pre className="text-[11px] font-mono bg-gray-900 dark:bg-black text-blue-300 rounded-md p-3 overflow-x-auto leading-relaxed border border-gray-800">
 {`GET https://graph.microsoft.com/v1.0/
@@ -169,7 +191,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {related.map((r) => (
                 <Link key={r.slug} href={`/roles/${r.slug}`}
-                  className="block bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg p-3 transition-colors">
+                  className="block bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-3 transition-colors">
                   <div className="text-[13px] font-medium text-[#0078d4] dark:text-[#85b7eb] mb-1.5 truncate">{r.name}</div>
                   <div className="flex items-center gap-1.5">
                     <EamTierBadge tier={r.eamTier} showLabel={false} />
@@ -187,7 +209,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
 
 function FactCard({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-3.5">
+    <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-3.5">
       <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1.5">
         {icon}
         <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>

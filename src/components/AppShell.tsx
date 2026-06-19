@@ -28,13 +28,15 @@ export default function AppShell({
     pathname === '/' ? 'dashboard' :
     pathname.startsWith('/api-permissions') ? 'apiPermissions' :
     pathname.startsWith('/role-actions') ? 'roleActions' :
+    pathname.startsWith('/reference') ? 'reference' :
     'roles'
 
-  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions') => {
+  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference') => {
     if (v === 'dashboard') router.push('/')
     else if (v === 'roles') router.push('/roles')
     else if (v === 'apiPermissions') router.push('/api-permissions')
-    else router.push('/role-actions')
+    else if (v === 'roleActions') router.push('/role-actions')
+    else router.push('/reference')
   }
 
   const handleSearchChange = (val: string) => {
@@ -53,7 +55,7 @@ export default function AppShell({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+    <div className="flex h-screen bg-[#eef1f5] dark:bg-gray-950 overflow-hidden">
       <Sidebar
         view={view}
         search={search}
@@ -65,7 +67,7 @@ export default function AppShell({
         onCategoryFilter={handleCategoryFilter}
       />
       <div className="flex flex-col flex-1 min-w-0">
-        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between shrink-0">
+        <header className="bg-white dark:bg-gray-900 border-b border-[#dde3ec] dark:border-gray-800 px-6 py-3 flex items-center justify-between shrink-0">
           <div>
             <h1 className="text-[15px] font-semibold text-gray-800 dark:text-gray-100">{headerTitle}</h1>
             <p className="text-[12px] text-gray-400 dark:text-gray-500">{headerSub}</p>

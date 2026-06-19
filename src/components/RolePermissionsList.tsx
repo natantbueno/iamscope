@@ -48,7 +48,7 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filtrar ações..."
-            className="w-full text-[12px] pl-8 pr-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0078d4]"
+            className="w-full text-[12px] pl-8 pr-3 py-1.5 border border-[#dde3ec] dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0078d4]"
           />
         </div>
         {tiers.map((t) => {
@@ -59,7 +59,7 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
               className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
                 tierFilter === t
                   ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] font-medium'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
               {t === 'all' ? 'Todas' : EAM_META[t].label} ({count})
             </button>
@@ -68,10 +68,10 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
       </div>
 
       {/* Table */}
-      <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+      <div className="border border-[#dde3ec] dark:border-gray-800 rounded-lg overflow-hidden">
         <table className="w-full text-[12px] border-collapse">
           <thead>
-            <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
               <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2">Role Action</th>
               <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2 w-40">Categoria</th>
               <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2 w-36">Tier</th>

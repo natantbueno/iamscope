@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, ChevronsUpDown, Copy, CheckCheck, AlertTriangle
 import { RoleActionEntry } from '@/lib/roleActions'
 import { EamTier, EAM_META } from '@/data/roles'
 import EamTierBadge from './EamTierBadge'
+import { deriveRoleActionDescription } from '@/lib/descriptions'
 
 type SortCol = 'action' | 'namespace' | 'verb' | 'tier' | 'category' | 'count'
 type SortDir = 'asc' | 'desc'
@@ -102,7 +103,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Filter bar */}
-      <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-800 space-y-2">
+      <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 space-y-2">
         {/* Tier chips */}
         <div className="flex items-center gap-2 flex-wrap">
           {TIER_FILTERS.map((f) => (
@@ -110,7 +111,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
               className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
                 tier === f.value
                   ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
               {f.label}
             </button>
@@ -157,7 +158,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
           <>
             <table className="w-full text-[12px] border-collapse">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
                   <SortTh col="action" active={sortCol} dir={sortDir} onSort={toggleSort} className="min-w-[280px]">
                     Role Action
                   </SortTh>
@@ -176,6 +177,9 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                   <SortTh col="count" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-20 text-center">
                     # Roles
                   </SortTh>
+                  <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2.5 w-52">
+                    Descrição
+                  </th>
                   <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2.5">
                     Usada por
                   </th>
@@ -223,12 +227,18 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         <td className="px-3 py-2 align-middle text-center">
                           <span className="text-[12px] font-medium text-gray-600 dark:text-gray-300">{entry.usedByRoles.length}</span>
                         </td>
+                        {/* Descrição */}
+                        <td className="px-3 py-2 align-middle">
+                          <span className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">
+                            {deriveRoleActionDescription(entry.namespace, entry.resource, entry.verb)}
+                          </span>
+                        </td>
                         {/* Used by */}
                         <td className="px-3 py-2 align-middle">
                           <div className="flex items-center gap-1 flex-wrap max-w-xs">
                             {entry.usedByRoles.slice(0, isExpanded ? undefined : 2).map((r) => (
                               <Link key={r.slug} href={`/roles/${r.slug}`}
-                                className="inline-flex items-center gap-0.5 text-[10px] bg-gray-100 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] text-gray-600 dark:text-gray-300 hover:text-[#0078d4] dark:hover:text-[#85b7eb] px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 transition-colors">
+                                className="inline-flex items-center gap-0.5 text-[10px] bg-gray-100 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] text-gray-600 dark:text-gray-300 hover:text-[#0078d4] dark:hover:text-[#85b7eb] px-1.5 py-0.5 rounded border border-[#dde3ec] dark:border-gray-700 transition-colors">
                                 {r.isPrivileged && <AlertTriangle size={9} className="text-red-400 shrink-0" />}
                                 {r.name}
                               </Link>
@@ -255,7 +265,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
             {hasMore && (
               <div className="flex justify-center py-4">
                 <button onClick={() => setPage((p) => p + 1)}
-                  className="text-[12px] px-4 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  className="text-[12px] px-4 py-1.5 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   Carregar mais ({sorted.length - visible.length} restantes)
                 </button>
               </div>
@@ -279,7 +289,7 @@ function Select({ label, value, onChange, options }: {
     <div className="flex items-center gap-1.5">
       <span className="text-[11px] text-gray-400 dark:text-gray-500 shrink-0">{label}:</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="text-[11px] border border-gray-200 dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#0078d4] max-w-[180px]">
+        className="text-[11px] border border-[#dde3ec] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#0078d4] max-w-[180px]">
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     </div>

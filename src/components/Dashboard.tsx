@@ -38,7 +38,7 @@ export default function Dashboard() {
       </div>
 
       {/* EAM tier breakdown - cada linha clicável */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 mb-6">
+      <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 mb-6 shadow-sm">
         <div className="flex items-center gap-1.5 mb-3">
           <Layers size={14} className="text-[#0078d4] dark:text-[#85b7eb]" />
           <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">
@@ -73,7 +73,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
           <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 mb-2">Sobre este site</h2>
           <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed mb-2">
             Referência para roles e API permissions do Microsoft Entra ID, com classificação por tier do
@@ -90,7 +90,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
           <div className="flex items-center gap-1.5 mb-3">
             <Star size={14} className="text-amber-500" />
             <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">Roles mais consultadas</h2>
@@ -101,7 +101,7 @@ export default function Dashboard() {
               if (!role) return null
               return (
                 <Link key={name} href={`/roles/${role.slug}`}
-                  className="text-left flex items-center gap-2 bg-gray-50 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] border border-gray-200 dark:border-gray-700 hover:border-[#9dc3e8] rounded-md px-2.5 py-1.5 transition-colors">
+                  className="text-left flex items-center gap-2 bg-gray-50 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] border border-[#dde3ec] dark:border-gray-700 hover:border-[#9dc3e8] rounded-md px-2.5 py-1.5 transition-colors">
                   <span className="text-[12px] font-medium text-[#0078d4] dark:text-[#85b7eb] flex-1 truncate">{role.name}</span>
                   {role.isPrivileged && <AlertTriangle size={11} className="text-red-500 shrink-0" />}
                   <ChevronRight size={13} className="text-gray-300 dark:text-gray-600 shrink-0" />
@@ -137,7 +137,7 @@ function StatCard({ label, value, accent, danger, href }: {
 }) {
   return (
     <Link href={href}
-      className="block bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-3.5 transition-colors group">
+      className="block bg-white dark:bg-gray-800 hover:bg-[#f5f8fc] dark:hover:bg-gray-700 rounded-lg p-3.5 transition-colors group border border-[#dde3ec] dark:border-gray-700 shadow-sm">
       <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-1 flex items-center gap-1">
         {label}
         <ChevronRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />

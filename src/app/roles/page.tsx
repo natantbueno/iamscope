@@ -5,10 +5,21 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import RolesTable, { FilterType } from '@/components/RolesTable'
 import ExportMenu from '@/components/ExportMenu'
+import StatsBar from '@/components/StatsBar'
 import { ROLES, RoleCategory } from '@/data/roles'
 
 const TIER_VALUES = ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified']
 const CATEGORY_VALUES: RoleCategory[] = ['Identity', 'Application', 'Security', 'Compliance', 'M365', 'Device', 'Other']
+
+// stats globais — calculados uma vez
+const GLOBAL_STATS = {
+  total:       ROLES.length,
+  control:     ROLES.filter((r) => r.eamTier === 'ControlPlane').length,
+  management:  ROLES.filter((r) => r.eamTier === 'ManagementPlane').length,
+  userAccess:  ROLES.filter((r) => r.eamTier === 'UserAccess').length,
+  unclassified:ROLES.filter((r) => r.eamTier === 'Unclassified').length,
+  privileged:  ROLES.filter((r) => r.isPrivileged).length,
+}
 
 function RolesContent() {
   const searchParams = useSearchParams()
@@ -19,7 +30,6 @@ function RolesContent() {
   const tierParam = searchParams.get('tier')
   const filterParam = searchParams.get('filter')
 
-  // Tier e category são filtros independentes
   const initialTier: FilterType =
     filterParam === 'privileged' ? 'privileged'
     : tierParam && TIER_VALUES.includes(tierParam) ? (tierParam as FilterType)
@@ -49,15 +59,8 @@ function RolesContent() {
     router.replace(`/roles${qs ? '?' + qs : ''}`)
   }
 
-  const handleTierChange = (f: FilterType) => {
-    setActiveTier(f)
-    syncUrl(f, activeCategory, q)
-  }
-
-  const handleCategoryChange = (c: RoleCategory | null) => {
-    setActiveCategory(c)
-    syncUrl(activeTier, c, q)
-  }
+  const handleTierChange = (f: FilterType) => { setActiveTier(f); syncUrl(f, activeCategory, q) }
+  const handleCategoryChange = (c: RoleCategory | null) => { setActiveCategory(c); syncUrl(activeTier, c, q) }
 
   const filteredRoles = useMemo(() => {
     const query = q.toLowerCase()
@@ -68,14 +71,11 @@ function RolesContent() {
         r.description.toLowerCase().includes(query) ||
         r.id.toLowerCase().includes(query) ||
         r.permissions.some((p) => p.action.toLowerCase().includes(query))
-
       const matchTier =
         activeTier === 'all' ? true
         : activeTier === 'privileged' ? r.isPrivileged
         : r.eamTier === activeTier
-
       const matchCategory = !activeCategory || r.category === activeCategory
-
       return matchSearch && matchTier && matchCategory
     }).sort((a, b) => {
       const order = { ControlPlane: 0, ManagementPlane: 1, UserAccess: 2, Unclassified: 3 }
@@ -94,6 +94,14 @@ function RolesContent() {
       headerActions={<ExportMenu roles={filteredRoles} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        <StatsBar stats={[
+          { label: 'Total', value: GLOBAL_STATS.total, color: 'blue', href: '/roles' },
+          { label: 'Control Plane', value: GLOBAL_STATS.control, color: 'red', href: '/roles?tier=ControlPlane' },
+          { label: 'Management Plane', value: GLOBAL_STATS.management, color: 'orange', href: '/roles?tier=ManagementPlane' },
+          { label: 'User Access', value: GLOBAL_STATS.userAccess, color: 'green', href: '/roles?tier=UserAccess' },
+          { label: 'Não classificadas', value: GLOBAL_STATS.unclassified, color: 'gray', href: '/roles?tier=Unclassified' },
+          { label: 'Privilegiadas', value: GLOBAL_STATS.privileged, color: 'red', href: '/roles?filter=privileged' },
+        ]} />
         <RolesTable
           roles={filteredRoles}
           activeTier={activeTier}

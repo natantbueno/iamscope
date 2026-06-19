@@ -2,12 +2,12 @@
 
 import {
   Search, LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
-  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers, ListTree,
+  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers, ListTree, HelpCircle,
 } from 'lucide-react'
 import { RoleCategory } from '@/data/roles'
 import { useTheme } from './ThemeProvider'
 
-export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions'
+export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference'
 
 interface SidebarProps {
   view: View
@@ -36,8 +36,8 @@ export default function Sidebar({
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <aside className="w-60 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+    <aside className="w-60 shrink-0 bg-white dark:bg-gray-900 border-r border-[#dde3ec] dark:border-gray-800 flex flex-col h-screen sticky top-0">
+      <div className="p-4 border-b border-[#dde3ec] dark:border-gray-800">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-[#0078d4] rounded flex items-center justify-center">
@@ -63,7 +63,7 @@ export default function Sidebar({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Buscar..."
-            className="w-full text-[12px] pl-8 pr-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0078d4] focus:border-[#0078d4]"
+            className="w-full text-[12px] pl-8 pr-3 py-1.5 border border-[#dde3ec] dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0078d4] focus:border-[#0078d4]"
           />
         </div>
       </div>
@@ -84,6 +84,9 @@ export default function Sidebar({
           <NavItem icon={<KeyRound size={15} />} label="API Permissions"
             active={view === 'apiPermissions'} badge={String(totalApiPerms)}
             onClick={() => onViewChange('apiPermissions')} />
+          <NavItem icon={<HelpCircle size={15} />} label="Reference"
+            active={view === 'reference'}
+            onClick={() => onViewChange('reference')} />
         </div>
 
         <div className="mb-4">
@@ -109,7 +112,7 @@ export default function Sidebar({
         </div>
       </nav>
 
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+      <div className="p-4 border-t border-[#dde3ec] dark:border-gray-800">
         <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
           Tiering: Enterprise Access Model
           <br />
@@ -133,7 +136,7 @@ function NavItem({ icon, label, active, badge, onClick }: {
       {icon}
       <span className="flex-1">{label}</span>
       {badge && (
-        <span className="text-[10px] bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded-full">
+        <span className="text-[10px] bg-gray-100 dark:bg-gray-800 border border-[#dde3ec] dark:border-gray-700 text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded-full">
           {badge}
         </span>
       )}

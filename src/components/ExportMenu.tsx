@@ -29,7 +29,7 @@ export default function ExportMenu({ roles, label = 'Exportar' }: { roles?: Entr
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <Download size={13} />
         {label}
@@ -37,7 +37,7 @@ export default function ExportMenu({ roles, label = 'Exportar' }: { roles?: Entr
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-60 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 py-1.5">
+        <div className="absolute right-0 mt-1 w-60 bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-700 rounded-lg shadow-lg z-50 py-1.5">
           <MenuLabel>Lista de roles</MenuLabel>
           <MenuItem icon={<FileSpreadsheet size={14} className="text-green-600" />} onClick={() => act(exportExcel)}>
             Excel (.xls)
