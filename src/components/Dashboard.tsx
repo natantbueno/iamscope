@@ -13,7 +13,7 @@ const TOP_ROLES = [
   'Security Administrator', 'User Administrator', 'Application Administrator',
 ]
 
-const TIER_ORDER: EamTier[] = ['ControlPlane', 'ManagementPlane', 'WorkloadPlane', 'UserAccess']
+const TIER_ORDER: EamTier[] = ['ControlPlane', 'ManagementPlane', 'UserAccess']
 
 export default function Dashboard() {
   const { theme } = useTheme()

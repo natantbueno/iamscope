@@ -35,7 +35,7 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
     setTimeout(() => setCopied(null), 1500)
   }
 
-  const tiers: ('all' | EamTier)[] = ['all', 'ControlPlane', 'ManagementPlane', 'WorkloadPlane', 'UserAccess']
+  const tiers: ('all' | EamTier)[] = ['all', 'ControlPlane', 'ManagementPlane', 'UserAccess']
 
   return (
     <div>

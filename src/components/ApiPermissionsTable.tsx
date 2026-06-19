@@ -12,7 +12,6 @@ const FILTERS: { label: string; value: ApiFilter }[] = [
   { label: 'Todas', value: 'all' },
   { label: 'Control Plane', value: 'ControlPlane' },
   { label: 'Management Plane', value: 'ManagementPlane' },
-  { label: 'Workload Plane', value: 'WorkloadPlane' },
   { label: 'User Access', value: 'UserAccess' },
 ]
 
@@ -20,7 +19,7 @@ const PAGE_SIZE = 50
 
 export default function ApiPermissionsTable({ search, initialTier = 'all' }: { search: string; initialTier?: string }) {
   const [filter, setFilter] = useState<ApiFilter>(
-    ['ControlPlane', 'ManagementPlane', 'WorkloadPlane', 'UserAccess'].includes(initialTier)
+    ['ControlPlane', 'ManagementPlane', 'UserAccess'].includes(initialTier)
       ? (initialTier as ApiFilter)
       : 'all'
   )
