@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import ApiPermissionsTable from '@/components/ApiPermissionsTable'
 import StatsBar from '@/components/StatsBar'
+import ExportMenu from '@/components/ExportMenu'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
 
 const GLOBAL_STATS = {
@@ -25,6 +26,7 @@ function ApiContent() {
     <AppShell
       headerTitle="API Permissions"
       headerSub="Microsoft Graph API permissions com classificação EAM"
+      headerActions={<ExportMenu mode="apiPerms" apiPerms={API_PERMISSIONS} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

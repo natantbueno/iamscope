@@ -1,4 +1,8 @@
 import { ROLES, EntraRole } from '@/data/roles'
+import { RoleActionEntry } from '@/lib/roleActions'
+import { API_PERMISSIONS } from '@/data/apiPermissions'
+
+type ApiPermission = typeof API_PERMISSIONS[number]
 
 // Achata uma role para uma linha de export (sem o array de permissions completo)
 function roleToRow(role: EntraRole) {
@@ -134,4 +138,50 @@ export function exportExcel(roles: EntraRole[] = ROLES) {
 </Workbook>`
 
   download('entra-roles.xls', xml, 'application/vnd.ms-excel')
+}
+
+// ---------- Role Actions ----------
+export function exportRoleActionsCSV(actions: RoleActionEntry[]) {
+  const rows = actions.map((a) => ({
+    action: a.action,
+    namespace: a.namespace,
+    resource: a.resource,
+    verb: a.verb,
+    category: a.category,
+    tier: a.tier,
+    usedByPrivileged: a.isUsedByPrivileged,
+    rolesCount: a.usedByRoles.length,
+    roles: a.usedByRoles.map((r) => r.name).join(' | '),
+  }))
+  download('entra-role-actions.csv', toCSV(rows), 'text/csv;charset=utf-8')
+}
+
+export function exportRoleActionsJSON(actions: RoleActionEntry[]) {
+  const data = actions.map((a) => ({
+    action: a.action,
+    namespace: a.namespace,
+    resource: a.resource,
+    verb: a.verb,
+    category: a.category,
+    tier: a.tier,
+    usedByPrivileged: a.isUsedByPrivileged,
+    usedByRoles: a.usedByRoles,
+  }))
+  download('entra-role-actions.json', JSON.stringify(data, null, 2), 'application/json')
+}
+
+// ---------- API Permissions ----------
+export function exportApiPermissionsCSV(perms: ApiPermission[]) {
+  const rows = perms.map((p) => ({
+    name: p.name,
+    id: p.id,
+    type: p.type,
+    category: p.category,
+    eamTier: p.eamTier,
+  }))
+  download('entra-api-permissions.csv', toCSV(rows), 'text/csv;charset=utf-8')
+}
+
+export function exportApiPermissionsJSON(perms: ApiPermission[]) {
+  download('entra-api-permissions.json', JSON.stringify(perms, null, 2), 'application/json')
 }
