@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import RoleActionsTable from '@/components/RoleActionsTable'
 import StatsBar from '@/components/StatsBar'
+import ExportMenu from '@/components/ExportMenu'
 import { getRoleActions, getUniqueNamespaces, getUniqueVerbs, getUniqueCategories } from '@/lib/roleActions'
 
 function RoleActionsContent() {
@@ -31,6 +32,7 @@ function RoleActionsContent() {
     <AppShell
       headerTitle="Role Actions"
       headerSub={subtitle}
+      headerActions={<ExportMenu mode="roleActions" roleActions={actions} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
