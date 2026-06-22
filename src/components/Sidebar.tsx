@@ -2,12 +2,14 @@
 
 import {
   Search, LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
-  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers, ListTree, HelpCircle,
+  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Sun, Moon, Layers, ListTree, HelpCircle, Info,
 } from 'lucide-react'
 import { RoleCategory } from '@/data/roles'
 import { useTheme } from './ThemeProvider'
+import EntraScopeIcon from './EntraScopeIcon'
+import { useRouter } from 'next/navigation'
 
-export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference'
+export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info'
 
 interface SidebarProps {
   view: View
@@ -34,27 +36,43 @@ export default function Sidebar({
   onViewChange, onSearchChange, onCategoryFilter,
 }: SidebarProps) {
   const { theme, toggleTheme } = useTheme()
+  const router = useRouter()
 
   return (
     <aside className="w-60 shrink-0 bg-white dark:bg-gray-900 border-r border-[#dde3ec] dark:border-gray-800 flex flex-col h-screen sticky top-0">
       <div className="p-4 border-b border-[#dde3ec] dark:border-gray-800">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-[#0078d4] rounded flex items-center justify-center">
-              <ShieldCheck size={14} color="white" />
-            </div>
-            <span className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">
-              entra.permissions
-            </span>
-          </div>
           <button
-            onClick={toggleTheme}
-            className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Alternar tema"
-            title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+            <EntraScopeIcon size={24} />
+            <span className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">
+              Entra Scope
+            </span>
           </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => router.push('/info')}
+              className={`p-1.5 rounded-md transition-colors ${
+                view === 'info'
+                  ? 'text-[#0078d4] dark:text-[#85b7eb] bg-[#e8f1fb] dark:bg-[#0c2a47]'
+                  : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              aria-label="Sobre"
+              title="Sobre o Entra Scope"
+            >
+              <Info size={15} />
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Alternar tema"
+              title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+            >
+              {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+            </button>
+          </div>
         </div>
         <div className="relative">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
