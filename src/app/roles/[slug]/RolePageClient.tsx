@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import {
   ArrowLeft, AlertTriangle, Copy, CheckCheck, ExternalLink, Shield, Hash, Tag, Layers, BookOpen,
+  ListTree, ShieldAlert, Settings2, Users2, HelpCircle,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { getRoleBySlug, getRelatedRoles } from '@/lib/roles'
@@ -12,7 +13,6 @@ import CategoryBadge from '@/components/CategoryBadge'
 import EamTierBadge from '@/components/EamTierBadge'
 import RolePermissionsList from '@/components/RolePermissionsList'
 import ThemeToggle from '@/components/ThemeToggle'
-import StatsBar from '@/components/StatsBar'
 
 export default function RolePageClient({ slug }: { slug: string }) {
   const role = getRoleBySlug(slug)
@@ -59,21 +59,10 @@ export default function RolePageClient({ slug }: { slug: string }) {
         </div>
       </header>
 
-      {/* Stats bar da role */}
-      <StatsBar stats={[
-        { label: 'Role actions', value: permStats.total, color: 'blue' },
-        { label: 'Control Plane', value: permStats.control, color: 'red' },
-        { label: 'Management Plane', value: permStats.management, color: 'orange' },
-        { label: 'User Access', value: permStats.userAccess, color: 'green' },
-        { label: 'Não classificadas', value: permStats.unclassified, color: 'gray' },
-        { label: 'Categoria', value: role.category },
-        { label: 'EAM Tier', value: eam.label },
-      ]} />
-
       <main className="max-w-5xl mx-auto px-6 py-6">
         {/* Title block */}
-        <div className="mb-6">
-          <div className="flex items-start gap-3 flex-wrap mb-3">
+        <div className="mb-5">
+          <div className="flex items-start gap-3 flex-wrap mb-2">
             <h1 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100">{role.name}</h1>
             {role.isPrivileged && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400 mt-1.5">
@@ -84,14 +73,20 @@ export default function RolePageClient({ slug }: { slug: string }) {
           <div className="flex items-center gap-2 flex-wrap">
             <EamTierBadge tier={role.eamTier} />
             <CategoryBadge category={role.category} />
-            <span className="text-[12px] text-gray-400 dark:text-gray-500">
-              {role.permissionCount} role actions
-            </span>
           </div>
         </div>
 
+        {/* Stats + facts grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mb-3">
+          <StatCard icon={<ListTree size={13} />} label="Role Actions" value={permStats.total} accent="#0078d4" />
+          <StatCard icon={<ShieldAlert size={13} />} label="Control Plane" value={permStats.control} accent="#dc2626" />
+          <StatCard icon={<Settings2 size={13} />} label="Management Plane" value={permStats.management} accent="#ea580c" />
+          <StatCard icon={<Users2 size={13} />} label="User Access" value={permStats.userAccess} accent="#16a34a" />
+          <StatCard icon={<HelpCircle size={13} />} label="Não classificadas" value={permStats.unclassified} accent="#6b7280" />
+        </div>
+
         {/* Quick facts grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">
           <FactCard icon={<Hash size={14} />} label="Template ID">
             <div className="flex items-center gap-1.5">
               <code className="font-mono text-[11px] text-gray-600 dark:text-gray-300 break-all">{role.id}</code>
@@ -215,6 +210,20 @@ function FactCard({ icon, label, children }: { icon: React.ReactNode; label: str
         <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
       </div>
       {children}
+    </div>
+  )
+}
+
+function StatCard({ icon, label, value, accent }: {
+  icon: React.ReactNode; label: string; value: number; accent: string
+}) {
+  return (
+    <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-3.5">
+      <div className="flex items-center gap-1.5 mb-1.5" style={{ color: accent }}>
+        {icon}
+        <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
+      </div>
+      <span className="text-[22px] font-bold" style={{ color: accent }}>{value}</span>
     </div>
   )
 }

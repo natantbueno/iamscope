@@ -29,13 +29,15 @@ export default function AppShell({
     pathname.startsWith('/api-permissions') ? 'apiPermissions' :
     pathname.startsWith('/role-actions') ? 'roleActions' :
     pathname.startsWith('/reference') ? 'reference' :
+    pathname.startsWith('/info') ? 'info' :
     'roles'
 
-  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference') => {
+  const handleViewChange = (v: 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info') => {
     if (v === 'dashboard') router.push('/')
     else if (v === 'roles') router.push('/roles')
     else if (v === 'apiPermissions') router.push('/api-permissions')
     else if (v === 'roleActions') router.push('/role-actions')
+    else if (v === 'info') router.push('/info')
     else router.push('/reference')
   }
 
