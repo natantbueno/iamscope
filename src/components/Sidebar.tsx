@@ -6,7 +6,7 @@ import {
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
   ChevronDown, Shield, ChevronRight,
   Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Sparkles,
-  GitCompare, Timer,
+  GitCompare, Timer, ShieldAlert,
 } from 'lucide-react'
 import { RoleCategory, EAM_META, EamTier } from '@/data/roles'
 import { AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
@@ -206,6 +206,14 @@ export default function Sidebar({
           <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
           <span className="flex-1 text-[12px] font-medium text-emerald-300 group-hover:text-emerald-200">Role Evaluator</span>
           <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-900/60 px-1.5 py-0.5 rounded">Beta</span>
+        </button>
+        <button
+          onClick={() => router.push('/sod')}
+          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg bg-amber-950/60 hover:bg-amber-900/60 border border-amber-800/50 hover:border-amber-700/70 transition-colors text-left group"
+        >
+          <ShieldAlert size={14} className="text-amber-400 shrink-0" />
+          <span className="flex-1 text-[12px] font-medium text-amber-300 group-hover:text-amber-200">SoD Analyzer</span>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 bg-amber-900/60 px-1.5 py-0.5 rounded">Beta</span>
         </button>
         <button
           onClick={() => router.push('/tier-comparison')}

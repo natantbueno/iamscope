@@ -48,9 +48,9 @@ export const DATA_SYNC: DataSourceSync[] = [
   },
   {
     id: 'azure-rbac-roles',
-    label: 'Azure RBAC — Built-in Roles (923)',
+    label: 'Azure RBAC — Built-in Roles (926)',
     platform: 'Azure RBAC',
-    lastSynced: '2026-06-30',
+    lastSynced: '2026-07-01',
     sourceLabel: 'MicrosoftDocs/azure-docs — built-in-roles reference (via scripts/fetch-azure-roles.js)',
     sourceUrl: 'https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles',
   },

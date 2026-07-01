@@ -23,7 +23,6 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/app/azure-rbac/roles/*/AzureRbacRoleClient.tsx"
+    "node_modules"
   ]
 }

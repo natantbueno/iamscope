@@ -61,7 +61,7 @@ export default function IbmCloudDashboard() {
       headerSub="Referência de roles, plataformas e acessos IBM Cloud"
     >
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 max-w-4xl space-y-6">
+        <div className="max-w-5xl px-6 py-6 space-y-6">
 
           {/* Stat Cards */}
           <div className="grid grid-cols-4 gap-3">
@@ -89,9 +89,8 @@ export default function IbmCloudDashboard() {
               { label: 'Cloud Foundry', count: cfRoles, color: '#059669', filter: 'cloud-foundry', desc: 'Org Manager/Auditor e Space Manager/Developer' },
             ].map(m => (
               <Link key={m.filter} href={`/ibm-cloud/roles?model=${m.filter}`}
-                className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4 hover:border-current transition-colors group"
-                style={{ ['--hover-color' as string]: m.color } as React.CSSProperties}>
-                <div className="text-2xl font-bold mb-1" style={{ color: m.color }}>{m.count}</div>
+                className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors group">
+                <div className="text-[22px] font-bold leading-none mb-1.5" style={{ color: m.color }}>{m.count}</div>
                 <div className="text-[12px] font-semibold text-gray-700 dark:text-gray-300">{m.label}</div>
                 <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">{m.desc}</p>
               </Link>

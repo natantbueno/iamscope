@@ -45,7 +45,7 @@ export default function GcpDashboard() {
       headerSub="Referência de predefined roles do GCP IAM"
     >
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 max-w-4xl space-y-6">
+        <div className="max-w-5xl px-6 py-6 space-y-6">
 
           {/* Stat Cards */}
           <div className="grid grid-cols-4 gap-3">

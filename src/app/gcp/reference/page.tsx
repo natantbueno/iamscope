@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META, GcpTier } from '@/data/gcp'
 import Link from 'next/link'

@@ -3,13 +3,31 @@
     "id": "global-admin",
     "name": "Global Administrator / Root Access",
     "tier": 0,
-    "description": "Controle administrativo total e irrestrito sobre todos os recursos, identidade e billing da plataforma."
+    "description": "O role mais privilegiado de cada plataforma. Concede controle irrestrito sobre todos os recursos, identidade e billing."
+  },
+  {
+    "id": "security-admin",
+    "name": "Security Administrator",
+    "tier": 0,
+    "description": "Administrador de segurança com acesso completo a políticas, alertas, configurações de proteção de identidade e conformidade."
+  },
+  {
+    "id": "privileged-role-admin",
+    "name": "Privileged Role Administrator",
+    "tier": 0,
+    "description": "Capacidade de atribuir, modificar e remover qualquer função ou permissão elevada, incluindo administradores globais."
+  },
+  {
+    "id": "conditional-access-admin",
+    "name": "Conditional Access Administrator",
+    "tier": 0,
+    "description": "Controle sobre políticas de autenticação adaptativa, requisitos de MFA, conformidade de dispositivos e acesso baseado em risco."
   },
   {
     "id": "billing-admin",
     "name": "Billing Administrator",
     "tier": 0,
-    "description": "Acesso completo a dados de billing, gerenciamento de custos, assinaturas e métodos de pagamento."
+    "description": "Acesso a dados de billing, gerenciamento de custos e propriedade de assinaturas. Comprometimento causa dano financeiro direto."
   },
   {
     "id": "read-only-viewer",
@@ -24,9 +42,111 @@
     "description": "Criar, atualizar e excluir contas de usuário, gerenciar membros de grupos e redefinir credenciais."
   },
   {
+    "id": "application-admin",
+    "name": "Application / Service Principal Administrator",
+    "tier": 1,
+    "description": "Registrar aplicativos, gerenciar credenciais e configurar permissões de API delegadas e de aplicativo."
+  },
+  {
+    "id": "key-vault-admin",
+    "name": "Key / Secret / Certificate Management",
+    "tier": 1,
+    "description": "Criar, rotacionar, importar e configurar políticas de acesso para chaves, segredos e certificados."
+  },
+  {
+    "id": "compliance-admin",
+    "name": "Audit & Compliance Administrator",
+    "tier": 1,
+    "description": "Acesso a relatórios de conformidade, logs de auditoria, avaliações de risco e controles regulatórios."
+  },
+  {
+    "id": "exchange-admin",
+    "name": "Exchange / Email Administrator",
+    "tier": 1,
+    "description": "Controle sobre caixas de correio, listas de distribuição, conectores de email e políticas anti-spam."
+  },
+  {
+    "id": "groups-admin",
+    "name": "Groups Administrator",
+    "tier": 1,
+    "description": "Criar, modificar e excluir grupos de segurança e do Microsoft 365, e gerenciar associações."
+  },
+  {
+    "id": "authentication-admin",
+    "name": "Authentication Administrator",
+    "tier": 1,
+    "description": "Gerenciar métodos de autenticação, redefinir senhas e configurar MFA para usuários não-admin."
+  },
+  {
+    "id": "intune-admin",
+    "name": "Device / Endpoint Management Administrator",
+    "tier": 1,
+    "description": "Políticas de conformidade, configuração de dispositivos e implantação de aplicativos móveis corporativos."
+  },
+  {
+    "id": "cost-management-admin",
+    "name": "Cost Management Administrator",
+    "tier": 1,
+    "description": "Visualiza, analisa e otimiza gastos na nuvem — orçamentos, alertas de custo e alocação de despesas — sem controle sobre pagamentos."
+  },
+  {
     "id": "storage-admin",
     "name": "Storage / Object Storage Administrator",
     "tier": 2,
-    "description": "Controle total sobre serviços de armazenamento de objetos — criar/excluir buckets/containers e gerenciar dados armazenados."
+    "description": "Controle total sobre serviços de armazenamento de objetos — criar/excluir buckets/containers."
+  },
+  {
+    "id": "network-admin",
+    "name": "Network Administrator",
+    "tier": 2,
+    "description": "Controle sobre VPCs, sub-redes, grupos de segurança, firewalls, balanceadores de carga e VPNs."
+  },
+  {
+    "id": "compute-admin",
+    "name": "Compute / VM Administrator",
+    "tier": 2,
+    "description": "Controle sobre máquinas virtuais, imagens, snapshots e grupos de escalabilidade automática."
+  },
+  {
+    "id": "database-admin",
+    "name": "Database Administrator",
+    "tier": 2,
+    "description": "Controle sobre instâncias de banco de dados relacional e NoSQL, backup, replicação e desempenho."
+  },
+  {
+    "id": "container-admin",
+    "name": "Container / Kubernetes Administrator",
+    "tier": 2,
+    "description": "Controle sobre clusters Kubernetes, workloads, políticas de rede, RBAC e registros de imagens."
+  },
+  {
+    "id": "dns-admin",
+    "name": "DNS Administrator",
+    "tier": 2,
+    "description": "Controle sobre zonas DNS, registros de nomes de domínio, resolutores privados e delegação de domínios."
+  },
+  {
+    "id": "backup-admin",
+    "name": "Backup & Recovery Administrator",
+    "tier": 2,
+    "description": "Políticas de backup, agendamentos, retenção de dados e testes de restauração."
+  },
+  {
+    "id": "devops-admin",
+    "name": "DevOps / CI-CD Administrator",
+    "tier": 2,
+    "description": "Controle sobre repositórios de código, automação de build, deploy contínuo e infraestrutura como código."
+  },
+  {
+    "id": "monitoring-admin",
+    "name": "Log Analytics / Monitoring Administrator",
+    "tier": 2,
+    "description": "Métricas de infraestrutura, alertas, dashboards, retenção de logs e observabilidade."
+  },
+  {
+    "id": "audit-log-admin",
+    "name": "Audit Log Administrator",
+    "tier": 2,
+    "description": "Configura, gerencia ou consulta trilhas de auditoria imutáveis para investigações de segurança e compliance."
   }
 ]

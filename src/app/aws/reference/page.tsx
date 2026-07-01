@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { AWS_POLICIES, AWS_TIER_META, AwsTier } from '@/data/aws'
 import Link from 'next/link'
