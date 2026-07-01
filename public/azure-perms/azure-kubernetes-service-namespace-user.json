@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ContainerService/managedClusters/managedNamespaces/read","type":"Actions"},{"action":"Microsoft.ContainerService/managedClusters/managedNamespaces/listCredential/action","type":"Actions"}]

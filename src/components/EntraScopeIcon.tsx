@@ -6,7 +6,7 @@ export default function EntraScopeIcon({ size = 24 }: { size?: number }) {
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Entra Scope"
+      aria-label="IAM Scope"
     >
       {/* Shield */}
       <path

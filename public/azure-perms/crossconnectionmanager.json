@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ClassicNetwork/expressRouteCrossConnections/*","type":"Actions"},{"action":"Microsoft.Network/expressRouteCrossConnections/*","type":"Actions"},{"action":"Microsoft.Features/providers/features/read","type":"Actions"},{"action":"Microsoft.Network/expressRouteCrossConnections/delete","type":"NotActions"}]

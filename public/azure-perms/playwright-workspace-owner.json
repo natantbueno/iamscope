@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Loadtestservice/playwrightworkspaces/*","type":"Actions"},{"action":"Microsoft.Loadtestservice/locations/playwrightquotas/*","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Resources/deployments/*","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"}]

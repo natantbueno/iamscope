@@ -1,0 +1,1 @@
+[{"action":"Microsoft.MixedReality/spatialMapsAccounts/read","type":"DataActions"},{"action":"Microsoft.MixedReality/spatialMapsAccounts/delete","type":"DataActions"},{"action":"Microsoft.MixedReality/spatialMapsAccounts/write","type":"DataActions"}]

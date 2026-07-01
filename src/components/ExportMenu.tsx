@@ -5,11 +5,13 @@ import { Download, FileJson, FileSpreadsheet, FileText, ChevronDown } from 'luci
 import { EntraRole } from '@/data/roles'
 import { RoleActionEntry } from '@/lib/roleActions'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
+import { AzureRbacRole } from '@/data/azureRbac'
 import {
   exportCSV, exportExcel, exportJSON,
   exportPermissionsCSV, exportPermissionsJSON,
   exportRoleActionsCSV, exportRoleActionsJSON,
   exportApiPermissionsCSV, exportApiPermissionsJSON,
+  exportAzureRbacCSV, exportAzureRbacJSON,
 } from '@/lib/export'
 
 type ApiPermission = typeof API_PERMISSIONS[number]
@@ -18,6 +20,7 @@ type Props =
   | { mode?: 'roles';       roles?: EntraRole[];            label?: string }
   | { mode: 'roleActions';  roleActions: RoleActionEntry[]; label?: string }
   | { mode: 'apiPerms';     apiPerms: ApiPermission[];      label?: string }
+  | { mode: 'azureRbac';   azureRoles: AzureRbacRole[];    label?: string }
 
 export default function ExportMenu(props: Props) {
   const { label = 'Exportar' } = props
@@ -99,6 +102,21 @@ export default function ExportMenu(props: Props) {
                   CSV
                 </MenuItem>
                 <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportApiPermissionsJSON(perms))}>
+                  JSON
+                </MenuItem>
+              </>
+            )
+          })()}
+
+          {mode === 'azureRbac' && (() => {
+            const azureRoles = (props as { azureRoles: AzureRbacRole[] }).azureRoles
+            return (
+              <>
+                <MenuLabel>Azure RBAC Roles</MenuLabel>
+                <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportAzureRbacCSV(azureRoles))}>
+                  CSV
+                </MenuItem>
+                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportAzureRbacJSON(azureRoles))}>
                   JSON
                 </MenuItem>
               </>

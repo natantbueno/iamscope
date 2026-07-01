@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Web/connectorGateways/read","type":"Actions"},{"action":"Microsoft.Web/connectorGateways/*/read","type":"Actions"}]

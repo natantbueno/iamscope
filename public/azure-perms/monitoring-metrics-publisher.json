@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Insights/Register/Action","type":"Actions"},{"action":"Microsoft.Support/*","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Insights/Metrics/Write","type":"DataActions"},{"action":"Microsoft.Insights/Telemetry/Write","type":"DataActions"}]

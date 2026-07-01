@@ -6,8 +6,8 @@ import Dashboard from '@/components/Dashboard'
 export default function Home() {
   return (
     <AppShell
-      headerTitle="Dashboard"
-      headerSub="Microsoft Entra ID — referência de roles e permissões"
+      headerTitle="Microsoft Entra ID"
+      headerSub="Referência de roles e permissões"
     >
       <div className="flex-1 overflow-y-auto">
         <Dashboard />

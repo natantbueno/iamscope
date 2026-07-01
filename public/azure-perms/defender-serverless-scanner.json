@@ -1,0 +1,1 @@
+[{"action":"microsoft.web/sites/publish/action","type":"Actions"},{"action":"Microsoft.Web/sites/sitecontainers/read","type":"Actions"},{"action":"microsoft.web/sites/slots/publish/action","type":"Actions"},{"action":"microsoft.web/sites/config/list/action","type":"Actions"},{"action":"microsoft.web/sites/slots/config/list/action","type":"Actions"}]

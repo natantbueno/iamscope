@@ -33,3 +33,13 @@ body {
 html {
   transition: background-color 0.2s ease;
 }
+
+/* CloudNav — hover & active state driven by per-item CSS custom property */
+.cloud-nav-item {
+  transition: color 150ms ease, border-bottom-color 150ms ease;
+}
+.cloud-nav-item:hover,
+.cloud-nav-item[aria-current="page"] {
+  color: var(--cloud-color);
+  border-bottom-color: var(--cloud-color);
+}

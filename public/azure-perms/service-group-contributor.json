@@ -1,0 +1,1 @@
+[{"action":"*","type":"Actions"},{"action":"Microsoft.Authorization/roleAssignments/write","type":"NotActions"},{"action":"Microsoft.Authorization/roleAssignments/delete","type":"NotActions"}]

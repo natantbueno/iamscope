@@ -1,0 +1,3209 @@
+[
+  {
+    "id": "global-admin",
+    "function": "global-admin",
+    "tier": 0,
+    "name": "Global Administrator / Root Access",
+    "description": "O role mais privilegiado de cada plataforma. Concede controle irrestrito sobre todos os recursos, identidade e billing. Proteja com MFA, PIM/JIT e revisões de acesso frequentes.",
+    "clouds": {
+      "entraId": {
+        "role": "Global Administrator",
+        "slug": "global-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Gerenciar todas as configurações do Entra ID",
+          "Atribuir qualquer role a qualquer usuário",
+          "Acessar todos os admin centers do Microsoft 365",
+          "Redefinir senha de qualquer usuário incluindo outros Global Admins",
+          "Gerenciar políticas de Conditional Access"
+        ],
+        "mitigations": [
+          "Limitar a menos de 5 contas",
+          "Exigir MFA resistente a phishing (FIDO2)",
+          "Usar Privileged Identity Management (PIM) com ativação JIT",
+          "Habilitar alertas de atividade de Global Admin",
+          "Nunca usar para tarefas do dia-a-dia"
+        ]
+      },
+      "azureRbac": {
+        "role": "Owner",
+        "slug": "owner",
+        "risk": "critical",
+        "keyPermissions": [
+          "Acesso total a todos os recursos Azure",
+          "Gerenciar atribuições de role para todos os usuários",
+          "Excluir qualquer resource group ou subscription",
+          "Modificar todas as configurações de recursos",
+          "Acessar segredos do Azure Key Vault (se permitido)"
+        ],
+        "mitigations": [
+          "Atribuir no nível de management group apenas quando necessário",
+          "Preferir Contributor sobre Owner quando atribuição de RBAC não é necessária",
+          "Usar Azure PIM para elevação just-in-time",
+          "Habilitar Microsoft Defender for Cloud",
+          "Auditar atribuições Owner semanalmente"
+        ]
+      },
+      "aws": {
+        "role": "Root User / OrganizationAccountAccessRole",
+        "slug": "organization-account-access-role",
+        "risk": "critical",
+        "keyPermissions": [
+          "Root user: acesso irrestrito, não é limitável por nenhuma policy, SCP ou permission boundary",
+          "OrganizationAccountAccessRole: criada automaticamente pela AWS Organizations em toda conta membro — é o verdadeiro Tier 0 de uma conta (mais amplo que a managed policy AdministratorAccess, que ainda pode ser restringida por SCP)",
+          "Assumível a partir da conta de management da organização sem MFA adicional por padrão",
+          "Gerenciar SCPs da organização (a partir da conta de management)",
+          "Acessar dados de billing e custo"
+        ],
+        "mitigations": [
+          "Nunca usar conta root para operações diárias — trancar credenciais root com MFA hardware",
+          "Restringir quem pode assumir OrganizationAccountAccessRole via SCP e trust policy",
+          "Habilitar AWS Organizations SCPs para restringir até admins (root não é afetado)",
+          "Usar AWS IAM Identity Center com credenciais temporárias para acesso humano do dia-a-dia",
+          "Habilitar CloudTrail em todas as regiões e monitorar AssumeRole para esta role"
+        ]
+      },
+      "gcp": {
+        "role": "Organization Admin",
+        "slug": "resourcemanager-org-admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "resourcemanager.organizations.* — controle total da hierarquia de recursos da organização",
+          "Definir e gerenciar Organization Policies (equivalente aos guardrails de SCP)",
+          "Atribuir IAM em qualquer nível: organização, pasta, projeto",
+          "Delegar Project Owner em qualquer projeto da organização",
+          "Escopo superior ao Project Owner — que é apenas por projeto, não organização"
+        ],
+        "mitigations": [
+          "Distinguir Organization Admin (Tier 0, escopo org) de Project Owner (escopo de projeto, menor blast radius)",
+          "Usar Organization Policy Constraints para restringir até admins",
+          "Habilitar VPC Service Controls",
+          "Exigir OS Login e 2FA para todas as contas admin",
+          "Auditar Cloud Audit Logs diariamente"
+        ]
+      },
+      "oci": {
+        "role": "Tenancy Administrator",
+        "slug": "tenancy-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "manage all-resources in tenancy",
+          "Criar/excluir qualquer política IAM",
+          "Gerenciar billing e assinaturas",
+          "Acessar todos os compartments",
+          "Criar/excluir usuários e grupos"
+        ],
+        "mitigations": [
+          "Usar isolamento por compartment — evitar políticas tenancy-wide",
+          "Habilitar Cloud Guard com detector de Tenancy Admin",
+          "Exigir MFA para todos os usuários admin",
+          "Monitorar OCI Audit logs para ações admin",
+          "Rotacionar API keys a cada 90 dias"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Administrator (All Services)",
+        "slug": "administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Controle IAM total sobre todos os serviços",
+          "Gerenciar configurações e usuários da conta",
+          "Acessar todos os resource groups",
+          "Gerenciar billing e faturas",
+          "Criar/excluir instâncias de serviço"
+        ],
+        "mitigations": [
+          "Usar condições IAM IBM Cloud para restringir janelas de acesso",
+          "Habilitar Activity Tracker para ações admin",
+          "Usar trusted profiles para workloads automatizados",
+          "Implementar IP allowlists via network sources",
+          "Exigir MFA TOTP para todas as identidades admin"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Super Admin",
+        "slug": "super-admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "Gerenciar todas as configurações do Google Workspace",
+          "Criar/excluir contas de usuário",
+          "Acessar Drive, Gmail e dados de qualquer usuário",
+          "Atribuir e revogar roles admin",
+          "Configurar domain-wide delegation"
+        ],
+        "mitigations": [
+          "Limitar a no máximo 2 contas Super Admin",
+          "Inscrever no Google Advanced Protection Program",
+          "Usar roles de admin delegadas para tarefas do dia-a-dia",
+          "Habilitar relatórios de auditoria de atividade Super Admin",
+          "Nunca usar Super Admin para acesso de aplicações"
+        ]
+      }
+    }
+  },
+  {
+    "id": "billing-admin",
+    "function": "billing-admin",
+    "tier": 0,
+    "name": "Billing Administrator",
+    "description": "Acesso a dados de billing, gerenciamento de custos e propriedade de assinaturas. Classificado como Tier 0 pois acesso a billing pode causar dano financeiro ou interrupção de serviços.",
+    "clouds": {
+      "entraId": {
+        "role": "Billing Administrator",
+        "slug": "billing-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Gerenciar assinaturas Microsoft 365",
+          "Comprar e cancelar licenças",
+          "Visualizar faturas e histórico de pagamentos",
+          "Atualizar métodos de pagamento e endereço de cobrança",
+          "Acessar o centro de admin de billing do Microsoft 365"
+        ],
+        "mitigations": [
+          "Restringir apenas a contas do time de Finanças",
+          "Habilitar notificações de alertas de billing",
+          "Auditar alterações de licença mensalmente",
+          "Exigir MFA em todas as contas de admin de billing",
+          "Usar Entra ID PIM para acesso JIT ao billing"
+        ]
+      },
+      "azureRbac": {
+        "role": "Cost Management Contributor",
+        "slug": "cost-management-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Ler e gerenciar dados de custo",
+          "Criar e gerenciar budgets",
+          "Exportar dados de custo e uso",
+          "Visualizar reservas e savings plans",
+          "Não pode comprar ou cancelar assinaturas"
+        ],
+        "mitigations": [
+          "Preferir Cost Management Reader para necessidades apenas de visualização",
+          "Combinar com alertas de Budget para monitorar gastos",
+          "Restringir ao escopo de assinatura específica",
+          "Auditar exportações de custo para risco de exfiltração de dados",
+          "Usar controles de acesso do Azure Cost Management"
+        ]
+      },
+      "aws": {
+        "role": "AWSBillingReadOnlyAccess",
+        "slug": "awsbillingreadonlyaccess",
+        "risk": "high",
+        "keyPermissions": [
+          "aws-portal:ViewBilling",
+          "aws-portal:ViewPaymentMethods",
+          "budgets:ViewBudget",
+          "cur:DescribeReportDefinitions",
+          "ce:GetCostAndUsage"
+        ],
+        "mitigations": [
+          "Habilitar AWS Cost Anomaly Detection",
+          "Definir alertas de billing via CloudWatch",
+          "Restringir via condição de política IAM com MFA",
+          "Usar consolidated billing do AWS Organizations",
+          "Auditar via eventos de billing no CloudTrail"
+        ],
+        "notes": "Para gerenciamento completo de billing, use permissão da conta root ou AWSBillingConductorFullAccess"
+      },
+      "gcp": {
+        "role": "Billing Account Administrator",
+        "slug": "billing-account-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "billing.accounts.close (fechar billing account)",
+          "billing.accounts.update (atualizar configurações)",
+          "billing.subscriptions.create (criar assinaturas)",
+          "resourcemanager.projects.createBillingAssignment",
+          "Associar/desassociar projetos de billing accounts"
+        ],
+        "mitigations": [
+          "Separar gerenciamento de billing account do admin de projeto",
+          "Habilitar alertas de budget em 50%, 90% e 100%",
+          "Usar Billing Account Viewer para necessidades somente-leitura",
+          "Monitorar exportação de dados de Cloud Billing para BigQuery",
+          "Restringir via constraints de Organization Policy"
+        ]
+      },
+      "oci": {
+        "role": "Billing Administrator",
+        "slug": "billing-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "manage usage-reports in tenancy",
+          "manage cost-reports in tenancy",
+          "manage subscriptions in tenancy",
+          "Visualizar e baixar faturas",
+          "Gerenciar métodos de pagamento"
+        ],
+        "mitigations": [
+          "Atribuir apenas ao grupo Finance no nível de tenancy",
+          "Habilitar alertas de OCI Budget",
+          "Monitorar com detectores de anomalia de custo do Cloud Guard",
+          "Auditar todas as chamadas de API de billing via serviço OCI Audit",
+          "Separar admin de billing do admin de IAM"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Billing Manager",
+        "slug": "billing-manager",
+        "risk": "high",
+        "keyPermissions": [
+          "Visualizar faturas e histórico de pagamentos",
+          "Atualizar métodos de pagamento",
+          "Gerenciar notificações de uso",
+          "Visualizar limites de gastos",
+          "Acessar relatórios de uso"
+        ],
+        "mitigations": [
+          "Restringir via limites de gastos na conta",
+          "Habilitar notificações de billing IBM Cloud",
+          "Usar IBM Cloud Activity Tracker para eventos de billing",
+          "Combinar com restrições de IP via network sources",
+          "Revisar acesso trimestralmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Billing Admin (Google Cloud)",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar assinatura do Google Workspace",
+          "Adicionar/remover licenças de usuários",
+          "Visualizar informações de pagamento",
+          "Gerenciar billing account do GCP se vinculado",
+          "Receber notificações de billing"
+        ],
+        "mitigations": [
+          "Separar billing do Workspace do billing do GCP",
+          "Habilitar alertas de limite de billing",
+          "Usar acesso somente-leitura para necessidades de relatório de custo",
+          "Auditar alterações de licença via log de auditoria admin",
+          "Exigir MFA em contas de admin de billing"
+        ]
+      }
+    }
+  },
+  {
+    "id": "read-only-viewer",
+    "function": "read-only-viewer",
+    "tier": 1,
+    "name": "Read-Only / Viewer (Global)",
+    "description": "Acesso global somente-leitura para visualizar todos os recursos e configurações. Tier 1 porque acesso de leitura a todos os recursos pode expor configurações sensíveis, segredos e dados.",
+    "clouds": {
+      "entraId": {
+        "role": "Global Reader",
+        "slug": "global-reader",
+        "risk": "high",
+        "keyPermissions": [
+          "Ler toda a configuração do Entra ID",
+          "Visualizar configurações de todos os admin centers do Microsoft 365",
+          "Ler todos os usuários, grupos e service principals",
+          "Visualizar políticas de Conditional Access",
+          "Não pode modificar nenhuma configuração"
+        ],
+        "mitigations": [
+          "Restringir a membros do time de auditoria e conformidade",
+          "Monitorar operações de exportação em massa de dados",
+          "Combinar com revisões de acesso do Entra ID",
+          "Alertar sobre padrões de login incomuns",
+          "Evitar atribuir a service accounts"
+        ]
+      },
+      "azureRbac": {
+        "role": "Reader",
+        "slug": "reader",
+        "risk": "medium",
+        "keyPermissions": [
+          "*/read em todos os tipos de recursos Azure",
+          "Visualizar configurações e propriedades de recursos",
+          "Listar resource groups e assinaturas",
+          "Visualizar histórico de deployments",
+          "Não pode ler segredos do Key Vault diretamente"
+        ],
+        "mitigations": [
+          "Atenção: Reader pode listar chaves de storage account via operações list",
+          "Usar Azure Policy para restringir leituras sensíveis",
+          "Combinar com recomendações do Defender for Cloud",
+          "Restringir no escopo de management group se acesso amplo não for necessário",
+          "Monitorar enumeração de dados em grande escala"
+        ]
+      },
+      "aws": {
+        "role": "ReadOnlyAccess",
+        "slug": "readonlyaccess",
+        "risk": "high",
+        "keyPermissions": [
+          "Get/List/Describe em todos os serviços AWS",
+          "Visualizar usuários, roles e políticas IAM",
+          "Listar buckets S3 e objetos",
+          "Visualizar configurações de instâncias EC2",
+          "Não pode acessar valores de segredos ou chaves KMS"
+        ],
+        "mitigations": [
+          "Atenção: inclui s3:GetObject em muitas configurações de bucket",
+          "Usar Service Control Policies para restringir ainda mais",
+          "Habilitar CloudTrail para registrar todas as chamadas de API de leitura",
+          "Usar IAM Access Analyzer para detectar políticas com excesso de permissões",
+          "Preferir políticas ReadOnly específicas por serviço em vez de conta inteira"
+        ]
+      },
+      "gcp": {
+        "role": "Viewer",
+        "slug": "viewer",
+        "risk": "high",
+        "keyPermissions": [
+          "*.get e *.list em todos os serviços GCP",
+          "Visualizar todas as políticas IAM do projeto",
+          "Listar todos os recursos entre serviços",
+          "Visualizar conteúdo de buckets GCS",
+          "Não pode modificar recursos ou acessar segredos"
+        ],
+        "mitigations": [
+          "Preferir roles/iam.securityReviewer para auditoria",
+          "Restringir com VPC Service Controls",
+          "Monitorar eventos de Data Read do Cloud Audit Logs",
+          "Evitar no nível de organização — usar escopo de folder/projeto",
+          "Revisar concessões de Viewer trimestralmente"
+        ]
+      },
+      "oci": {
+        "role": "Identity Reader + Service Inspectors",
+        "risk": "medium",
+        "keyPermissions": [
+          "inspect all-resources in tenancy (listagem básica)",
+          "read all-resources in compartment (visão detalhada)",
+          "Visualizar configurações sem dados sensíveis",
+          "Listar todos os serviços e recursos OCI",
+          "Ler eventos de auditoria"
+        ],
+        "mitigations": [
+          "Usar inspect (não read) para tarefas puras de inventário",
+          "Habilitar logging OCI Audit para todas as operações de leitura",
+          "Escopo para compartment específico em vez de tenancy",
+          "Adicionar condições where para limitar leituras de dados sensíveis",
+          "Revisar e certificar acesso trimestralmente"
+        ],
+        "notes": "OCI não tem um único role 'viewer' — combinar verbos inspect/read por serviço"
+      },
+      "ibmCloud": {
+        "role": "Viewer (All Services)",
+        "slug": "viewer",
+        "risk": "medium",
+        "keyPermissions": [
+          "Visualizar instâncias e configurações de serviço",
+          "Listar resource groups e recursos",
+          "Visualizar políticas IAM (somente-leitura)",
+          "Acessar relatórios de uso e custo",
+          "Não pode modificar nenhum recurso"
+        ],
+        "mitigations": [
+          "Escopo para resource group específico quando possível",
+          "Monitorar via IBM Cloud Activity Tracker",
+          "Combinar com IBM Cloud Monitoring para detecção de anomalias",
+          "Usar trusted profiles para operações de leitura automatizadas",
+          "Revisar atribuições de Viewer trimestralmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Reports Admin",
+        "slug": "reports-admin",
+        "risk": "medium",
+        "keyPermissions": [
+          "Visualizar todos os relatórios de auditoria e uso",
+          "Acessar a API Admin SDK Reports",
+          "Visualizar relatórios de login e atividade de usuário",
+          "Não pode gerenciar usuários ou configurações",
+          "Acessar relatórios de atividade do Drive"
+        ],
+        "mitigations": [
+          "Usar em vez de Super Admin para tarefas de auditoria/conformidade",
+          "Monitorar acesso a relatórios via log de auditoria admin",
+          "Limitar ao time de Segurança e Conformidade",
+          "Combinar com exportações do BigQuery para análise em grande escala",
+          "Revisar atribuições semestralmente"
+        ],
+        "notes": "Google Workspace não tem um único role global somente-leitura; Reports Admin é o mais próximo para fins de auditoria"
+      }
+    }
+  },
+  {
+    "id": "user-admin",
+    "function": "user-admin",
+    "tier": 1,
+    "name": "User Management Administrator",
+    "description": "Criar, atualizar e excluir contas de usuário, gerenciar membros de grupos e redefinir credenciais. Tier 1 porque gerenciamento de usuários pode ser usado para escalação de privilégios criando novas contas admin.",
+    "clouds": {
+      "entraId": {
+        "role": "User Administrator",
+        "slug": "user-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e excluir contas de usuário",
+          "Redefinir senhas para usuários não-admin",
+          "Gerenciar licenças e memberships de grupos",
+          "Atualizar atributos de perfil de usuário",
+          "Não pode gerenciar Global Admins ou Privileged Role Admins"
+        ],
+        "mitigations": [
+          "Não pode redefinir senhas de usuários com roles privilegiadas",
+          "Habilitar Azure AD Identity Protection para este role",
+          "Usar PIM para ativação just-in-time de admin de usuários",
+          "Alertar sobre eventos de criação/exclusão em massa de usuários",
+          "Exigir MFA forte para contas de User Admin"
+        ]
+      },
+      "azureRbac": {
+        "role": "User Access Administrator",
+        "slug": "user-access-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Microsoft.Authorization/roleAssignments/* (todas as atribuições)",
+          "Atribuir qualquer role RBAC a qualquer usuário ou service principal",
+          "Remover atribuições de role",
+          "Visualizar todas as atribuições de acesso",
+          "Efetivamente concede capacidade de escalação de privilégios"
+        ],
+        "mitigations": [
+          "Este é equivalente ao Tier 0 — tratar como crítico",
+          "Nunca atribuir amplamente; escopo para recursos específicos",
+          "Usar PIM para ativação just-in-time apenas",
+          "Auditar todas as alterações de atribuição de role no Activity Log",
+          "Preferir roles de serviço específicas em vez de User Access Administrator"
+        ],
+        "notes": "Azure RBAC separa acesso a recursos do gerenciamento de usuários. User Access Administrator é para atribuições RBAC, não gerenciamento de contas."
+      },
+      "aws": {
+        "role": "IAM User Management (custom policy)",
+        "risk": "high",
+        "keyPermissions": [
+          "iam:CreateUser, iam:DeleteUser",
+          "iam:AddUserToGroup, iam:RemoveUserFromGroup",
+          "iam:AttachUserPolicy (com restrições)",
+          "iam:CreateLoginProfile (definir senhas)",
+          "iam:UpdateAccessKey"
+        ],
+        "mitigations": [
+          "Restringir iam:AttachUserPolicy apenas a políticas não-admin",
+          "Usar permission boundaries IAM para limitar o que usuários podem criar",
+          "Habilitar AWS IAM Access Analyzer",
+          "Monitorar com CloudTrail para eventos IAM",
+          "Preferir AWS IAM Identity Center para gerenciamento do ciclo de vida de usuários"
+        ],
+        "notes": "AWS não tem uma managed policy única para gerenciamento de usuários. Combine ações IAM com permission boundaries."
+      },
+      "gcp": {
+        "role": "roles/iam.admin",
+        "slug": "iam-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "iam.roles.create, iam.roles.delete (criar/excluir roles)",
+          "iam.serviceAccounts.create (criar service accounts)",
+          "resourcemanager.projects.setIamPolicy (modificar políticas)",
+          "iam.serviceAccountKeys.create (criar chaves)",
+          "Controle IAM completo — efetivamente Tier 0"
+        ],
+        "mitigations": [
+          "iam.admin é efetivamente equivalente ao Owner — tratar como Tier 0",
+          "Usar roles/iam.securityAdmin para revisão IAM somente-leitura",
+          "Restringir com constraints de deny da Organization Policy",
+          "Monitorar com Cloud Audit Logs Admin Activity",
+          "Preferir Workspace Admin roles para gerenciamento de usuários vs GCP IAM"
+        ],
+        "notes": "Para gerenciamento de usuários do Workspace, usar Google Workspace User Management Admin em vez disso"
+      },
+      "oci": {
+        "role": "IAM Administrator",
+        "slug": "iam-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "manage users in tenancy",
+          "manage groups in tenancy",
+          "manage dynamic-groups in tenancy",
+          "manage policies in tenancy",
+          "manage compartments in tenancy"
+        ],
+        "mitigations": [
+          "OCI IAM Administrator pode gerenciar políticas — efetivamente Tier 0",
+          "Separar gerenciamento de usuários do gerenciamento de políticas",
+          "Usar políticas com escopo de compartment quando possível",
+          "Monitorar via serviço OCI Audit eventos de Identity",
+          "Exigir MFA para todos os administradores IAM"
+        ]
+      },
+      "ibmCloud": {
+        "role": "User Management Editor",
+        "slug": "user-management-editor",
+        "risk": "high",
+        "keyPermissions": [
+          "Convidar usuários para a conta",
+          "Remover usuários da conta",
+          "Editar configurações de perfil de usuário",
+          "Gerenciar configurações de MFA do usuário",
+          "Visualizar lista e detalhes de usuários"
+        ],
+        "mitigations": [
+          "Não pode atribuir roles IAM — separado do gerenciamento de acesso",
+          "Habilitar IBM Cloud Activity Tracker para eventos de usuário",
+          "Restringir apenas a times de RH/TI",
+          "Auditar eventos de convite e remoção de usuários mensalmente",
+          "Combinar com processos de governança de identidade"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "User Management Admin",
+        "slug": "user-management-admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e excluir contas de usuário",
+          "Redefinir senhas de usuários",
+          "Gerenciar memberships de grupos",
+          "Suspender e restaurar contas de usuário",
+          "Não pode gerenciar roles admin ou billing"
+        ],
+        "mitigations": [
+          "Não pode redefinir senhas de contas Super Admin",
+          "Habilitar log de auditoria admin para todas as ações de gerenciamento de usuários",
+          "Exigir Verificação em 2 Etapas para contas admin",
+          "Usar escopo de admin delegado por unidade organizacional",
+          "Revisar atribuições admin trimestralmente"
+        ]
+      }
+    }
+  },
+  {
+    "id": "storage-admin",
+    "function": "storage-admin",
+    "tier": 2,
+    "name": "Storage / Object Storage Administrator",
+    "description": "Controle total sobre serviços de armazenamento de objetos — criar/excluir buckets/containers e gerenciar dados armazenados. Tier 2 devido à sensibilidade dos dados e potencial de exfiltração ou exclusão em massa.",
+    "clouds": {
+      "entraId": {
+        "role": "SharePoint Administrator",
+        "slug": "sharepoint-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Controle total sobre todos os sites SharePoint",
+          "Acessar conteúdo do OneDrive de qualquer usuário",
+          "Criar e excluir site collections",
+          "Gerenciar políticas e permissões de compartilhamento",
+          "Acessar o SharePoint admin center"
+        ],
+        "mitigations": [
+          "Monitorar com Microsoft Purview para exfiltração de dados",
+          "Habilitar logs de auditoria do SharePoint",
+          "Restringir políticas de compartilhamento externo",
+          "Usar Microsoft Defender for Cloud Apps (CASB)",
+          "Revisar atribuições de SharePoint Admin mensalmente"
+        ],
+        "notes": "Entra ID não tem um 'Storage Admin' genérico — SharePoint Admin é o equivalente mais próximo para armazenamento colaborativo"
+      },
+      "azureRbac": {
+        "role": "Storage Account Contributor",
+        "slug": "storage-account-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Storage/storageAccounts/* (controle total)",
+          "Criar/excluir storage accounts",
+          "Listar e regenerar chaves de storage account",
+          "Configurar replicação e criptografia de storage",
+          "Não pode ler dados de blob diretamente (usar Storage Blob Data Owner)"
+        ],
+        "mitigations": [
+          "Atenção: listagem de chaves dá acesso indireto a todos os dados",
+          "Usar Storage Blob Data Owner para acesso ao data plane em vez disso",
+          "Habilitar Microsoft Defender for Storage",
+          "Configurar soft delete e versionamento de blobs",
+          "Monitorar com Azure Monitor para anomalias de storage"
+        ]
+      },
+      "aws": {
+        "role": "AmazonS3FullAccess",
+        "slug": "amazons3fullaccess",
+        "risk": "high",
+        "keyPermissions": [
+          "s3:* em Resource: * (acesso total ao S3)",
+          "Criar e excluir buckets S3",
+          "Get, put e delete de todos os objetos",
+          "Gerenciar políticas de bucket e ACLs",
+          "Configurar versionamento e criptografia de bucket"
+        ],
+        "mitigations": [
+          "Habilitar S3 Block Public Access no nível da conta",
+          "Habilitar S3 Object Lock para workloads de conformidade",
+          "Usar S3 Access Analyzer para validação de políticas",
+          "Habilitar eventos de dados do CloudTrail para S3",
+          "Preferir políticas específicas de bucket em vez de AmazonS3FullAccess"
+        ]
+      },
+      "gcp": {
+        "role": "Storage Admin",
+        "slug": "storage-admin",
+        "risk": "high",
+        "keyPermissions": [
+          "storage.buckets.create, storage.buckets.delete",
+          "storage.objects.create, storage.objects.delete",
+          "storage.buckets.setIamPolicy (modificar políticas de bucket)",
+          "storage.objects.get (ler todos os dados)",
+          "storage.hmacKeys.create (criar chaves HMAC)"
+        ],
+        "mitigations": [
+          "Habilitar uniform bucket-level access",
+          "Usar VPC Service Controls para restringir acesso ao GCS",
+          "Habilitar Object Versioning e políticas de retenção",
+          "Monitorar com Cloud Audit Logs Data Access para GCS",
+          "Preferir roles/storage.objectAdmin para acesso apenas a dados"
+        ]
+      },
+      "oci": {
+        "role": "Object Storage Administrator",
+        "slug": "object-storage-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "manage buckets in compartment",
+          "manage objects in compartment",
+          "Configurar regras de lifecycle e replicação",
+          "Definir políticas de bucket e visibilidade",
+          "Criar e excluir buckets"
+        ],
+        "mitigations": [
+          "Habilitar logging de auditoria do Object Storage",
+          "Configurar regras de retenção e locks de bucket",
+          "Restringir com isolamento de compartment",
+          "Monitorar com detectores do Cloud Guard para Object Storage",
+          "Habilitar versionamento em buckets críticos"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Object Storage)",
+        "slug": "object-storage-manager",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e excluir buckets",
+          "Ler/escrever/excluir objetos",
+          "Gerenciar políticas de bucket e CORS",
+          "Configurar versionamento e criptografia de bucket",
+          "Gerar credenciais HMAC"
+        ],
+        "mitigations": [
+          "Habilitar rastreamento de atividade do IBM Cloud Object Storage",
+          "Usar políticas IAM no nível de bucket para menor privilégio",
+          "Habilitar versionamento de objetos em buckets de produção",
+          "Configurar IBM Cloud Security Advisor para ICOS",
+          "Rotacionar chaves HMAC regularmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Google Drive Admin (delegação via Super Admin)",
+        "risk": "high",
+        "keyPermissions": [
+          "Acessar e gerenciar todos os shared drives",
+          "Transferir propriedade de arquivos",
+          "Restaurar arquivos excluídos (dentro da janela de retenção)",
+          "Gerenciar configurações de compartilhamento do Drive",
+          "Acessar conteúdo do My Drive de qualquer usuário"
+        ],
+        "mitigations": [
+          "Habilitar Google Vault para eDiscovery e retenção",
+          "Configurar regras de DLP no Google Workspace",
+          "Restringir compartilhamento externo no nível do domínio",
+          "Monitorar eventos de auditoria do Drive via API Admin Reports",
+          "Usar Context-Aware Access para operações admin do Drive"
+        ],
+        "notes": "Google Workspace Drive admin requer delegação de Super Admin. Não há role standalone de 'Storage Admin'."
+      }
+    }
+  },
+  {
+    "id": "security-admin",
+    "function": "security-admin",
+    "tier": 0,
+    "name": "Security Administrator",
+    "description": "Administrador de segurança com acesso completo a políticas, alertas, configurações de proteção de identidade e conformidade em toda a organização.",
+    "clouds": {
+      "entraId": {
+        "role": "Security Administrator",
+        "slug": "security-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Ler e configurar todas as políticas de segurança no Microsoft Entra ID",
+          "Gerenciar alertas e incidentes no Microsoft Defender XDR",
+          "Configurar políticas de Proteção de Identidade (Identity Protection)",
+          "Acesso total ao Microsoft Purview Compliance Portal",
+          "Gerenciar configurações do Microsoft Secure Score"
+        ],
+        "mitigations": [
+          "Exigir MFA resistente a phishing (FIDO2) para ativação da função",
+          "Restringir acesso apenas a estações de trabalho de acesso privilegiado (PAW)",
+          "Habilitar alertas de auditoria para todas as alterações de política de segurança",
+          "Revisar atribuições mensalmente com revisões de acesso do Entra ID",
+          "Usar Privileged Identity Management (PIM) com aprovação obrigatória e justificativa"
+        ],
+        "notes": "Não concede permissão de atribuição de funções; use Administrador de Funções Privilegiadas para isso."
+      },
+      "azureRbac": {
+        "role": "Security Admin",
+        "slug": "security-admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "Microsoft.Security/* — gerenciamento completo do Microsoft Defender for Cloud",
+          "Microsoft.Security/securitySolutions/* — soluções de segurança conectadas",
+          "Microsoft.Security/pricings/write — habilitar planos do Defender for Cloud",
+          "Microsoft.Security/policies/write — políticas de segurança em assinaturas",
+          "Microsoft.Authorization/policyAssignments/write — atribuir políticas do Azure Policy"
+        ],
+        "mitigations": [
+          "Atribuir somente no escopo de assinatura ou grupo de gerenciamento necessário",
+          "Combinar com PIM do Azure para acesso just-in-time",
+          "Monitorar via Microsoft Sentinel com regras analíticas para Security Admin",
+          "Exigir aprovação de segundo administrador para alterações críticas de política",
+          "Registrar todas as ativações em Log Analytics Workspace dedicado a segurança"
+        ]
+      },
+      "aws": {
+        "role": "SecurityAudit",
+        "risk": "high",
+        "keyPermissions": [
+          "securityhub:* — gerenciamento completo do AWS Security Hub",
+          "guardduty:* — administração do Amazon GuardDuty (detector e findings)",
+          "access-analyzer:* — AWS IAM Access Analyzer para análise de políticas",
+          "macie2:* — Amazon Macie para descoberta de dados sensíveis",
+          "inspector2:* — Amazon Inspector para avaliações de vulnerabilidade"
+        ],
+        "mitigations": [
+          "Combinar SecurityAudit com AWSSecurityHubFullAccess via permission boundary",
+          "Usar AWS Organizations SCPs para limitar escopo de ações de segurança",
+          "Habilitar CloudTrail com integridade de log e alarmes CloudWatch para ações IAM",
+          "Revisar via AWS IAM Access Advisor para remover permissões não utilizadas",
+          "Exigir autenticação MFA para todas as chamadas de API de segurança críticas"
+        ],
+        "notes": "Combinar SecurityAudit (somente leitura) com AWSSecurityHubFullAccess e AmazonGuardDutyFullAccess para administração completa de segurança."
+      },
+      "gcp": {
+        "role": "roles/iam.securityAdmin",
+        "risk": "critical",
+        "keyPermissions": [
+          "iam.roles.* — criação, atualização e exclusão de funções IAM customizadas",
+          "iam.policies.* — gerenciamento de políticas IAM em recursos GCP",
+          "resourcemanager.projects.setIamPolicy — definir políticas em projetos",
+          "resourcemanager.organizations.setIamPolicy — definir políticas na organização",
+          "securitycenter.* — acesso completo ao Security Command Center"
+        ],
+        "mitigations": [
+          "Aplicar Workforce Identity Federation para eliminar contas de serviço de longa duração",
+          "Usar VPC Service Controls para isolar recursos críticos de segurança",
+          "Habilitar Cloud Audit Logs (Data Access) para todas as operações IAM",
+          "Configurar alertas no Security Command Center para mutações de política",
+          "Revisar bindings IAM com Recommender API mensalmente"
+        ]
+      },
+      "oci": {
+        "role": "CloudGuardOperator",
+        "risk": "high",
+        "keyPermissions": [
+          "manage cloud-guard-family in tenancy — administração completa do Cloud Guard",
+          "manage security-zones in tenancy — zonas de segurança e receitas de política",
+          "manage vss-family in tenancy — Vulnerability Scanning Service",
+          "read audit-events in tenancy — leitura de eventos de auditoria OCI",
+          "manage bastion in tenancy — sessões de acesso privilegiado via Bastion"
+        ],
+        "mitigations": [
+          "Restringir a grupos de usuários dedicados com políticas de compartimento granulares",
+          "Habilitar auditoria de OCI Audit Service para todas as ações de segurança",
+          "Exigir autenticação multifator para contas com acesso a políticas de segurança",
+          "Usar OCI Identity Domains com revisões de acesso periódicas",
+          "Configurar notificações OCI Events para alterações em security-zones"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Security and Compliance Center Administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Administrador da instância Security and Compliance Center (SCC) — escopo completo",
+          "Manager no IBM Cloud Activity Tracker — acesso a todos os eventos de auditoria",
+          "Viewer em todas as instâncias para coleta de evidências de conformidade",
+          "Administrator no IBM Cloud Security Advisor para gerenciar findings",
+          "Manager no Secrets Manager para políticas de rotação de segredos"
+        ],
+        "mitigations": [
+          "Atribuir via IBM Cloud IAM Access Groups com política de least privilege",
+          "Habilitar IBM Cloud Activity Tracker with LogDNA para auditoria contínua",
+          "Exigir autenticação IBMid com MFA para contas com papel de administrador",
+          "Revisar permissões mensalmente usando IBM Cloud IAM Access Reports",
+          "Configurar alertas no IBM Cloud Monitoring para ações administrativas de segurança"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Security Admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "Acesso completo ao Google Admin Console — Central de Segurança (Security Center)",
+          "Gerenciar investigações de segurança e alertas no Alert Center",
+          "Configurar regras DLP (Data Loss Prevention) para Gmail e Drive",
+          "Acesso ao painel de auditoria e logs de atividade de todos os usuários",
+          "Gerenciar configurações de autenticação e SSO SAML para apps de terceiros"
+        ],
+        "mitigations": [
+          "Habilitar verificação em dois fatores obrigatória com chaves de segurança hardware",
+          "Restringir acesso ao Admin Console por endereço IP via Context-Aware Access",
+          "Configurar alertas de auditoria para todas as ações de administrador de segurança",
+          "Revisar admins delegados mensalmente no relatório de administradores do Workspace",
+          "Usar Super Admin somente para contas break-glass; delegar funções específicas"
+        ]
+      }
+    }
+  },
+  {
+    "id": "privileged-role-admin",
+    "function": "privileged-role-admin",
+    "tier": 0,
+    "name": "Privileged Role Administrator",
+    "description": "Administrador de funções privilegiadas com capacidade de atribuir, modificar e remover qualquer função ou permissão elevada, incluindo administradores globais.",
+    "clouds": {
+      "entraId": {
+        "role": "Privileged Role Administrator",
+        "slug": "privileged-role-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Atribuir e remover qualquer função do Entra ID, incluindo Administrador Global",
+          "Gerenciar todas as configurações do Privileged Identity Management (PIM)",
+          "Configurar políticas de ativação, aprovação e duração para funções elegíveis",
+          "Ativar e desativar funções privilegiadas para qualquer usuário da organização",
+          "Gerenciar atribuições de funções em grupos elegíveis para PIM"
+        ],
+        "mitigations": [
+          "Limitar a no máximo dois titulares permanentes com identidades break-glass documentadas",
+          "Exigir aprovação de múltiplos administradores para ativação da função",
+          "Habilitar alertas PIM para todas as atribuições de Administrador de Funções Privilegiadas",
+          "Monitorar continuamente via Microsoft Sentinel com regras de detecção de escalonamento",
+          "Revisar trimestralmente com revisões de acesso do Entra ID e relatório de auditoria PIM"
+        ],
+        "notes": "Função de maior risco no Entra ID; um titular comprometido pode comprometer toda a organização. Manter contas break-glass em cofre físico."
+      },
+      "azureRbac": {
+        "role": "User Access Administrator",
+        "slug": "user-access-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Microsoft.Authorization/roleAssignments/write — atribuir qualquer função RBAC do Azure",
+          "Microsoft.Authorization/roleAssignments/delete — remover atribuições de função",
+          "Microsoft.Authorization/roleDefinitions/write — criar funções RBAC customizadas",
+          "Microsoft.Authorization/elevateAccess/action — elevar acesso a Administrador de Acesso",
+          "Microsoft.Authorization/locks/write — criar locks de recurso para proteção"
+        ],
+        "mitigations": [
+          "Usar apenas com PIM do Azure com aprovação obrigatória e janela de tempo limitada",
+          "Monitorar via Azure Activity Log com alertas para roleAssignments/write",
+          "Restringir elevateAccess por política condicional e aprovação manual",
+          "Auditar todas as atribuições semanalmente com Azure RBAC Access Reviews",
+          "Bloquear herança da função no nível de grupo de gerenciamento raiz"
+        ]
+      },
+      "aws": {
+        "role": "IAMFullAccess",
+        "risk": "critical",
+        "keyPermissions": [
+          "iam:* — controle total sobre usuários, grupos, funções e políticas IAM",
+          "iam:CreateRole — criação de funções IAM com qualquer política de confiança",
+          "iam:AttachRolePolicy — anexar políticas gerenciadas a funções e usuários",
+          "iam:PutUserPolicy — criar políticas inline para escalonamento de privilégios",
+          "iam:PassRole — passar funções IAM a serviços AWS (vetor crítico de escalonamento)"
+        ],
+        "mitigations": [
+          "Nunca atribuir IAMFullAccess diretamente; usar funções IAM com permission boundaries",
+          "Implementar SCP na AWS Organization bloqueando iam:CreateUser sem condição MFA",
+          "Usar AWS IAM Access Analyzer para detectar políticas com acesso excessivo",
+          "Habilitar CloudTrail com alertas para iam:PassRole e iam:CreateRole",
+          "Exigir MFA para todas as ações IAM via condição aws:MultiFactorAuthPresent"
+        ],
+        "notes": "IAMFullAccess equivale a Administrador de Funções Privilegiadas no contexto AWS. Preferir políticas customizadas com permission boundaries para limitar escopo."
+      },
+      "gcp": {
+        "role": "roles/iam.admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "iam.roles.create — criar funções IAM customizadas no nível de organização",
+          "iam.roles.update — modificar permissões de funções existentes",
+          "resourcemanager.organizations.setIamPolicy — atribuir qualquer binding IAM na organização",
+          "iam.serviceAccounts.setIamPolicy — delegar acesso a contas de serviço críticas",
+          "iam.workloadIdentityPools.create — criar pools de identidade de carga de trabalho"
+        ],
+        "mitigations": [
+          "Aplicar somente no nível de organização com justificativa documentada e revisão trimestral",
+          "Usar Cloud Asset Inventory para monitorar mudanças de IAM policy em tempo real",
+          "Configurar alertas no Cloud Monitoring para mutações em roles/iam.admin",
+          "Implementar Org Policy constraints/iam.allowedPolicyMemberDomains para restringir membros",
+          "Exigir Workforce Identity Federation com MFA para titulares desta função"
+        ]
+      },
+      "oci": {
+        "role": "manage policies in tenancy",
+        "risk": "critical",
+        "keyPermissions": [
+          "manage policies in tenancy — criar, editar e excluir qualquer política IAM na tenancy",
+          "manage groups in tenancy — criar grupos e adicionar usuários a grupos privilegiados",
+          "manage users in tenancy — administração completa de usuários OCI",
+          "manage dynamic-groups in tenancy — gerenciar grupos dinâmicos para instâncias",
+          "manage identity-providers in tenancy — configurar federação de identidade"
+        ],
+        "mitigations": [
+          "Restringir 'manage policies in tenancy' a um grupo de administradores mínimo documentado",
+          "Habilitar OCI Audit para todas as operações de política IAM na tenancy",
+          "Implementar separação de funções: administrador de políticas ≠ administrador de usuários",
+          "Revisar políticas mensalmente com OCI Identity Policy Advisor",
+          "Configurar alarmes OCI para criação ou modificação de políticas de alta permissão"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Administrator (IAM)",
+        "risk": "critical",
+        "keyPermissions": [
+          "Administrador de políticas de acesso IAM — atribuir qualquer função a qualquer usuário",
+          "Gerenciar grupos de acesso e suas políticas em toda a conta IBM Cloud",
+          "Criar e gerenciar IDs de serviço com políticas de acesso privilegiado",
+          "Configurar provedores de identidade (SAML/OIDC) para federação de usuários",
+          "Gerenciar configurações de MFA e autenticação em nível de conta"
+        ],
+        "mitigations": [
+          "Limitar a contas de serviço dedicadas com acesso just-in-time via IBM Cloud IAM",
+          "Habilitar IBM Cloud Activity Tracker para auditoria de todas as ações IAM",
+          "Separar responsabilidades: administrador IAM ≠ administrador de recursos",
+          "Revisar políticas IAM mensalmente com IBM Cloud IAM Access Report",
+          "Exigir MFA IBMid com hardware TOTP para contas com papel de Administrador IAM"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Super Admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "Atribuir e remover qualquer função de administrador delegado no Google Workspace",
+          "Acesso irrestrito ao Admin Console incluindo configurações de segurança globais",
+          "Gerenciar configurações de autenticação, SSO e provedores de identidade externos",
+          "Delegar acesso administrativo a qualquer serviço Google (Gmail, Drive, Meet, etc.)",
+          "Configurar políticas de dispositivo e conformidade para toda a organização"
+        ],
+        "mitigations": [
+          "Manter máximo de 3 contas Super Admin; usar contas separadas para uso diário",
+          "Exigir chaves de segurança físicas (FIDO2) para login de Super Admin",
+          "Restringir acesso ao Admin Console por endereço IP com Context-Aware Access",
+          "Configurar alertas de auditoria para todas as ações de Super Admin",
+          "Criar contas break-glass documentadas em cofre físico para recuperação de emergência"
+        ],
+        "notes": "O Google Workspace não possui função equivalente a PIM; todas as atribuições são permanentes. Implementar controles compensatórios rigorosos."
+      }
+    }
+  },
+  {
+    "id": "conditional-access-admin",
+    "function": "conditional-access-admin",
+    "tier": 0,
+    "name": "Conditional Access Administrator",
+    "description": "Administrador de acesso condicional com controle sobre políticas de autenticação adaptativa, requisitos de MFA, conformidade de dispositivos e controles de acesso baseados em risco.",
+    "clouds": {
+      "entraId": {
+        "role": "Conditional Access Administrator",
+        "slug": "conditional-access-administrator",
+        "risk": "critical",
+        "keyPermissions": [
+          "Criar, modificar e excluir políticas de Acesso Condicional do Entra ID",
+          "Configurar controles de concessão: exigir MFA, dispositivo compatível, híbrido AD",
+          "Definir controles de sessão: frequência de login, persistência de navegador",
+          "Gerenciar locais nomeados e países confiáveis para políticas de localização",
+          "Configurar políticas de proteção de contexto de autenticação (Authentication Context)"
+        ],
+        "mitigations": [
+          "Usar modo de relatório (report-only) antes de ativar qualquer nova política",
+          "Sempre excluir contas break-glass das políticas de Acesso Condicional",
+          "Exigir PIM com aprovação para ativação desta função de administrador",
+          "Revisar políticas mensalmente e testar com What If tool do Entra ID",
+          "Monitorar via Sentinel com alertas para criação ou exclusão de políticas CA"
+        ],
+        "notes": "Pode criar políticas que bloqueiam acesso de todos os usuários; testar sempre em modo report-only antes de ativar."
+      },
+      "azureRbac": {
+        "role": "Security Admin",
+        "slug": "security-admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Security/policies/write — políticas de segurança no Defender for Cloud",
+          "Microsoft.Authorization/policyAssignments/write — atribuir políticas do Azure Policy",
+          "Microsoft.Authorization/policyDefinitions/write — criar definições de política customizada",
+          "Microsoft.Authorization/policySetDefinitions/write — criar iniciativas de política",
+          "Microsoft.Security/complianceResults/read — leitura de resultados de conformidade"
+        ],
+        "mitigations": [
+          "Usar Azure Policy em modo audit antes de mudar para enforce",
+          "Separar responsabilidades entre criadores e aprovadores de política",
+          "Monitorar alterações de política via Azure Monitor e Activity Log",
+          "Revisar atribuições de política trimestralmente com Azure Policy Compliance Report",
+          "Implementar aprovação manual para políticas em modo Deny no Azure Policy"
+        ],
+        "notes": "O Azure RBAC não possui equivalente direto ao Acesso Condicional do Entra ID; Security Admin é o papel mais próximo para gerenciamento de políticas de segurança."
+      },
+      "aws": {
+        "role": "AWSOrganizationsFullAccess",
+        "risk": "critical",
+        "keyPermissions": [
+          "organizations:CreatePolicy — criar SCPs (Service Control Policies) na AWS Organization",
+          "organizations:AttachPolicy — anexar SCPs a OUs e contas para controle de acesso",
+          "iam:CreatePolicy — criar políticas IAM de controle de acesso contextual",
+          "iam:PutGroupPolicy — aplicar políticas de acesso condicional a grupos IAM",
+          "sso:CreatePermissionSet — criar conjuntos de permissão no AWS IAM Identity Center"
+        ],
+        "mitigations": [
+          "Testar SCPs em OUs de sandbox antes de aplicar em produção",
+          "Exigir aprovação de múltiplos administradores para criação de SCPs restritivos",
+          "Monitorar via CloudTrail com alertas para organizations:AttachPolicy",
+          "Revisar SCPs trimestralmente para garantir que não bloqueiam operações críticas",
+          "Manter SCP de proteção de contas de administrador de emergência (break-glass)"
+        ],
+        "notes": "AWS não possui Acesso Condicional nativo; SCPs e IAM Conditions (aws:RequestedRegion, aws:MultiFactorAuthPresent) são os equivalentes mais próximos."
+      },
+      "gcp": {
+        "role": "roles/accesscontextmanager.policyAdmin",
+        "risk": "critical",
+        "keyPermissions": [
+          "accesscontextmanager.policies.* — administração completa de políticas de contexto de acesso",
+          "accesscontextmanager.accessLevels.* — criar e gerenciar níveis de acesso (IP, dispositivo, etc.)",
+          "accesscontextmanager.servicePerimeters.* — perímetros de serviço VPC Service Controls",
+          "accesscontextmanager.accessZones.* — zonas de acesso para restrições contextuais",
+          "orgpolicy.policy.set — definir políticas de organização para restrição de acesso"
+        ],
+        "mitigations": [
+          "Testar perímetros VPC Service Controls em modo dry-run antes de ativar",
+          "Configurar alertas no Cloud Audit Logs para mutações em Access Context Manager",
+          "Manter lista de acesso de emergência para contas break-glass fora dos perímetros",
+          "Revisar níveis de acesso e perímetros mensalmente com Cloud Asset Inventory",
+          "Implementar aprovação no processo de mudança para alterações em service perimeters"
+        ]
+      },
+      "oci": {
+        "role": "manage authentication-policies in tenancy",
+        "risk": "high",
+        "keyPermissions": [
+          "manage authentication-policies in tenancy — configurar políticas de senha e MFA",
+          "manage identity-providers in tenancy — gerenciar provedores de identidade federada",
+          "manage network-sources in tenancy — criar fontes de rede para restrição de IP",
+          "manage domains in tenancy — configurar domínios de identidade OCI",
+          "use tag-namespaces in tenancy — aplicar tags para controle de acesso baseado em atributo"
+        ],
+        "mitigations": [
+          "Testar alterações em políticas de autenticação em ambiente de não-produção primeiro",
+          "Habilitar OCI Audit para todas as operações em authentication-policies",
+          "Configurar notificações OCI Events para alterações em políticas de autenticação",
+          "Revisar configurações de MFA e políticas de senha trimestralmente",
+          "Manter pelo menos dois administradores com acesso às políticas de autenticação"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Administrator (IAM Settings)",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar configurações de MFA em nível de conta no IBM Cloud IAM",
+          "Configurar restrições de IP para acesso ao IBM Cloud Console e APIs",
+          "Administrar provedores de identidade SAML para federação de usuários",
+          "Gerenciar configurações de sessão e expiração de token de acesso",
+          "Configurar políticas de senha para usuários IBMid na conta"
+        ],
+        "mitigations": [
+          "Testar alterações de configuração de MFA em grupos de usuários piloto primeiro",
+          "Habilitar IBM Cloud Activity Tracker para auditoria de alterações IAM Settings",
+          "Exigir aprovação de segundo administrador para alterações de restrição de IP",
+          "Revisar configurações de autenticação mensalmente com IBM Cloud IAM reports",
+          "Documentar todas as alterações de configuração de autenticação com justificativa"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Security Admin",
+        "risk": "critical",
+        "keyPermissions": [
+          "Configurar políticas de Context-Aware Access para aplicativos Google Workspace",
+          "Gerenciar níveis de acesso baseados em dispositivo, localização e identidade",
+          "Configurar regras de acesso condicional para aplicativos SAML e OIDC de terceiros",
+          "Administrar políticas de verificação em dois passos obrigatória por unidade organizacional",
+          "Configurar políticas de confiança de dispositivo com BeyondCorp Enterprise"
+        ],
+        "mitigations": [
+          "Testar políticas Context-Aware Access com grupos piloto antes de implantação global",
+          "Manter contas de administrador break-glass isentas de políticas de acesso condicional",
+          "Configurar alertas de auditoria para alterações em políticas Context-Aware Access",
+          "Revisar políticas de acesso mensalmente e remover regras obsoletas",
+          "Documentar e aprovar formalmente todas as alterações em políticas de acesso condicional"
+        ]
+      }
+    }
+  },
+  {
+    "id": "application-admin",
+    "function": "application-admin",
+    "tier": 1,
+    "name": "Application / Service Principal Administrator",
+    "description": "Administrador de aplicativos e entidades de serviço com capacidade de registrar aplicativos, gerenciar credenciais e configurar permissões de API delegadas e de aplicativo.",
+    "clouds": {
+      "entraId": {
+        "role": "Application Administrator",
+        "slug": "application-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar todos os registros de aplicativo (App Registrations) no Entra ID",
+          "Adicionar e rotacionar segredos de cliente e certificados para aplicativos",
+          "Conceder consentimento de administrador para permissões de API Microsoft Graph",
+          "Configurar permissões delegadas e de aplicativo para integração com APIs externas",
+          "Gerenciar entidades de serviço (Service Principals) e suas atribuições de função"
+        ],
+        "mitigations": [
+          "Habilitar políticas de consentimento de usuário restritivas para bloquear consentimento individual",
+          "Revisar todos os consentimentos de administrador mensalmente no portal de aplicativos corporativos",
+          "Monitorar criação de aplicativos via Sentinel com alertas para novas permissões críticas",
+          "Exigir PIM com justificativa para ativação da função de Administrador de Aplicativos",
+          "Implementar processo de revisão formal antes de conceder permissões de aplicativo (sem usuário)"
+        ]
+      },
+      "azureRbac": {
+        "role": "Contributor",
+        "slug": "contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.ManagedIdentity/userAssignedIdentities/write — criar identidades gerenciadas",
+          "Microsoft.Authorization/roleAssignments/read — visualizar atribuições de função para apps",
+          "Microsoft.Web/sites/config/write — configurar identidades para App Service e Functions",
+          "Microsoft.Compute/virtualMachines/write — atribuir identidades gerenciadas a VMs",
+          "Microsoft.Resources/deployments/write — implantar recursos com identidades de serviço"
+        ],
+        "mitigations": [
+          "Restringir Contributor ao escopo mínimo necessário (grupo de recursos específico)",
+          "Monitorar criação de identidades gerenciadas via Azure Monitor e Activity Log",
+          "Revisar atribuições de identidades gerenciadas mensalmente para detectar uso indevido",
+          "Usar identidades gerenciadas atribuídas pelo sistema em vez de atribuídas pelo usuário quando possível",
+          "Auditar roleAssignments vinculadas a identidades gerenciadas trimestralmente"
+        ],
+        "notes": "O Azure RBAC não possui função direta para gerenciamento de registros de aplicativo; isso é controlado pelo Entra ID. Contributor é relevante para gerenciamento de identidades gerenciadas."
+      },
+      "aws": {
+        "role": "IAMFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "iam:CreateRole — criar funções IAM para aplicativos e serviços",
+          "iam:AttachRolePolicy — anexar políticas a funções de aplicativo",
+          "iam:CreateServiceLinkedRole — criar funções vinculadas a serviços AWS",
+          "iam:PassRole — passar funções a serviços AWS (EC2, Lambda, ECS, etc.)",
+          "iam:CreateOpenIDConnectProvider — criar provedores OIDC para federação de workloads"
+        ],
+        "mitigations": [
+          "Usar permission boundaries em todas as funções IAM criadas para aplicativos",
+          "Implementar tag policy para rastrear propriedade de funções de aplicativo",
+          "Preferir IRSA (IAM Roles for Service Accounts) para workloads Kubernetes",
+          "Monitorar iam:PassRole via CloudTrail com alertas para serviços não autorizados",
+          "Revisar funções de aplicativo com AWS IAM Access Analyzer mensalmente"
+        ]
+      },
+      "gcp": {
+        "role": "roles/iam.serviceAccountAdmin",
+        "risk": "high",
+        "keyPermissions": [
+          "iam.serviceAccounts.create — criar contas de serviço para aplicativos",
+          "iam.serviceAccounts.delete — excluir contas de serviço existentes",
+          "iam.serviceAccounts.update — modificar metadados de contas de serviço",
+          "iam.serviceAccountKeys.create — criar chaves de conta de serviço (vetor de risco)",
+          "iam.serviceAccounts.setIamPolicy — conceder acesso a contas de serviço específicas"
+        ],
+        "mitigations": [
+          "Preferir Workload Identity Federation em vez de chaves de conta de serviço",
+          "Desabilitar criação de chaves de SA via Org Policy constraints/iam.disableServiceAccountKeyCreation",
+          "Auditar chaves de SA com mais de 90 dias de idade via Cloud Asset Inventory",
+          "Monitorar iam.serviceAccountKeys.create via Cloud Audit Logs com alertas",
+          "Implementar rotação automática de chaves via Secret Manager quando inevitáveis"
+        ]
+      },
+      "oci": {
+        "role": "manage instance-principals in tenancy",
+        "risk": "high",
+        "keyPermissions": [
+          "manage dynamic-groups in tenancy — criar grupos dinâmicos para instâncias e funções",
+          "manage policies in compartment — criar políticas de acesso para entidades de serviço",
+          "manage api-keys in tenancy — gerenciar chaves de API para usuários de serviço",
+          "manage auth-tokens in tenancy — tokens de autenticação para integração de APIs",
+          "manage service-gateways in compartment — acesso de serviço sem internet público"
+        ],
+        "mitigations": [
+          "Preferir instance principals e resource principals em vez de credenciais de usuário",
+          "Revisar grupos dinâmicos mensalmente para remover instâncias não autorizadas",
+          "Monitorar criação de chaves de API via OCI Audit com alertas automáticos",
+          "Limitar escopo de políticas de dynamic-groups ao compartimento necessário",
+          "Rotacionar chaves de API e tokens de autenticação a cada 90 dias"
+        ],
+        "notes": "OCI usa dynamic-groups e instance principals como equivalente a service principals. O papel 'manage app-catalog-listing' é para publicação de aplicativos no Marketplace OCI."
+      },
+      "ibmCloud": {
+        "role": "Service ID Creator",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar IDs de serviço (Service IDs) para autenticação de aplicativos",
+          "Gerar e rotacionar chaves de API para IDs de serviço",
+          "Atribuir políticas de acesso IAM a IDs de serviço para acesso a recursos",
+          "Gerenciar configurações de bloqueio para proteger IDs de serviço críticos",
+          "Criar trusted profiles para acesso federado de cargas de trabalho"
+        ],
+        "mitigations": [
+          "Habilitar bloqueio de Service IDs críticos para prevenir exclusão acidental",
+          "Rotacionar chaves de API de Service IDs a cada 90 dias com rotação automatizada",
+          "Monitorar criação de Service IDs via IBM Cloud Activity Tracker",
+          "Revisar políticas de acesso de Service IDs mensalmente no IBM Cloud IAM",
+          "Usar Trusted Profiles em vez de chaves de API para workloads em IBM Cloud"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Services Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar aplicativos de terceiros no Google Workspace Marketplace",
+          "Configurar acesso OAuth de aplicativos externos aos dados do Workspace",
+          "Administrar instalação e permissões de complementos do Google para toda a organização",
+          "Gerenciar configurações de aplicativos conectados e consentimentos OAuth",
+          "Configurar políticas de acesso de API para aplicativos integrados ao Workspace"
+        ],
+        "mitigations": [
+          "Restringir instalação de aplicativos Marketplace a uma lista de aprovados",
+          "Revisar mensalmente os aplicativos com acesso OAuth a dados do Workspace",
+          "Habilitar alertas de auditoria para novas concessões de acesso OAuth",
+          "Implementar processo formal de aprovação para novos aplicativos de terceiros",
+          "Usar Google Workspace App Access Control para bloquear aplicativos não aprovados"
+        ],
+        "notes": "O Google Workspace não possui conceito de Service Principals como o Entra ID. A gestão de credenciais de aplicativo é feita via Google Cloud IAM (contas de serviço) integrado ao Workspace."
+      }
+    }
+  },
+  {
+    "id": "key-vault-admin",
+    "function": "key-vault-admin",
+    "tier": 1,
+    "name": "Key / Secret / Certificate Management",
+    "description": "Administrador de gerenciamento de chaves criptográficas, segredos e certificados com capacidade de criar, rotacionar, importar e configurar políticas de acesso para material criptográfico sensível.",
+    "clouds": {
+      "entraId": {
+        "role": "Cloud Application Administrator",
+        "slug": "cloud-application-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar certificados de autenticação de aplicativos no Entra ID",
+          "Adicionar e rotacionar credenciais de certificado para entidades de serviço",
+          "Configurar certificados de assinatura SAML para aplicativos empresariais",
+          "Gerenciar tokens e certificados de federação de identidade de workload",
+          "Visualizar e exportar metadados de certificados de autenticação de apps"
+        ],
+        "mitigations": [
+          "Monitorar expiração de certificados com alertas automatizados no Entra ID",
+          "Usar chaves gerenciadas pelo Entra em vez de certificados carregados manualmente",
+          "Auditar mensalmente todos os certificados de autenticação de aplicativos",
+          "Exigir aprovação formal para adição de novas credenciais a entidades de serviço críticas",
+          "Configurar alertas Sentinel para adição de novas credenciais a service principals"
+        ],
+        "notes": "O Entra ID não é um cofre de chaves; para gerenciamento de chaves e segredos da infraestrutura, use o Azure Key Vault com função Key Vault Administrator."
+      },
+      "azureRbac": {
+        "role": "Key Vault Administrator",
+        "slug": "key-vault-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.KeyVault/vaults/keys/* — gerenciamento completo de chaves criptográficas",
+          "Microsoft.KeyVault/vaults/secrets/* — criar, ler e rotacionar segredos",
+          "Microsoft.KeyVault/vaults/certificates/* — gerenciar certificados e renovação",
+          "Microsoft.KeyVault/vaults/accessPolicies/write — configurar políticas de acesso ao vault",
+          "Microsoft.KeyVault/vaults/write — criar e configurar instâncias do Key Vault"
+        ],
+        "mitigations": [
+          "Habilitar soft-delete e purge protection em todos os Key Vaults de produção",
+          "Usar RBAC do Key Vault em vez de access policies legadas para controle granular",
+          "Monitorar acesso a segredos via Azure Key Vault Diagnostic Logs com alertas",
+          "Restringir acesso de rede ao Key Vault via private endpoints e service endpoints",
+          "Revisar políticas de acesso ao Key Vault mensalmente e remover acessos não utilizados"
+        ]
+      },
+      "aws": {
+        "role": "AWSKeyManagementServicePowerUser",
+        "risk": "high",
+        "keyPermissions": [
+          "kms:CreateKey — criar chaves mestras de cliente (CMKs) no AWS KMS",
+          "kms:PutKeyPolicy — definir políticas de acesso para chaves KMS",
+          "kms:EnableKeyRotation — habilitar rotação automática anual de chaves",
+          "secretsmanager:CreateSecret — criar segredos no AWS Secrets Manager",
+          "secretsmanager:RotateSecret — configurar rotação automática de segredos"
+        ],
+        "mitigations": [
+          "Usar KMS com CMKs em vez de chaves gerenciadas pela AWS para dados críticos",
+          "Habilitar rotação automática de segredos no Secrets Manager para credenciais de banco",
+          "Monitorar uso de chaves KMS via CloudTrail com alertas para kms:Decrypt em massa",
+          "Restringir acesso a chaves KMS com condições de política por tag e origem de rede",
+          "Implementar Multi-Region Keys apenas quando estritamente necessário para DR"
+        ]
+      },
+      "gcp": {
+        "role": "roles/cloudkms.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "cloudkms.keyRings.create — criar key rings no Cloud KMS",
+          "cloudkms.cryptoKeys.create — criar chaves criptográficas no key ring",
+          "cloudkms.cryptoKeyVersions.create — criar novas versões de chaves (rotação)",
+          "cloudkms.cryptoKeys.setIamPolicy — definir quem pode usar as chaves",
+          "secretmanager.secrets.create — criar segredos no Secret Manager (requer roles/secretmanager.admin)"
+        ],
+        "mitigations": [
+          "Separar roles/cloudkms.admin (gerenciar) de roles/cloudkms.cryptoKeyEncrypterDecrypter (usar)",
+          "Habilitar Cloud KMS Audit Logs para todas as operações de criptografia e gerenciamento",
+          "Usar CMEK (Customer-Managed Encryption Keys) para dados críticos no GCP",
+          "Revisar IAM policies de chaves KMS mensalmente via Cloud Asset Inventory",
+          "Implementar rotação automática de chaves simétricas a cada 90 dias no Cloud KMS"
+        ]
+      },
+      "oci": {
+        "role": "manage vaults in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage vaults in compartment — criar e administrar cofres OCI Vault",
+          "manage keys in compartment — criar e rotacionar chaves mestras de criptografia",
+          "manage secrets in compartment — criar e gerenciar segredos no OCI Vault",
+          "use key-delegate in compartment — delegar uso de chaves a serviços OCI",
+          "manage virtual-vaults in compartment — cofres virtuais isolados para multi-tenancy"
+        ],
+        "mitigations": [
+          "Usar HSM-backed keys (Virtual Private Vault) para dados de maior criticidade",
+          "Habilitar rotação automática de chaves de criptografia no OCI Vault",
+          "Monitorar operações de vault via OCI Audit com alertas para operações de exclusão",
+          "Restringir acesso a secrets e keys via compartimento dedicado com políticas granulares",
+          "Revisar acessos a vaults e chaves mensalmente e revogar permissões não utilizadas"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Key Protect)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e importar chaves raiz (root keys) no IBM Cloud Key Protect",
+          "Rotacionar e desativar chaves de criptografia no Key Protect",
+          "Gerenciar políticas de ciclo de vida de chaves (expiração e rotação)",
+          "Criar e gerenciar segredos no IBM Secrets Manager",
+          "Configurar grupos de acesso e políticas de autorização para chaves e segredos"
+        ],
+        "mitigations": [
+          "Usar IBM Cloud Hyper Protect Crypto Services para chaves com requisito HSM dedicado",
+          "Habilitar rotação automática de root keys no Key Protect a cada 365 dias",
+          "Monitorar operações de chaves via IBM Cloud Activity Tracker with LogDNA",
+          "Implementar separação entre gerenciamento de chaves e operações de criptografia",
+          "Revisar políticas de acesso ao Key Protect e Secrets Manager mensalmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "medium",
+        "keyPermissions": [
+          "Configurar criptografia do lado do cliente (Client-Side Encryption) no Workspace",
+          "Gerenciar chaves de criptografia externas via Google Workspace CSE API",
+          "Administrar certificados S/MIME para criptografia de email no Gmail",
+          "Configurar integração com provedores externos de chaves (Thales, Virtru, etc.)",
+          "Gerenciar políticas de retenção e criptografia no Google Vault"
+        ],
+        "mitigations": [
+          "Usar serviço externo de gerenciamento de chaves integrado ao Workspace CSE",
+          "Auditar uso de Client-Side Encryption e acesso às chaves de criptografia",
+          "Configurar alertas para alterações nas configurações de criptografia do Workspace",
+          "Revisar certificados S/MIME e sua validade mensalmente",
+          "Separar administração de chaves de criptografia da administração do Workspace"
+        ],
+        "notes": "O Google Workspace não possui um cofre de chaves nativo equivalente ao Key Vault ou KMS. Para gerenciamento de chaves de criptografia, usa-se Google Cloud KMS integrado via Client-Side Encryption (CSE)."
+      }
+    }
+  },
+  {
+    "id": "compliance-admin",
+    "function": "compliance-admin",
+    "tier": 1,
+    "name": "Audit & Compliance Administrator",
+    "description": "Administrador de auditoria e conformidade com acesso a relatórios de conformidade, logs de auditoria, avaliações de risco e configuração de controles regulatórios como ISO 27001, SOC 2 e LGPD.",
+    "clouds": {
+      "entraId": {
+        "role": "Compliance Administrator",
+        "slug": "compliance-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Acesso completo ao Microsoft Purview Compliance Portal para gestão de conformidade",
+          "Gerenciar políticas de retenção e rótulos de sensibilidade no Microsoft Purview",
+          "Configurar e revisar avaliações de conformidade no Compliance Manager",
+          "Acesso a logs de auditoria do Microsoft 365 para investigações de conformidade",
+          "Gerenciar casos de Descoberta Eletrônica (eDiscovery) e holds legais"
+        ],
+        "mitigations": [
+          "Separar funções de configuração de conformidade e acesso a conteúdo de usuários",
+          "Exigir PIM com justificativa para ativação da função de Administrador de Conformidade",
+          "Registrar todas as ações de Compliance Administrator no Log de Auditoria Unificado",
+          "Revisar acesso às ferramentas de eDiscovery trimestralmente para evitar uso indevido",
+          "Implementar política de dois aprovadores para criação de holds legais e exportações"
+        ]
+      },
+      "azureRbac": {
+        "role": "Security Reader",
+        "slug": "security-reader",
+        "risk": "medium",
+        "keyPermissions": [
+          "Microsoft.Security/*/read — leitura de todas as configurações do Defender for Cloud",
+          "Microsoft.PolicyInsights/*/read — visualizar resultados de conformidade do Azure Policy",
+          "Microsoft.Authorization/policyAssignments/write — atribuir políticas de conformidade",
+          "Microsoft.Authorization/policyDefinitions/write — criar definições de política de conformidade",
+          "Microsoft.OperationalInsights/workspaces/read — acesso a logs no Log Analytics"
+        ],
+        "mitigations": [
+          "Combinar Security Reader (leitura) com Policy Contributor (escrita) para controle granular",
+          "Monitorar atribuições de política de conformidade via Azure Activity Log",
+          "Revisar relatórios de conformidade do Azure Policy mensalmente e remediar não-conformidades",
+          "Restringir Policy Contributor ao escopo de assinatura específica de conformidade",
+          "Configurar alertas para recursos não conformes com prazo de remediação definido"
+        ]
+      },
+      "aws": {
+        "role": "AWSAuditManagerAdministratorAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "auditmanager:* — administração completa do AWS Audit Manager para avaliações",
+          "config:* — AWS Config para avaliação contínua de conformidade de recursos",
+          "cloudtrail:GetTrail — acesso a trilhas CloudTrail para auditoria de eventos",
+          "securityhub:GetFindings — acesso a findings do Security Hub para relatórios",
+          "trustedadvisor:* — AWS Trusted Advisor para recomendações de conformidade"
+        ],
+        "mitigations": [
+          "Separar acesso de leitura de auditoria (SecurityAudit) do gerenciamento de avaliações",
+          "Habilitar AWS Config com todas as regras de conformidade relevantes ao setor",
+          "Monitorar alterações em trilhas CloudTrail via alarmes CloudWatch",
+          "Revisar frameworks de conformidade no Audit Manager trimestralmente",
+          "Restringir exportação de evidências de auditoria a buckets S3 com criptografia e logging"
+        ]
+      },
+      "gcp": {
+        "role": "roles/iam.securityReviewer",
+        "risk": "medium",
+        "keyPermissions": [
+          "iam.roles.get — visualizar definições de funções IAM para revisão de conformidade",
+          "iam.policies.audit — auditar políticas IAM em projetos e organização",
+          "resourcemanager.projects.getIamPolicy — visualizar políticas IAM em projetos",
+          "logging.logEntries.list — acesso a entradas de log do Cloud Logging para auditoria",
+          "securitycenter.findings.list — visualizar findings do Security Command Center"
+        ],
+        "mitigations": [
+          "Combinar roles/iam.securityReviewer com roles/logging.viewer para auditoria completa",
+          "Usar Cloud Asset Inventory para gerar relatórios de conformidade de recursos",
+          "Configurar alertas no Security Command Center para findings de alta severidade",
+          "Revisar relatórios de conformidade via Google Cloud Compliance Reports mensalmente",
+          "Exportar logs de auditoria para bucket GCS imutável com retenção definida por política"
+        ]
+      },
+      "oci": {
+        "role": "manage cloud-guard-family in tenancy",
+        "risk": "high",
+        "keyPermissions": [
+          "manage cloud-guard-family in tenancy — administração do Cloud Guard para conformidade",
+          "read audit-events in tenancy — acesso a todos os eventos de auditoria OCI",
+          "manage security-zone-recipes in tenancy — receitas de zona de segurança para conformidade",
+          "read all-resources in tenancy — visibilidade de recursos para avaliação de conformidade",
+          "manage announcements-subscription in tenancy — alertas de conformidade e vulnerabilidades"
+        ],
+        "mitigations": [
+          "Configurar detectores personalizados no Cloud Guard para requisitos regulatórios específicos",
+          "Exportar eventos de auditoria OCI para Object Storage com retenção de 12+ meses",
+          "Revisar findings do Cloud Guard semanalmente e atribuir responsáveis por remediação",
+          "Implementar OCI Security Zones para garantir conformidade contínua de recursos",
+          "Configurar notificações automáticas para problemas críticos de conformidade detectados"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Security and Compliance Center Administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Administrador do IBM Security and Compliance Center para gestão de perfis",
+          "Criar e executar varreduras de conformidade contra perfis CIS, NIST, SOC 2",
+          "Acesso a relatórios de conformidade e evidências coletadas automaticamente",
+          "Gerenciar integrações de coleta de evidências de outros serviços IBM Cloud",
+          "Configurar escopos de avaliação e notificações de não-conformidade"
+        ],
+        "mitigations": [
+          "Separar administração do SCC do acesso aos dados de conformidade coletados",
+          "Habilitar IBM Cloud Activity Tracker para auditoria de ações no SCC",
+          "Revisar relatórios de conformidade mensalmente com stakeholders de segurança",
+          "Configurar alertas automáticos para scores de conformidade abaixo do limiar definido",
+          "Restringir exportação de relatórios de conformidade a usuários com necessidade comprovada"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Audit Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Acesso completo ao Google Workspace Admin Reports para logs de auditoria",
+          "Visualizar logs de atividade de todos os serviços: Gmail, Drive, Meet, Admin",
+          "Configurar exportação de logs de auditoria para Google BigQuery ou Cloud Storage",
+          "Acesso ao Google Vault para eDiscovery, retenção e exportação de dados",
+          "Visualizar relatórios de segurança e conformidade no Admin Console"
+        ],
+        "mitigations": [
+          "Separar acesso de leitura de logs do gerenciamento de políticas de retenção",
+          "Configurar alertas de auditoria para ações suspeitas detectadas nos relatórios",
+          "Restringir acesso ao Google Vault a usuários com necessidade legal documentada",
+          "Exportar logs de auditoria para armazenamento imutável com retenção adequada",
+          "Revisar permissões de Audit Admin trimestralmente e remover acessos não utilizados"
+        ]
+      }
+    }
+  },
+  {
+    "id": "exchange-admin",
+    "function": "exchange-admin",
+    "tier": 1,
+    "name": "Exchange / Email Administrator",
+    "description": "Administrador de email e mensageria com controle sobre caixas de correio, listas de distribuição, conectores de email, políticas anti-spam e configurações de fluxo de mensagens.",
+    "clouds": {
+      "entraId": {
+        "role": "Exchange Administrator",
+        "slug": "exchange-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciamento completo de caixas de correio Exchange Online e Microsoft 365",
+          "Criar e gerenciar grupos de distribuição e listas de endereços globais",
+          "Configurar conectores de email, regras de transporte e políticas anti-spam",
+          "Administrar salas de reunião, recursos compartilhados e caixas de correio de equipamento",
+          "Acesso a logs de rastreamento de mensagens e relatórios de entrega de email"
+        ],
+        "mitigations": [
+          "Monitorar regras de encaminhamento de email criadas por usuários ou admins externamente",
+          "Habilitar alertas para criação de conectores de saída não autorizados",
+          "Revisar mensalmente grupos de distribuição e remover membros desatualizados",
+          "Auditar alterações em regras de transporte via log de auditoria do Exchange",
+          "Restringir acesso ao Exchange Admin Center por grupo de segurança dedicado"
+        ]
+      },
+      "azureRbac": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem função RBAC do Azure equivalente ao Exchange Administrator",
+          "Exchange Online é gerenciado via Entra ID (função Exchange Administrator)",
+          "Microsoft.Office365.Exchange/* — permissões via Microsoft Graph (requer consentimento admin)",
+          "Acesso via PowerShell Exchange Online com permissão de função Entra ID",
+          "Integrações com Azure Logic Apps para automação de fluxos de email"
+        ],
+        "mitigations": [
+          "Usar Entra ID Privileged Identity Management para acesso just-in-time ao Exchange",
+          "Restringir módulo PowerShell Exchange Online a usuários com função Exchange Administrator",
+          "Monitorar uso da API Microsoft Graph para operações Exchange via Sentinel",
+          "Auditar conexões PowerShell ao Exchange Online via logs de auditoria do Entra ID",
+          "Implementar acesso condicional restringindo gerenciamento Exchange a dispositivos gerenciados"
+        ],
+        "notes": "O Azure RBAC não possui função equivalente ao Exchange Administrator; o gerenciamento de Exchange Online é feito via funções do Entra ID."
+      },
+      "aws": {
+        "role": "AmazonWorkMailFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "workmail:* — administração completa do Amazon WorkMail para email corporativo",
+          "ses:* — Amazon SES para envio de email transacional e marketing",
+          "ses:CreateEmailIdentity — verificar domínios e endereços de email no SES",
+          "ses:PutConfigurationSetTrackingOptions — configurar rastreamento de email",
+          "ses:CreateReceiptRule — configurar regras de recebimento de email"
+        ],
+        "mitigations": [
+          "Habilitar DKIM, SPF e DMARC para todos os domínios de email gerenciados no SES",
+          "Monitorar reputação de envio no SES Dashboard e configurar alarmes de bounce/complaint",
+          "Restringir acesso ao Amazon WorkMail a grupos de AD específicos via integração",
+          "Auditar alterações de configuração SES via CloudTrail com alertas automáticos",
+          "Implementar políticas de autorização SES para limitar endereços de envio por aplicativo"
+        ]
+      },
+      "gcp": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "GCP não possui serviço de email corporativo nativo equivalente ao Exchange",
+          "Gmail é gerenciado via Google Workspace (função Gmail Admin delegada)",
+          "Integração via Cloud Functions ou Pub/Sub para automação de fluxos de email",
+          "Cloud Run pode hospedar servidores SMTP personalizados integrados ao GCP",
+          "API Gmail do Google Workspace para acesso programático a caixas de correio"
+        ],
+        "mitigations": [
+          "Para email corporativo no GCP, usar Google Workspace Gmail com Admin delegado",
+          "Monitorar uso da API Gmail via Cloud Audit Logs para acesso programático",
+          "Implementar controles de DLP do Workspace para proteger dados em emails",
+          "Usar Cloud Armor para proteger endpoints de recebimento de email expostos",
+          "Auditar regras de encaminhamento automático mensalmente via Admin Reports"
+        ],
+        "notes": "O GCP não possui equivalente nativo ao Exchange Online. Para email corporativo, usa-se Google Workspace com a função Gmail Admin delegada."
+      },
+      "oci": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "OCI Email Delivery — serviço para envio de email transacional (SMTP)",
+          "manage email-family in compartment — gerenciar domínios e remetentes aprovados",
+          "OCI não possui serviço de email corporativo (mailbox) nativo",
+          "Integração com Microsoft Exchange ou Google Workspace para email corporativo",
+          "use smtp-credentials in tenancy — credenciais SMTP para aplicativos de envio"
+        ],
+        "mitigations": [
+          "Verificar todos os domínios de envio no OCI Email Delivery para evitar spoofing",
+          "Configurar SPF e DKIM via OCI Email Delivery para domínios de envio",
+          "Monitorar volume de envio via OCI Monitoring para detectar uso indevido",
+          "Restringir criação de remetentes aprovados a administradores via política IAM OCI",
+          "Auditar credenciais SMTP mensalmente e revogar as não utilizadas"
+        ],
+        "notes": "OCI não possui solução de email corporativo (caixas de correio). O OCI Email Delivery é apenas para envio transacional SMTP."
+      },
+      "ibmCloud": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "IBM Cloud não possui serviço nativo de email corporativo com caixas de correio",
+          "IBM Cloud Email Service (via SendGrid) para email transacional",
+          "Integração com Microsoft Exchange ou Google Workspace para email corporativo",
+          "IBM Event Streams para processamento de eventos de email em pipelines",
+          "Configuração via IBM Cloud Continuous Delivery para automação de email"
+        ],
+        "mitigations": [
+          "Usar IBM Cloud SendGrid com autenticação de remetente para email transacional",
+          "Monitorar deliverability e métricas de reputação no SendGrid Dashboard",
+          "Restringir chaves de API SendGrid por permissão (somente envio vs. administração)",
+          "Implementar SPF, DKIM e DMARC para domínios de envio gerenciados",
+          "Auditar logs de envio de email para detectar uso não autorizado"
+        ],
+        "notes": "IBM Cloud não possui serviço de email corporativo nativo. Para email transacional, usa-se o serviço IBM Cloud Email (baseado em SendGrid)."
+      },
+      "googleWorkspace": {
+        "role": "Gmail Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar configurações do Gmail para toda a organização no Admin Console",
+          "Configurar roteamento de email, gateways e filtros de conteúdo",
+          "Administrar políticas anti-spam, anti-phishing e quarentena de emails",
+          "Configurar grupos do Google como listas de distribuição e aliases de email",
+          "Acesso ao Log de Auditoria de Email para rastreamento de mensagens"
+        ],
+        "mitigations": [
+          "Habilitar verificação em dois passos obrigatória para todos os usuários do Workspace",
+          "Configurar alertas para encaminhamento automático para domínios externos",
+          "Revisar mensalmente regras de roteamento de email e filtros de conteúdo",
+          "Monitorar tentativas de phishing via Central de Segurança do Google Workspace",
+          "Implementar DKIM, SPF e DMARC para todos os domínios gerenciados no Workspace"
+        ]
+      }
+    }
+  },
+  {
+    "id": "groups-admin",
+    "function": "groups-admin",
+    "tier": 1,
+    "name": "Groups Administrator",
+    "description": "Administrador de grupos com capacidade de criar, modificar e excluir grupos de segurança e grupos do Microsoft 365, gerenciar associações e configurar políticas de grupo em toda a organização.",
+    "clouds": {
+      "entraId": {
+        "role": "Groups Administrator",
+        "slug": "groups-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e excluir qualquer grupo de segurança e grupo do Microsoft 365",
+          "Gerenciar associações de grupos incluindo adição e remoção de membros e proprietários",
+          "Configurar políticas de nomenclatura e expiração de grupos do Microsoft 365",
+          "Restaurar grupos do Microsoft 365 excluídos dentro do período de retenção",
+          "Gerenciar grupos dinâmicos com base em atributos de usuário (regras de associação)"
+        ],
+        "mitigations": [
+          "Habilitar revisões de acesso periódicas para grupos com acesso a recursos sensíveis",
+          "Configurar políticas de expiração de grupos para remover grupos obsoletos automaticamente",
+          "Monitorar grupos com acesso a dados sensíveis via Microsoft Purview Information Protection",
+          "Restringir criação de grupos por usuários finais via política do Entra ID",
+          "Auditar mensalmente grupos sem proprietário definido e atribuir responsáveis"
+        ]
+      },
+      "azureRbac": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Gerenciamento de grupos é feito via Entra ID, não via RBAC do Azure",
+          "Microsoft.Authorization/roleAssignments/read — visualizar atribuições de grupo em recursos",
+          "Grupos Entra ID podem receber funções RBAC do Azure como qualquer principal",
+          "Microsoft.Resources/subscriptions/resourceGroups/read — grupos de recursos (diferente de grupos Entra)",
+          "Sem função RBAC do Azure equivalente ao Administrador de Grupos Entra ID"
+        ],
+        "mitigations": [
+          "Usar grupos Entra ID atribuíveis a funções para gerenciar acesso RBAC via grupos",
+          "Monitorar atribuições de funções RBAC feitas a grupos via Azure Activity Log",
+          "Revisar trimestralmente grupos com atribuições de função RBAC de alta permissão",
+          "Habilitar logs de auditoria do Entra ID para rastrear mudanças em associações de grupos",
+          "Implementar processo formal para aprovação de adição de membros a grupos privilegiados"
+        ],
+        "notes": "O Azure RBAC não possui conceito de Administrador de Grupos; grupos são gerenciados no Entra ID. Grupos do Entra podem ter funções RBAC do Azure atribuídas."
+      },
+      "aws": {
+        "role": "IAMFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "iam:CreateGroup — criar grupos IAM para organizar usuários e permissões",
+          "iam:AddUserToGroup — adicionar usuários a grupos IAM",
+          "iam:AttachGroupPolicy — anexar políticas gerenciadas a grupos IAM",
+          "iam:PutGroupPolicy — criar políticas inline em grupos IAM",
+          "iam:DeleteGroup — excluir grupos IAM e suas associações"
+        ],
+        "mitigations": [
+          "Preferir funções IAM em vez de grupos IAM para acesso programático e de serviços",
+          "Revisar mensalmente membros de grupos IAM com políticas de alto privilégio",
+          "Monitorar iam:AddUserToGroup para grupos privilegiados via CloudTrail com alertas",
+          "Implementar convenção de nomenclatura de grupos IAM para facilitar auditorias",
+          "Usar AWS SSO/IAM Identity Center com grupos gerenciados externamente para maior controle"
+        ]
+      },
+      "gcp": {
+        "role": "roles/iam.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "cloudidentity.groups.create — criar grupos no Cloud Identity ou Google Workspace",
+          "cloudidentity.groups.update — atualizar configurações e metadados de grupos",
+          "cloudidentity.memberships.create — adicionar membros a grupos do Cloud Identity",
+          "cloudidentity.memberships.delete — remover membros de grupos",
+          "resourcemanager.projects.setIamPolicy — atribuir grupos a políticas IAM de projetos"
+        ],
+        "mitigations": [
+          "Usar grupos gerenciados por diretório (Google Workspace ou Cloud Identity) em vez de grupos ad-hoc",
+          "Habilitar Cloud Audit Logs para operações de gerenciamento de grupos do Cloud Identity",
+          "Revisar membros de grupos com acesso a recursos GCP críticos mensalmente",
+          "Implementar processo de aprovação para adição de membros a grupos privilegiados",
+          "Usar Recommender API para identificar grupos com permissões excessivas"
+        ]
+      },
+      "oci": {
+        "role": "manage groups in tenancy",
+        "risk": "high",
+        "keyPermissions": [
+          "manage groups in tenancy — criar, modificar e excluir grupos IAM na tenancy OCI",
+          "manage users in tenancy — adicionar e remover usuários de grupos",
+          "manage dynamic-groups in tenancy — grupos baseados em atributos de instâncias",
+          "manage compartments in tenancy — grupos podem ter acesso por compartimento",
+          "read audit-events in tenancy — verificar ações realizadas por membros de grupos"
+        ],
+        "mitigations": [
+          "Documentar propósito e proprietário para cada grupo criado na tenancy OCI",
+          "Revisar mensalmente associações de grupos e remover usuários inativos",
+          "Monitorar criação de novos grupos via OCI Audit com alertas automáticos",
+          "Implementar separação entre quem cria grupos e quem define políticas de acesso",
+          "Auditar grupos com políticas de alta permissão (manage * in tenancy) trimestralmente"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Administrator (Access Groups)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar Access Groups no IBM Cloud IAM para organização de permissões",
+          "Adicionar e remover membros (usuários, IDs de serviço) de Access Groups",
+          "Atribuir políticas de acesso IAM a Access Groups para controle de recursos",
+          "Configurar templates de Access Group para contas membros em IBM Cloud Organizations",
+          "Gerenciar regras dinâmicas de Access Group baseadas em atributos de federação"
+        ],
+        "mitigations": [
+          "Revisar mensalmente membros de Access Groups com políticas de alto privilégio",
+          "Habilitar IBM Cloud Activity Tracker para auditoria de operações em Access Groups",
+          "Usar regras dinâmicas para associação automatizada em vez de membros manuais quando possível",
+          "Implementar separação entre administrador de Access Groups e atribuidor de políticas",
+          "Auditar políticas de Access Groups trimestralmente e remover permissões excessivas"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Groups Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e excluir grupos do Google em toda a organização Workspace",
+          "Gerenciar membros, proprietários e configurações de grupos do Google",
+          "Configurar permissões de publicação e acesso externo para grupos de email",
+          "Administrar grupos de segurança usados em políticas de acesso condicional",
+          "Gerenciar configurações do Google Groups for Business para colaboração"
+        ],
+        "mitigations": [
+          "Revisar mensalmente grupos com acesso externo habilitado para evitar vazamento",
+          "Configurar alertas de auditoria para adição de membros externos a grupos internos",
+          "Implementar política de nomenclatura de grupos para facilitar identificação e auditoria",
+          "Restringir criação de grupos por usuários finais via configurações do Admin Console",
+          "Auditar grupos sem proprietário definido mensalmente e atribuir responsáveis"
+        ]
+      }
+    }
+  },
+  {
+    "id": "authentication-admin",
+    "function": "authentication-admin",
+    "tier": 1,
+    "name": "Authentication Administrator",
+    "description": "Administrador de autenticação com capacidade de gerenciar métodos de autenticação, redefinir senhas, configurar MFA e gerenciar credenciais para usuários sem privilégios de administrador.",
+    "clouds": {
+      "entraId": {
+        "role": "Authentication Administrator",
+        "slug": "authentication-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Redefinir senhas e revogar sessões para usuários não-administradores",
+          "Gerenciar e registrar métodos de autenticação MFA para usuários",
+          "Forçar re-registro de MFA para usuários comprometidos ou em transição",
+          "Exigir re-autenticação de usuários em sessões ativas suspeitas",
+          "Visualizar e reportar sobre métodos de autenticação registrados na organização"
+        ],
+        "mitigations": [
+          "Restringir função a equipes de helpdesk com treinamento de engenharia social",
+          "Monitorar resets de senha em massa via alertas do Microsoft Sentinel",
+          "Exigir verificação de identidade do usuário antes de redefinir credenciais",
+          "Registrar todas as operações de reset no log de auditoria do Entra ID",
+          "Separar Autenticação Admin (helpdesk) de Administrador Privilegiado de Autenticação"
+        ]
+      },
+      "azureRbac": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Gerenciamento de autenticação é controlado pelo Entra ID, não pelo Azure RBAC",
+          "Sem função RBAC Azure equivalente ao Authentication Administrator do Entra",
+          "Microsoft.ManagedIdentity/*/read — visualizar identidades gerenciadas em recursos",
+          "Políticas de acesso condicional do Entra ID controlam requisitos de autenticação",
+          "Configurações de autenticação para serviços Azure são gerenciadas via Entra ID"
+        ],
+        "mitigations": [
+          "Gerenciar requisitos de autenticação para recursos Azure via Acesso Condicional Entra",
+          "Monitorar tentativas de autenticação em serviços Azure via Entra ID Sign-in Logs",
+          "Habilitar alertas para falhas de autenticação em massa em recursos Azure",
+          "Implementar identidades gerenciadas para eliminar credenciais em recursos Azure",
+          "Revisar configurações de autenticação de recursos Azure trimestralmente"
+        ],
+        "notes": "O Azure RBAC não possui função equivalente ao Authentication Administrator. Autenticação é gerenciada centralmente no Entra ID."
+      },
+      "aws": {
+        "role": "IAMUserChangePassword",
+        "risk": "high",
+        "keyPermissions": [
+          "iam:UpdateLoginProfile — redefinir senhas de usuários IAM do console",
+          "iam:DeactivateMFADevice — desativar dispositivos MFA de usuários",
+          "iam:DeleteVirtualMFADevice — remover dispositivos MFA virtuais de usuários",
+          "iam:ResyncMFADevice — ressincronizar dispositivos MFA com problemas",
+          "iam:CreateLoginProfile — criar acesso ao console para usuários IAM existentes"
+        ],
+        "mitigations": [
+          "Preferir AWS IAM Identity Center para gerenciamento centralizado de autenticação",
+          "Exigir MFA para todas as operações de reset de credencial de usuário IAM",
+          "Monitorar iam:DeactivateMFADevice via CloudTrail com alertas imediatos",
+          "Implementar aprovação de segundo administrador para desativação de MFA de usuários",
+          "Revisar usuários IAM sem MFA habilitado semanalmente e exigir ativação"
+        ]
+      },
+      "gcp": {
+        "role": "N/A",
+        "risk": "medium",
+        "keyPermissions": [
+          "Autenticação de usuários GCP é gerenciada via Google Workspace ou Cloud Identity",
+          "cloudidentity.users.update — atualizar atributos de usuário incluindo senhas",
+          "Gerenciamento de MFA é feito no Admin Console do Google Workspace/Cloud Identity",
+          "Sem função IAM GCP equivalente ao Authentication Administrator do Entra",
+          "Políticas de autenticação GCP são configuradas via Org Policy e Access Context Manager"
+        ],
+        "mitigations": [
+          "Usar Google Workspace Admin com função User Management Admin para reset de credenciais",
+          "Configurar verificação em dois passos obrigatória via Admin Console do Workspace",
+          "Monitorar atividades de login suspeitas via Central de Segurança do Workspace",
+          "Implementar chaves de segurança físicas para contas privilegiadas no Cloud Identity",
+          "Auditar métodos de autenticação de usuários com acesso a projetos GCP críticos"
+        ],
+        "notes": "O GCP não possui função IAM equivalente ao Authentication Administrator. Gerenciamento de autenticação é feito via Google Workspace Admin ou Cloud Identity Admin."
+      },
+      "oci": {
+        "role": "manage authentication-policies in tenancy",
+        "risk": "high",
+        "keyPermissions": [
+          "manage authentication-policies in tenancy — configurar requisitos de senha e MFA",
+          "manage users in tenancy — redefinir senhas e tokens de usuários OCI",
+          "manage mfa-totp-devices in tenancy — gerenciar dispositivos TOTP de usuários",
+          "use auth-tokens in tenancy — tokens de autenticação para APIs OCI",
+          "manage smtp-credentials in tenancy — credenciais SMTP para autenticação de email"
+        ],
+        "mitigations": [
+          "Habilitar MFA obrigatório para todos os usuários com acesso ao OCI Console",
+          "Monitorar resets de senha via OCI Audit com alertas para operações em massa",
+          "Implementar processo de verificação de identidade antes de redefinir credenciais",
+          "Revisar políticas de senha OCI trimestralmente para garantir requisitos de complexidade",
+          "Auditar usuários sem MFA habilitado mensalmente e exigir ativação com prazo definido"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (IAM Identity Service)",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar configurações de MFA para usuários na conta IBM Cloud",
+          "Redefinir senhas e chaves de API de usuários IBMid na conta",
+          "Configurar provedores de identidade externos para autenticação federada",
+          "Gerenciar tokens de acesso e configurações de expiração de sessão",
+          "Administrar configurações de login e segurança da conta IBM Cloud"
+        ],
+        "mitigations": [
+          "Exigir MFA com TOTP ou chave de segurança para todos os usuários da conta",
+          "Monitorar alterações de configuração de MFA via IBM Cloud Activity Tracker",
+          "Implementar processo formal para reset de credenciais com verificação de identidade",
+          "Revisar configurações de autenticação e provedores de identidade trimestralmente",
+          "Configurar alertas para tentativas de login suspeitas e desativação de MFA"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "User Management Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Redefinir senhas de usuários (exceto outros administradores) no Google Workspace",
+          "Gerenciar métodos de verificação em dois passos de usuários",
+          "Revogar tokens de acesso e sessões ativas de usuários comprometidos",
+          "Desbloquear contas de usuários bloqueadas por tentativas de login suspeitas",
+          "Forçar re-inscrição em verificação em dois passos para usuários específicos"
+        ],
+        "mitigations": [
+          "Restringir User Management Admin a equipes de helpdesk com treinamento adequado",
+          "Monitorar resets de senha em massa via alertas do Alert Center do Workspace",
+          "Exigir verificação de identidade do solicitante antes de redefinir credenciais",
+          "Registrar todas as operações de gerenciamento de usuários no log de auditoria Admin",
+          "Implementar aprovação de gerente para redefinição de credenciais de contas privilegiadas"
+        ]
+      }
+    }
+  },
+  {
+    "id": "intune-admin",
+    "function": "intune-admin",
+    "tier": 1,
+    "name": "Device / Endpoint Management Administrator",
+    "description": "Administrador de gerenciamento de dispositivos e endpoints com controle sobre políticas de conformidade, configuração de dispositivos, implantação de aplicativos e gestão de dispositivos móveis corporativos.",
+    "clouds": {
+      "entraId": {
+        "role": "Intune Administrator",
+        "slug": "intune-administrator",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciamento completo do Microsoft Intune para MDM/MAM corporativo",
+          "Criar e implantar políticas de conformidade e configuração de dispositivos",
+          "Executar ações remotas: apagar, bloquear, redefinir senha de dispositivos",
+          "Implantar e remover aplicativos em dispositivos gerenciados Windows, iOS e Android",
+          "Acessar inventário completo de dispositivos e relatórios de conformidade"
+        ],
+        "mitigations": [
+          "Exigir PIM com aprovação para ativação de Intune Administrator",
+          "Monitorar ações de limpeza remota de dispositivos via alertas do Sentinel",
+          "Restringir acesso ao Intune Admin Center a dispositivos gerenciados com conformidade",
+          "Auditar perfis de configuração com acesso a recursos sensíveis (VPN, certificados) mensalmente",
+          "Implementar revisão formal para implantação de novos aplicativos em dispositivos corporativos"
+        ]
+      },
+      "azureRbac": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Gerenciamento de dispositivos via Intune é controlado pelo Entra ID, não Azure RBAC",
+          "Microsoft.Intune/* — permissões acessíveis via Microsoft Graph API com função Entra",
+          "Microsoft.Devices/IotHubs/* — gerenciamento de dispositivos IoT via Azure IoT Hub",
+          "Microsoft.HybridCompute/machines/* — servidores gerenciados pelo Azure Arc",
+          "Microsoft.ConnectedVMwarevSphere/* — VMs VMware gerenciadas pelo Azure Arc"
+        ],
+        "mitigations": [
+          "Gerenciar dispositivos corporativos via Microsoft Intune com função Entra adequada",
+          "Usar Azure Arc para extender gerenciamento a servidores e VMs on-premises",
+          "Monitorar dispositivos Azure Arc via Microsoft Defender for Servers",
+          "Revisar políticas de configuração de dispositivos Arc mensalmente",
+          "Implementar processo de onboarding de dispositivos com aprovação formal"
+        ],
+        "notes": "O Azure RBAC não possui função equivalente ao Intune Administrator; gerenciamento de endpoints é feito via Microsoft Intune com função do Entra ID."
+      },
+      "aws": {
+        "role": "AmazonSSMFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "ssm:* — administração completa do AWS Systems Manager para gerenciamento de instâncias",
+          "ssm:SendCommand — executar comandos remotos em instâncias gerenciadas",
+          "ssm:StartSession — iniciar sessões remotas em instâncias via Session Manager",
+          "ssm:CreatePatchBaseline — criar linhas de base de patching para instâncias",
+          "ssm:PutInventory — coletar e gerenciar inventário de software de instâncias"
+        ],
+        "mitigations": [
+          "Usar Session Manager em vez de SSH/RDP para eliminar portas abertas e chaves SSH",
+          "Habilitar logs de sessão SSM Manager para CloudWatch Logs e S3 com criptografia",
+          "Restringir ssm:SendCommand a documentos SSM aprovados via condição de política",
+          "Monitorar execuções de comando via CloudTrail com alertas para comandos suspeitos",
+          "Implementar aprovação obrigatória no Change Manager para alterações em produção"
+        ]
+      },
+      "gcp": {
+        "role": "roles/chrome.management.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "chrome.management.* — administração completa de dispositivos Chrome Enterprise",
+          "Gerenciar políticas de configuração de navegadores Chrome corporativos",
+          "Controlar extensões instaladas e bloqueadas em dispositivos Chrome Enterprise",
+          "Configurar redes Wi-Fi, VPN e certificados via Chrome Device Management",
+          "Acessar relatórios de uso e inventário de dispositivos Chrome Enterprise"
+        ],
+        "mitigations": [
+          "Restringir políticas Chrome a unidades organizacionais específicas por necessidade",
+          "Auditar mensalmente extensões aprovadas e remover as não necessárias",
+          "Monitorar dispositivos fora de conformidade via relatórios Chrome Enterprise",
+          "Implementar processo formal de aprovação para novas políticas de dispositivo",
+          "Revisar certificados e configurações de rede implantados em dispositivos Chrome"
+        ],
+        "notes": "GCP/Google Workspace usa Chrome Enterprise para gerenciamento de dispositivos. Para dispositivos não-Chrome, integrar com terceiros como Jamf ou Microsoft Intune."
+      },
+      "oci": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "OCI não possui serviço nativo de MDM/gerenciamento de endpoints corporativos",
+          "OCI Bastion — acesso seguro a instâncias sem exposição pública (similar ao SSM)",
+          "manage bastion in compartment — criar sessões de acesso a instâncias privadas",
+          "use osms-managed-instances in compartment — OS Management Service para patches",
+          "manage osms-managed-instance-groups in compartment — grupos de instâncias para patching"
+        ],
+        "mitigations": [
+          "Usar OCI OS Management Service para patching centralizado de instâncias",
+          "Monitorar instâncias não conformes com políticas de patch via OCI Monitoring",
+          "Implementar OCI Bastion para acesso remoto seguro sem portas SSH expostas",
+          "Integrar com ferramentas de MDM de terceiros para dispositivos de usuários finais",
+          "Auditar sessões OCI Bastion mensalmente e revogar acessos não utilizados"
+        ],
+        "notes": "OCI não possui serviço de MDM (Mobile Device Management) nativo. Para gerenciamento de endpoints corporativos, integrar com Microsoft Intune ou VMware Workspace ONE."
+      },
+      "ibmCloud": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "IBM Cloud não possui serviço nativo de MDM para endpoints corporativos de usuários",
+          "IBM MaaS360 é a solução UEM/MDM da IBM (produto separado do IBM Cloud)",
+          "Gerenciamento de instâncias de servidor via IBM Cloud Schematics (Terraform)",
+          "IBM Cloud Shell para acesso remoto a recursos de infraestrutura",
+          "IBM Turbonomic para gerenciamento de performance de workloads"
+        ],
+        "mitigations": [
+          "Usar IBM MaaS360 (produto separado) para gerenciamento de endpoints corporativos",
+          "Controlar acesso a instâncias IBM Cloud via SSH keys gerenciadas no IAM",
+          "Monitorar acesso remoto a instâncias via IBM Cloud Activity Tracker",
+          "Implementar IBM Cloud Schematics para gestão de configuração via IaC",
+          "Revisar chaves SSH e acessos remotos a servidores IBM Cloud mensalmente"
+        ],
+        "notes": "IBM Cloud não possui serviço de MDM nativo. Para UEM/MDM corporativo, use IBM MaaS360, que é um produto SaaS separado da IBM."
+      },
+      "googleWorkspace": {
+        "role": "Mobile Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar dispositivos móveis Android e iOS no Google Workspace endpoint management",
+          "Configurar políticas de segurança de dispositivos móveis corporativos e BYOD",
+          "Executar limpeza remota (wipe) de dados corporativos em dispositivos perdidos",
+          "Gerenciar aplicativos móveis aprovados via Google Play gerenciado",
+          "Acessar inventário e relatórios de conformidade de dispositivos móveis"
+        ],
+        "mitigations": [
+          "Separar dados pessoais de corporativos usando perfil de trabalho Android gerenciado",
+          "Monitorar ações de wipe remoto via log de auditoria de dispositivos do Admin Console",
+          "Exigir senha ou PIN mínimo em dispositivos com acesso a dados corporativos",
+          "Revisar dispositivos não sincronizados há mais de 30 dias e tomar ação de revogação",
+          "Implementar aprovação para inscrição de novos dispositivos pessoais (BYOD)"
+        ]
+      }
+    }
+  },
+  {
+    "id": "network-admin",
+    "function": "network-admin",
+    "tier": 2,
+    "name": "Network Administrator",
+    "description": "Administrador de rede com controle sobre VPCs, sub-redes, grupos de segurança, firewalls, balanceadores de carga, VPNs e configurações de conectividade de rede em nuvem.",
+    "clouds": {
+      "azureRbac": {
+        "role": "Network Contributor",
+        "slug": "network-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Network/* — gerenciamento completo de recursos de rede Azure",
+          "Microsoft.Network/virtualNetworks/write — criar e configurar VNets e sub-redes",
+          "Microsoft.Network/networkSecurityGroups/write — criar e modificar NSGs e regras",
+          "Microsoft.Network/applicationGateways/write — gerenciar Application Gateways e WAF",
+          "Microsoft.Network/vpnGateways/write — criar e configurar gateways VPN e ExpressRoute"
+        ],
+        "mitigations": [
+          "Restringir Network Contributor ao grupo de recursos de rede específico (landing zone)",
+          "Monitorar alterações em NSGs via Azure Network Watcher e alertas de Activity Log",
+          "Usar Azure Firewall Manager para gerenciamento centralizado de políticas de firewall",
+          "Revisar regras de NSG trimestralmente e remover regras permissivas desnecessárias",
+          "Implementar Microsoft Defender for Cloud recomendações de endurecimento de rede"
+        ]
+      },
+      "aws": {
+        "role": "AmazonVPCFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "ec2:CreateVpc — criar VPCs e definir blocos CIDR de endereçamento",
+          "ec2:CreateSecurityGroup — criar grupos de segurança com regras de tráfego",
+          "ec2:AuthorizeSecurityGroupIngress — adicionar regras de entrada a grupos de segurança",
+          "ec2:CreateTransitGateway — criar e gerenciar Transit Gateways para conectividade",
+          "ec2:CreateVpnConnection — criar conexões VPN para conectividade híbrida"
+        ],
+        "mitigations": [
+          "Usar AWS Network Firewall para inspeção de tráfego centralizada em VPCs",
+          "Habilitar VPC Flow Logs para todas as VPCs com retenção mínima de 90 dias",
+          "Monitorar alterações em Security Groups via AWS Config com regras de conformidade",
+          "Restringir regras 0.0.0.0/0 em Security Groups via AWS Config Managed Rules",
+          "Revisar peering de VPC e Transit Gateway attachments trimestralmente"
+        ]
+      },
+      "gcp": {
+        "role": "roles/compute.networkAdmin",
+        "risk": "high",
+        "keyPermissions": [
+          "compute.networks.* — criar e gerenciar VPC networks e sub-redes no GCP",
+          "compute.firewalls.* — criar e modificar regras de firewall VPC",
+          "compute.routers.* — gerenciar Cloud Routers para roteamento dinâmico BGP",
+          "compute.vpnTunnels.* — criar e configurar túneis VPN para conectividade híbrida",
+          "compute.interconnects.* — gerenciar Cloud Interconnect para conectividade dedicada"
+        ],
+        "mitigations": [
+          "Usar VPC Service Controls para criar perímetros de segurança em torno de serviços GCP",
+          "Habilitar VPC Flow Logs em todas as sub-redes para análise de tráfego",
+          "Monitorar alterações de firewall via Cloud Audit Logs com alertas automáticos",
+          "Implementar Hierarchical Firewall Policies para regras de rede em nível organizacional",
+          "Revisar regras de firewall VPC mensalmente e remover regras excessivamente permissivas"
+        ]
+      },
+      "oci": {
+        "role": "manage virtual-network-family in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage virtual-network-family in compartment — VCNs, sub-redes, security lists, route tables",
+          "manage drgs in compartment — Dynamic Routing Gateways para conectividade",
+          "manage load-balancers in compartment — balanceadores de carga e listeners",
+          "manage network-security-groups in compartment — grupos de segurança de rede",
+          "manage internet-gateways in compartment — gateways de acesso à internet"
+        ],
+        "mitigations": [
+          "Usar OCI Network Firewall para inspeção de tráfego L7 em VCNs",
+          "Habilitar OCI VCN Flow Logs para análise de tráfego e detecção de anomalias",
+          "Monitorar alterações em security lists e NSGs via OCI Audit com alertas",
+          "Revisar rotas de rede e internet gateways trimestralmente para minimizar exposição",
+          "Implementar OCI Bastion para acesso remoto sem exposição de portas públicas"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Editor (VPC Infrastructure Services)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar VPCs, sub-redes e zonas de disponibilidade no IBM Cloud",
+          "Configurar Security Groups e Network ACLs para controle de tráfego",
+          "Gerenciar Load Balancers e Application Load Balancers no IBM Cloud VPC",
+          "Criar e configurar VPN Gateways para conectividade site-to-site",
+          "Administrar Direct Link para conectividade dedicada com ambientes on-premises"
+        ],
+        "mitigations": [
+          "Habilitar IBM Cloud Flow Logs para VPCs para análise de tráfego de rede",
+          "Monitorar alterações de Security Groups via IBM Cloud Activity Tracker",
+          "Usar IBM Cloud Internet Services (CIS) para proteção DDoS e WAF",
+          "Revisar regras de Network ACL e Security Groups trimestralmente",
+          "Implementar IBM Cloud Schematics para gerenciar configurações de rede via IaC"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Google Workspace não gerencia infraestrutura de rede de nuvem diretamente",
+          "Configurações de rede do Workspace são limitadas a DNS e conectividade de apps",
+          "Gerenciamento de rede para GCP é feito via funções IAM do Google Cloud",
+          "Google Workspace Admin pode configurar endereços IP permitidos para acesso ao Admin",
+          "Configuração de rede para Context-Aware Access é feita via Access Context Manager"
+        ],
+        "mitigations": [
+          "Usar Context-Aware Access para restrições de rede baseadas em IP no Workspace",
+          "Configurar restrições de domínio para compartilhamento externo no Drive e Gmail",
+          "Monitorar atividades suspeitas de rede via Central de Segurança do Workspace",
+          "Gerenciar DNS corporativo via Google Domains ou provedor externo para acesso ao Workspace",
+          "Auditar aplicativos de terceiros com acesso à rede corporativa mensalmente"
+        ],
+        "notes": "Google Workspace não possui funções de administração de rede de nuvem. O gerenciamento de rede GCP é feito via Google Cloud Console com funções IAM separadas."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia infraestrutura de rede",
+          "Configurações de rede são gerenciadas no Azure RBAC",
+          "Conditional Access pode controlar acesso baseado em rede",
+          "Named Locations configuram faixas de IP confiáveis"
+        ],
+        "mitigations": [
+          "Usar Conditional Access com Named Locations para controle de rede de identidade",
+          "Configurar restrições de IP de tenant no Entra ID",
+          "Implementar Global Secure Access (Entra Private Access) para rede ZTNA",
+          "Monitorar sign-in logs para anomalias de localização de rede",
+          "Combinar com Azure RBAC Network Contributor para controle de rede completo"
+        ],
+        "notes": "Entra ID não possui um role de administrador de rede. Usar Azure RBAC Network Contributor para gerenciamento de infraestrutura de rede."
+      }
+    }
+  },
+  {
+    "id": "compute-admin",
+    "function": "compute-admin",
+    "tier": 2,
+    "name": "Compute / VM Administrator",
+    "description": "Administrador de computação com controle sobre máquinas virtuais, imagens, snapshots, grupos de escalabilidade automática e recursos de computação em nuvem.",
+    "clouds": {
+      "azureRbac": {
+        "role": "Virtual Machine Contributor",
+        "slug": "virtual-machine-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Compute/virtualMachines/* — gerenciamento completo de VMs Azure",
+          "Microsoft.Compute/disks/* — criar e gerenciar discos gerenciados para VMs",
+          "Microsoft.Compute/snapshots/* — criar e gerenciar snapshots de discos",
+          "Microsoft.Compute/virtualMachineScaleSets/* — gerenciar scale sets para auto-scaling",
+          "Microsoft.Compute/images/* — criar imagens personalizadas a partir de VMs"
+        ],
+        "mitigations": [
+          "Habilitar Microsoft Defender for Servers em todas as VMs para proteção em tempo real",
+          "Restringir Virtual Machine Contributor ao grupo de recursos específico de produção",
+          "Monitorar criação de VMs e snapshots via Azure Activity Log com alertas",
+          "Usar Azure Policy para impor tamanhos de VM aprovados e regiões permitidas",
+          "Revisar VMs paradas mas não desalocadas mensalmente para reduzir custo e superfície"
+        ]
+      },
+      "aws": {
+        "role": "AmazonEC2FullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "ec2:RunInstances — lançar novas instâncias EC2 com qualquer tipo e configuração",
+          "ec2:TerminateInstances — encerrar instâncias EC2 em execução",
+          "ec2:CreateImage — criar AMIs (Amazon Machine Images) a partir de instâncias",
+          "ec2:CreateSnapshot — criar snapshots de volumes EBS",
+          "ec2:ModifyInstanceAttribute — modificar atributos de instâncias incluindo perfil IAM"
+        ],
+        "mitigations": [
+          "Usar EC2 Instance Connect ou SSM Session Manager em vez de pares de chaves SSH",
+          "Habilitar Amazon Inspector para avaliação de vulnerabilidades em instâncias EC2",
+          "Monitorar lançamento de instâncias em regiões não autorizadas via AWS Config",
+          "Restringir ec2:RunInstances por tipos de instância aprovados via condição de política",
+          "Revisar instâncias EC2 paradas há mais de 30 dias mensalmente e encerrar as desnecessárias"
+        ]
+      },
+      "gcp": {
+        "role": "roles/compute.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "compute.instances.* — criar, modificar e excluir instâncias de VM no Compute Engine",
+          "compute.disks.* — gerenciar discos e snapshots de instâncias",
+          "compute.images.* — criar e gerenciar imagens de VM customizadas",
+          "compute.instanceGroups.* — gerenciar grupos de instâncias para auto-scaling",
+          "compute.machineTypes.list — visualizar tipos de máquina disponíveis para criação de VMs"
+        ],
+        "mitigations": [
+          "Habilitar Shielded VMs para proteger instâncias contra rootkits e bootkits",
+          "Usar VM Manager para gerenciamento de patches e inventário de software",
+          "Monitorar criação de instâncias via Cloud Audit Logs com alertas para tipos não aprovados",
+          "Implementar Org Policy constraints/compute.trustedImageProjects para restringir imagens",
+          "Revisar instâncias com endereços IP públicos mensalmente e usar Cloud NAT quando possível"
+        ]
+      },
+      "oci": {
+        "role": "manage instance-family in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage instances in compartment — criar, iniciar, parar e encerrar instâncias OCI",
+          "manage instance-images in compartment — criar e gerenciar imagens customizadas",
+          "manage boot-volumes in compartment — gerenciar volumes de boot e backups",
+          "manage volume-backups in compartment — criar e restaurar backups de volumes",
+          "manage instance-configurations in compartment — templates de configuração de instâncias"
+        ],
+        "mitigations": [
+          "Usar OCI Cloud Guard para detectar instâncias com configurações inseguras",
+          "Habilitar Oracle Cloud Agent para monitoramento e gestão de instâncias",
+          "Monitorar criação de instâncias via OCI Audit com alertas para formas não aprovadas",
+          "Restringir acesso SSH a instâncias via OCI Bastion sem exposição de porta 22",
+          "Revisar instâncias paradas mensalmente e encerrar as não necessárias para reduzir custos"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Operator (VPC Infrastructure Services)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar, iniciar, parar e excluir instâncias de servidor virtual (VSI) no IBM Cloud VPC",
+          "Gerenciar volumes de armazenamento em bloco e snapshots de instâncias",
+          "Criar imagens customizadas de instâncias para provisionamento padronizado",
+          "Gerenciar grupos de instâncias para auto-scaling e alta disponibilidade",
+          "Configurar chaves SSH e metadados de instâncias para acesso seguro"
+        ],
+        "mitigations": [
+          "Usar IBM Cloud Secrets Manager para gerenciar chaves SSH de acesso a instâncias",
+          "Habilitar IBM Cloud Security and Compliance Center para avaliação de instâncias",
+          "Monitorar criação de instâncias via IBM Cloud Activity Tracker com alertas",
+          "Restringir perfis de instância (vCPU/RAM) via políticas IAM de recursos",
+          "Revisar instâncias paradas mensalmente e excluir as não necessárias"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Google Workspace não gerencia infraestrutura de computação diretamente",
+          "Gerenciamento de VMs GCP é feito via Google Cloud com funções IAM separadas",
+          "Google Workspace Admin pode gerenciar Chromebooks via Chrome Device Management",
+          "Apps Script pode executar computações serverless integradas ao Workspace",
+          "Google Workspace não possui equivalente a máquinas virtuais de propósito geral"
+        ],
+        "mitigations": [
+          "Gerenciar Chromebooks via Chrome Enterprise Admin separado do Admin Console geral",
+          "Monitorar uso de Apps Script para execuções com alto volume ou acesso a dados sensíveis",
+          "Restringir criação de Apps Script a usuários com necessidade legítima",
+          "Auditar permissões de Apps Script publicados na organização mensalmente",
+          "Usar Google Cloud para necessidades de computação além do ecossistema Workspace"
+        ],
+        "notes": "Google Workspace não gerencia VMs ou infraestrutura de computação. Para Compute Engine e recursos GCP, usar funções IAM do Google Cloud (roles/compute.admin)."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia recursos de computação",
+          "Gerenciamento de VMs é feito via Azure RBAC",
+          "Entra ID gerencia identidades de VMs (Managed Identity)",
+          "Device Identity pode registrar dispositivos no Entra ID"
+        ],
+        "mitigations": [
+          "Usar Managed Identity do Entra ID em vez de credenciais em VMs",
+          "Configurar login do Entra ID em VMs Azure para acesso seguro",
+          "Monitorar registros de dispositivo no Entra ID",
+          "Implementar políticas de Conditional Access para acesso a VMs",
+          "Combinar com Azure RBAC Virtual Machine Contributor para controle completo"
+        ],
+        "notes": "Entra ID não possui role de administrador de computação. Usar Azure RBAC Virtual Machine Contributor para gerenciamento de VMs."
+      }
+    }
+  },
+  {
+    "id": "database-admin",
+    "function": "database-admin",
+    "tier": 2,
+    "name": "Database Administrator",
+    "description": "Administrador de banco de dados com controle sobre instâncias de banco de dados relacional e NoSQL, configurações de backup, replicação, parâmetros de desempenho e acesso a dados.",
+    "clouds": {
+      "azureRbac": {
+        "role": "SQL DB Contributor",
+        "slug": "sql-db-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Sql/servers/* — gerenciar servidores Azure SQL e suas configurações",
+          "Microsoft.Sql/servers/databases/* — criar e gerenciar bancos de dados SQL",
+          "Microsoft.DocumentDB/databaseAccounts/* — administrar contas Azure Cosmos DB",
+          "Microsoft.DBforPostgreSQL/servers/* — gerenciar Azure Database for PostgreSQL",
+          "Microsoft.Sql/servers/firewallRules/* — configurar regras de firewall para SQL Server"
+        ],
+        "mitigations": [
+          "Habilitar Azure Defender for SQL para detecção de ameaças e avaliação de vulnerabilidades",
+          "Usar Transparent Data Encryption (TDE) com chaves gerenciadas pelo cliente (CMK)",
+          "Restringir acesso de rede via firewall e private endpoints para bancos de dados",
+          "Monitorar consultas SQL de alto impacto via Azure SQL Insights e Query Store",
+          "Revisar administradores de banco de dados e logins SQL mensalmente"
+        ]
+      },
+      "aws": {
+        "role": "AmazonRDSFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "rds:CreateDBInstance — criar instâncias de banco de dados Amazon RDS",
+          "rds:ModifyDBInstance — modificar configurações e parâmetros de instâncias",
+          "rds:CreateDBSnapshot — criar snapshots de banco de dados para backup",
+          "rds:RestoreDBInstanceFromDBSnapshot — restaurar bancos de dados a partir de snapshots",
+          "rds:DeleteDBInstance — excluir instâncias de banco de dados RDS"
+        ],
+        "mitigations": [
+          "Habilitar criptografia em repouso para todos os volumes de instâncias RDS",
+          "Habilitar backup automático com retenção mínima de 7 dias em produção",
+          "Restringir acesso de rede RDS a Security Groups específicos sem exposição pública",
+          "Monitorar Performance Insights para consultas de alto impacto e acesso anômalo",
+          "Habilitar AWS CloudTrail para registrar todas as chamadas de API RDS com alertas"
+        ]
+      },
+      "gcp": {
+        "role": "roles/cloudsql.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "cloudsql.instances.create — criar instâncias Cloud SQL (MySQL, PostgreSQL, SQL Server)",
+          "cloudsql.instances.update — modificar configurações de instâncias Cloud SQL",
+          "cloudsql.backupRuns.create — criar backups de instâncias Cloud SQL",
+          "cloudsql.instances.export — exportar dados de banco de dados para Cloud Storage",
+          "cloudsql.databases.create — criar bancos de dados dentro de instâncias Cloud SQL"
+        ],
+        "mitigations": [
+          "Habilitar conexões via Cloud SQL Auth Proxy em vez de IPs públicos",
+          "Usar CMEK (chaves gerenciadas pelo cliente) para criptografia de instâncias Cloud SQL",
+          "Monitorar exportações de dados de banco de dados via Cloud Audit Logs com alertas",
+          "Habilitar backups automáticos com retenção de 7+ dias e testar restaurações periodicamente",
+          "Revisar usuários de banco de dados e contas com acesso privilegiado mensalmente"
+        ]
+      },
+      "oci": {
+        "role": "manage database-family in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage databases in compartment — criar e gerenciar bancos de dados Oracle",
+          "manage db-systems in compartment — gerenciar sistemas de banco de dados OCI",
+          "manage autonomous-database in compartment — Autonomous Database (ADB)",
+          "manage backups in compartment — criar e restaurar backups de banco de dados",
+          "manage db-homes in compartment — gerenciar Oracle Database Homes"
+        ],
+        "mitigations": [
+          "Habilitar Oracle Data Safe para avaliação de segurança e mascaramento de dados",
+          "Usar criptografia TDE nativa do Oracle Database para dados em repouso",
+          "Restringir acesso de rede a bancos de dados via VCN Security Lists e NSGs",
+          "Monitorar atividade de banco de dados via Oracle Audit Vault integrado ao Data Safe",
+          "Revisar acessos privilegiados a bancos de dados de produção mensalmente"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Databases for PostgreSQL)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar instâncias IBM Cloud Databases (PostgreSQL, MySQL, MongoDB, Redis)",
+          "Configurar backups automáticos e pontos de restauração para instâncias de banco de dados",
+          "Gerenciar usuários e credenciais de acesso a bancos de dados gerenciados IBM Cloud",
+          "Configurar escalabilidade de CPU, memória e armazenamento de instâncias",
+          "Gerenciar whitelists de IP e certificados TLS para conexões seguras"
+        ],
+        "mitigations": [
+          "Habilitar IBM Cloud Key Protect para gerenciar chaves de criptografia de bancos de dados",
+          "Usar conexões privadas via IBM Cloud Private Endpoints para bancos de dados",
+          "Monitorar métricas de banco de dados via IBM Cloud Monitoring para anomalias",
+          "Revisar credenciais de banco de dados e rotacionar a cada 90 dias",
+          "Testar restaurações de backup mensalmente para validar integridade de backups"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Google Workspace não gerencia bancos de dados de infraestrutura diretamente",
+          "Google Sheets pode ser usado como banco de dados leve via API Google Sheets",
+          "Gerenciamento de Cloud SQL e AlloyDB é feito via Google Cloud com funções IAM",
+          "Google AppSheet pode usar planilhas e bancos de dados externos como fonte de dados",
+          "Workspace não possui equivalente ao Cloud SQL, BigQuery ou AlloyDB"
+        ],
+        "mitigations": [
+          "Usar Google Cloud para gerenciamento de bancos de dados relacionais e NoSQL",
+          "Restringir conectores de dados externos no Workspace a fontes de dados aprovadas",
+          "Monitorar uso de planilhas Google Sheets com dados sensíveis via DLP do Workspace",
+          "Auditar integrações AppSheet com bancos de dados externos mensalmente",
+          "Implementar políticas de classificação de dados para Sheets com informações sensíveis"
+        ],
+        "notes": "Google Workspace não possui serviços de banco de dados de infraestrutura. Para bancos de dados gerenciados no ecossistema Google, usar Google Cloud com funções IAM específicas (roles/cloudsql.admin, roles/bigquery.admin)."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia serviços de banco de dados",
+          "Autenticação de banco de dados pode usar Entra ID como provedor de identidade",
+          "Managed Identity do Entra ID pode autenticar em bancos Azure",
+          "Conditional Access pode restringir acesso a aplicações de banco"
+        ],
+        "mitigations": [
+          "Configurar autenticação do Entra ID para Azure SQL e outros bancos",
+          "Usar Managed Identity para conexões de aplicação a bancos de dados",
+          "Implementar Conditional Access para aplicações de banco de dados",
+          "Monitorar sign-ins de service principals que acessam bancos de dados",
+          "Combinar com Azure RBAC SQL DB Contributor para controle completo"
+        ],
+        "notes": "Entra ID não possui role de administrador de banco de dados. Usar Azure RBAC SQL DB Contributor ou Cosmos DB Operator."
+      }
+    }
+  },
+  {
+    "id": "container-admin",
+    "function": "container-admin",
+    "tier": 2,
+    "name": "Container / Kubernetes Administrator",
+    "description": "Administrador de contêineres e orquestração Kubernetes com controle sobre clusters, workloads, políticas de rede, controle de acesso baseado em função (RBAC) e registros de imagens de contêiner.",
+    "clouds": {
+      "azureRbac": {
+        "role": "Azure Kubernetes Service Contributor",
+        "slug": "azure-kubernetes-service-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.ContainerService/managedClusters/* — gerenciar clusters AKS completamente",
+          "Microsoft.ContainerService/managedClusters/listClusterUserCredential/action — obter credenciais",
+          "Microsoft.ContainerRegistry/registries/* — gerenciar Azure Container Registry (ACR)",
+          "Microsoft.ContainerService/managedClusters/agentPools/* — gerenciar node pools",
+          "Microsoft.ContainerService/managedClusters/upgradeProfiles/read — gerenciar upgrades"
+        ],
+        "mitigations": [
+          "Habilitar Microsoft Defender for Containers para proteção de clusters AKS",
+          "Usar Azure RBAC integrado ao Kubernetes para controle de acesso ao cluster",
+          "Restringir acesso ao API server do AKS via authorized IP ranges",
+          "Monitorar imagens de contêiner com Microsoft Defender para vulnerabilidades",
+          "Revisar RBAC do Kubernetes (ClusterRoleBindings) mensalmente para remover acessos excessivos"
+        ]
+      },
+      "aws": {
+        "role": "AmazonEKSClusterPolicy",
+        "risk": "high",
+        "keyPermissions": [
+          "eks:CreateCluster — criar clusters Amazon EKS",
+          "eks:DescribeCluster — acessar informações e credenciais de clusters EKS",
+          "ecr:* — administração completa do Amazon ECR (Elastic Container Registry)",
+          "ecs:* — administração completa do Amazon ECS (Elastic Container Service)",
+          "eks:CreateNodegroup — criar e gerenciar grupos de nós do cluster EKS"
+        ],
+        "mitigations": [
+          "Usar IRSA (IAM Roles for Service Accounts) para permissões de pods EKS",
+          "Habilitar Amazon GuardDuty EKS Protection para detecção de ameaças em clusters",
+          "Restringir acesso ao endpoint do cluster EKS via private endpoint e CIDR allowlist",
+          "Monitorar imagens ECR com Amazon Inspector para vulnerabilidades de CVE",
+          "Revisar aws-auth ConfigMap do EKS mensalmente para remover mapeamentos obsoletos"
+        ]
+      },
+      "gcp": {
+        "role": "roles/container.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "container.clusters.create — criar e configurar clusters Google Kubernetes Engine (GKE)",
+          "container.clusters.delete — excluir clusters GKE",
+          "container.clusters.update — atualizar configurações e versão de clusters GKE",
+          "artifactregistry.repositories.* — gerenciar Artifact Registry para imagens de contêiner",
+          "container.pods.* — gerenciar pods em namespaces de clusters GKE"
+        ],
+        "mitigations": [
+          "Habilitar Workload Identity para eliminar chaves de conta de serviço em pods GKE",
+          "Ativar Binary Authorization para permitir apenas imagens de contêiner assinadas",
+          "Habilitar GKE Autopilot para clusters gerenciados com security posture endurecida",
+          "Monitorar ameaças em clusters via Security Command Center com GKE Threat Detection",
+          "Revisar Kubernetes RBAC (ClusterRoleBindings) mensalmente via Recommender API"
+        ]
+      },
+      "oci": {
+        "role": "manage cluster-family in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage clusters in compartment — criar e gerenciar clusters OCI Container Engine (OKE)",
+          "manage cluster-node-pools in compartment — gerenciar pools de nós do cluster",
+          "manage repos in compartment — repositórios do OCI Container Registry (OCIR)",
+          "use vnics in compartment — interfaces de rede para nós do cluster",
+          "manage cluster-workload-mappings in compartment — acesso a workloads do cluster"
+        ],
+        "mitigations": [
+          "Habilitar verificação de vulnerabilidades no OCI Container Registry para imagens",
+          "Usar OCI Cloud Guard para detectar configurações inseguras em clusters OKE",
+          "Restringir acesso ao API server do cluster OKE via endpoint privado",
+          "Monitorar atividades suspeitas nos pods via logs de auditoria do Kubernetes",
+          "Revisar RBAC do Kubernetes e associações de service accounts mensalmente"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Kubernetes Service)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar clusters IBM Cloud Kubernetes Service (IKS) e Red Hat OpenShift",
+          "Administrar worker pools e atualizações de versão de clusters Kubernetes",
+          "Gerenciar IBM Cloud Container Registry para imagens de contêiner",
+          "Configurar acesso RBAC ao cluster via integração com IBM Cloud IAM",
+          "Administrar complementos e operadores instalados nos clusters IKS/OpenShift"
+        ],
+        "mitigations": [
+          "Usar IBM Cloud Security and Compliance Center para avaliar postura de clusters",
+          "Habilitar verificação de imagens no IBM Cloud Container Registry com Vulnerability Advisor",
+          "Restringir acesso ao API server de clusters a redes privadas via private endpoint",
+          "Monitorar logs de auditoria Kubernetes via IBM Log Analysis para atividades suspeitas",
+          "Revisar RBAC de cluster e service accounts com acesso privilegiado mensalmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Google Workspace não gerencia infraestrutura de contêineres ou Kubernetes",
+          "Gerenciamento de GKE e Artifact Registry é feito via Google Cloud IAM",
+          "Workspace pode se integrar com GKE via Cloud Build para CI/CD",
+          "Google Cloud Run pode executar contêineres serverless sem gerenciamento de cluster",
+          "Sem equivalente de administração Kubernetes no ecossistema Google Workspace"
+        ],
+        "mitigations": [
+          "Gerenciar clusters Kubernetes via Google Cloud com funções IAM específicas (roles/container.admin)",
+          "Usar Google Cloud Identity para autenticação unificada com clusters GKE",
+          "Implementar Binary Authorization para workloads containerizados no GCP",
+          "Monitorar imagens de contêiner via Artifact Registry com varredura de vulnerabilidades",
+          "Auditar permissões RBAC de clusters GKE trimestralmente"
+        ],
+        "notes": "Google Workspace não possui funções de administração de contêineres. Para GKE e Artifact Registry, usar Google Cloud com roles/container.admin e roles/artifactregistry.admin."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia clusters Kubernetes diretamente",
+          "Azure RBAC gerencia permissões de AKS",
+          "Entra ID fornece autenticação para clusters AKS",
+          "Managed Identity conecta pods a serviços Azure"
+        ],
+        "mitigations": [
+          "Configurar integração do Entra ID com AKS para autenticação RBAC",
+          "Usar Workload Identity do Entra ID em vez de credenciais estáticas em pods",
+          "Implementar Conditional Access para acesso ao portal AKS",
+          "Monitorar sign-ins de service principals associados a clusters",
+          "Combinar com Azure RBAC AKS Contributor para controle completo"
+        ],
+        "notes": "Entra ID não possui role de administrador de containers. Usar Azure RBAC Azure Kubernetes Service Contributor."
+      }
+    }
+  },
+  {
+    "id": "dns-admin",
+    "function": "dns-admin",
+    "tier": 2,
+    "name": "DNS Administrator",
+    "description": "Administrador de DNS com controle sobre zonas DNS, registros de nomes de domínio, resolutores privados, políticas de DNS e configurações de delegação de domínios em nuvem.",
+    "clouds": {
+      "azureRbac": {
+        "role": "DNS Zone Contributor",
+        "slug": "dns-zone-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Network/dnsZones/* — criar e gerenciar zonas DNS públicas no Azure DNS",
+          "Microsoft.Network/dnsZones/A/write — criar e modificar registros A para nomes de host",
+          "Microsoft.Network/dnsZones/MX/write — gerenciar registros MX para roteamento de email",
+          "Microsoft.Network/privateDnsZones/* — gerenciar zonas DNS privadas para VNets",
+          "Microsoft.Network/dnsZones/NS/read — visualizar servidores de nome delegados"
+        ],
+        "mitigations": [
+          "Monitorar alterações de registros DNS via Azure Monitor com alertas para MX e NS",
+          "Restringir DNS Zone Contributor a administradores de rede com necessidade documentada",
+          "Habilitar logs de diagnóstico de Azure DNS para rastrear todas as alterações de registro",
+          "Revisar delegações de zona DNS e registros NS mensalmente para detectar alterações não autorizadas",
+          "Implementar Azure DNS Private Resolver para resolução DNS interna sem exposição pública"
+        ]
+      },
+      "aws": {
+        "role": "AmazonRoute53FullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "route53:CreateHostedZone — criar zonas hospedadas públicas e privadas no Route 53",
+          "route53:ChangeResourceRecordSets — criar, modificar e excluir registros DNS",
+          "route53:CreateHealthCheck — criar verificações de integridade para failover DNS",
+          "route53domains:RegisterDomain — registrar novos domínios via Route 53 Domains",
+          "route53resolver:CreateResolverEndpoint — criar endpoints de resolvedor DNS híbrido"
+        ],
+        "mitigations": [
+          "Monitorar alterações de registros NS e SOA via CloudTrail com alertas imediatos",
+          "Usar Route 53 DNSSEC para assinar digitalmente zonas DNS públicas críticas",
+          "Restringir route53domains:TransferDomain com aprovação adicional para prevenir sequestro",
+          "Habilitar VPC DNS logging via Route 53 Resolver Query Logging para análise",
+          "Revisar políticas de tráfego e registros de failover mensalmente"
+        ]
+      },
+      "gcp": {
+        "role": "roles/dns.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "dns.managedZones.create — criar zonas DNS gerenciadas públicas e privadas",
+          "dns.resourceRecordSets.create — criar registros DNS em zonas gerenciadas",
+          "dns.resourceRecordSets.update — modificar registros DNS existentes",
+          "dns.policies.create — criar políticas de DNS para resolução de nomes privados",
+          "dns.responsePolicies.create — criar políticas de resposta para filtragem DNS"
+        ],
+        "mitigations": [
+          "Habilitar Cloud Audit Logs para todas as operações DNS com alertas para registros NS",
+          "Usar DNSSEC para zonas DNS públicas críticas no Cloud DNS",
+          "Monitorar consultas DNS suspeitas via Cloud DNS logging integrado ao Cloud Logging",
+          "Restringir criação de zonas DNS públicas a administradores com aprovação formal",
+          "Revisar políticas de DNS privadas e response policies mensalmente"
+        ]
+      },
+      "oci": {
+        "role": "manage dns in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage dns in compartment — criar e gerenciar zonas DNS e registros no OCI DNS",
+          "manage dns-zones in compartment — administrar zonas DNS públicas e privadas",
+          "manage dns-records in compartment — criar e modificar registros de nomes DNS",
+          "manage dns-steering-policies in compartment — políticas de roteamento de tráfego DNS",
+          "manage dns-views in compartment — visualizações DNS para resolução privada em VCN"
+        ],
+        "mitigations": [
+          "Monitorar alterações de registros DNS via OCI Audit com alertas para registros críticos",
+          "Restringir modificação de registros NS e SOA a administradores de rede sênior",
+          "Habilitar DNSSEC para zonas DNS públicas críticas no OCI DNS",
+          "Revisar políticas de roteamento de tráfego DNS mensalmente para detectar desvios",
+          "Implementar resolução DNS privada via OCI DNS Views para recursos internos"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (DNS Services)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar zonas DNS públicas e privadas no IBM Cloud DNS Services",
+          "Administrar registros DNS (A, AAAA, CNAME, MX, TXT, NS) em zonas gerenciadas",
+          "Configurar resolutores DNS personalizados para resolução híbrida on-premises",
+          "Gerenciar servidores de nome autorizados para domínios gerenciados no IBM Cloud",
+          "Configurar políticas de balanceamento de carga DNS via Global Load Balancer"
+        ],
+        "mitigations": [
+          "Monitorar alterações de registros DNS via IBM Cloud Activity Tracker com alertas",
+          "Restringir acesso ao IBM Cloud DNS Services a administradores de rede documentados",
+          "Revisar registros DNS críticos (MX, NS) mensalmente para detectar alterações não autorizadas",
+          "Habilitar IBM Cloud Internet Services (CIS) para proteção DNSSEC em domínios públicos",
+          "Auditar zonas DNS privadas e registros de resolutores customizados trimestralmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Domain Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Gerenciar registros DNS do domínio principal e domínios adicionais no Workspace",
+          "Adicionar e verificar domínios adicionais e aliases de domínio no Admin Console",
+          "Configurar registros MX para roteamento de email do Google Workspace",
+          "Gerenciar registros SPF, DKIM e DMARC para autenticação de email do domínio",
+          "Configurar delegação de subdomínio para serviços específicos do Workspace"
+        ],
+        "mitigations": [
+          "Restringir acesso a configurações de DNS do domínio a administradores de TI sênior",
+          "Monitorar alterações de registros DNS do domínio via log de auditoria Admin",
+          "Configurar alertas para adição de novos domínios verificados no Workspace",
+          "Revisar registros MX e SPF/DKIM/DMARC mensalmente para garantir integridade",
+          "Usar registrador de domínio com autenticação de dois fatores para proteção adicional"
+        ],
+        "notes": "O Domain Admin no Google Workspace refere-se à administração de domínios no Admin Console. O gerenciamento de registros DNS do domínio em si é feito no registrador (ex: Google Domains, Cloudflare)."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID gerencia nomes de domínio customizados do tenant",
+          "Verificação de domínio DNS é feita no Entra admin center",
+          "Registros DNS de verificação do Entra ID são configurados externamente",
+          "Custom domain management é limitado a verificação de domínio"
+        ],
+        "mitigations": [
+          "Restringir adição de domínios customizados a Global Admins",
+          "Monitorar alterações de domínio no log de auditoria do Entra ID",
+          "Verificar registros DNS de domínio customizado periodicamente",
+          "Usar Azure RBAC DNS Zone Contributor para gerenciamento completo de DNS",
+          "Implementar DNSSEC quando suportado pelo registrador de domínio"
+        ],
+        "notes": "Entra ID não possui role de administrador de DNS. Gerenciamento de zonas DNS é feito via Azure RBAC DNS Zone Contributor."
+      }
+    }
+  },
+  {
+    "id": "backup-admin",
+    "function": "backup-admin",
+    "tier": 2,
+    "name": "Backup & Recovery Administrator",
+    "description": "Administrador de backup e recuperação com controle sobre políticas de backup, agendamentos, retenção de dados, testes de restauração e conformidade de proteção de dados em ambientes de nuvem.",
+    "clouds": {
+      "azureRbac": {
+        "role": "Backup Contributor",
+        "slug": "backup-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.RecoveryServices/vaults/* — criar e gerenciar cofres do Recovery Services",
+          "Microsoft.RecoveryServices/vaults/backupPolicies/* — criar políticas de backup",
+          "Microsoft.RecoveryServices/vaults/backupFabrics/*/backup/action — executar backups",
+          "Microsoft.RecoveryServices/vaults/backupJobs/read — monitorar trabalhos de backup",
+          "Microsoft.DataProtection/backupVaults/* — Azure Backup vault de nova geração"
+        ],
+        "mitigations": [
+          "Habilitar proteção contra exclusão de backup (soft delete) com período de retenção de 14+ dias",
+          "Usar Multi-User Authorization (MUA) para operações críticas de backup e restauração",
+          "Monitorar falhas de backup via Azure Monitor com alertas para SLA de backup",
+          "Testar restaurações de backup mensalmente para validar integridade e tempo de recuperação",
+          "Restringir operações de exclusão de backup com Azure Backup Resource Guard"
+        ]
+      },
+      "aws": {
+        "role": "AWSBackupFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "backup:CreateBackupPlan — criar planos de backup com regras e janelas de backup",
+          "backup:StartBackupJob — iniciar trabalhos de backup manuais ou agendados",
+          "backup:StartRestoreJob — iniciar trabalhos de restauração a partir de pontos de recuperação",
+          "backup:DeleteBackupVault — excluir cofres de backup e seus conteúdos",
+          "backup:DeleteRecoveryPoint — excluir pontos de recuperação de backups"
+        ],
+        "mitigations": [
+          "Habilitar AWS Backup Vault Lock para proteção imutável de backups críticos (WORM)",
+          "Monitorar exclusões de pontos de recuperação via CloudTrail com alertas imediatos",
+          "Usar cofres de backup em contas AWS separadas para proteção contra ransomware",
+          "Testar restaurações a partir de backups trimestralmente com documentação de RTO/RPO",
+          "Implementar política de retenção de backup mínima de 30 dias para dados de produção"
+        ]
+      },
+      "gcp": {
+        "role": "roles/backupdr.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "backupdr.managementServers.* — gerenciar servidores de gerenciamento do Backup and DR",
+          "backupdr.backupPlans.* — criar e gerenciar planos de backup para recursos GCP",
+          "backupdr.backupVaults.* — administrar cofres de backup e políticas de retenção",
+          "backupdr.backups.* — criar, restaurar e excluir backups de recursos",
+          "compute.disks.createSnapshot — criar snapshots de disco para backup de VMs"
+        ],
+        "mitigations": [
+          "Usar Google Cloud Backup and DR com imutabilidade de cofre para proteção WORM",
+          "Habilitar Cloud Audit Logs para todas as operações de backup e restauração",
+          "Monitorar falhas de backup via Cloud Monitoring com alertas para políticas violadas",
+          "Testar restaurações a partir de backups mensalmente com validação de dados",
+          "Armazenar backups em região GCP diferente para proteção contra desastre regional"
+        ]
+      },
+      "oci": {
+        "role": "manage backup in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage boot-volume-backups in compartment — backups de volumes de boot de instâncias",
+          "manage volume-backups in compartment — backups de volumes de bloco de dados",
+          "manage db-backups in compartment — backups de bancos de dados Oracle na OCI",
+          "manage auto-db-backups in compartment — backups automáticos de Autonomous Database",
+          "manage volume-group-backups in compartment — backups de grupos de volumes"
+        ],
+        "mitigations": [
+          "Habilitar backups automáticos com retenção de 30+ dias para workloads de produção",
+          "Usar compartimento dedicado para armazenamento de backups com acesso restrito",
+          "Monitorar falhas de backup via OCI Monitoring com alertas para políticas violadas",
+          "Testar restaurações de backup trimestralmente e documentar RTO/RPO alcançados",
+          "Configurar replicação de backups entre regiões OCI para proteção contra desastre"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Backup for VPC)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar políticas de backup para volumes de armazenamento em bloco VPC",
+          "Configurar snapshots automáticos com políticas de retenção para instâncias VPC",
+          "Administrar compartilhamentos de arquivo e suas políticas de backup no IBM Cloud",
+          "Gerenciar planos de backup e jobs de replicação para workloads de banco de dados",
+          "Restaurar volumes e snapshots a partir de pontos de recuperação disponíveis"
+        ],
+        "mitigations": [
+          "Habilitar snapshots imutáveis para proteção contra exclusão acidental ou ransomware",
+          "Monitorar trabalhos de backup via IBM Cloud Monitoring com alertas para falhas",
+          "Testar restaurações de backup mensalmente para validar integridade e processo de DR",
+          "Armazenar cópias de backup em região IBM Cloud diferente para recuperação regional",
+          "Auditar políticas de backup e retenção trimestralmente para garantir conformidade com SLAs"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Vault Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar retenções legais (holds) no Google Vault para dados do Workspace",
+          "Configurar políticas de retenção para Gmail, Drive, Chat e Meet no Vault",
+          "Executar pesquisas e exportações de dados para eDiscovery e conformidade",
+          "Auditar atividades de exportação e acesso a dados retidos no Google Vault",
+          "Gerenciar casos de retenção e sua associação com usuários e unidades organizacionais"
+        ],
+        "mitigations": [
+          "Restringir acesso ao Google Vault a administradores legais e de conformidade aprovados",
+          "Monitorar exportações de dados do Vault via log de auditoria Admin com alertas",
+          "Implementar aprovação de dois administradores para remoção de holds legais",
+          "Revisar políticas de retenção trimestralmente para garantir conformidade com LGPD/GDPR",
+          "Separar função de Vault Admin da função de leitura de conteúdo de usuários"
+        ]
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia serviços de backup de infraestrutura",
+          "Soft-delete de usuários e grupos é gerenciado por User Admin",
+          "Restauração de objetos excluídos do Entra ID é possível em 30 dias",
+          "Entra Connect gerencia backup de sincronização de diretório"
+        ],
+        "mitigations": [
+          "Configurar políticas de retenção de objetos excluídos no Entra ID",
+          "Usar ferramentas de backup de terceiros para configuração do Entra ID",
+          "Monitorar exclusões em massa via alertas de auditoria do Entra ID",
+          "Implementar export periódico de configuração via Microsoft Graph API",
+          "Combinar com Azure RBAC Backup Contributor para backup de infraestrutura"
+        ],
+        "notes": "Entra ID não possui role de administrador de backup. Usar Azure RBAC Backup Contributor para serviços de backup Azure."
+      }
+    }
+  },
+  {
+    "id": "devops-admin",
+    "function": "devops-admin",
+    "tier": 2,
+    "name": "DevOps / CI-CD Administrator",
+    "description": "Administrador de DevOps e pipelines de CI/CD com controle sobre repositórios de código, automação de build, deploy contínuo, infraestrutura como código e ambientes de desenvolvimento e produção.",
+    "clouds": {
+      "azureRbac": {
+        "role": "DevTest Labs User",
+        "slug": "devtest-labs-user",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.DevTestLab/labs/* — gerenciar ambientes Azure DevTest Labs",
+          "Microsoft.Resources/deployments/write — implantar recursos via ARM templates",
+          "Microsoft.Authorization/*/read — visualizar permissões para pipelines de deploy",
+          "Microsoft.Compute/virtualMachines/start/action — iniciar VMs em ambientes de dev",
+          "Microsoft.Storage/storageAccounts/listKeys/action — acessar chaves de armazenamento para pipelines"
+        ],
+        "mitigations": [
+          "Usar Azure Managed Identity para autenticação de pipelines sem credenciais estáticas",
+          "Restringir implantações de produção via Azure Pipelines com aprovações de gate",
+          "Monitorar implantações via Azure Activity Log com alertas para recursos críticos",
+          "Implementar ambientes Azure DevOps com proteção de aprovação para produção",
+          "Revisar conexões de serviço Azure DevOps com permissões de produção mensalmente"
+        ],
+        "notes": "Para administração completa de CI/CD no Azure, usar Azure DevOps com permissões de Administrador de Projeto, integrado ao Azure RBAC para implantações."
+      },
+      "aws": {
+        "role": "AWSCodePipeline_FullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "codepipeline:* — administração completa do AWS CodePipeline para CI/CD",
+          "codebuild:* — gerenciar projetos e builds do AWS CodeBuild",
+          "codedeploy:* — administrar aplicativos e deployments do AWS CodeDeploy",
+          "codecommit:* — gerenciar repositórios de código no AWS CodeCommit",
+          "codeartifact:* — administrar repositórios de artefatos no AWS CodeArtifact"
+        ],
+        "mitigations": [
+          "Usar funções IAM de execução de pipeline em vez de credenciais de usuário em pipelines",
+          "Implementar aprovações manuais obrigatórias para estágios de deploy em produção",
+          "Habilitar notificações CodePipeline via SNS para monitorar execuções de pipeline",
+          "Restringir execução de pipeline de produção a branches protegidos via regras de branch",
+          "Auditar permissões de funções de execução de CodePipeline trimestralmente"
+        ]
+      },
+      "gcp": {
+        "role": "roles/cloudbuild.builds.editor",
+        "risk": "high",
+        "keyPermissions": [
+          "cloudbuild.builds.create — criar e executar builds no Cloud Build",
+          "cloudbuild.builds.cancel — cancelar builds em execução",
+          "clouddeploy.deliveryPipelines.* — gerenciar pipelines de entrega no Cloud Deploy",
+          "clouddeploy.releases.create — criar releases para deployment em ambientes",
+          "artifactregistry.repositories.uploadArtifacts — publicar artefatos de build"
+        ],
+        "mitigations": [
+          "Usar Workload Identity Federation para autenticação de pipelines CI/CD externos ao GCP",
+          "Implementar aprovações obrigatórias no Cloud Deploy para promoção a ambientes de produção",
+          "Monitorar builds Cloud Build via Cloud Audit Logs com alertas para falhas ou acessos anômalos",
+          "Restringir triggers de build a repositórios e branches aprovados via Cloud Build Triggers",
+          "Revisar permissões de contas de serviço usadas em pipelines mensalmente"
+        ]
+      },
+      "oci": {
+        "role": "manage devops-family in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage devops-project in compartment — projetos DevOps OCI com pipelines e repositórios",
+          "manage build-pipelines in compartment — pipelines de build com estágios CI",
+          "manage deployment-pipelines in compartment — pipelines de deploy com aprovações",
+          "manage repositories in compartment — repositórios de código OCI DevOps",
+          "manage triggers in compartment — gatilhos automáticos para execução de pipelines"
+        ],
+        "mitigations": [
+          "Configurar aprovações de gate em estágios de deploy para ambientes de produção",
+          "Usar Dynamic Groups e Instance Principals para autenticação de pipelines sem credenciais",
+          "Monitorar execuções de pipeline via OCI Monitoring com alertas para falhas de deploy",
+          "Restringir acesso a pipelines de produção a grupos de usuários sênior aprovados",
+          "Auditar gatilhos de pipeline e suas configurações de branch trimestralmente"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (Continuous Delivery)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar toolchains no IBM Cloud Continuous Delivery para CI/CD",
+          "Administrar pipelines de build e deploy integrados ao IBM Cloud DevOps Insights",
+          "Gerenciar repositórios de código via IBM GitLab integrado ao Continuous Delivery",
+          "Configurar integrações de ferramentas: Slack, PagerDuty, Jira para notificações de pipeline",
+          "Administrar ambientes de deploy e aprovações de gate para promoção de releases"
+        ],
+        "mitigations": [
+          "Usar IBM Cloud IAM API Keys de vida curta para autenticação de pipelines",
+          "Implementar aprovações obrigatórias para deploy em ambientes de produção",
+          "Monitorar execuções de pipeline via IBM Cloud Activity Tracker com alertas",
+          "Restringir acesso a toolchains de produção a engenheiros sênior aprovados",
+          "Revisar integrações de ferramentas e suas credenciais armazenadas mensalmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Google Workspace não possui serviços nativos de CI/CD ou pipelines de DevOps",
+          "Google Cloud Build e Cloud Deploy são serviços GCP separados do Workspace",
+          "Workspace pode ser integrado a pipelines via Google Chat notifications e scripts",
+          "Google Apps Script pode automatizar tarefas dentro do ecossistema Workspace",
+          "Firebase App Distribution pode ser usado para distribuição de apps móveis"
+        ],
+        "mitigations": [
+          "Gerenciar CI/CD via Google Cloud Build e Cloud Deploy com funções IAM GCP",
+          "Usar Google Cloud Identity para autenticação unificada em ferramentas DevOps",
+          "Monitorar atividades de Apps Script via log de auditoria do Workspace Admin",
+          "Restringir criação de Apps Script a usuários com necessidade de automação aprovada",
+          "Auditar integrações de terceiros de CI/CD com acesso ao Google Drive/Sheets mensalmente"
+        ],
+        "notes": "Google Workspace não possui funções de administração de CI/CD. Para DevOps no ecossistema Google, usar Google Cloud com roles/cloudbuild.builds.editor e roles/clouddeploy.admin."
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID não gerencia pipelines de CI/CD",
+          "Service principals do Entra ID autenticam pipelines DevOps",
+          "Managed Identity conecta pipelines a recursos Azure",
+          "App registrations são usadas para integração com Azure DevOps"
+        ],
+        "mitigations": [
+          "Usar Managed Identity em vez de secrets para autenticação de pipelines",
+          "Restringir permissões de service principals usados em CI/CD",
+          "Implementar Conditional Access para acesso ao Azure DevOps",
+          "Monitorar criação de app registrations e service principals para DevOps",
+          "Rotacionar credenciais de service principal usadas em pipelines regularmente"
+        ],
+        "notes": "Entra ID não possui role de administrador DevOps. Gerenciamento de CI/CD é feito via Azure DevOps ou GitHub com autenticação do Entra ID."
+      }
+    }
+  },
+  {
+    "id": "monitoring-admin",
+    "function": "monitoring-admin",
+    "tier": 2,
+    "name": "Log Analytics / Monitoring Administrator",
+    "description": "Administrador de monitoramento e análise de logs com controle sobre métricas de infraestrutura, alertas, dashboards, retenção de logs e observabilidade de aplicativos e serviços em nuvem.",
+    "clouds": {
+      "azureRbac": {
+        "role": "Monitoring Contributor",
+        "slug": "monitoring-contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.Insights/alertRules/* — criar e gerenciar regras de alerta no Azure Monitor",
+          "Microsoft.Insights/components/* — gerenciar instâncias do Application Insights",
+          "Microsoft.OperationalInsights/workspaces/* — administrar workspaces Log Analytics",
+          "Microsoft.Insights/actionGroups/* — configurar grupos de ação para notificações",
+          "Microsoft.Insights/diagnosticSettings/write — configurar coleta de logs de diagnóstico"
+        ],
+        "mitigations": [
+          "Restringir leitura de logs a dados mínimos necessários via Log Analytics RBAC",
+          "Monitorar consultas KQL executadas em Log Analytics via Log Analytics Audit",
+          "Usar workspaces Log Analytics dedicados por ambiente para separação de dados",
+          "Revisar alertas obsoletos e ações configuradas mensalmente para reduzir ruído",
+          "Implementar retenção de logs com arquivamento automático para conformidade regulatória"
+        ]
+      },
+      "aws": {
+        "role": "CloudWatchFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "cloudwatch:* — administração completa do Amazon CloudWatch para métricas e alertas",
+          "logs:* — gerenciar log groups, streams e retenção no CloudWatch Logs",
+          "logs:FilterLogEvents — pesquisar e analisar eventos em grupos de log",
+          "xray:* — gerenciar rastreamento de requisições com AWS X-Ray",
+          "cloudwatch:PutDashboard — criar dashboards de monitoramento personalizados"
+        ],
+        "mitigations": [
+          "Usar CloudWatch Logs Insights com consultas pré-aprovadas para análise rotineira",
+          "Habilitar criptografia de log groups com chaves KMS gerenciadas pelo cliente",
+          "Configurar exportação automática de logs para S3 com Object Lock para imutabilidade",
+          "Restringir logs:GetLogEvents de log groups com dados sensíveis via política de recurso",
+          "Revisar retenção de log groups mensalmente e ajustar para conformidade com política"
+        ]
+      },
+      "gcp": {
+        "role": "roles/monitoring.admin",
+        "risk": "high",
+        "keyPermissions": [
+          "monitoring.alertPolicies.* — criar e gerenciar políticas de alerta no Cloud Monitoring",
+          "monitoring.dashboards.* — administrar dashboards de monitoramento personalizados",
+          "logging.sinks.* — criar sinks de log para exportação a BigQuery, Storage e Pub/Sub",
+          "logging.logEntries.list — pesquisar e analisar entradas de log no Cloud Logging",
+          "monitoring.notificationChannels.* — configurar canais de notificação de alertas"
+        ],
+        "mitigations": [
+          "Habilitar Log Bucket Lock para imutabilidade de logs de auditoria críticos",
+          "Separar roles/monitoring.admin (configurar) de roles/logging.viewer (consultar) por equipe",
+          "Configurar sinks de log para bucket GCS com retenção imutável para conformidade",
+          "Monitorar acesso a logs de auditoria via Cloud Audit Logs para consultas suspeitas",
+          "Revisar políticas de retenção de log e configurações de sink mensalmente"
+        ]
+      },
+      "oci": {
+        "role": "manage log-groups in compartment",
+        "risk": "high",
+        "keyPermissions": [
+          "manage log-groups in compartment — criar grupos de log no OCI Logging",
+          "manage logs in compartment — habilitar e configurar logs de serviços OCI",
+          "manage log-content in compartment — consultar e exportar conteúdo de logs",
+          "manage alarms in compartment — criar alarmes no OCI Monitoring para alertas",
+          "manage metrics in compartment — consultar e gerenciar métricas de recursos OCI"
+        ],
+        "mitigations": [
+          "Configurar retenção de logs mínima de 90 dias para logs de auditoria de segurança",
+          "Exportar logs OCI para Object Storage com Object Lock para conformidade e imutabilidade",
+          "Monitorar consultas de log com conteúdo sensível via OCI Audit com alertas",
+          "Restringir manage log-content a administradores de segurança com necessidade comprovada",
+          "Revisar grupos de log e logs habilitados mensalmente para garantir cobertura completa"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Manager (IBM Cloud Monitoring)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e gerenciar instâncias IBM Cloud Monitoring (Sysdig) para métricas de infraestrutura",
+          "Administrar dashboards, alertas e equipes no IBM Cloud Monitoring",
+          "Gerenciar instâncias IBM Cloud Log Analysis (LogDNA) para centralização de logs",
+          "Configurar arquivamento de logs para IBM Cloud Object Storage com retenção definida",
+          "Criar grupos de log e índices de pesquisa para análise eficiente de logs"
+        ],
+        "mitigations": [
+          "Separar acesso de visualização de logs (Viewer) do gerenciamento de instâncias (Manager)",
+          "Configurar exclusão de dados sensíveis via IBM Log Analysis antes do armazenamento",
+          "Monitorar consultas de log com padrões suspeitos via alertas no IBM Cloud Monitoring",
+          "Exportar logs de auditoria para Object Storage com política de retenção de 12+ meses",
+          "Revisar usuários e equipes com acesso a instâncias de monitoramento mensalmente"
+        ]
+      },
+      "googleWorkspace": {
+        "role": "Reports Admin",
+        "risk": "high",
+        "keyPermissions": [
+          "Acesso completo ao Admin Reports para logs de auditoria de todos os serviços Workspace",
+          "Executar e exportar relatórios de atividade: Login, Admin, Drive, Gmail, Meet",
+          "Configurar alertas personalizados no Alert Center para eventos de segurança",
+          "Acessar Google Workspace Audit API para integração com SIEMs externos",
+          "Visualizar relatórios de uso e adoção de serviços para toda a organização"
+        ],
+        "mitigations": [
+          "Restringir Reports Admin a equipes de segurança e conformidade com necessidade comprovada",
+          "Configurar exportação de logs para Google BigQuery para análise de longo prazo",
+          "Monitorar uso da Audit API por aplicativos de terceiros via log de auditoria Admin",
+          "Habilitar alertas de segurança no Alert Center para eventos de login e acesso suspeito",
+          "Revisar integrações SIEM com acesso à Audit API do Workspace trimestralmente"
+        ]
+      },
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "Sem equivalente direto no Entra ID",
+          "Entra ID gera logs de auditoria e sign-in nativamente",
+          "Diagnostic settings exportam logs para Log Analytics Workspace",
+          "Entra ID Insights fornece relatórios de uso e risco",
+          "Microsoft Sentinel integra logs do Entra ID para SIEM"
+        ],
+        "mitigations": [
+          "Configurar Diagnostic Settings do Entra ID para Log Analytics Workspace",
+          "Habilitar alertas de risco de sign-in no Entra ID Identity Protection",
+          "Usar Microsoft Sentinel com conector do Entra ID para detecção de ameaças",
+          "Monitorar workbooks nativos do Entra ID para tendências de autenticação",
+          "Combinar com Azure RBAC Monitoring Contributor para monitoramento completo"
+        ],
+        "notes": "Entra ID não possui role de administrador de monitoramento. Logs são acessados via Global Reader ou Reports Reader. Usar Azure RBAC para Log Analytics."
+      }
+    }
+  }
+]

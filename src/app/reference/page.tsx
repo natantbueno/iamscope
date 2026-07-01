@@ -6,6 +6,7 @@ import { API_PERMISSIONS } from '@/data/apiPermissions'
 import EamTierBadge from '@/components/EamTierBadge'
 import CategoryBadge from '@/components/CategoryBadge'
 import { ExternalLink } from 'lucide-react'
+import { DATA_SYNC } from '@/data/syncMeta'
 
 export default function ReferencePage() {
   const totalRoles = ROLES.length
@@ -15,56 +16,14 @@ export default function ReferencePage() {
   return (
     <AppShell
       headerTitle="Reference"
-      headerSub="Documentação e guia de uso do entra.permissions"
+      headerSub="Documentação e guia de uso do IAM Scope"
     >
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-8 py-8 space-y-12">
+        <div className="px-8 py-8 space-y-12 max-w-3xl">
 
           {/* ── Sobre ──────────────────────────────────── */}
-          <Section id="about" title="Sobre o entra.permissions">
-            <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
-              O <strong className="text-gray-800 dark:text-gray-200">entra.permissions</strong> é um site público de referência para as <strong>roles e permissões do Microsoft Entra ID</strong>, com foco na classificação de risco pelo modelo <em>Enterprise Access Model (EAM)</em>.
-            </p>
-            <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
-              Os dados são derivados do repositório{' '}
-              <ExtLink href="https://github.com/Cloud-Architekt/AzurePrivilegedIAM">AzurePrivilegedIAM</ExtLink>{' '}
-              (Thomas Naunheim / EntraOps) e complementados com informações do{' '}
-              <ExtLink href="https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference">Microsoft Learn</ExtLink>.
-            </p>
-            <StatsRow items={[
-              { label: 'Built-in Roles', value: totalRoles },
-              { label: 'Role Actions únicas', value: totalActions },
-              { label: 'API Permissions (Graph)', value: totalApiPerms },
-            ]} />
-          </Section>
-
-          <Divider />
 
           {/* ── Como navegar ───────────────────────────── */}
-          <Section id="navigation" title="Como navegar">
-            <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              O site possui quatro seções principais, acessíveis pelo menu lateral:
-            </p>
-            <table className="w-full text-[13px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                  <Th>Seção</Th>
-                  <Th>Descrição</Th>
-                </tr>
-              </thead>
-              <tbody>
-                <TR><TD bold>Built-in Roles</TD><TD>Lista das {totalRoles} roles nativas do Entra ID com filtros por tier EAM, categoria e privilégio. Clique em qualquer role para ver detalhes, role actions e snippets de código.</TD></TR>
-                <TR><TD bold>Role Actions</TD><TD>Todas as role actions únicas ({totalActions}) agregadas de todas as roles. Permite buscar quais roles possuem uma determinada permissão.</TD></TR>
-                <TR><TD bold>API Permissions</TD><TD>As {totalApiPerms} permissões do Microsoft Graph classificadas por tier EAM. Distingue entre Application (AppRole) e Delegated.</TD></TR>
-                <TR last><TD bold>Reference</TD><TD>Esta página — documentação sobre o site, explicação dos tiers e badges, e informações sobre Custom Roles.</TD></TR>
-              </tbody>
-            </table>
-            <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-3">
-              Use a <strong>barra de busca</strong> no topo do sidebar para pesquisar rapidamente por nome de role, action ou API permission. Filtros por tier, categoria e privilégio estão disponíveis em cada seção. Todas as tabelas suportam <strong>ordenação por coluna</strong> (clique no cabeçalho).
-            </p>
-          </Section>
-
-          <Divider />
 
           {/* ── EAM ────────────────────────────────────── */}
           <Section id="eam" title="Enterprise Access Model (EAM)">
@@ -269,7 +228,7 @@ Get-MgRoleManagementDirectoryResourceNamespace | ForEach-Object {
                 </TR>
                 <TR last>
                   <TD><ExtLink href="https://learn.microsoft.com/en-us/graph/permissions-reference">Microsoft Graph Permissions Reference</ExtLink></TD>
-                  <TD>Documentação das API permissions do Microsoft Graph</TD>
+                  <TD>Documentação das API permissions do Microsoft Graph (Application + Delegated)</TD>
                   <TD>Microsoft</TD>
                 </TR>
               </tbody>
@@ -278,6 +237,33 @@ Get-MgRoleManagementDirectoryResourceNamespace | ForEach-Object {
               Os dados são atualizados manualmente a partir dos arquivos de classificação do repositório AzurePrivilegedIAM. Para contribuir com correções, abra uma issue no{' '}
               <ExtLink href="https://github.com/natebzurg/entraid.permissions">repositório do site</ExtLink>.
             </p>
+          </Section>
+
+          <Divider />
+
+          {/* ── Frescor dos dados ──────────────────────── */}
+          <Section id="data-freshness" title="Frescor dos dados (Entra ID)">
+            <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+              Data da última verificação de cada conjunto de dados do Entra ID contra sua fonte oficial. Veja a página{' '}
+              <a href="/info" className="text-[#0078d4] dark:text-[#85b7eb] hover:underline">Sobre</a> para o frescor das
+              demais 6 clouds.
+            </p>
+            <table className="w-full text-[13px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                  <Th>Conjunto de dados</Th>
+                  <Th>Última verificação</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {DATA_SYNC.filter((d) => d.platform === 'Entra ID').map((d, i, arr) => (
+                  <TR key={d.id} last={i === arr.length - 1}>
+                    <TD bold>{d.label}</TD>
+                    <TD mono>{d.lastSynced}</TD>
+                  </TR>
+                ))}
+              </tbody>
+            </table>
           </Section>
 
           <div className="pb-8" />

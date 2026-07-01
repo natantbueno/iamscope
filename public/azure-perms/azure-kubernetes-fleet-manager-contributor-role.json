@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ContainerService/fleets/*","type":"Actions"},{"action":"Microsoft.Resources/deployments/*","type":"Actions"},{"action":"Microsoft.ContainerService/fleetMemberships/*","type":"Actions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.HybridContainerService/provisionedClusterInstances/read","type":"Actions"},{"action":"Microsoft.HybridContainerService/provisionedClusterInstances/listUserKubeconfig/action","type":"Actions"},{"action":"Microsoft.Kubernetes/connectedClusters/Read","type":"Actions"}]

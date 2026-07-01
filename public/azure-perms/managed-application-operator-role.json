@@ -1,0 +1,1 @@
+[{"action":"*/read","type":"Actions"},{"action":"Microsoft.Solutions/applications/read","type":"Actions"},{"action":"Microsoft.Solutions/*/action","type":"Actions"}]

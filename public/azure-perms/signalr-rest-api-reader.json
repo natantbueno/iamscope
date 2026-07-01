@@ -1,0 +1,1 @@
+[{"action":"Microsoft.SignalRService/SignalR/group/read","type":"DataActions"},{"action":"Microsoft.SignalRService/SignalR/clientConnection/read","type":"DataActions"},{"action":"Microsoft.SignalRService/SignalR/user/read","type":"DataActions"}]

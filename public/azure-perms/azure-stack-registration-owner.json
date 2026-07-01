@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AzureStack/edgeSubscriptions/read","type":"Actions"},{"action":"Microsoft.AzureStack/registrations/products/*/action","type":"Actions"},{"action":"Microsoft.AzureStack/registrations/products/read","type":"Actions"},{"action":"Microsoft.AzureStack/registrations/read","type":"Actions"}]

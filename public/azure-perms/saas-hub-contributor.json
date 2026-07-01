@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.SaaSHub/cloudservices/read","type":"Actions"},{"action":"Microsoft.SaaSHub/cloudservices/write","type":"Actions"},{"action":"Microsoft.SaaSHub/cloudservices/delete","type":"Actions"}]

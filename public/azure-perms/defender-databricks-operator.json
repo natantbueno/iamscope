@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Databricks/workspaces/read","type":"Actions"},{"action":"Microsoft.Databricks/workspaces/assignWorkspaceAdmin/action","type":"Actions"}]

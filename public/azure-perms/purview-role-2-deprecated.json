@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Purview/accounts/read","type":"Actions"},{"action":"Microsoft.Purview/accounts/scan/read","type":"DataActions"},{"action":"Microsoft.Purview/accounts/scan/write","type":"DataActions"}]

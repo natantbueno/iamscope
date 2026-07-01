@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AzureArcData/sqlServerInstances/read","type":"Actions"},{"action":"Microsoft.AzureArcData/sqlServerInstances/write","type":"Actions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Blockchain/blockchainMembers/transactionNodes/read","type":"Actions"},{"action":"Microsoft.Blockchain/blockchainMembers/transactionNodes/connect/action","type":"DataActions"}]

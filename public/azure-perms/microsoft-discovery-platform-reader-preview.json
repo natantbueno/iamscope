@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Discovery/*/read","type":"Actions"},{"action":"Microsoft.Resources/deployments/read","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Discovery/*/read","type":"DataActions"}]

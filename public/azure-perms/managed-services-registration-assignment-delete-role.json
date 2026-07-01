@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ManagedServices/registrationAssignments/read","type":"Actions"},{"action":"Microsoft.ManagedServices/registrationAssignments/delete","type":"Actions"},{"action":"Microsoft.ManagedServices/operationStatuses/read","type":"Actions"}]

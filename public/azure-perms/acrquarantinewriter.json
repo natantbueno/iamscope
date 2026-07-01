@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ContainerRegistry/registries/quarantine/read","type":"Actions"},{"action":"Microsoft.ContainerRegistry/registries/quarantine/write","type":"Actions"},{"action":"Microsoft.ContainerRegistry/registries/quarantinedArtifacts/read","type":"DataActions"},{"action":"Microsoft.ContainerRegistry/registries/quarantinedArtifacts/write","type":"DataActions"}]

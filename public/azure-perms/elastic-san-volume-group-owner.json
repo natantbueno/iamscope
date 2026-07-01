@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Authorization/roleAssignments/read","type":"Actions"},{"action":"Microsoft.Authorization/roleDefinitions/read","type":"Actions"},{"action":"Microsoft.ElasticSan/elasticSans/volumeGroups/*","type":"Actions"},{"action":"Microsoft.ElasticSan/locations/asyncoperations/read","type":"Actions"}]

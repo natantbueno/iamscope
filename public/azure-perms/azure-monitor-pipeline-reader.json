@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Monitor/pipelineGroups/read","type":"Actions"},{"action":"Microsoft.Resources/deployments/read","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Insights/alertRules/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"}]

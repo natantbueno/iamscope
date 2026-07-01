@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Discovery/bookshelf/knowledgeBaseVersions/query/action","type":"DataActions"},{"action":"Microsoft.Discovery/bookshelf/knowledgebases/operations/read","type":"DataActions"}]

@@ -1,0 +1,1 @@
+[{"action":"microsoft.insights/workbooks/read","type":"Actions"},{"action":"microsoft.insights/workbooks/revisions/read","type":"Actions"},{"action":"microsoft.insights/workbooktemplates/read","type":"Actions"}]

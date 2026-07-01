@@ -3,22 +3,20 @@
 import Link from 'next/link'
 import {
   ArrowLeft, AlertTriangle, Copy, CheckCheck, ExternalLink, Shield, Hash, Tag, Layers, BookOpen,
-  ListTree, ShieldAlert, Settings2, Users2, HelpCircle,
+  ListTree, ShieldAlert, Settings2, Users2, HelpCircle, ChevronDown, ChevronUp, Code2,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { getRoleBySlug, getRelatedRoles } from '@/lib/roles'
 import { EAM_META } from '@/data/roles'
-import { useTheme } from '@/components/ThemeProvider'
 import CategoryBadge from '@/components/CategoryBadge'
 import EamTierBadge from '@/components/EamTierBadge'
 import RolePermissionsList from '@/components/RolePermissionsList'
-import ThemeToggle from '@/components/ThemeToggle'
+import AppShell from '@/components/AppShell'
 
 export default function RolePageClient({ slug }: { slug: string }) {
   const role = getRoleBySlug(slug)
   const [copied, setCopied] = useState(false)
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
+  const isDark = true
 
   if (!role) return null
   const eam = EAM_META[role.eamTier]
@@ -48,18 +46,17 @@ export default function RolePageClient({ slug }: { slug: string }) {
     .filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-[#eef1f5] dark:bg-gray-950">
-      {/* Top bar */}
-      <header className="bg-white dark:bg-gray-900 border-b border-[#dde3ec] dark:border-gray-800 sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/roles" className="flex items-center gap-1.5 text-[13px] text-gray-500 dark:text-gray-400 hover:text-[#0078d4] dark:hover:text-[#85b7eb] transition-colors">
-            <ArrowLeft size={15} /> Voltar para roles
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-6">
+    <AppShell
+      headerTitle={role.name}
+      headerSub={`Entra ID · ${role.category} · EAM ${role.eamTier}`}
+      headerBack={
+        <Link href="/roles" className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
+          <ArrowLeft size={15} /> Voltar
+        </Link>
+      }
+    >
+      <div className="flex-1 overflow-y-auto bg-gray-950">
+      <div className="max-w-5xl px-6 py-6">
         {/* Title block */}
         <div className="mb-5">
           <div className="flex items-start gap-3 flex-wrap mb-2">
@@ -143,6 +140,9 @@ export default function RolePageClient({ slug }: { slug: string }) {
           )}
         </section>
 
+        {/* Role Definition JSON */}
+        <RoleDefinitionJson role={role} />
+
         {/* Full permissions */}
         <section className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5 mb-6">
           <h2 className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 mb-1">
@@ -197,8 +197,9 @@ export default function RolePageClient({ slug }: { slug: string }) {
             </div>
           </section>
         )}
-      </main>
-    </div>
+      </div>
+      </div>
+    </AppShell>
   )
 }
 
@@ -226,4 +227,118 @@ function StatCard({ icon, label, value, accent }: {
       <span className="text-[22px] font-bold" style={{ color: accent }}>{value}</span>
     </div>
   )
+}
+
+function RoleDefinitionJson({ role }: { role: { id: string; name: string; description: string; isPrivileged: boolean; permissions: { action: string }[] } }) {
+  const [expanded, setExpanded] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const jsonObj = {
+    "@odata.type": "#microsoft.graph.unifiedRoleDefinition",
+    id: role.id,
+    displayName: role.name,
+    description: role.description,
+    isBuiltIn: true,
+    isEnabled: true,
+    isPrivileged: role.isPrivileged,
+    rolePermissions: [{
+      allowedResourceActions: role.permissions.map(p => p.action)
+    }]
+  }
+
+  const jsonStr = JSON.stringify(jsonObj, null, 2)
+  const lines = jsonStr.split('\n')
+  const PREVIEW_LINES = 12
+  const showLines = expanded ? lines : lines.slice(0, PREVIEW_LINES)
+
+  const copyJson = () => {
+    navigator.clipboard.writeText(jsonStr)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <section className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-5 mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <Code2 size={15} />
+          Role Definition (JSON)
+        </h2>
+        <button
+          onClick={copyJson}
+          className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-gray-200 transition-colors"
+          title="Copiar JSON"
+        >
+          {copied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
+          {copied ? 'Copiado!' : 'Copiar'}
+        </button>
+      </div>
+      <div className="relative">
+        <div className="bg-black rounded-lg p-4 border border-gray-800 overflow-x-auto">
+          <pre className="text-[11px] font-mono leading-relaxed">
+            {showLines.map((line, i) => (
+              <JsonLine key={i} line={line} />
+            ))}
+          </pre>
+        </div>
+        {lines.length > PREVIEW_LINES && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-2 flex items-center gap-1 text-[12px] text-[#0078d4] dark:text-[#85b7eb] hover:underline"
+          >
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {expanded ? 'Recolher' : `Mostrar tudo (${lines.length} linhas)`}
+          </button>
+        )}
+      </div>
+    </section>
+  )
+}
+
+function JsonLine({ line }: { line: string }) {
+  const parts: React.ReactNode[] = []
+  let remaining = line
+  let key = 0
+
+  while (remaining.length > 0) {
+    // Match key
+    const keyMatch = remaining.match(/^(\s*)"([^"]+)"(:)/)
+    if (keyMatch) {
+      parts.push(<span key={key++} className="text-gray-400">{keyMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-blue-400">&quot;{keyMatch[2]}&quot;</span>)
+      parts.push(<span key={key++} className="text-gray-400">{keyMatch[3]}</span>)
+      remaining = remaining.slice(keyMatch[0].length)
+      continue
+    }
+    // Match string value
+    const strMatch = remaining.match(/^(\s*)"([^"]*)"(.*)/)
+    if (strMatch) {
+      parts.push(<span key={key++} className="text-gray-400">{strMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-green-400">&quot;{strMatch[2]}&quot;</span>)
+      parts.push(<span key={key++} className="text-gray-400">{strMatch[3]}</span>)
+      remaining = ''
+      continue
+    }
+    // Match boolean/number
+    const boolMatch = remaining.match(/^(\s*)(true|false|null|\d+)(,?)(.*)/)
+    if (boolMatch) {
+      parts.push(<span key={key++} className="text-gray-400">{boolMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-yellow-400">{boolMatch[2]}</span>)
+      parts.push(<span key={key++} className="text-gray-400">{boolMatch[3]}{boolMatch[4]}</span>)
+      remaining = ''
+      continue
+    }
+    // Match brackets/braces
+    const bracketMatch = remaining.match(/^(\s*)([\[\]{},]+)(.*)/)
+    if (bracketMatch) {
+      parts.push(<span key={key++} className="text-gray-400">{bracketMatch[1]}{bracketMatch[2]}{bracketMatch[3]}</span>)
+      remaining = ''
+      continue
+    }
+    // Fallback
+    parts.push(<span key={key++} className="text-gray-400">{remaining}</span>)
+    remaining = ''
+  }
+
+  return <div>{parts}{'\n'}</div>
 }

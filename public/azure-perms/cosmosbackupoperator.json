@@ -1,0 +1,1 @@
+[{"action":"Microsoft.DocumentDB/databaseAccounts/backup/action","type":"Actions"},{"action":"Microsoft.DocumentDB/databaseAccounts/restore/action","type":"Actions"}]

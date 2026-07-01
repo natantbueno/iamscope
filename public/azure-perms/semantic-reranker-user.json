@@ -1,0 +1,1 @@
+[{"action":"Microsoft.InferenceService/inferenceAccounts/read","type":"Actions"},{"action":"Microsoft.InferenceService/inferenceAccounts/write","type":"NotActions"},{"action":"Microsoft.InferenceService/inferenceAccounts/delete","type":"NotActions"},{"action":"Microsoft.InferenceService/inferenceAccounts/invoke/semanticReranker/action","type":"DataActions"}]

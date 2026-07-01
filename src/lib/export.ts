@@ -185,3 +185,23 @@ export function exportApiPermissionsCSV(perms: ApiPermission[]) {
 export function exportApiPermissionsJSON(perms: ApiPermission[]) {
   download('entra-api-permissions.json', JSON.stringify(perms, null, 2), 'application/json')
 }
+
+// ---------- Azure RBAC ----------
+import { AzureRbacRole } from '@/data/azureRbac'
+
+export function exportAzureRbacCSV(roles: AzureRbacRole[]) {
+  const rows = roles.map((r) => ({
+    name: r.name,
+    id: r.id,
+    category: r.category,
+    tier: r.tier,
+    isPrivileged: r.isPrivileged,
+    permissionCount: r.permissionCount,
+    description: r.description,
+  }))
+  download('azure-rbac-roles.csv', toCSV(rows), 'text/csv;charset=utf-8')
+}
+
+export function exportAzureRbacJSON(roles: AzureRbacRole[]) {
+  download('azure-rbac-roles.json', JSON.stringify(roles, null, 2), 'application/json')
+}
