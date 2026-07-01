@@ -51,7 +51,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AccessAnalyzerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AccessAnalyzerServiceRolePolicy',
     description: 'AccessAnalyzerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -59,7 +59,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AccountAccessManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AccountAccessManagerServiceRolePolicy',
     description: 'AccountAccessManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -83,7 +83,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AdministratorAccess-Amplify',
     arn: 'arn:aws:iam::aws:policy/AdministratorAccess-Amplify',
     description: 'AdministratorAccess-Amplify — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -91,7 +91,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AdministratorAccess-AWSElasticBeanstalk',
     arn: 'arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk',
     description: 'AdministratorAccess-AWSElasticBeanstalk — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -99,7 +99,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIDevOpsAgentAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AIDevOpsAgentAccessPolicy',
     description: 'AIDevOpsAgentAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -107,7 +107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIDevOpsAgentActionsPolicy',
     arn: 'arn:aws:iam::aws:policy/AIDevOpsAgentActionsPolicy',
     description: 'AIDevOpsAgentActionsPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -115,7 +115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIDevOpsAgentFullAccess',
     arn: 'arn:aws:iam::aws:policy/AIDevOpsAgentFullAccess',
     description: 'AIDevOpsAgentFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -123,7 +123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIDevOpsAgentReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AIDevOpsAgentReadOnlyAccess',
     description: 'AIDevOpsAgentReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -131,7 +131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIDevOpsOperatorAppAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AIDevOpsOperatorAppAccessPolicy',
     description: 'AIDevOpsOperatorAppAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -139,7 +139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIOpsAssistantIncidentReportPolicy',
     arn: 'arn:aws:iam::aws:policy/AIOpsAssistantIncidentReportPolicy',
     description: 'AIOpsAssistantIncidentReportPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -147,7 +147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIOpsAssistantPolicy',
     arn: 'arn:aws:iam::aws:policy/AIOpsAssistantPolicy',
     description: 'AIOpsAssistantPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -155,7 +155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIOpsConsoleAdminPolicy',
     arn: 'arn:aws:iam::aws:policy/AIOpsConsoleAdminPolicy',
     description: 'AIOpsConsoleAdminPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -163,7 +163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIOpsOperatorAccess',
     arn: 'arn:aws:iam::aws:policy/AIOpsOperatorAccess',
     description: 'AIOpsOperatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -171,7 +171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AIOpsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AIOpsReadOnlyAccess',
     description: 'AIOpsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -211,7 +211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AlexaForBusinessNetworkProfileServicePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AlexaForBusinessNetworkProfileServicePolicy',
     description: 'AlexaForBusinessNetworkProfileServicePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -235,7 +235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAPIGatewayAdministrator',
     arn: 'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
     description: 'AmazonAPIGatewayAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -243,7 +243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAPIGatewayInvokeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess',
     description: 'AmazonAPIGatewayInvokeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -251,7 +251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAPIGatewayPushToCloudWatchLogs',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs',
     description: 'AmazonAPIGatewayPushToCloudWatchLogs — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -283,7 +283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAppStreamFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAppStreamFullAccess',
     description: 'AmazonAppStreamFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -291,7 +291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAppStreamPCAAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonAppStreamPCAAccess',
     description: 'AmazonAppStreamPCAAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -299,7 +299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAppStreamReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAppStreamReadOnlyAccess',
     description: 'AmazonAppStreamReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -307,7 +307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAppStreamServiceAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonAppStreamServiceAccess',
     description: 'AmazonAppStreamServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -315,7 +315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAthenaFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess',
     description: 'AmazonAthenaFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -323,7 +323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAthenaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonAthenaServiceRolePolicy',
     description: 'AmazonAthenaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -331,7 +331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAugmentedAIFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAugmentedAIFullAccess',
     description: 'AmazonAugmentedAIFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -339,7 +339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAugmentedAIHumanLoopFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAugmentedAIHumanLoopFullAccess',
     description: 'AmazonAugmentedAIHumanLoopFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -347,7 +347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAugmentedAIIntegratedAPIAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAugmentedAIIntegratedAPIAccess',
     description: 'AmazonAugmentedAIIntegratedAPIAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -355,7 +355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAuroraDSQLConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAuroraDSQLConsoleFullAccess',
     description: 'AmazonAuroraDSQLConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -363,7 +363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAuroraDSQLFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAuroraDSQLFullAccess',
     description: 'AmazonAuroraDSQLFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -371,7 +371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonAuroraDSQLReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonAuroraDSQLReadOnlyAccess',
     description: 'AmazonAuroraDSQLReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -379,7 +379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockAgentCoreMemoryBedrockModelInferenceExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockAgentCoreMemoryBedrockModelInferenceExecutionRolePolicy',
     description: 'AmazonBedrockAgentCoreMemoryBedrockModelInferenceExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -387,7 +387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockFullAccess',
     description: 'AmazonBedrockFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -395,7 +395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockLimitedAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockLimitedAccess',
     description: 'AmazonBedrockLimitedAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -403,7 +403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockMantleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockMantleFullAccess',
     description: 'AmazonBedrockMantleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -411,7 +411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockMantleInferenceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockMantleInferenceAccess',
     description: 'AmazonBedrockMantleInferenceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -419,7 +419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockMantleReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockMantleReadOnly',
     description: 'AmazonBedrockMantleReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -427,7 +427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockMarketplaceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockMarketplaceAccess',
     description: 'AmazonBedrockMarketplaceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -435,7 +435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockReadOnly',
     description: 'AmazonBedrockReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -443,7 +443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonBedrockStudioPermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonBedrockStudioPermissionsBoundary',
     description: 'AmazonBedrockStudioPermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -475,7 +475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonChimeFullAccess',
     description: 'AmazonChimeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -483,7 +483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonChimeReadOnly',
     description: 'AmazonChimeReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -491,7 +491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeSDK',
     arn: 'arn:aws:iam::aws:policy/AmazonChimeSDK',
     description: 'AmazonChimeSDK — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -499,7 +499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeSDKMediaPipelinesServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonChimeSDKMediaPipelinesServiceLinkedRolePolicy',
     description: 'AmazonChimeSDKMediaPipelinesServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -507,7 +507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeSDKMessagingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonChimeSDKMessagingServiceRolePolicy',
     description: 'AmazonChimeSDKMessagingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -515,7 +515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonChimeServiceRolePolicy',
     description: 'AmazonChimeServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -523,7 +523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeTranscriptionServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonChimeTranscriptionServiceLinkedRolePolicy',
     description: 'AmazonChimeTranscriptionServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -531,7 +531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeUserManagement',
     arn: 'arn:aws:iam::aws:policy/AmazonChimeUserManagement',
     description: 'AmazonChimeUserManagement — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -539,7 +539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonChimeVoiceConnectorServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonChimeVoiceConnectorServiceLinkedRolePolicy',
     description: 'AmazonChimeVoiceConnectorServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -611,7 +611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeCatalystFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeCatalystFullAccess',
     description: 'AmazonCodeCatalystFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -619,7 +619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeCatalystReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeCatalystReadOnlyAccess',
     description: 'AmazonCodeCatalystReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -627,7 +627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeCatalystSupportAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonCodeCatalystSupportAccess',
     description: 'AmazonCodeCatalystSupportAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -635,7 +635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruProfilerAgentAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruProfilerAgentAccess',
     description: 'AmazonCodeGuruProfilerAgentAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -643,7 +643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruProfilerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruProfilerFullAccess',
     description: 'AmazonCodeGuruProfilerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -651,7 +651,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruProfilerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruProfilerReadOnlyAccess',
     description: 'AmazonCodeGuruProfilerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -659,7 +659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruReviewerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruReviewerFullAccess',
     description: 'AmazonCodeGuruReviewerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -667,7 +667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruReviewerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruReviewerReadOnlyAccess',
     description: 'AmazonCodeGuruReviewerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -675,7 +675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruReviewerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonCodeGuruReviewerServiceRolePolicy',
     description: 'AmazonCodeGuruReviewerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -683,7 +683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruSecurityFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruSecurityFullAccess',
     description: 'AmazonCodeGuruSecurityFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -691,7 +691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCodeGuruSecurityScanAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonCodeGuruSecurityScanAccess',
     description: 'AmazonCodeGuruSecurityScanAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -699,7 +699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoDeveloperAuthenticatedIdentities',
     arn: 'arn:aws:iam::aws:policy/AmazonCognitoDeveloperAuthenticatedIdentities',
     description: 'AmazonCognitoDeveloperAuthenticatedIdentities — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -707,7 +707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoIdpEmailServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonCognitoIdpEmailServiceRolePolicy',
     description: 'AmazonCognitoIdpEmailServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -715,7 +715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoIdpServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonCognitoIdpServiceRolePolicy',
     description: 'AmazonCognitoIdpServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -723,7 +723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoPowerUser',
     arn: 'arn:aws:iam::aws:policy/AmazonCognitoPowerUser',
     description: 'AmazonCognitoPowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -731,7 +731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonCognitoReadOnly',
     description: 'AmazonCognitoReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -739,7 +739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoUnAuthedIdentitiesSessionPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonCognitoUnAuthedIdentitiesSessionPolicy',
     description: 'AmazonCognitoUnAuthedIdentitiesSessionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -747,7 +747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonCognitoUnauthenticatedIdentities',
     arn: 'arn:aws:iam::aws:policy/AmazonCognitoUnauthenticatedIdentities',
     description: 'AmazonCognitoUnauthenticatedIdentities — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -755,7 +755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnect_FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonConnect_FullAccess',
     description: 'AmazonConnect_FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -763,7 +763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnectCampaignsServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonConnectCampaignsServiceLinkedRolePolicy',
     description: 'AmazonConnectCampaignsServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -771,7 +771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnectReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonConnectReadOnlyAccess',
     description: 'AmazonConnectReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -779,7 +779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnectServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonConnectServiceLinkedRolePolicy',
     description: 'AmazonConnectServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -787,7 +787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnectSynchronizationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonConnectSynchronizationServiceRolePolicy',
     description: 'AmazonConnectSynchronizationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -795,7 +795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonConnectVoiceIDFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonConnectVoiceIDFullAccess',
     description: 'AmazonConnectVoiceIDFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -803,7 +803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneBedrockModelConsumptionPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDataZoneBedrockModelConsumptionPolicy',
     description: 'AmazonDataZoneBedrockModelConsumptionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -811,7 +811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneBedrockModelManagementPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDataZoneBedrockModelManagementPolicy',
     description: 'AmazonDataZoneBedrockModelManagementPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -819,7 +819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneDomainExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDataZoneDomainExecutionRolePolicy',
     description: 'AmazonDataZoneDomainExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -827,7 +827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneEnvironmentRolePermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneEnvironmentRolePermissionsBoundary',
     description: 'AmazonDataZoneEnvironmentRolePermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -835,7 +835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneFullAccess',
     description: 'AmazonDataZoneFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -843,7 +843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneFullUserAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneFullUserAccess',
     description: 'AmazonDataZoneFullUserAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -851,7 +851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneGlueManageAccessRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDataZoneGlueManageAccessRolePolicy',
     description: 'AmazonDataZoneGlueManageAccessRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -859,7 +859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZonePortalFullAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZonePortalFullAccessPolicy',
     description: 'AmazonDataZonePortalFullAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -867,7 +867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZonePreviewConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZonePreviewConsoleFullAccess',
     description: 'AmazonDataZonePreviewConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -875,7 +875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneProjectDeploymentPermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneProjectDeploymentPermissionsBoundary',
     description: 'AmazonDataZoneProjectDeploymentPermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -883,7 +883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneProjectRolePermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneProjectRolePermissionsBoundary',
     description: 'AmazonDataZoneProjectRolePermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -891,7 +891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneRedshiftGlueProvisioningPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneRedshiftGlueProvisioningPolicy',
     description: 'AmazonDataZoneRedshiftGlueProvisioningPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -899,7 +899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneRedshiftManageAccessRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDataZoneRedshiftManageAccessRolePolicy',
     description: 'AmazonDataZoneRedshiftManageAccessRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -907,7 +907,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneSageMakerEnvironmentRolePermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneSageMakerEnvironmentRolePermissionsBoundary',
     description: 'AmazonDataZoneSageMakerEnvironmentRolePermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -915,7 +915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneSageMakerManageAccessRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneSageMakerManageAccessRolePolicy',
     description: 'AmazonDataZoneSageMakerManageAccessRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -923,7 +923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDataZoneSageMakerProvisioningRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonDataZoneSageMakerProvisioningRolePolicy',
     description: 'AmazonDataZoneSageMakerProvisioningRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -931,7 +931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDetectiveFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDetectiveFullAccess',
     description: 'AmazonDetectiveFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -939,7 +939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDetectiveInvestigatorAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDetectiveInvestigatorAccess',
     description: 'AmazonDetectiveInvestigatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -947,7 +947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDetectiveMemberAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDetectiveMemberAccess',
     description: 'AmazonDetectiveMemberAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -955,7 +955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDetectiveOrganizationsAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDetectiveOrganizationsAccess',
     description: 'AmazonDetectiveOrganizationsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -963,7 +963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDetectiveServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonDetectiveServiceLinkedRolePolicy',
     description: 'AmazonDetectiveServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -971,7 +971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDevOpsGuruConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDevOpsGuruConsoleFullAccess',
     description: 'AmazonDevOpsGuruConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -979,7 +979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDevOpsGuruFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDevOpsGuruFullAccess',
     description: 'AmazonDevOpsGuruFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -987,7 +987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDevOpsGuruOrganizationsAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDevOpsGuruOrganizationsAccess',
     description: 'AmazonDevOpsGuruOrganizationsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -995,7 +995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDevOpsGuruReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDevOpsGuruReadOnlyAccess',
     description: 'AmazonDevOpsGuruReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1003,7 +1003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDevOpsGuruServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonDevOpsGuruServiceRolePolicy',
     description: 'AmazonDevOpsGuruServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1011,7 +1011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDMSCloudWatchLogsRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDMSCloudWatchLogsRole',
     description: 'AmazonDMSCloudWatchLogsRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1019,7 +1019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDMSRedshiftS3Role',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDMSRedshiftS3Role',
     description: 'AmazonDMSRedshiftS3Role — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1027,7 +1027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDMSVPCManagementRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole',
     description: 'AmazonDMSVPCManagementRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1035,7 +1035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDB-ElasticServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonDocDB-ElasticServiceRolePolicy',
     description: 'AmazonDocDB-ElasticServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1043,7 +1043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDBConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDocDBConsoleFullAccess',
     description: 'AmazonDocDBConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1051,7 +1051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDBElasticFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDocDBElasticFullAccess',
     description: 'AmazonDocDBElasticFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1059,7 +1059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDBElasticReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDocDBElasticReadOnlyAccess',
     description: 'AmazonDocDBElasticReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1067,7 +1067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDBFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDocDBFullAccess',
     description: 'AmazonDocDBFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1075,7 +1075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDocDBReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDocDBReadOnlyAccess',
     description: 'AmazonDocDBReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1083,7 +1083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDRSVPCManagement',
     arn: 'arn:aws:iam::aws:policy/AmazonDRSVPCManagement',
     description: 'AmazonDRSVPCManagement — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1091,7 +1091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDynamoDBFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess',
     description: 'AmazonDynamoDBFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1099,7 +1099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDynamoDBFullAccess_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess_v2',
     description: 'AmazonDynamoDBFullAccess_v2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1107,7 +1107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDynamoDBFullAccesswithDataPipeline',
     arn: 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccesswithDataPipeline',
     description: 'AmazonDynamoDBFullAccesswithDataPipeline — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1115,7 +1115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonDynamoDBReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess',
     description: 'AmazonDynamoDBReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1123,7 +1123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEBSCSIDriverEKSClusterScopedPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEBSCSIDriverEKSClusterScopedPolicy',
     description: 'AmazonEBSCSIDriverEKSClusterScopedPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1147,7 +1147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerRegistryFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess',
     description: 'AmazonEC2ContainerRegistryFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1155,7 +1155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerRegistryPowerUser',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser',
     description: 'AmazonEC2ContainerRegistryPowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1163,7 +1163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerRegistryPullOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
     description: 'AmazonEC2ContainerRegistryPullOnly — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1171,7 +1171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerRegistryReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
     description: 'AmazonEC2ContainerRegistryReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1179,7 +1179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerServiceAutoscaleRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole',
     description: 'AmazonEC2ContainerServiceAutoscaleRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1187,7 +1187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerServiceEventsRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole',
     description: 'AmazonEC2ContainerServiceEventsRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1195,7 +1195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerServiceforEC2Role',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role',
     description: 'AmazonEC2ContainerServiceforEC2Role — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1203,7 +1203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ContainerServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole',
     description: 'AmazonEC2ContainerServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1211,7 +1211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2FullAccess',
     description: 'AmazonEC2FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1219,7 +1219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ImageReferencesAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ImageReferencesAccessPolicy',
     description: 'AmazonEC2ImageReferencesAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1227,7 +1227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess',
     description: 'AmazonEC2ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1235,7 +1235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2RoleforAWSCodeDeploy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
     description: 'AmazonEC2RoleforAWSCodeDeploy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1243,7 +1243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2RoleforAWSCodeDeployLimited',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeployLimited',
     description: 'AmazonEC2RoleforAWSCodeDeployLimited — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1251,7 +1251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2RoleforDataPipelineRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforDataPipelineRole',
     description: 'AmazonEC2RoleforDataPipelineRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1259,7 +1259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2RoleforSSM',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM',
     description: 'AmazonEC2RoleforSSM — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1267,7 +1267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2RolePolicyForLaunchWizard',
     arn: 'arn:aws:iam::aws:policy/AmazonEC2RolePolicyForLaunchWizard',
     description: 'AmazonEC2RolePolicyForLaunchWizard — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1275,7 +1275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2SpotFleetAutoscaleRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetAutoscaleRole',
     description: 'AmazonEC2SpotFleetAutoscaleRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1283,7 +1283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEC2SpotFleetTaggingRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole',
     description: 'AmazonEC2SpotFleetTaggingRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1291,7 +1291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECS_FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonECS_FullAccess',
     description: 'AmazonECS_FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Containers', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1299,7 +1299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSComputeServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonECSComputeServiceRolePolicy',
     description: 'AmazonECSComputeServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1307,7 +1307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRoleforExpressGatewayServices',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRoleforExpressGatewayServices',
     description: 'AmazonECSInfrastructureRoleforExpressGatewayServices — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1315,7 +1315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRolePolicyForLoadBalancers',
     arn: 'arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForLoadBalancers',
     description: 'AmazonECSInfrastructureRolePolicyForLoadBalancers — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1323,7 +1323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRolePolicyForManagedInstances',
     arn: 'arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances',
     description: 'AmazonECSInfrastructureRolePolicyForManagedInstances — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1331,7 +1331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRolePolicyForServiceConnectTransportLayerSecurity',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForServiceConnectTransportLayerSecurity',
     description: 'AmazonECSInfrastructureRolePolicyForServiceConnectTransportLayerSecurity — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1339,7 +1339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRolePolicyForVolumes',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes',
     description: 'AmazonECSInfrastructureRolePolicyForVolumes — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1347,7 +1347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInfrastructureRolePolicyForVpcLattice',
     arn: 'arn:aws:iam::aws:policy/AmazonECSInfrastructureRolePolicyForVpcLattice',
     description: 'AmazonECSInfrastructureRolePolicyForVpcLattice — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1355,7 +1355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSInstanceRolePolicyForManagedInstances',
     arn: 'arn:aws:iam::aws:policy/AmazonECSInstanceRolePolicyForManagedInstances',
     description: 'AmazonECSInstanceRolePolicyForManagedInstances — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1363,7 +1363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonECSServiceRolePolicy',
     description: 'AmazonECSServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1371,7 +1371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonECSTaskExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
     description: 'AmazonECSTaskExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1379,7 +1379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEFSCSIDriverPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy',
     description: 'AmazonEFSCSIDriverPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1387,7 +1387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKS_CNI_Policy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy',
     description: 'AmazonEKS_CNI_Policy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1395,7 +1395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSBlockStoragePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSBlockStoragePolicy',
     description: 'AmazonEKSBlockStoragePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1403,7 +1403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSBlockStoragePolicyV2',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSBlockStoragePolicyV2',
     description: 'AmazonEKSBlockStoragePolicyV2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1411,7 +1411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSClusterPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy',
     description: 'AmazonEKSClusterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1419,7 +1419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSComputePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSComputePolicy',
     description: 'AmazonEKSComputePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1427,7 +1427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSConnectorServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEKSConnectorServiceRolePolicy',
     description: 'AmazonEKSConnectorServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1435,7 +1435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSDashboardConsoleReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSDashboardConsoleReadOnly',
     description: 'AmazonEKSDashboardConsoleReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1443,7 +1443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSDashboardServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEKSDashboardServiceRolePolicy',
     description: 'AmazonEKSDashboardServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1451,7 +1451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSFargatePodExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy',
     description: 'AmazonEKSFargatePodExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1459,7 +1459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSForFargateServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEKSForFargateServiceRolePolicy',
     description: 'AmazonEKSForFargateServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1467,7 +1467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSLoadBalancingPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy',
     description: 'AmazonEKSLoadBalancingPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1475,7 +1475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSLocalOutpostClusterPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSLocalOutpostClusterPolicy',
     description: 'AmazonEKSLocalOutpostClusterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1483,7 +1483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSLocalOutpostServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEKSLocalOutpostServiceRolePolicy',
     description: 'AmazonEKSLocalOutpostServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1491,7 +1491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSMCPReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSMCPReadOnlyAccess',
     description: 'AmazonEKSMCPReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1499,7 +1499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSNetworkingPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSNetworkingPolicy',
     description: 'AmazonEKSNetworkingPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1507,7 +1507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSServicePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy',
     description: 'AmazonEKSServicePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1515,7 +1515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEKSServiceRolePolicy',
     description: 'AmazonEKSServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1523,7 +1523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSVPCResourceController',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSVPCResourceController',
     description: 'AmazonEKSVPCResourceController — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1531,7 +1531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSWorkerNodeMinimalPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSWorkerNodeMinimalPolicy',
     description: 'AmazonEKSWorkerNodeMinimalPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1539,7 +1539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEKSWorkerNodePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy',
     description: 'AmazonEKSWorkerNodePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1547,7 +1547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElastiCacheFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess',
     description: 'AmazonElastiCacheFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1555,7 +1555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElastiCacheReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElastiCacheReadOnlyAccess',
     description: 'AmazonElastiCacheReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1563,7 +1563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticContainerRegistryPublicFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess',
     description: 'AmazonElasticContainerRegistryPublicFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Containers', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1571,7 +1571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticContainerRegistryPublicPowerUser',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicPowerUser',
     description: 'AmazonElasticContainerRegistryPublicPowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'Containers', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1579,7 +1579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticContainerRegistryPublicReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
     description: 'AmazonElasticContainerRegistryPublicReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1587,7 +1587,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemClientFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemClientFullAccess',
     description: 'AmazonElasticFileSystemClientFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1595,7 +1595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemClientReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadOnlyAccess',
     description: 'AmazonElasticFileSystemClientReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1603,7 +1603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemClientReadWriteAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess',
     description: 'AmazonElasticFileSystemClientReadWriteAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1611,7 +1611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess',
     description: 'AmazonElasticFileSystemFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1619,7 +1619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemReadOnlyAccess',
     description: 'AmazonElasticFileSystemReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1627,7 +1627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonElasticFileSystemServiceRolePolicy',
     description: 'AmazonElasticFileSystemServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1635,7 +1635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticFileSystemsUtils',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticFileSystemsUtils',
     description: 'AmazonElasticFileSystemsUtils — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1643,7 +1643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceEditorsRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceEditorsRole',
     description: 'AmazonElasticMapReduceEditorsRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1651,7 +1651,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceforAutoScalingRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole',
     description: 'AmazonElasticMapReduceforAutoScalingRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1659,7 +1659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceforEC2Role',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role',
     description: 'AmazonElasticMapReduceforEC2Role — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1667,7 +1667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticMapReduceFullAccess',
     description: 'AmazonElasticMapReduceFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1675,7 +1675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReducePlacementGroupPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticMapReducePlacementGroupPolicy',
     description: 'AmazonElasticMapReducePlacementGroupPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1683,7 +1683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonElasticMapReduceReadOnlyAccess',
     description: 'AmazonElasticMapReduceReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1691,7 +1691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticMapReduceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole',
     description: 'AmazonElasticMapReduceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1699,7 +1699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonElasticsearchServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonElasticsearchServiceRolePolicy',
     description: 'AmazonElasticsearchServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1739,7 +1739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRCleanupPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEMRCleanupPolicy',
     description: 'AmazonEMRCleanupPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1747,7 +1747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRContainersServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEMRContainersServiceRolePolicy',
     description: 'AmazonEMRContainersServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1755,7 +1755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRFullAccessPolicy_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonEMRFullAccessPolicy_v2',
     description: 'AmazonEMRFullAccessPolicy_v2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1763,7 +1763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRReadOnlyAccessPolicy_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonEMRReadOnlyAccessPolicy_v2',
     description: 'AmazonEMRReadOnlyAccessPolicy_v2 — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1771,7 +1771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRServerlessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEMRServerlessServiceRolePolicy',
     description: 'AmazonEMRServerlessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1779,7 +1779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRServicePolicy_v2',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2',
     description: 'AmazonEMRServicePolicy_v2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1787,7 +1787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEMRServicePolicyForSessions',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicyForSessions',
     description: 'AmazonEMRServicePolicyForSessions — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1795,7 +1795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonESCognitoAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonESCognitoAccess',
     description: 'AmazonESCognitoAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1819,7 +1819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeApiDestinationsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEventBridgeApiDestinationsServiceRolePolicy',
     description: 'AmazonEventBridgeApiDestinationsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1827,7 +1827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess',
     description: 'AmazonEventBridgeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1835,7 +1835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgePipesFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgePipesFullAccess',
     description: 'AmazonEventBridgePipesFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1843,7 +1843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgePipesOperatorAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgePipesOperatorAccess',
     description: 'AmazonEventBridgePipesOperatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1851,7 +1851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgePipesReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgePipesReadOnlyAccess',
     description: 'AmazonEventBridgePipesReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1859,7 +1859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeReadOnlyAccess',
     description: 'AmazonEventBridgeReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1867,7 +1867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeSchedulerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerFullAccess',
     description: 'AmazonEventBridgeSchedulerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1875,7 +1875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeSchedulerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerReadOnlyAccess',
     description: 'AmazonEventBridgeSchedulerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1883,7 +1883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeSchemasFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeSchemasFullAccess',
     description: 'AmazonEventBridgeSchemasFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1891,7 +1891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeSchemasReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonEventBridgeSchemasReadOnlyAccess',
     description: 'AmazonEventBridgeSchemasReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1899,7 +1899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonEventBridgeSchemasServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonEventBridgeSchemasServiceRolePolicy',
     description: 'AmazonEventBridgeSchemasServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1923,7 +1923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonForecastFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonForecastFullAccess',
     description: 'AmazonForecastFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1931,7 +1931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFraudDetectorFullAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonFraudDetectorFullAccessPolicy',
     description: 'AmazonFraudDetectorFullAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1939,7 +1939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFreeRTOSFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonFreeRTOSFullAccess',
     description: 'AmazonFreeRTOSFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1947,7 +1947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFreeRTOSOTAUpdate',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonFreeRTOSOTAUpdate',
     description: 'AmazonFreeRTOSOTAUpdate — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1955,7 +1955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFSxConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonFSxConsoleFullAccess',
     description: 'AmazonFSxConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1963,7 +1963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFSxConsoleReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonFSxConsoleReadOnlyAccess',
     description: 'AmazonFSxConsoleReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1971,7 +1971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFSxFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonFSxFullAccess',
     description: 'AmazonFSxFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1979,7 +1979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFSxReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonFSxReadOnlyAccess',
     description: 'AmazonFSxReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -1987,7 +1987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonFSxServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonFSxServiceRolePolicy',
     description: 'AmazonFSxServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -1995,7 +1995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGlacierFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonGlacierFullAccess',
     description: 'AmazonGlacierFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2003,7 +2003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGlacierReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonGlacierReadOnlyAccess',
     description: 'AmazonGlacierReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2011,7 +2011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGrafanaAthenaAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaAthenaAccess',
     description: 'AmazonGrafanaAthenaAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2027,7 +2027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGrafanaRedshiftAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaRedshiftAccess',
     description: 'AmazonGrafanaRedshiftAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2043,7 +2043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGuardDutyFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess',
     description: 'AmazonGuardDutyFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2051,7 +2051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGuardDutyFullAccess_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess_v2',
     description: 'AmazonGuardDutyFullAccess_v2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2059,7 +2059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGuardDutyMalwareProtectionServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonGuardDutyMalwareProtectionServiceRolePolicy',
     description: 'AmazonGuardDutyMalwareProtectionServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2067,7 +2067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGuardDutyReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonGuardDutyReadOnlyAccess',
     description: 'AmazonGuardDutyReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2075,7 +2075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonGuardDutyServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonGuardDutyServiceRolePolicy',
     description: 'AmazonGuardDutyServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2155,7 +2155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2AgentlessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonInspector2AgentlessServiceRolePolicy',
     description: 'AmazonInspector2AgentlessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2163,7 +2163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonInspector2FullAccess',
     description: 'AmazonInspector2FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2171,7 +2171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2FullAccess_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonInspector2FullAccess_v2',
     description: 'AmazonInspector2FullAccess_v2 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2179,7 +2179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2ManagedCisPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonInspector2ManagedCisPolicy',
     description: 'AmazonInspector2ManagedCisPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2187,7 +2187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2ManagedTelemetryPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonInspector2ManagedTelemetryPolicy',
     description: 'AmazonInspector2ManagedTelemetryPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2195,7 +2195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonInspector2ReadOnlyAccess',
     description: 'AmazonInspector2ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2203,7 +2203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2ServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonInspector2ServiceRolePolicy',
     description: 'AmazonInspector2ServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2211,7 +2211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspector2ThirdPartyServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonInspector2ThirdPartyServiceRolePolicy',
     description: 'AmazonInspector2ThirdPartyServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2219,7 +2219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspectorFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonInspectorFullAccess',
     description: 'AmazonInspectorFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2227,7 +2227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspectorReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonInspectorReadOnlyAccess',
     description: 'AmazonInspectorReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2235,7 +2235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonInspectorServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonInspectorServiceRolePolicy',
     description: 'AmazonInspectorServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2243,7 +2243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKendraFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKendraFullAccess',
     description: 'AmazonKendraFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2251,7 +2251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKendraReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKendraReadOnlyAccess',
     description: 'AmazonKendraReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2259,7 +2259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKeyspacesFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKeyspacesFullAccess',
     description: 'AmazonKeyspacesFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2267,7 +2267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKeyspacesReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKeyspacesReadOnlyAccess',
     description: 'AmazonKeyspacesReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2275,7 +2275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKeyspacesReadOnlyAccess_v2',
     arn: 'arn:aws:iam::aws:policy/AmazonKeyspacesReadOnlyAccess_v2',
     description: 'AmazonKeyspacesReadOnlyAccess_v2 — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2283,7 +2283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisAnalyticsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisAnalyticsFullAccess',
     description: 'AmazonKinesisAnalyticsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2291,7 +2291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisAnalyticsReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisAnalyticsReadOnly',
     description: 'AmazonKinesisAnalyticsReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2299,7 +2299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisFirehoseFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess',
     description: 'AmazonKinesisFirehoseFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2307,7 +2307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisFirehoseReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisFirehoseReadOnlyAccess',
     description: 'AmazonKinesisFirehoseReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2315,7 +2315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisFullAccess',
     description: 'AmazonKinesisFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2323,7 +2323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisReadOnlyAccess',
     description: 'AmazonKinesisReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2331,7 +2331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisVideoStreamsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisVideoStreamsFullAccess',
     description: 'AmazonKinesisVideoStreamsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2339,7 +2339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonKinesisVideoStreamsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonKinesisVideoStreamsReadOnlyAccess',
     description: 'AmazonKinesisVideoStreamsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2363,7 +2363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexChannelsAccess',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonLexChannelsAccess',
     description: 'AmazonLexChannelsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2371,7 +2371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLexFullAccess',
     description: 'AmazonLexFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2379,7 +2379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonLexReadOnly',
     description: 'AmazonLexReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2387,7 +2387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexReplicationPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonLexReplicationPolicy',
     description: 'AmazonLexReplicationPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2395,7 +2395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexRunBotsOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonLexRunBotsOnly',
     description: 'AmazonLexRunBotsOnly — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2403,7 +2403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLexV2BotPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonLexV2BotPolicy',
     description: 'AmazonLexV2BotPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2411,7 +2411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutEquipmentFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutEquipmentFullAccess',
     description: 'AmazonLookoutEquipmentFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2419,7 +2419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutEquipmentReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutEquipmentReadOnlyAccess',
     description: 'AmazonLookoutEquipmentReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2427,7 +2427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutMetricsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutMetricsFullAccess',
     description: 'AmazonLookoutMetricsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2435,7 +2435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutMetricsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutMetricsReadOnlyAccess',
     description: 'AmazonLookoutMetricsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2443,7 +2443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutVisionConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutVisionConsoleFullAccess',
     description: 'AmazonLookoutVisionConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2451,7 +2451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutVisionConsoleReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutVisionConsoleReadOnlyAccess',
     description: 'AmazonLookoutVisionConsoleReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2459,7 +2459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutVisionFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutVisionFullAccess',
     description: 'AmazonLookoutVisionFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2467,7 +2467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonLookoutVisionReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonLookoutVisionReadOnlyAccess',
     description: 'AmazonLookoutVisionReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2475,7 +2475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningBatchPredictionsAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningBatchPredictionsAccess',
     description: 'AmazonMachineLearningBatchPredictionsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2483,7 +2483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningCreateOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningCreateOnlyAccess',
     description: 'AmazonMachineLearningCreateOnlyAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2491,7 +2491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningFullAccess',
     description: 'AmazonMachineLearningFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2499,7 +2499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningManageRealTimeEndpointOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningManageRealTimeEndpointOnlyAccess',
     description: 'AmazonMachineLearningManageRealTimeEndpointOnlyAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2507,7 +2507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningReadOnlyAccess',
     description: 'AmazonMachineLearningReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2515,7 +2515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningRealTimePredictionOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMachineLearningRealTimePredictionOnlyAccess',
     description: 'AmazonMachineLearningRealTimePredictionOnlyAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2523,7 +2523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMachineLearningRoleforRedshiftDataSourceV3',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonMachineLearningRoleforRedshiftDataSourceV3',
     description: 'AmazonMachineLearningRoleforRedshiftDataSourceV3 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2531,7 +2531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMacieFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMacieFullAccess',
     description: 'AmazonMacieFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2539,7 +2539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMacieHandshakeRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonMacieHandshakeRole',
     description: 'AmazonMacieHandshakeRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2547,7 +2547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMacieReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMacieReadOnlyAccess',
     description: 'AmazonMacieReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2555,7 +2555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMacieServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonMacieServiceRole',
     description: 'AmazonMacieServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2563,7 +2563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMacieServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonMacieServiceRolePolicy',
     description: 'AmazonMacieServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2635,7 +2635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMemoryDBFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMemoryDBFullAccess',
     description: 'AmazonMemoryDBFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2643,7 +2643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMemoryDBReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMemoryDBReadOnlyAccess',
     description: 'AmazonMemoryDBReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2691,7 +2691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMQApiFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMQApiFullAccess',
     description: 'AmazonMQApiFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2699,7 +2699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMQApiReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMQApiReadOnlyAccess',
     description: 'AmazonMQApiReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2707,7 +2707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMQFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMQFullAccess',
     description: 'AmazonMQFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2715,7 +2715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMQReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMQReadOnlyAccess',
     description: 'AmazonMQReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2723,7 +2723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMQServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonMQServiceRolePolicy',
     description: 'AmazonMQServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2731,7 +2731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMSKConnectReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMSKConnectReadOnlyAccess',
     description: 'AmazonMSKConnectReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2739,7 +2739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMSKFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMSKFullAccess',
     description: 'AmazonMSKFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2747,7 +2747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMSKReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonMSKReadOnlyAccess',
     description: 'AmazonMSKReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2755,7 +2755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonMWAAServerlessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonMWAAServerlessServiceRolePolicy',
     description: 'AmazonMWAAServerlessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2843,7 +2843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchDashboardsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonOpenSearchDashboardsServiceRolePolicy',
     description: 'AmazonOpenSearchDashboardsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2851,7 +2851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchDirectQueryGlueCreateAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchDirectQueryGlueCreateAccess',
     description: 'AmazonOpenSearchDirectQueryGlueCreateAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2859,7 +2859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchIngestionFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchIngestionFullAccess',
     description: 'AmazonOpenSearchIngestionFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2867,7 +2867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchIngestionReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchIngestionReadOnlyAccess',
     description: 'AmazonOpenSearchIngestionReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2875,7 +2875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchIngestionServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonOpenSearchIngestionServiceRolePolicy',
     description: 'AmazonOpenSearchIngestionServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2883,7 +2883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchServerlessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonOpenSearchServerlessServiceRolePolicy',
     description: 'AmazonOpenSearchServerlessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2891,7 +2891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchServiceCognitoAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchServiceCognitoAccess',
     description: 'AmazonOpenSearchServiceCognitoAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2899,7 +2899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchServiceFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess',
     description: 'AmazonOpenSearchServiceFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2907,7 +2907,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchServiceReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonOpenSearchServiceReadOnlyAccess',
     description: 'AmazonOpenSearchServiceReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2915,7 +2915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonOpenSearchServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonOpenSearchServiceRolePolicy',
     description: 'AmazonOpenSearchServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -2923,7 +2923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonPersonalizeFullAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonPersonalizeFullAccess',
     description: 'AmazonPersonalizeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2931,7 +2931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonPollyFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonPollyFullAccess',
     description: 'AmazonPollyFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2939,7 +2939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonPollyReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonPollyReadOnlyAccess',
     description: 'AmazonPollyReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2987,7 +2987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonQDeveloperAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonQDeveloperAccess',
     description: 'AmazonQDeveloperAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -2995,7 +2995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonQFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonQFullAccess',
     description: 'AmazonQFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3003,7 +3003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonQLDBConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonQLDBConsoleFullAccess',
     description: 'AmazonQLDBConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3011,7 +3011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonQLDBFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonQLDBFullAccess',
     description: 'AmazonQLDBFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3019,7 +3019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonQLDBReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonQLDBReadOnly',
     description: 'AmazonQLDBReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3027,7 +3027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSBetaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRDSBetaServiceRolePolicy',
     description: 'AmazonRDSBetaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3035,7 +3035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSCustomInstanceProfileRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSCustomInstanceProfileRolePolicy',
     description: 'AmazonRDSCustomInstanceProfileRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3043,7 +3043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSCustomPreviewServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRDSCustomPreviewServiceRolePolicy',
     description: 'AmazonRDSCustomPreviewServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3051,7 +3051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSCustomServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRDSCustomServiceRolePolicy',
     description: 'AmazonRDSCustomServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3059,7 +3059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSDataFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSDataFullAccess',
     description: 'AmazonRDSDataFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3067,7 +3067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSDirectoryServiceAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess',
     description: 'AmazonRDSDirectoryServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3075,7 +3075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSEnhancedMonitoringRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
     description: 'AmazonRDSEnhancedMonitoringRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3083,7 +3083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSFullAccess',
     description: 'AmazonRDSFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3091,7 +3091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSPerformanceInsightsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSPerformanceInsightsFullAccess',
     description: 'AmazonRDSPerformanceInsightsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3099,7 +3099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSPerformanceInsightsReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSPerformanceInsightsReadOnly',
     description: 'AmazonRDSPerformanceInsightsReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3107,7 +3107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSPreviewServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRDSPreviewServiceRolePolicy',
     description: 'AmazonRDSPreviewServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3115,7 +3115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess',
     description: 'AmazonRDSReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3123,7 +3123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRDSServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRDSServiceRolePolicy',
     description: 'AmazonRDSServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3131,7 +3131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftAllCommandsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess',
     description: 'AmazonRedshiftAllCommandsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3139,7 +3139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftDataFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftDataFullAccess',
     description: 'AmazonRedshiftDataFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3147,7 +3147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftFederatedAuthorization',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftFederatedAuthorization',
     description: 'AmazonRedshiftFederatedAuthorization — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3155,7 +3155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftFullAccess',
     description: 'AmazonRedshiftFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3163,7 +3163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftQueryEditor',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftQueryEditor',
     description: 'AmazonRedshiftQueryEditor — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3171,7 +3171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftQueryEditorV2FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftQueryEditorV2FullAccess',
     description: 'AmazonRedshiftQueryEditorV2FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3179,7 +3179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftQueryEditorV2NoSharing',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftQueryEditorV2NoSharing',
     description: 'AmazonRedshiftQueryEditorV2NoSharing — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3187,7 +3187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftQueryEditorV2ReadSharing',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftQueryEditorV2ReadSharing',
     description: 'AmazonRedshiftQueryEditorV2ReadSharing — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3195,7 +3195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftQueryEditorV2ReadWriteSharing',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftQueryEditorV2ReadWriteSharing',
     description: 'AmazonRedshiftQueryEditorV2ReadWriteSharing — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3203,7 +3203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRedshiftReadOnlyAccess',
     description: 'AmazonRedshiftReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3211,7 +3211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRedshiftServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonRedshiftServiceLinkedRolePolicy',
     description: 'AmazonRedshiftServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3219,7 +3219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRekognitionCustomLabelsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRekognitionCustomLabelsFullAccess',
     description: 'AmazonRekognitionCustomLabelsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3227,7 +3227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRekognitionFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRekognitionFullAccess',
     description: 'AmazonRekognitionFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3235,7 +3235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRekognitionReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRekognitionReadOnlyAccess',
     description: 'AmazonRekognitionReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3243,7 +3243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRekognitionServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonRekognitionServiceRole',
     description: 'AmazonRekognitionServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3251,7 +3251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53AutoNamingFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53AutoNamingFullAccess',
     description: 'AmazonRoute53AutoNamingFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3259,7 +3259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53AutoNamingReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53AutoNamingReadOnlyAccess',
     description: 'AmazonRoute53AutoNamingReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3267,7 +3267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53AutoNamingRegistrantAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53AutoNamingRegistrantAccess',
     description: 'AmazonRoute53AutoNamingRegistrantAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3275,7 +3275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53DomainsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53DomainsFullAccess',
     description: 'AmazonRoute53DomainsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3283,7 +3283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53DomainsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53DomainsReadOnlyAccess',
     description: 'AmazonRoute53DomainsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3291,7 +3291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess',
     description: 'AmazonRoute53FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3299,7 +3299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53GlobalResolverFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53GlobalResolverFullAccess',
     description: 'AmazonRoute53GlobalResolverFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3307,7 +3307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53GlobalResolverReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53GlobalResolverReadOnlyAccess',
     description: 'AmazonRoute53GlobalResolverReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3315,7 +3315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53ProfilesFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53ProfilesFullAccess',
     description: 'AmazonRoute53ProfilesFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3323,7 +3323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53ProfilesReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53ProfilesReadOnlyAccess',
     description: 'AmazonRoute53ProfilesReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3331,7 +3331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53ReadOnlyAccess',
     description: 'AmazonRoute53ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3339,7 +3339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryClusterFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryClusterFullAccess',
     description: 'AmazonRoute53RecoveryClusterFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3347,7 +3347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryClusterReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryClusterReadOnlyAccess',
     description: 'AmazonRoute53RecoveryClusterReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3355,7 +3355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryControlConfigFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryControlConfigFullAccess',
     description: 'AmazonRoute53RecoveryControlConfigFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3363,7 +3363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryControlConfigReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryControlConfigReadOnlyAccess',
     description: 'AmazonRoute53RecoveryControlConfigReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3371,7 +3371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryReadinessFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryReadinessFullAccess',
     description: 'AmazonRoute53RecoveryReadinessFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3379,7 +3379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53RecoveryReadinessReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53RecoveryReadinessReadOnlyAccess',
     description: 'AmazonRoute53RecoveryReadinessReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3387,7 +3387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53ResolverFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53ResolverFullAccess',
     description: 'AmazonRoute53ResolverFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3395,7 +3395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonRoute53ResolverReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonRoute53ResolverReadOnlyAccess',
     description: 'AmazonRoute53ResolverReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3403,7 +3403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3ExpressFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3ExpressFullAccess',
     description: 'AmazonS3ExpressFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3411,7 +3411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3ExpressReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3ExpressReadOnlyAccess',
     description: 'AmazonS3ExpressReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3419,7 +3419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesClientFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FilesClientFullAccess',
     description: 'AmazonS3FilesClientFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3427,7 +3427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesClientReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FilesClientReadOnlyAccess',
     description: 'AmazonS3FilesClientReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3435,7 +3435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesClientReadWriteAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FilesClientReadWriteAccess',
     description: 'AmazonS3FilesClientReadWriteAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3443,7 +3443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesCSIDriverPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonS3FilesCSIDriverPolicy',
     description: 'AmazonS3FilesCSIDriverPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3451,7 +3451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FilesFullAccess',
     description: 'AmazonS3FilesFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3459,7 +3459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FilesReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FilesReadOnlyAccess',
     description: 'AmazonS3FilesReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3467,7 +3467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3FullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3FullAccess',
     description: 'AmazonS3FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3475,7 +3475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3ObjectLambdaExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonS3ObjectLambdaExecutionRolePolicy',
     description: 'AmazonS3ObjectLambdaExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3483,7 +3483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3OutpostsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3OutpostsFullAccess',
     description: 'AmazonS3OutpostsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3491,7 +3491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3OutpostsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3OutpostsReadOnlyAccess',
     description: 'AmazonS3OutpostsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3499,7 +3499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess',
     description: 'AmazonS3ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3507,7 +3507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3TablesFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3TablesFullAccess',
     description: 'AmazonS3TablesFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3515,7 +3515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3TablesLakeFormationServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonS3TablesLakeFormationServiceRole',
     description: 'AmazonS3TablesLakeFormationServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3523,7 +3523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonS3TablesReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonS3TablesReadOnlyAccess',
     description: 'AmazonS3TablesReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3531,7 +3531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerAdmin-ServiceCatalogProductsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerAdmin-ServiceCatalogProductsServiceRolePolicy',
     description: 'AmazonSageMakerAdmin-ServiceCatalogProductsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3539,7 +3539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasAIServicesAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasAIServicesAccess',
     description: 'AmazonSageMakerCanvasAIServicesAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3547,7 +3547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasBedrockAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasBedrockAccess',
     description: 'AmazonSageMakerCanvasBedrockAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3555,7 +3555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasDataPrepFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasDataPrepFullAccess',
     description: 'AmazonSageMakerCanvasDataPrepFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3563,7 +3563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasDirectDeployAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerCanvasDirectDeployAccess',
     description: 'AmazonSageMakerCanvasDirectDeployAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3571,7 +3571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasEMRServerlessExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasEMRServerlessExecutionRolePolicy',
     description: 'AmazonSageMakerCanvasEMRServerlessExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3579,7 +3579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasForecastAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerCanvasForecastAccess',
     description: 'AmazonSageMakerCanvasForecastAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3587,7 +3587,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasFullAccess',
     description: 'AmazonSageMakerCanvasFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3595,7 +3595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCanvasSMDataScienceAssistantAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerCanvasSMDataScienceAssistantAccess',
     description: 'AmazonSageMakerCanvasSMDataScienceAssistantAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3603,7 +3603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCapacityReservationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonSageMakerCapacityReservationServiceRolePolicy',
     description: 'AmazonSageMakerCapacityReservationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3611,7 +3611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerClusterInstanceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerClusterInstanceRolePolicy',
     description: 'AmazonSageMakerClusterInstanceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3619,7 +3619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerCoreServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonSageMakerCoreServiceRolePolicy',
     description: 'AmazonSageMakerCoreServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3627,7 +3627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerEdgeDeviceFleetPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerEdgeDeviceFleetPolicy',
     description: 'AmazonSageMakerEdgeDeviceFleetPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3635,7 +3635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerFeatureStoreAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerFeatureStoreAccess',
     description: 'AmazonSageMakerFeatureStoreAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3643,7 +3643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess',
     description: 'AmazonSageMakerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3651,7 +3651,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerGeospatialExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerGeospatialExecutionRole',
     description: 'AmazonSageMakerGeospatialExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3659,7 +3659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerGeospatialFullAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerGeospatialFullAccess',
     description: 'AmazonSageMakerGeospatialFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3667,7 +3667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerGroundTruthExecution',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerGroundTruthExecution',
     description: 'AmazonSageMakerGroundTruthExecution — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3675,7 +3675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerHyperPodGatedModelAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerHyperPodGatedModelAccess',
     description: 'AmazonSageMakerHyperPodGatedModelAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3683,7 +3683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerHyperPodInferenceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerHyperPodInferenceAccess',
     description: 'AmazonSageMakerHyperPodInferenceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3691,7 +3691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerHyperPodObservabilityAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerHyperPodObservabilityAdminAccess',
     description: 'AmazonSageMakerHyperPodObservabilityAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3699,7 +3699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerHyperPodServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonSageMakerHyperPodServiceRolePolicy',
     description: 'AmazonSageMakerHyperPodServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3707,7 +3707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerHyperPodTrainingOperatorAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerHyperPodTrainingOperatorAccess',
     description: 'AmazonSageMakerHyperPodTrainingOperatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3715,7 +3715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerJobFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerJobFullAccess',
     description: 'AmazonSageMakerJobFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3723,7 +3723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerJobRuntimeAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerJobRuntimeAccess',
     description: 'AmazonSageMakerJobRuntimeAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3731,7 +3731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerMechanicalTurkAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerMechanicalTurkAccess',
     description: 'AmazonSageMakerMechanicalTurkAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3739,7 +3739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerModelCustomizationCoreAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerModelCustomizationCoreAccess',
     description: 'AmazonSageMakerModelCustomizationCoreAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3747,7 +3747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerModelGovernanceUseAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerModelGovernanceUseAccess',
     description: 'AmazonSageMakerModelGovernanceUseAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3755,7 +3755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerModelRegistryFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerModelRegistryFullAccess',
     description: 'AmazonSageMakerModelRegistryFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3763,7 +3763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerNotebooksServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonSageMakerNotebooksServiceRolePolicy',
     description: 'AmazonSageMakerNotebooksServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3771,7 +3771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerPartnerAppsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerPartnerAppsFullAccess',
     description: 'AmazonSageMakerPartnerAppsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3779,7 +3779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerPartnerServiceCatalogProductsApiGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerPartnerServiceCatalogProductsApiGatewayServiceRolePolicy',
     description: 'AmazonSageMakerPartnerServiceCatalogProductsApiGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3787,7 +3787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerPartnerServiceCatalogProductsCloudFormationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerPartnerServiceCatalogProductsCloudFormationServiceRolePolicy',
     description: 'AmazonSageMakerPartnerServiceCatalogProductsCloudFormationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3795,7 +3795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerPartnerServiceCatalogProductsLambdaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerPartnerServiceCatalogProductsLambdaServiceRolePolicy',
     description: 'AmazonSageMakerPartnerServiceCatalogProductsLambdaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3803,7 +3803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerPipelinesIntegrations',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerPipelinesIntegrations',
     description: 'AmazonSageMakerPipelinesIntegrations — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3811,7 +3811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerQuickSightVPCPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerQuickSightVPCPolicy',
     description: 'AmazonSageMakerQuickSightVPCPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3819,7 +3819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerReadOnly',
     description: 'AmazonSageMakerReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3827,7 +3827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsApiGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsApiGatewayServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsApiGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3835,7 +3835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsCloudformationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsCloudformationServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsCloudformationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3843,7 +3843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsCodeBuildServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerServiceCatalogProductsCodeBuildServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsCodeBuildServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3851,7 +3851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsCodePipelineServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsCodePipelineServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsCodePipelineServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3859,7 +3859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsEventsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsEventsServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsEventsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3867,7 +3867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsFirehoseServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsFirehoseServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsFirehoseServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3875,7 +3875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsGlueServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsGlueServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsGlueServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3883,7 +3883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerServiceCatalogProductsLambdaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSageMakerServiceCatalogProductsLambdaServiceRolePolicy',
     description: 'AmazonSageMakerServiceCatalogProductsLambdaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3891,7 +3891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerSpacesControllerPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerSpacesControllerPolicy',
     description: 'AmazonSageMakerSpacesControllerPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3899,7 +3899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerSpacesRouterPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerSpacesRouterPolicy',
     description: 'AmazonSageMakerSpacesRouterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3907,7 +3907,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSageMakerTrainingPlanCreateAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSageMakerTrainingPlanCreateAccess',
     description: 'AmazonSageMakerTrainingPlanCreateAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3915,7 +3915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSecurityLakeAdministrator',
     arn: 'arn:aws:iam::aws:policy/AmazonSecurityLakeAdministrator',
     description: 'AmazonSecurityLakeAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3923,7 +3923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSecurityLakeMetastoreManager',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSecurityLakeMetastoreManager',
     description: 'AmazonSecurityLakeMetastoreManager — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3931,7 +3931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSecurityLakePermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AmazonSecurityLakePermissionsBoundary',
     description: 'AmazonSecurityLakePermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3939,7 +3939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSESFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSESFullAccess',
     description: 'AmazonSESFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3947,7 +3947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSESReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSESReadOnlyAccess',
     description: 'AmazonSESReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3955,7 +3955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSESServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonSESServiceRolePolicy',
     description: 'AmazonSESServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -3963,7 +3963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSNSFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSNSFullAccess',
     description: 'AmazonSNSFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3971,7 +3971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSNSReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSNSReadOnlyAccess',
     description: 'AmazonSNSReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3979,7 +3979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSNSRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonSNSRole',
     description: 'AmazonSNSRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3987,7 +3987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSQSFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSQSFullAccess',
     description: 'AmazonSQSFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -3995,7 +3995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSQSReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSQSReadOnlyAccess',
     description: 'AmazonSQSReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4019,7 +4019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSSMDirectoryServiceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess',
     description: 'AmazonSSMDirectoryServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4043,7 +4043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonSSMManagedEC2InstanceDefaultPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonSSMManagedEC2InstanceDefaultPolicy',
     description: 'AmazonSSMManagedEC2InstanceDefaultPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4091,7 +4091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTextractFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTextractFullAccess',
     description: 'AmazonTextractFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4099,7 +4099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTextractServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AmazonTextractServiceRole',
     description: 'AmazonTextractServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4107,7 +4107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTimestreamConsoleFullAccess',
     description: 'AmazonTimestreamConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4115,7 +4115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTimestreamFullAccess',
     description: 'AmazonTimestreamFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4123,7 +4123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamInfluxDBFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTimestreamInfluxDBFullAccess',
     description: 'AmazonTimestreamInfluxDBFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4131,7 +4131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamInfluxDBFullAccessWithoutMarketplaceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTimestreamInfluxDBFullAccessWithoutMarketplaceAccess',
     description: 'AmazonTimestreamInfluxDBFullAccessWithoutMarketplaceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4139,7 +4139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamInfluxDBServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonTimestreamInfluxDBServiceRolePolicy',
     description: 'AmazonTimestreamInfluxDBServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4147,7 +4147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTimestreamReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTimestreamReadOnlyAccess',
     description: 'AmazonTimestreamReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4155,7 +4155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTranscribeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTranscribeFullAccess',
     description: 'AmazonTranscribeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4163,7 +4163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonTranscribeReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonTranscribeReadOnlyAccess',
     description: 'AmazonTranscribeReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4187,7 +4187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCCrossAccountNetworkInterfaceOperations',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCCrossAccountNetworkInterfaceOperations',
     description: 'AmazonVPCCrossAccountNetworkInterfaceOperations — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4195,7 +4195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCFullAccess',
     description: 'AmazonVPCFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4203,7 +4203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCNetworkAccessAnalyzerFullAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCNetworkAccessAnalyzerFullAccessPolicy',
     description: 'AmazonVPCNetworkAccessAnalyzerFullAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4211,7 +4211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCReachabilityAnalyzerFullAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCReachabilityAnalyzerFullAccessPolicy',
     description: 'AmazonVPCReachabilityAnalyzerFullAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4219,7 +4219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCReachabilityAnalyzerPathComponentReadPolicy',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCReachabilityAnalyzerPathComponentReadPolicy',
     description: 'AmazonVPCReachabilityAnalyzerPathComponentReadPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4227,7 +4227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonVPCReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess',
     description: 'AmazonVPCReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4251,7 +4251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkMailEventsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonWorkMailEventsServiceRolePolicy',
     description: 'AmazonWorkMailEventsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4259,7 +4259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkMailFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkMailFullAccess',
     description: 'AmazonWorkMailFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4267,7 +4267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkMailMessageFlowFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkMailMessageFlowFullAccess',
     description: 'AmazonWorkMailMessageFlowFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4275,7 +4275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkMailMessageFlowReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkMailMessageFlowReadOnlyAccess',
     description: 'AmazonWorkMailMessageFlowReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4283,7 +4283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkMailReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkMailReadOnlyAccess',
     description: 'AmazonWorkMailReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4291,7 +4291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesAdmin',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesAdmin',
     description: 'AmazonWorkSpacesAdmin — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4299,7 +4299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesApplicationManagerAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesApplicationManagerAdminAccess',
     description: 'AmazonWorkSpacesApplicationManagerAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4315,7 +4315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesPoolServiceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesPoolServiceAccess',
     description: 'AmazonWorkSpacesPoolServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4323,7 +4323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesSecureBrowserReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesSecureBrowserReadOnly',
     description: 'AmazonWorkSpacesSecureBrowserReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4331,7 +4331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesSelfServiceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesSelfServiceAccess',
     description: 'AmazonWorkSpacesSelfServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4339,7 +4339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesServiceAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesServiceAccess',
     description: 'AmazonWorkSpacesServiceAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4347,7 +4347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesThinClientFullAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesThinClientFullAccess',
     description: 'AmazonWorkSpacesThinClientFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4355,7 +4355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesThinClientMonitoringServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonWorkSpacesThinClientMonitoringServiceRolePolicy',
     description: 'AmazonWorkSpacesThinClientMonitoringServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4363,7 +4363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesThinClientReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesThinClientReadOnlyAccess',
     description: 'AmazonWorkSpacesThinClientReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4371,7 +4371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesWebReadOnly',
     arn: 'arn:aws:iam::aws:policy/AmazonWorkSpacesWebReadOnly',
     description: 'AmazonWorkSpacesWebReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4379,7 +4379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmazonWorkSpacesWebServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AmazonWorkSpacesWebServiceRolePolicy',
     description: 'AmazonWorkSpacesWebServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4403,7 +4403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AmplifyBackendDeployFullAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AmplifyBackendDeployFullAccess',
     description: 'AmplifyBackendDeployFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4451,7 +4451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'APIGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/APIGatewayServiceRolePolicy',
     description: 'APIGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4467,7 +4467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ApplicationAutoScalingForAmazonAppStreamAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/ApplicationAutoScalingForAmazonAppStreamAccess',
     description: 'ApplicationAutoScalingForAmazonAppStreamAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4483,7 +4483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AppRunnerNetworkingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AppRunnerNetworkingServiceRolePolicy',
     description: 'AppRunnerNetworkingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4491,7 +4491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AppRunnerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AppRunnerServiceRolePolicy',
     description: 'AppRunnerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4507,7 +4507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AuroraDsqlServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AuroraDsqlServiceLinkedRolePolicy',
     description: 'AuroraDsqlServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4515,7 +4515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AutoScalingConsoleFullAccess',
     description: 'AutoScalingConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4523,7 +4523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingConsoleReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AutoScalingConsoleReadOnlyAccess',
     description: 'AutoScalingConsoleReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4531,7 +4531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingFullAccess',
     arn: 'arn:aws:iam::aws:policy/AutoScalingFullAccess',
     description: 'AutoScalingFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4539,7 +4539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingNotificationAccessRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole',
     description: 'AutoScalingNotificationAccessRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4547,7 +4547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AutoScalingReadOnlyAccess',
     description: 'AutoScalingReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4555,7 +4555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AutoScalingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AutoScalingServiceRolePolicy',
     description: 'AutoScalingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4707,7 +4707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingAppStreamFleetPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingAppStreamFleetPolicy',
     description: 'AWSApplicationAutoscalingAppStreamFleetPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4715,7 +4715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingCassandraTablePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingCassandraTablePolicy',
     description: 'AWSApplicationAutoscalingCassandraTablePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4723,7 +4723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingComprehendEndpointPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingComprehendEndpointPolicy',
     description: 'AWSApplicationAutoscalingComprehendEndpointPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4731,7 +4731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoScalingCustomResourcePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoScalingCustomResourcePolicy',
     description: 'AWSApplicationAutoScalingCustomResourcePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4739,7 +4739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingDynamoDBTablePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingDynamoDBTablePolicy',
     description: 'AWSApplicationAutoscalingDynamoDBTablePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4747,7 +4747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingEC2SpotFleetRequestPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingEC2SpotFleetRequestPolicy',
     description: 'AWSApplicationAutoscalingEC2SpotFleetRequestPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4755,7 +4755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingECSServicePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingECSServicePolicy',
     description: 'AWSApplicationAutoscalingECSServicePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4763,7 +4763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingElastiCacheRGPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingElastiCacheRGPolicy',
     description: 'AWSApplicationAutoscalingElastiCacheRGPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4771,7 +4771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingEMRInstanceGroupPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingEMRInstanceGroupPolicy',
     description: 'AWSApplicationAutoscalingEMRInstanceGroupPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4779,7 +4779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingKafkaClusterPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingKafkaClusterPolicy',
     description: 'AWSApplicationAutoscalingKafkaClusterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4787,7 +4787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingLambdaConcurrencyPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingLambdaConcurrencyPolicy',
     description: 'AWSApplicationAutoscalingLambdaConcurrencyPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4795,7 +4795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingNeptuneClusterPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingNeptuneClusterPolicy',
     description: 'AWSApplicationAutoscalingNeptuneClusterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4803,7 +4803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingRDSClusterPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingRDSClusterPolicy',
     description: 'AWSApplicationAutoscalingRDSClusterPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4811,7 +4811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingSageMakerEndpointPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingSageMakerEndpointPolicy',
     description: 'AWSApplicationAutoscalingSageMakerEndpointPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4819,7 +4819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationAutoscalingWorkSpacesPoolPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingWorkSpacesPoolPolicy',
     description: 'AWSApplicationAutoscalingWorkSpacesPoolPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -4883,7 +4883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationMigrationEC2Access',
     arn: 'arn:aws:iam::aws:policy/AWSApplicationMigrationEC2Access',
     description: 'AWSApplicationMigrationEC2Access — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4891,7 +4891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationMigrationFSxProxyPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSApplicationMigrationFSxProxyPolicy',
     description: 'AWSApplicationMigrationFSxProxyPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4899,7 +4899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationMigrationFSxProxyVPCPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSApplicationMigrationFSxProxyVPCPolicy',
     description: 'AWSApplicationMigrationFSxProxyVPCPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4923,7 +4923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationMigrationNetworkMigrationCustomResource',
     arn: 'arn:aws:iam::aws:policy/AWSApplicationMigrationNetworkMigrationCustomResource',
     description: 'AWSApplicationMigrationNetworkMigrationCustomResource — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4931,7 +4931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSApplicationMigrationNetworkMigrationMultiAccount',
     arn: 'arn:aws:iam::aws:policy/AWSApplicationMigrationNetworkMigrationMultiAccount',
     description: 'AWSApplicationMigrationNetworkMigrationMultiAccount — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4987,7 +4987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshEnvoyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess',
     description: 'AWSAppMeshEnvoyAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -4995,7 +4995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppMeshFullAccess',
     description: 'AWSAppMeshFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Containers', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5003,7 +5003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshPreviewEnvoyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppMeshPreviewEnvoyAccess',
     description: 'AWSAppMeshPreviewEnvoyAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5011,7 +5011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshPreviewServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSAppMeshPreviewServiceRolePolicy',
     description: 'AWSAppMeshPreviewServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5019,7 +5019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSAppMeshReadOnly',
     description: 'AWSAppMeshReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5027,7 +5027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppMeshServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSAppMeshServiceRolePolicy',
     description: 'AWSAppMeshServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5035,7 +5035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppRunnerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppRunnerFullAccess',
     description: 'AWSAppRunnerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Containers', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5043,7 +5043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppRunnerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppRunnerReadOnlyAccess',
     description: 'AWSAppRunnerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5051,7 +5051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppRunnerServicePolicyForECRAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess',
     description: 'AWSAppRunnerServicePolicyForECRAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5059,7 +5059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppSyncAdministrator',
     arn: 'arn:aws:iam::aws:policy/AWSAppSyncAdministrator',
     description: 'AWSAppSyncAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5067,7 +5067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppSyncInvokeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAppSyncInvokeFullAccess',
     description: 'AWSAppSyncInvokeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5075,7 +5075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppSyncPushToCloudWatchLogs',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs',
     description: 'AWSAppSyncPushToCloudWatchLogs — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5083,7 +5083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppSyncSchemaAuthor',
     arn: 'arn:aws:iam::aws:policy/AWSAppSyncSchemaAuthor',
     description: 'AWSAppSyncSchemaAuthor — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5091,7 +5091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAppSyncServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSAppSyncServiceRolePolicy',
     description: 'AWSAppSyncServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5099,7 +5099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSArtifactAccountSync',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSArtifactAccountSync',
     description: 'AWSArtifactAccountSync — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5107,7 +5107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSArtifactAgreementsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSArtifactAgreementsFullAccess',
     description: 'AWSArtifactAgreementsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'service-role', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5115,7 +5115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSArtifactAgreementsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSArtifactAgreementsReadOnlyAccess',
     description: 'AWSArtifactAgreementsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5123,7 +5123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSArtifactReportsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSArtifactReportsReadOnlyAccess',
     description: 'AWSArtifactReportsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5131,7 +5131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSArtifactServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSArtifactServiceRolePolicy',
     description: 'AWSArtifactServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5139,7 +5139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAuditManagerAdministratorAccess',
     arn: 'arn:aws:iam::aws:policy/AWSAuditManagerAdministratorAccess',
     description: 'AWSAuditManagerAdministratorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5147,7 +5147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAuditManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSAuditManagerServiceRolePolicy',
     description: 'AWSAuditManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5155,7 +5155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSAutoScalingPlansEC2AutoScalingPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSAutoScalingPlansEC2AutoScalingPolicy',
     description: 'AWSAutoScalingPlansEC2AutoScalingPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5163,7 +5163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupAuditAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupAuditAccess',
     description: 'AWSBackupAuditAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5171,7 +5171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupDataTransferAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupDataTransferAccess',
     description: 'AWSBackupDataTransferAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5179,7 +5179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupFullAccess',
     description: 'AWSBackupFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5187,7 +5187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupGatewayServiceRolePolicyForVirtualMachineMetadataSync',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSBackupGatewayServiceRolePolicyForVirtualMachineMetadataSync',
     description: 'AWSBackupGatewayServiceRolePolicyForVirtualMachineMetadataSync — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5195,7 +5195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupGuardDutyRolePolicyForScans',
     arn: 'arn:aws:iam::aws:policy/AWSBackupGuardDutyRolePolicyForScans',
     description: 'AWSBackupGuardDutyRolePolicyForScans — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5203,7 +5203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupOperatorAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupOperatorAccess',
     description: 'AWSBackupOperatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5211,7 +5211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupOrganizationAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupOrganizationAdminAccess',
     description: 'AWSBackupOrganizationAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5219,7 +5219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupRestoreAccessForSAPHANA',
     arn: 'arn:aws:iam::aws:policy/AWSBackupRestoreAccessForSAPHANA',
     description: 'AWSBackupRestoreAccessForSAPHANA — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5227,7 +5227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupSearchOperatorAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBackupSearchOperatorAccess',
     description: 'AWSBackupSearchOperatorAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5235,7 +5235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceLinkedRolePolicyForBackup',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBackupServiceLinkedRolePolicyForBackup',
     description: 'AWSBackupServiceLinkedRolePolicyForBackup — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5243,7 +5243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceLinkedRolePolicyForBackupTest',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBackupServiceLinkedRolePolicyForBackupTest',
     description: 'AWSBackupServiceLinkedRolePolicyForBackupTest — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5251,7 +5251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForBackup',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup',
     description: 'AWSBackupServiceRolePolicyForBackup — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5259,7 +5259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForIndexing',
     arn: 'arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForIndexing',
     description: 'AWSBackupServiceRolePolicyForIndexing — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5267,7 +5267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForItemRestores',
     arn: 'arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForItemRestores',
     description: 'AWSBackupServiceRolePolicyForItemRestores — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5275,7 +5275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForRestores',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores',
     description: 'AWSBackupServiceRolePolicyForRestores — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5283,7 +5283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForS3Backup',
     arn: 'arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup',
     description: 'AWSBackupServiceRolePolicyForS3Backup — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5291,7 +5291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForS3Restore',
     arn: 'arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore',
     description: 'AWSBackupServiceRolePolicyForS3Restore — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5299,7 +5299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBackupServiceRolePolicyForScans',
     arn: 'arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForScans',
     description: 'AWSBackupServiceRolePolicyForScans — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5307,7 +5307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBatchFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBatchFullAccess',
     description: 'AWSBatchFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5315,7 +5315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBatchServiceEventTargetRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSBatchServiceEventTargetRole',
     description: 'AWSBatchServiceEventTargetRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5323,7 +5323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBatchServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole',
     description: 'AWSBatchServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5331,7 +5331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBatchServiceRolePolicyForSageMaker',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBatchServiceRolePolicyForSageMaker',
     description: 'AWSBatchServiceRolePolicyForSageMaker — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5347,7 +5347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBedrockAgentCoreGatewayNetworkServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBedrockAgentCoreGatewayNetworkServiceRolePolicy',
     description: 'AWSBedrockAgentCoreGatewayNetworkServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5355,7 +5355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBedrockAgentCoreIdentityNetworkServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBedrockAgentCoreIdentityNetworkServiceRolePolicy',
     description: 'AWSBedrockAgentCoreIdentityNetworkServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5363,7 +5363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBillingConductorFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBillingConductorFullAccess',
     description: 'AWSBillingConductorFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5371,7 +5371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBillingConductorReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBillingConductorReadOnlyAccess',
     description: 'AWSBillingConductorReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5379,7 +5379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBillingReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess',
     description: 'AWSBillingReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5387,7 +5387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBillingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSBillingServiceRolePolicy',
     description: 'AWSBillingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5395,7 +5395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBudgetsActions_RolePolicyForResourceAdministrationWithSSM',
     arn: 'arn:aws:iam::aws:policy/AWSBudgetsActions_RolePolicyForResourceAdministrationWithSSM',
     description: 'AWSBudgetsActions_RolePolicyForResourceAdministrationWithSSM — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5403,7 +5403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBudgetsActionsWithAWSResourceControlAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBudgetsActionsWithAWSResourceControlAccess',
     description: 'AWSBudgetsActionsWithAWSResourceControlAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5411,7 +5411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSBudgetsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSBudgetsReadOnlyAccess',
     description: 'AWSBudgetsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5443,7 +5443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess',
     description: 'AWSCertificateManagerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5451,7 +5451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerPrivateCAAuditor',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAAuditor',
     description: 'AWSCertificateManagerPrivateCAAuditor — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5459,7 +5459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerPrivateCAFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess',
     description: 'AWSCertificateManagerPrivateCAFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5467,7 +5467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerPrivateCAPrivilegedUser',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAPrivilegedUser',
     description: 'AWSCertificateManagerPrivateCAPrivilegedUser — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5475,7 +5475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerPrivateCAReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAReadOnly',
     description: 'AWSCertificateManagerPrivateCAReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5483,7 +5483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerPrivateCAUser',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAUser',
     description: 'AWSCertificateManagerPrivateCAUser — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5491,7 +5491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCertificateManagerReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly',
     description: 'AWSCertificateManagerReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5507,7 +5507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCleanRoomsFullAccess',
     description: 'AWSCleanRoomsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5515,7 +5515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsFullAccessNoQuerying',
     arn: 'arn:aws:iam::aws:policy/AWSCleanRoomsFullAccessNoQuerying',
     description: 'AWSCleanRoomsFullAccessNoQuerying — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5523,7 +5523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsMLFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCleanRoomsMLFullAccess',
     description: 'AWSCleanRoomsMLFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5531,7 +5531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsMLReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCleanRoomsMLReadOnlyAccess',
     description: 'AWSCleanRoomsMLReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5539,7 +5539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCleanRoomsReadOnlyAccess',
     description: 'AWSCleanRoomsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5547,7 +5547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCleanRoomsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSCleanRoomsServiceRolePolicy',
     description: 'AWSCleanRoomsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5555,7 +5555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloud9Administrator',
     arn: 'arn:aws:iam::aws:policy/AWSCloud9Administrator',
     description: 'AWSCloud9Administrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5563,7 +5563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloud9EnvironmentMember',
     arn: 'arn:aws:iam::aws:policy/AWSCloud9EnvironmentMember',
     description: 'AWSCloud9EnvironmentMember — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5571,7 +5571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloud9ServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSCloud9ServiceRolePolicy',
     description: 'AWSCloud9ServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5579,7 +5579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloud9SSMInstanceProfile',
     arn: 'arn:aws:iam::aws:policy/AWSCloud9SSMInstanceProfile',
     description: 'AWSCloud9SSMInstanceProfile — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5587,7 +5587,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloud9User',
     arn: 'arn:aws:iam::aws:policy/AWSCloud9User',
     description: 'AWSCloud9User — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5595,7 +5595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudFormationFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess',
     description: 'AWSCloudFormationFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5603,7 +5603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudFormationReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess',
     description: 'AWSCloudFormationReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5611,7 +5611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudFrontLogger',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSCloudFrontLogger',
     description: 'AWSCloudFrontLogger — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5619,7 +5619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudFrontVPCOriginServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSCloudFrontVPCOriginServiceRolePolicy',
     description: 'AWSCloudFrontVPCOriginServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5627,7 +5627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudHSMFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCloudHSMFullAccess',
     description: 'AWSCloudHSMFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5635,7 +5635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudHSMReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCloudHSMReadOnlyAccess',
     description: 'AWSCloudHSMReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5643,7 +5643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCloudHSMRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCloudHSMRole',
     description: 'AWSCloudHSMRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5715,7 +5715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeArtifactAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeArtifactAdminAccess',
     description: 'AWSCodeArtifactAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5723,7 +5723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeArtifactReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeArtifactReadOnlyAccess',
     description: 'AWSCodeArtifactReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5731,7 +5731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeBuildAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess',
     description: 'AWSCodeBuildAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5739,7 +5739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeBuildDeveloperAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess',
     description: 'AWSCodeBuildDeveloperAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5747,7 +5747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeBuildReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeBuildReadOnlyAccess',
     description: 'AWSCodeBuildReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5755,7 +5755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeCommitFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeCommitFullAccess',
     description: 'AWSCodeCommitFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5763,7 +5763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeCommitPowerUser',
     arn: 'arn:aws:iam::aws:policy/AWSCodeCommitPowerUser',
     description: 'AWSCodeCommitPowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5771,7 +5771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeCommitReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSCodeCommitReadOnly',
     description: 'AWSCodeCommitReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5779,7 +5779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployDeployerAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeDeployDeployerAccess',
     description: 'AWSCodeDeployDeployerAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5787,7 +5787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeDeployFullAccess',
     description: 'AWSCodeDeployFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5795,7 +5795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeDeployReadOnlyAccess',
     description: 'AWSCodeDeployReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5803,7 +5803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole',
     description: 'AWSCodeDeployRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5811,7 +5811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRoleForCloudFormation',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForCloudFormation',
     description: 'AWSCodeDeployRoleForCloudFormation — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5819,7 +5819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRoleForECS',
     arn: 'arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS',
     description: 'AWSCodeDeployRoleForECS — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5827,7 +5827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRoleForECSLimited',
     arn: 'arn:aws:iam::aws:policy/AWSCodeDeployRoleForECSLimited',
     description: 'AWSCodeDeployRoleForECSLimited — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5835,7 +5835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRoleForLambda',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
     description: 'AWSCodeDeployRoleForLambda — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5843,7 +5843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeDeployRoleForLambdaLimited',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
     description: 'AWSCodeDeployRoleForLambdaLimited — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5851,7 +5851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodePipeline_FullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess',
     description: 'AWSCodePipeline_FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5859,7 +5859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodePipeline_ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodePipeline_ReadOnlyAccess',
     description: 'AWSCodePipeline_ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5867,7 +5867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodePipelineApproverAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodePipelineApproverAccess',
     description: 'AWSCodePipelineApproverAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5875,7 +5875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodePipelineCustomActionAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodePipelineCustomActionAccess',
     description: 'AWSCodePipelineCustomActionAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5883,7 +5883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeStarFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSCodeStarFullAccess',
     description: 'AWSCodeStarFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'DevOps', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5891,7 +5891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeStarNotificationsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSCodeStarNotificationsServiceRolePolicy',
     description: 'AWSCodeStarNotificationsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -5899,7 +5899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCodeStarServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCodeStarServiceRole',
     description: 'AWSCodeStarServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5947,7 +5947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSConfigRoleForOrganizations',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations',
     description: 'AWSConfigRoleForOrganizations — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -5987,7 +5987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSConnector',
     arn: 'arn:aws:iam::aws:policy/AWSConnector',
     description: 'AWSConnector — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6011,7 +6011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSControlTowerIdentityCenterManagementPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSControlTowerIdentityCenterManagementPolicy',
     description: 'AWSControlTowerIdentityCenterManagementPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6027,7 +6027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSCostAndUsageReportAutomationPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSCostAndUsageReportAutomationPolicy',
     description: 'AWSCostAndUsageReportAutomationPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6035,7 +6035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeDataGrantOwnerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeDataGrantOwnerFullAccess',
     description: 'AWSDataExchangeDataGrantOwnerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6043,7 +6043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeDataGrantReceiverFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeDataGrantReceiverFullAccess',
     description: 'AWSDataExchangeDataGrantReceiverFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6051,7 +6051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeFullAccess',
     description: 'AWSDataExchangeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6059,7 +6059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeProviderFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeProviderFullAccess',
     description: 'AWSDataExchangeProviderFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6067,7 +6067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeReadOnly',
     description: 'AWSDataExchangeReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6075,7 +6075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeServiceRolePolicyForLicenseManagement',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDataExchangeServiceRolePolicyForLicenseManagement',
     description: 'AWSDataExchangeServiceRolePolicyForLicenseManagement — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6083,7 +6083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeServiceRolePolicyForOrganizationDiscovery',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDataExchangeServiceRolePolicyForOrganizationDiscovery',
     description: 'AWSDataExchangeServiceRolePolicyForOrganizationDiscovery — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6091,7 +6091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataExchangeSubscriberFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataExchangeSubscriberFullAccess',
     description: 'AWSDataExchangeSubscriberFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6123,7 +6123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataPipeline_FullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataPipeline_FullAccess',
     description: 'AWSDataPipeline_FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6131,7 +6131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataPipeline_PowerUser',
     arn: 'arn:aws:iam::aws:policy/AWSDataPipeline_PowerUser',
     description: 'AWSDataPipeline_PowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6139,7 +6139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataSyncDiscoveryServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDataSyncDiscoveryServiceRolePolicy',
     description: 'AWSDataSyncDiscoveryServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6147,7 +6147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataSyncFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataSyncFullAccess',
     description: 'AWSDataSyncFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6155,7 +6155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataSyncReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDataSyncReadOnlyAccess',
     description: 'AWSDataSyncReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6163,7 +6163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDataSyncServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDataSyncServiceRolePolicy',
     description: 'AWSDataSyncServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6219,7 +6219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepLensLambdaFunctionAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSDeepLensLambdaFunctionAccessPolicy',
     description: 'AWSDeepLensLambdaFunctionAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6235,7 +6235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerAccountAdminAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDeepRacerAccountAdminAccess',
     description: 'AWSDeepRacerAccountAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6243,7 +6243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerCloudFormationAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSDeepRacerCloudFormationAccessPolicy',
     description: 'AWSDeepRacerCloudFormationAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6251,7 +6251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerDefaultMultiUserAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDeepRacerDefaultMultiUserAccess',
     description: 'AWSDeepRacerDefaultMultiUserAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6259,7 +6259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDeepRacerFullAccess',
     description: 'AWSDeepRacerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6267,7 +6267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerRoboMakerAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSDeepRacerRoboMakerAccessPolicy',
     description: 'AWSDeepRacerRoboMakerAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6275,7 +6275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDeepRacerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSDeepRacerServiceRolePolicy',
     description: 'AWSDeepRacerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6315,7 +6315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectConnectFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectConnectFullAccess',
     description: 'AWSDirectConnectFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6323,7 +6323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectConnectReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectConnectReadOnlyAccess',
     description: 'AWSDirectConnectReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6331,7 +6331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectConnectServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDirectConnectServiceRolePolicy',
     description: 'AWSDirectConnectServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6339,7 +6339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectoryServiceDataFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectoryServiceDataFullAccess',
     description: 'AWSDirectoryServiceDataFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6347,7 +6347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectoryServiceDataReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectoryServiceDataReadOnlyAccess',
     description: 'AWSDirectoryServiceDataReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6355,7 +6355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectoryServiceFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectoryServiceFullAccess',
     description: 'AWSDirectoryServiceFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6363,7 +6363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectoryServiceReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSDirectoryServiceReadOnlyAccess',
     description: 'AWSDirectoryServiceReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6371,7 +6371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDirectoryServiceServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDirectoryServiceServiceRolePolicy',
     description: 'AWSDirectoryServiceServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6395,7 +6395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSDMSServerlessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSDMSServerlessServiceRolePolicy',
     description: 'AWSDMSServerlessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6403,7 +6403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2CapacityManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2CapacityManagerServiceRolePolicy',
     description: 'AWSEC2CapacityManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6411,7 +6411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2CapacityReservationFleetRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2CapacityReservationFleetRolePolicy',
     description: 'AWSEC2CapacityReservationFleetRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6419,7 +6419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2FleetServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2FleetServiceRolePolicy',
     description: 'AWSEC2FleetServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6427,7 +6427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2SpotFleetServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2SpotFleetServiceRolePolicy',
     description: 'AWSEC2SpotFleetServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6435,7 +6435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2SpotServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2SpotServiceRolePolicy',
     description: 'AWSEC2SpotServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6443,7 +6443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2SqlHaInstancePolicy',
     arn: 'arn:aws:iam::aws:policy/AWSEC2SqlHaInstancePolicy',
     description: 'AWSEC2SqlHaInstancePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6451,7 +6451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2SqlHaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEC2SqlHaServiceRolePolicy',
     description: 'AWSEC2SqlHaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6459,7 +6459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2VssRestorePolicy',
     arn: 'arn:aws:iam::aws:policy/AWSEC2VssRestorePolicy',
     description: 'AWSEC2VssRestorePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6467,7 +6467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEC2VssSnapshotPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSEC2VssSnapshotPolicy',
     description: 'AWSEC2VssSnapshotPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6475,7 +6475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSECRPullThroughCache_ServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSECRPullThroughCache_ServiceRolePolicy',
     description: 'AWSECRPullThroughCache_ServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6483,7 +6483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkCustomPlatformforEC2Role',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkCustomPlatformforEC2Role',
     description: 'AWSElasticBeanstalkCustomPlatformforEC2Role — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6491,7 +6491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkEnhancedHealth',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth',
     description: 'AWSElasticBeanstalkEnhancedHealth — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6499,7 +6499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkMaintenance',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSElasticBeanstalkMaintenance',
     description: 'AWSElasticBeanstalkMaintenance — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6507,7 +6507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
     description: 'AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6515,7 +6515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkManagedUpdatesServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSElasticBeanstalkManagedUpdatesServiceRolePolicy',
     description: 'AWSElasticBeanstalkManagedUpdatesServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6523,7 +6523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkMulticontainerDocker',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker',
     description: 'AWSElasticBeanstalkMulticontainerDocker — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6531,7 +6531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkReadOnly',
     description: 'AWSElasticBeanstalkReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6539,7 +6539,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleCore',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleCore',
     description: 'AWSElasticBeanstalkRoleCore — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6547,7 +6547,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleCWL',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleCWL',
     description: 'AWSElasticBeanstalkRoleCWL — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6555,7 +6555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleECS',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleECS',
     description: 'AWSElasticBeanstalkRoleECS — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6563,7 +6563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleRDS',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleRDS',
     description: 'AWSElasticBeanstalkRoleRDS — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6571,7 +6571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleSNS',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleSNS',
     description: 'AWSElasticBeanstalkRoleSNS — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6579,7 +6579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkRoleWorkerTier',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkRoleWorkerTier',
     description: 'AWSElasticBeanstalkRoleWorkerTier — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6587,7 +6587,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkService',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService',
     description: 'AWSElasticBeanstalkService — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6595,7 +6595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSElasticBeanstalkServiceRolePolicy',
     description: 'AWSElasticBeanstalkServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6603,7 +6603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkWebTier',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier',
     description: 'AWSElasticBeanstalkWebTier — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6611,7 +6611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticBeanstalkWorkerTier',
     arn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier',
     description: 'AWSElasticBeanstalkWorkerTier — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6699,7 +6699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticDisasterRecoveryNetworkReplicationPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSElasticDisasterRecoveryNetworkReplicationPolicy',
     description: 'AWSElasticDisasterRecoveryNetworkReplicationPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6755,7 +6755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticLoadBalancingClassicServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSElasticLoadBalancingClassicServiceRolePolicy',
     description: 'AWSElasticLoadBalancingClassicServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6763,7 +6763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElasticLoadBalancingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSElasticLoadBalancingServiceRolePolicy',
     description: 'AWSElasticLoadBalancingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6771,7 +6771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectCreateBridge',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectCreateBridge',
     description: 'AWSElementalMediaConnectCreateBridge — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6779,7 +6779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectCreateFlow',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectCreateFlow',
     description: 'AWSElementalMediaConnectCreateFlow — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6787,7 +6787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectDeleteBridge',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectDeleteBridge',
     description: 'AWSElementalMediaConnectDeleteBridge — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6795,7 +6795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectDeleteFlow',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectDeleteFlow',
     description: 'AWSElementalMediaConnectDeleteFlow — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6803,7 +6803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectFullAccess',
     description: 'AWSElementalMediaConnectFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Messaging', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6811,7 +6811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSElementalMediaConnectReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSElementalMediaConnectReadOnlyAccess',
     description: 'AWSElementalMediaConnectReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6915,7 +6915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSEnhancedClassicNetworkingMangementPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSEnhancedClassicNetworkingMangementPolicy',
     description: 'AWSEnhancedClassicNetworkingMangementPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -6939,7 +6939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFaultInjectionSimulatorEC2Access',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorEC2Access',
     description: 'AWSFaultInjectionSimulatorEC2Access — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6947,7 +6947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFaultInjectionSimulatorECSAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorECSAccess',
     description: 'AWSFaultInjectionSimulatorECSAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6955,7 +6955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFaultInjectionSimulatorEKSAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorEKSAccess',
     description: 'AWSFaultInjectionSimulatorEKSAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6963,7 +6963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFaultInjectionSimulatorNetworkAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorNetworkAccess',
     description: 'AWSFaultInjectionSimulatorNetworkAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6971,7 +6971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFaultInjectionSimulatorRDSAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorRDSAccess',
     description: 'AWSFaultInjectionSimulatorRDSAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -6987,7 +6987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSFinSpaceServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSFinSpaceServiceRolePolicy',
     description: 'AWSFinSpaceServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7035,7 +7035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlobalAcceleratorSLRPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSGlobalAcceleratorSLRPolicy',
     description: 'AWSGlobalAcceleratorSLRPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7043,7 +7043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess',
     description: 'AWSGlueConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7051,7 +7051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueConsoleSageMakerNotebookFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGlueConsoleSageMakerNotebookFullAccess',
     description: 'AWSGlueConsoleSageMakerNotebookFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7059,7 +7059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AwsGlueDataBrewFullAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/AwsGlueDataBrewFullAccessPolicy',
     description: 'AwsGlueDataBrewFullAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7067,7 +7067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueDataBrewServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole',
     description: 'AWSGlueDataBrewServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7075,7 +7075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueSchemaRegistryFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGlueSchemaRegistryFullAccess',
     description: 'AWSGlueSchemaRegistryFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7083,7 +7083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueSchemaRegistryReadonlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGlueSchemaRegistryReadonlyAccess',
     description: 'AWSGlueSchemaRegistryReadonlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7091,7 +7091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueServiceNotebookRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceNotebookRole',
     description: 'AWSGlueServiceNotebookRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7099,7 +7099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGlueServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole',
     description: 'AWSGlueServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7107,7 +7107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AwsGlueSessionUserRestrictedNotebookPolicy',
     arn: 'arn:aws:iam::aws:policy/AwsGlueSessionUserRestrictedNotebookPolicy',
     description: 'AwsGlueSessionUserRestrictedNotebookPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7115,7 +7115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AwsGlueSessionUserRestrictedNotebookServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AwsGlueSessionUserRestrictedNotebookServiceRole',
     description: 'AwsGlueSessionUserRestrictedNotebookServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7123,7 +7123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AwsGlueSessionUserRestrictedPolicy',
     arn: 'arn:aws:iam::aws:policy/AwsGlueSessionUserRestrictedPolicy',
     description: 'AwsGlueSessionUserRestrictedPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7131,7 +7131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AwsGlueSessionUserRestrictedServiceRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AwsGlueSessionUserRestrictedServiceRole',
     description: 'AwsGlueSessionUserRestrictedServiceRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7171,7 +7171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGreengrassFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGreengrassFullAccess',
     description: 'AWSGreengrassFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7179,7 +7179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGreengrassReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSGreengrassReadOnlyAccess',
     description: 'AWSGreengrassReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7187,7 +7187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSGreengrassResourceAccessRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSGreengrassResourceAccessRolePolicy',
     description: 'AWSGreengrassResourceAccessRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7251,7 +7251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIAMIdentityCenterAllowListForIdentityContext',
     arn: 'arn:aws:iam::aws:policy/AWSIAMIdentityCenterAllowListForIdentityContext',
     description: 'AWSIAMIdentityCenterAllowListForIdentityContext — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7259,7 +7259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIdentityCenterExternalManagementPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIdentityCenterExternalManagementPolicy',
     description: 'AWSIdentityCenterExternalManagementPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7283,7 +7283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSImageBuilderFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSImageBuilderFullAccess',
     description: 'AWSImageBuilderFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7291,7 +7291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSImageBuilderReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSImageBuilderReadOnlyAccess',
     description: 'AWSImageBuilderReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7339,7 +7339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoT1ClickFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoT1ClickFullAccess',
     description: 'AWSIoT1ClickFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7347,7 +7347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoT1ClickReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoT1ClickReadOnlyAccess',
     description: 'AWSIoT1ClickReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7355,7 +7355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTAnalyticsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTAnalyticsFullAccess',
     description: 'AWSIoTAnalyticsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7363,7 +7363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTAnalyticsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTAnalyticsReadOnlyAccess',
     description: 'AWSIoTAnalyticsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7371,7 +7371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTConfigAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTConfigAccess',
     description: 'AWSIoTConfigAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7379,7 +7379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTConfigReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTConfigReadOnlyAccess',
     description: 'AWSIoTConfigReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7387,7 +7387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDataAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTDataAccess',
     description: 'AWSIoTDataAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7395,7 +7395,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderAddThingsToThingGroupMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderAddThingsToThingGroupMitigationAction',
     description: 'AWSIoTDeviceDefenderAddThingsToThingGroupMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7403,7 +7403,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderAudit',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderAudit',
     description: 'AWSIoTDeviceDefenderAudit — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7411,7 +7411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderEnableIoTLoggingMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderEnableIoTLoggingMitigationAction',
     description: 'AWSIoTDeviceDefenderEnableIoTLoggingMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7419,7 +7419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderPublishFindingsToSNSMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderPublishFindingsToSNSMitigationAction',
     description: 'AWSIoTDeviceDefenderPublishFindingsToSNSMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7427,7 +7427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderReplaceDefaultPolicyMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderReplaceDefaultPolicyMitigationAction',
     description: 'AWSIoTDeviceDefenderReplaceDefaultPolicyMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7435,7 +7435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderUpdateCACertMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderUpdateCACertMitigationAction',
     description: 'AWSIoTDeviceDefenderUpdateCACertMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7443,7 +7443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceDefenderUpdateDeviceCertMitigationAction',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderUpdateDeviceCertMitigationAction',
     description: 'AWSIoTDeviceDefenderUpdateDeviceCertMitigationAction — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7451,7 +7451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceTesterForFreeRTOSFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTDeviceTesterForFreeRTOSFullAccess',
     description: 'AWSIoTDeviceTesterForFreeRTOSFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7459,7 +7459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTDeviceTesterForGreengrassFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTDeviceTesterForGreengrassFullAccess',
     description: 'AWSIoTDeviceTesterForGreengrassFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7467,7 +7467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTEventsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTEventsFullAccess',
     description: 'AWSIoTEventsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7475,7 +7475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTEventsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTEventsReadOnlyAccess',
     description: 'AWSIoTEventsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7483,7 +7483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTFleetHubFederationAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTFleetHubFederationAccess',
     description: 'AWSIoTFleetHubFederationAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7491,7 +7491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTFleetwiseServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSIoTFleetwiseServiceRolePolicy',
     description: 'AWSIoTFleetwiseServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7499,7 +7499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTFullAccess',
     description: 'AWSIoTFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7507,7 +7507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTLogging',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTLogging',
     description: 'AWSIoTLogging — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7515,7 +7515,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTManagedIntegrationsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTManagedIntegrationsFullAccess',
     description: 'AWSIoTManagedIntegrationsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7523,7 +7523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTManagedIntegrationsRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSIoTManagedIntegrationsRolePolicy',
     description: 'AWSIoTManagedIntegrationsRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7531,7 +7531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTOTAUpdate',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTOTAUpdate',
     description: 'AWSIoTOTAUpdate — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7563,7 +7563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTRuleActions',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTRuleActions',
     description: 'AWSIoTRuleActions — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7571,7 +7571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTSiteWiseConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTSiteWiseConsoleFullAccess',
     description: 'AWSIoTSiteWiseConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'service-role', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7579,7 +7579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTSiteWiseFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTSiteWiseFullAccess',
     description: 'AWSIoTSiteWiseFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7587,7 +7587,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTSiteWiseMonitorPortalAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTSiteWiseMonitorPortalAccess',
     description: 'AWSIoTSiteWiseMonitorPortalAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7595,7 +7595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTSiteWiseMonitorServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSIoTSiteWiseMonitorServiceRolePolicy',
     description: 'AWSIoTSiteWiseMonitorServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7603,7 +7603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTSiteWiseReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTSiteWiseReadOnlyAccess',
     description: 'AWSIoTSiteWiseReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7611,7 +7611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTThingsRegistration',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSIoTThingsRegistration',
     description: 'AWSIoTThingsRegistration — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7619,7 +7619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTTwinMakerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSIoTTwinMakerServiceRolePolicy',
     description: 'AWSIoTTwinMakerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7627,7 +7627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessDataAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessDataAccess',
     description: 'AWSIoTWirelessDataAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7635,7 +7635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessFullAccess',
     description: 'AWSIoTWirelessFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IoT', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7643,7 +7643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessFullPublishAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessFullPublishAccess',
     description: 'AWSIoTWirelessFullPublishAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7651,7 +7651,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessGatewayCertManager',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessGatewayCertManager',
     description: 'AWSIoTWirelessGatewayCertManager — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7659,7 +7659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessLogging',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessLogging',
     description: 'AWSIoTWirelessLogging — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7667,7 +7667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSIoTWirelessReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSIoTWirelessReadOnlyAccess',
     description: 'AWSIoTWirelessReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IoT', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7707,7 +7707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSKeyManagementServiceCustomKeyStoresServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSKeyManagementServiceCustomKeyStoresServiceRolePolicy',
     description: 'AWSKeyManagementServiceCustomKeyStoresServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7715,7 +7715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSKeyManagementServiceMultiRegionKeysServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSKeyManagementServiceMultiRegionKeysServiceRolePolicy',
     description: 'AWSKeyManagementServiceMultiRegionKeysServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7723,7 +7723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSKeyManagementServicePowerUser',
     arn: 'arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser',
     description: 'AWSKeyManagementServicePowerUser — AWS managed policy.',
-    tier: 'PowerUser', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'PowerUser', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7731,7 +7731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLakeFormationCrossAccountManager',
     arn: 'arn:aws:iam::aws:policy/AWSLakeFormationCrossAccountManager',
     description: 'AWSLakeFormationCrossAccountManager — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7739,7 +7739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLakeFormationDataAdmin',
     arn: 'arn:aws:iam::aws:policy/AWSLakeFormationDataAdmin',
     description: 'AWSLakeFormationDataAdmin — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7747,7 +7747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambda_FullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
     description: 'AWSLambda_FullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7755,7 +7755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambda_ReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess',
     description: 'AWSLambda_ReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7763,7 +7763,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaBasicDurableExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicDurableExecutionRolePolicy',
     description: 'AWSLambdaBasicDurableExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7771,7 +7771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaBasicExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
     description: 'AWSLambdaBasicExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7779,7 +7779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaDynamoDBExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole',
     description: 'AWSLambdaDynamoDBExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7787,7 +7787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaENIManagementAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess',
     description: 'AWSLambdaENIManagementAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7795,7 +7795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaExecute',
     arn: 'arn:aws:iam::aws:policy/AWSLambdaExecute',
     description: 'AWSLambdaExecute — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7803,7 +7803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSLambdaFullAccess',
     description: 'AWSLambdaFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7811,7 +7811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaInvocation-DynamoDB',
     arn: 'arn:aws:iam::aws:policy/AWSLambdaInvocation-DynamoDB',
     description: 'AWSLambdaInvocation-DynamoDB — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7819,7 +7819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaKinesisExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole',
     description: 'AWSLambdaKinesisExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7827,7 +7827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaManagedEC2ResourceOperator',
     arn: 'arn:aws:iam::aws:policy/AWSLambdaManagedEC2ResourceOperator',
     description: 'AWSLambdaManagedEC2ResourceOperator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7835,7 +7835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaMSKExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaMSKExecutionRole',
     description: 'AWSLambdaMSKExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7843,7 +7843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaNetworkConnectorOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSLambdaNetworkConnectorOperatorPolicy',
     description: 'AWSLambdaNetworkConnectorOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7851,7 +7851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaReplicator',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSLambdaReplicator',
     description: 'AWSLambdaReplicator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7859,7 +7859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole',
     description: 'AWSLambdaRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7867,7 +7867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSLambdaServiceRolePolicy',
     description: 'AWSLambdaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -7875,7 +7875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaSQSQueueExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole',
     description: 'AWSLambdaSQSQueueExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7883,7 +7883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSLambdaVPCAccessExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
     description: 'AWSLambdaVPCAccessExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -7955,7 +7955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSManagedServices_DetectiveControlsConfig_ServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSManagedServices_DetectiveControlsConfig_ServiceRolePolicy',
     description: 'AWSManagedServices_DetectiveControlsConfig_ServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8003,7 +8003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceAmiIngestion',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceAmiIngestion',
     description: 'AWSMarketplaceAmiIngestion — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8011,7 +8011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceDeploymentServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSMarketplaceDeploymentServiceRolePolicy',
     description: 'AWSMarketplaceDeploymentServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8019,7 +8019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceDiscoveryFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceDiscoveryFullAccess',
     description: 'AWSMarketplaceDiscoveryFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8027,7 +8027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceFullAccess',
     description: 'AWSMarketplaceFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8035,7 +8035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceGetEntitlements',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceGetEntitlements',
     description: 'AWSMarketplaceGetEntitlements — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8043,7 +8043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceImageBuildFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceImageBuildFullAccess',
     description: 'AWSMarketplaceImageBuildFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8051,7 +8051,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceLicenseManagementServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSMarketplaceLicenseManagementServiceRolePolicy',
     description: 'AWSMarketplaceLicenseManagementServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8059,7 +8059,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceManageSubscriptions',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceManageSubscriptions',
     description: 'AWSMarketplaceManageSubscriptions — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8067,7 +8067,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceMeteringFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceMeteringFullAccess',
     description: 'AWSMarketplaceMeteringFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8075,7 +8075,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceMeteringRegisterUsage',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage',
     description: 'AWSMarketplaceMeteringRegisterUsage — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8083,7 +8083,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceProcurementSystemAdminFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceProcurementSystemAdminFullAccess',
     description: 'AWSMarketplaceProcurementSystemAdminFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8091,7 +8091,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplacePurchaseOrdersServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSMarketplacePurchaseOrdersServiceRolePolicy',
     description: 'AWSMarketplacePurchaseOrdersServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8099,7 +8099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceRead-only',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceRead-only',
     description: 'AWSMarketplaceRead-only — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8107,7 +8107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceResaleAuthorizationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSMarketplaceResaleAuthorizationServiceRolePolicy',
     description: 'AWSMarketplaceResaleAuthorizationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8115,7 +8115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceSellerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceSellerFullAccess',
     description: 'AWSMarketplaceSellerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8123,7 +8123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceSellerOfferManagement',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceSellerOfferManagement',
     description: 'AWSMarketplaceSellerOfferManagement — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8131,7 +8131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceSellerProductsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceSellerProductsFullAccess',
     description: 'AWSMarketplaceSellerProductsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8139,7 +8139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMarketplaceSellerProductsReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSMarketplaceSellerProductsReadOnly',
     description: 'AWSMarketplaceSellerProductsReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8155,7 +8155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMediaConnectServicePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSMediaConnectServicePolicy',
     description: 'AWSMediaConnectServicePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8315,7 +8315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSMSKReplicatorExecutionRole',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSMSKReplicatorExecutionRole',
     description: 'AWSMSKReplicatorExecutionRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8323,7 +8323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNATGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSNATGatewayServiceRolePolicy',
     description: 'AWSNATGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8331,7 +8331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkFirewallFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSNetworkFirewallFullAccess',
     description: 'AWSNetworkFirewallFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'service-role', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8339,7 +8339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkFirewallReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSNetworkFirewallReadOnlyAccess',
     description: 'AWSNetworkFirewallReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8347,7 +8347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkFirewallServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSNetworkFirewallServiceRolePolicy',
     description: 'AWSNetworkFirewallServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8355,7 +8355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkManagerCloudWANServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSNetworkManagerCloudWANServiceRolePolicy',
     description: 'AWSNetworkManagerCloudWANServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8363,7 +8363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkManagerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSNetworkManagerFullAccess',
     description: 'AWSNetworkManagerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8371,7 +8371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkManagerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSNetworkManagerReadOnlyAccess',
     description: 'AWSNetworkManagerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8379,7 +8379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSNetworkManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSNetworkManagerServiceRolePolicy',
     description: 'AWSNetworkManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8411,7 +8411,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSOrganizationsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSOrganizationsFullAccess',
     description: 'AWSOrganizationsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8419,7 +8419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSOrganizationsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSOrganizationsReadOnlyAccess',
     description: 'AWSOrganizationsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8427,7 +8427,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSOrganizationsServiceTrustPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSOrganizationsServiceTrustPolicy',
     description: 'AWSOrganizationsServiceTrustPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8435,7 +8435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSOutpostsAuthorizeServerPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSOutpostsAuthorizeServerPolicy',
     description: 'AWSOutpostsAuthorizeServerPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8443,7 +8443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSOutpostsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSOutpostsServiceRolePolicy',
     description: 'AWSOutpostsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8451,7 +8451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaApplianceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSPanoramaApplianceRolePolicy',
     description: 'AWSPanoramaApplianceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8459,7 +8459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaApplianceServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSPanoramaApplianceServiceRolePolicy',
     description: 'AWSPanoramaApplianceServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8467,7 +8467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSPanoramaFullAccess',
     description: 'AWSPanoramaFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8475,7 +8475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaGreengrassGroupRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSPanoramaGreengrassGroupRolePolicy',
     description: 'AWSPanoramaGreengrassGroupRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8483,7 +8483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaSageMakerRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSPanoramaSageMakerRolePolicy',
     description: 'AWSPanoramaSageMakerRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8491,7 +8491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSPanoramaServiceLinkedRolePolicy',
     description: 'AWSPanoramaServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8499,7 +8499,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPanoramaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSPanoramaServiceRolePolicy',
     description: 'AWSPanoramaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8627,7 +8627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPrivateCAConnectorForKubernetesPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSPrivateCAConnectorForKubernetesPolicy',
     description: 'AWSPrivateCAConnectorForKubernetesPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8667,7 +8667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPrivateMarketplaceAdminFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSPrivateMarketplaceAdminFullAccess',
     description: 'AWSPrivateMarketplaceAdminFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8675,7 +8675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPrivateMarketplaceRequests',
     arn: 'arn:aws:iam::aws:policy/AWSPrivateMarketplaceRequests',
     description: 'AWSPrivateMarketplaceRequests — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8683,7 +8683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSPrivateNetworksServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSPrivateNetworksServiceRolePolicy',
     description: 'AWSPrivateNetworksServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8691,7 +8691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSProtonCodeBuildProvisioningBasicAccess',
     arn: 'arn:aws:iam::aws:policy/AWSProtonCodeBuildProvisioningBasicAccess',
     description: 'AWSProtonCodeBuildProvisioningBasicAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8699,7 +8699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSProtonCodeBuildProvisioningServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSProtonCodeBuildProvisioningServiceRolePolicy',
     description: 'AWSProtonCodeBuildProvisioningServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -8771,7 +8771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSetupDevOpsGuruPermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSetupDevOpsGuruPermissionsBoundary',
     description: 'AWSQuickSetupDevOpsGuruPermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8843,7 +8843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSetupPatchPolicyLambdaExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSetupPatchPolicyLambdaExecutionPolicy',
     description: 'AWSQuickSetupPatchPolicyLambdaExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8883,7 +8883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSetupSSMDeploymentS3BucketRolePolicy',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSetupSSMDeploymentS3BucketRolePolicy',
     description: 'AWSQuickSetupSSMDeploymentS3BucketRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8931,7 +8931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightAssetBundleExportPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSightAssetBundleExportPolicy',
     description: 'AWSQuickSightAssetBundleExportPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8939,7 +8939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightAssetBundleImportPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSightAssetBundleImportPolicy',
     description: 'AWSQuickSightAssetBundleImportPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8947,7 +8947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuicksightAthenaAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuicksightAthenaAccess',
     description: 'AWSQuicksightAthenaAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8955,7 +8955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightDescribeRDS',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightDescribeRDS',
     description: 'AWSQuickSightDescribeRDS — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8963,7 +8963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightDescribeRedshift',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightDescribeRedshift',
     description: 'AWSQuickSightDescribeRedshift — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8971,7 +8971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightElasticsearchPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightElasticsearchPolicy',
     description: 'AWSQuickSightElasticsearchPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8979,7 +8979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightIoTAnalyticsAccess',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSightIoTAnalyticsAccess',
     description: 'AWSQuickSightIoTAnalyticsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8987,7 +8987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightListIAM',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightListIAM',
     description: 'AWSQuickSightListIAM — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -8995,7 +8995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuicksightOpenSearchPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuicksightOpenSearchPolicy',
     description: 'AWSQuicksightOpenSearchPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9003,7 +9003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightSageMakerPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightSageMakerPolicy',
     description: 'AWSQuickSightSageMakerPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9011,7 +9011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightSecretsManagerWriteAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightSecretsManagerWriteAccess',
     description: 'AWSQuickSightSecretsManagerWriteAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9019,7 +9019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightSecretsManagerWritePolicy',
     arn: 'arn:aws:iam::aws:policy/AWSQuickSightSecretsManagerWritePolicy',
     description: 'AWSQuickSightSecretsManagerWritePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9027,7 +9027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSQuickSightTimestreamPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSQuickSightTimestreamPolicy',
     description: 'AWSQuickSightTimestreamPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9099,7 +9099,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSResourceAccessManagerFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSResourceAccessManagerFullAccess',
     description: 'AWSResourceAccessManagerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9107,7 +9107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSResourceAccessManagerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSResourceAccessManagerReadOnlyAccess',
     description: 'AWSResourceAccessManagerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9115,7 +9115,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSResourceAccessManagerResourceShareParticipantAccess',
     arn: 'arn:aws:iam::aws:policy/AWSResourceAccessManagerResourceShareParticipantAccess',
     description: 'AWSResourceAccessManagerResourceShareParticipantAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9123,7 +9123,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSResourceAccessManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSResourceAccessManagerServiceRolePolicy',
     description: 'AWSResourceAccessManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9139,7 +9139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSResourceExplorerOrganizationsAccess',
     arn: 'arn:aws:iam::aws:policy/AWSResourceExplorerOrganizationsAccess',
     description: 'AWSResourceExplorerOrganizationsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9235,7 +9235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSS3OnOutpostsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSS3OnOutpostsServiceRolePolicy',
     description: 'AWSS3OnOutpostsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9243,7 +9243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSavingsPlansFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSavingsPlansFullAccess',
     description: 'AWSSavingsPlansFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Billing', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9251,7 +9251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSavingsPlansReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSavingsPlansReadOnlyAccess',
     description: 'AWSSavingsPlansReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9259,7 +9259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecretsManagerClientReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecretsManagerClientReadOnlyAccess',
     description: 'AWSSecretsManagerClientReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9267,7 +9267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityAgentServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSecurityAgentServiceRolePolicy',
     description: 'AWSSecurityAgentServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9275,7 +9275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityAgentWebAppPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSSecurityAgentWebAppPolicy',
     description: 'AWSSecurityAgentWebAppPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9283,7 +9283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityHubFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityHubFullAccess',
     description: 'AWSSecurityHubFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9291,7 +9291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityHubOrganizationsAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityHubOrganizationsAccess',
     description: 'AWSSecurityHubOrganizationsAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9299,7 +9299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityHubReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityHubReadOnlyAccess',
     description: 'AWSSecurityHubReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9307,7 +9307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityHubServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSecurityHubServiceRolePolicy',
     description: 'AWSSecurityHubServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9315,7 +9315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityHubV2ServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSecurityHubV2ServiceRolePolicy',
     description: 'AWSSecurityHubV2ServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9323,7 +9323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityIncidentResponseCaseFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityIncidentResponseCaseFullAccess',
     description: 'AWSSecurityIncidentResponseCaseFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9331,7 +9331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityIncidentResponseFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityIncidentResponseFullAccess',
     description: 'AWSSecurityIncidentResponseFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9339,7 +9339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityIncidentResponseReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSSecurityIncidentResponseReadOnlyAccess',
     description: 'AWSSecurityIncidentResponseReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9347,7 +9347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityIncidentResponseServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSecurityIncidentResponseServiceRolePolicy',
     description: 'AWSSecurityIncidentResponseServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9355,7 +9355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSecurityIncidentResponseTriageServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSecurityIncidentResponseTriageServiceRolePolicy',
     description: 'AWSSecurityIncidentResponseTriageServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9419,7 +9419,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceCatalogOrgsDataSyncServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceCatalogOrgsDataSyncServiceRolePolicy',
     description: 'AWSServiceCatalogOrgsDataSyncServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9435,7 +9435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForAIDevOpsPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForAIDevOpsPolicy',
     description: 'AWSServiceRoleForAIDevOpsPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9443,7 +9443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForAmazonEKSNodegroup',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForAmazonEKSNodegroup',
     description: 'AWSServiceRoleForAmazonEKSNodegroup — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9451,7 +9451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForAmazonQDeveloper',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForAmazonQDeveloper',
     description: 'AWSServiceRoleForAmazonQDeveloper — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9491,7 +9491,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForCodeGuru-Profiler',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForCodeGuru-Profiler',
     description: 'AWSServiceRoleForCodeGuru-Profiler — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9507,7 +9507,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForEC2ScheduledInstances',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForEC2ScheduledInstances',
     description: 'AWSServiceRoleForEC2ScheduledInstances — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9523,7 +9523,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForImageBuilder',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForImageBuilder',
     description: 'AWSServiceRoleForImageBuilder — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9531,7 +9531,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForIoTSiteWise',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForIoTSiteWise',
     description: 'AWSServiceRoleForIoTSiteWise — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IoT', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9555,7 +9555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForNeptuneGraphPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForNeptuneGraphPolicy',
     description: 'AWSServiceRoleForNeptuneGraphPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9563,7 +9563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRoleForPrivateMarketplaceAdminPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRoleForPrivateMarketplaceAdminPolicy',
     description: 'AWSServiceRoleForPrivateMarketplaceAdminPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9595,7 +9595,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRolePolicyForBackupReports',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRolePolicyForBackupReports',
     description: 'AWSServiceRolePolicyForBackupReports — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9603,7 +9603,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSServiceRolePolicyForBackupRestoreTesting',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSServiceRolePolicyForBackupRestoreTesting',
     description: 'AWSServiceRolePolicyForBackupRestoreTesting — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9619,7 +9619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSShieldDRTAccessPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSShieldDRTAccessPolicy',
     description: 'AWSShieldDRTAccessPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9627,7 +9627,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSShieldServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSShieldServiceRolePolicy',
     description: 'AWSShieldServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9659,7 +9659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSODirectoryAdministrator',
     arn: 'arn:aws:iam::aws:policy/AWSSSODirectoryAdministrator',
     description: 'AWSSSODirectoryAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9667,7 +9667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSODirectoryReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSSSODirectoryReadOnly',
     description: 'AWSSSODirectoryReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9675,7 +9675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSOMasterAccountAdministrator',
     arn: 'arn:aws:iam::aws:policy/AWSSSOMasterAccountAdministrator',
     description: 'AWSSSOMasterAccountAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9683,7 +9683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSOMemberAccountAdministrator',
     arn: 'arn:aws:iam::aws:policy/AWSSSOMemberAccountAdministrator',
     description: 'AWSSSOMemberAccountAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9691,7 +9691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSOReadOnly',
     arn: 'arn:aws:iam::aws:policy/AWSSSOReadOnly',
     description: 'AWSSSOReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9699,7 +9699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSSOServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSSOServiceRolePolicy',
     description: 'AWSSSOServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9707,7 +9707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStepFunctionsConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSStepFunctionsConsoleFullAccess',
     description: 'AWSStepFunctionsConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9715,7 +9715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStepFunctionsFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess',
     description: 'AWSStepFunctionsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Serverless', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9723,7 +9723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStepFunctionsReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSStepFunctionsReadOnlyAccess',
     description: 'AWSStepFunctionsReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9731,7 +9731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStorageGatewayFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSStorageGatewayFullAccess',
     description: 'AWSStorageGatewayFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9739,7 +9739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStorageGatewayReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSStorageGatewayReadOnlyAccess',
     description: 'AWSStorageGatewayReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9747,7 +9747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSStorageGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSStorageGatewayServiceRolePolicy',
     description: 'AWSStorageGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9899,7 +9899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSSystemsManagerOpsDataSyncServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSSystemsManagerOpsDataSyncServiceRolePolicy',
     description: 'AWSSystemsManagerOpsDataSyncServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -9971,7 +9971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransferConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSTransferConsoleFullAccess',
     description: 'AWSTransferConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9979,7 +9979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransferFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSTransferFullAccess',
     description: 'AWSTransferFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Storage', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9987,7 +9987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransferLoggingAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSTransferLoggingAccess',
     description: 'AWSTransferLoggingAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -9995,7 +9995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransferReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSTransferReadOnlyAccess',
     description: 'AWSTransferReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Storage', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10011,7 +10011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransformApplicationECSDeploymentPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/AWSTransformApplicationECSDeploymentPolicy',
     description: 'AWSTransformApplicationECSDeploymentPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10043,7 +10043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSTransformSecretsManagerConnectorPolicy',
     arn: 'arn:aws:iam::aws:policy/AWSTransformSecretsManagerConnectorPolicy',
     description: 'AWSTransformSecretsManagerConnectorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10131,7 +10131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSVPCFlowLogsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSVPCFlowLogsServiceRolePolicy',
     description: 'AWSVPCFlowLogsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10147,7 +10147,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSVPCS2SVpnServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSVPCS2SVpnServiceRolePolicy',
     description: 'AWSVPCS2SVpnServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10155,7 +10155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSVPCTransitGatewayServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSVPCTransitGatewayServiceRolePolicy',
     description: 'AWSVPCTransitGatewayServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10163,7 +10163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSVPCVerifiedAccessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSVPCVerifiedAccessServiceRolePolicy',
     description: 'AWSVPCVerifiedAccessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10171,7 +10171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSWAFConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSWAFConsoleFullAccess',
     description: 'AWSWAFConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10179,7 +10179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSWAFConsoleReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSWAFConsoleReadOnlyAccess',
     description: 'AWSWAFConsoleReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10187,7 +10187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSWAFFullAccess',
     arn: 'arn:aws:iam::aws:policy/AWSWAFFullAccess',
     description: 'AWSWAFFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Security', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10195,7 +10195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSWAFReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/AWSWAFReadOnlyAccess',
     description: 'AWSWAFReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10211,7 +10211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSWellArchitectedOrganizationsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/AWSWellArchitectedOrganizationsServiceRolePolicy',
     description: 'AWSWellArchitectedOrganizationsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10235,7 +10235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'AWSXRayDaemonWriteAccess',
     arn: 'arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess',
     description: 'AWSXRayDaemonWriteAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10283,7 +10283,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'BatchServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/BatchServiceRolePolicy',
     description: 'BatchServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10291,7 +10291,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'BedrockAgentCoreFullAccess',
     arn: 'arn:aws:iam::aws:policy/BedrockAgentCoreFullAccess',
     description: 'BedrockAgentCoreFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10299,7 +10299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'BedrockAgentCoreNetworkServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/BedrockAgentCoreNetworkServiceRolePolicy',
     description: 'BedrockAgentCoreNetworkServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10307,7 +10307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'BedrockAgentCoreRuntimeIdentityServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/BedrockAgentCoreRuntimeIdentityServiceRolePolicy',
     description: 'BedrockAgentCoreRuntimeIdentityServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10315,7 +10315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Billing',
     arn: 'arn:aws:iam::aws:policy/job-function/Billing',
     description: 'Billing — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10323,7 +10323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'BudgetsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/BudgetsServiceRolePolicy',
     description: 'BudgetsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10331,7 +10331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CertificateManagerServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CertificateManagerServiceRolePolicy',
     description: 'CertificateManagerServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10339,7 +10339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ClientVPNServiceConnectionsRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/ClientVPNServiceConnectionsRolePolicy',
     description: 'ClientVPNServiceConnectionsRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10347,7 +10347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ClientVPNServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/ClientVPNServiceRolePolicy',
     description: 'ClientVPNServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10355,7 +10355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudFormationStackSetsOrgAdminServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudFormationStackSetsOrgAdminServiceRolePolicy',
     description: 'CloudFormationStackSetsOrgAdminServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10363,7 +10363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudFormationStackSetsOrgMemberServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudFormationStackSetsOrgMemberServiceRolePolicy',
     description: 'CloudFormationStackSetsOrgMemberServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'DevOps', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10371,7 +10371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudFrontFullAccess',
     arn: 'arn:aws:iam::aws:policy/CloudFrontFullAccess',
     description: 'CloudFrontFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10379,7 +10379,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudFrontReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/CloudFrontReadOnlyAccess',
     description: 'CloudFrontReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10387,7 +10387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudHSMServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudHSMServiceRolePolicy',
     description: 'CloudHSMServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10435,7 +10435,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchActionsEC2Access',
     arn: 'arn:aws:iam::aws:policy/CloudWatchActionsEC2Access',
     description: 'CloudWatchActionsEC2Access — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10611,7 +10611,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchLambdaApplicationSignalsExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/CloudWatchLambdaApplicationSignalsExecutionRolePolicy',
     description: 'CloudWatchLambdaApplicationSignalsExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10619,7 +10619,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchLambdaInsightsExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
     description: 'CloudWatchLambdaInsightsExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Serverless', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10659,7 +10659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchNetworkFlowMonitorAgentPublishPolicy',
     arn: 'arn:aws:iam::aws:policy/CloudWatchNetworkFlowMonitorAgentPublishPolicy',
     description: 'CloudWatchNetworkFlowMonitorAgentPublishPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10667,7 +10667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchNetworkFlowMonitorServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudWatchNetworkFlowMonitorServiceRolePolicy',
     description: 'CloudWatchNetworkFlowMonitorServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10675,7 +10675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchNetworkFlowMonitorTopologyServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudWatchNetworkFlowMonitorTopologyServiceRolePolicy',
     description: 'CloudWatchNetworkFlowMonitorTopologyServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10683,7 +10683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchNetworkMonitorServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CloudWatchNetworkMonitorServiceRolePolicy',
     description: 'CloudWatchNetworkMonitorServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10691,7 +10691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchOpenSearchDashboardAccess',
     arn: 'arn:aws:iam::aws:policy/CloudWatchOpenSearchDashboardAccess',
     description: 'CloudWatchOpenSearchDashboardAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10699,7 +10699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CloudWatchOpenSearchDashboardsFullAccess',
     arn: 'arn:aws:iam::aws:policy/CloudWatchOpenSearchDashboardsFullAccess',
     description: 'CloudWatchOpenSearchDashboardsFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Analytics', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10731,7 +10731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ComprehendDataAccessRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ComprehendDataAccessRolePolicy',
     description: 'ComprehendDataAccessRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10739,7 +10739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ComprehendFullAccess',
     arn: 'arn:aws:iam::aws:policy/ComprehendFullAccess',
     description: 'ComprehendFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10747,7 +10747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ComprehendMedicalFullAccess',
     arn: 'arn:aws:iam::aws:policy/ComprehendMedicalFullAccess',
     description: 'ComprehendMedicalFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10755,7 +10755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ComprehendReadOnly',
     arn: 'arn:aws:iam::aws:policy/ComprehendReadOnly',
     description: 'ComprehendReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10811,7 +10811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CostOptimizationHubAdminAccess',
     arn: 'arn:aws:iam::aws:policy/CostOptimizationHubAdminAccess',
     description: 'CostOptimizationHubAdminAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10819,7 +10819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CostOptimizationHubReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/CostOptimizationHubReadOnlyAccess',
     description: 'CostOptimizationHubReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Billing', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10827,7 +10827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'CostOptimizationHubServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/CostOptimizationHubServiceRolePolicy',
     description: 'CostOptimizationHubServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Billing', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10859,7 +10859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DAXServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DAXServiceRolePolicy',
     description: 'DAXServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10883,7 +10883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DeclarativePoliciesEC2Report',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DeclarativePoliciesEC2Report',
     description: 'DeclarativePoliciesEC2Report — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10891,7 +10891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DynamoDBCloudWatchContributorInsightsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DynamoDBCloudWatchContributorInsightsServiceRolePolicy',
     description: 'DynamoDBCloudWatchContributorInsightsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10899,7 +10899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DynamoDBGlobalTableSettingsManagementServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DynamoDBGlobalTableSettingsManagementServiceRolePolicy',
     description: 'DynamoDBGlobalTableSettingsManagementServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10907,7 +10907,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DynamoDBKinesisReplicationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DynamoDBKinesisReplicationServiceRolePolicy',
     description: 'DynamoDBKinesisReplicationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10915,7 +10915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'DynamoDBReplicationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/DynamoDBReplicationServiceRolePolicy',
     description: 'DynamoDBReplicationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10923,7 +10923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2ApplicationStatusChecksServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/EC2ApplicationStatusChecksServiceRolePolicy',
     description: 'EC2ApplicationStatusChecksServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10931,7 +10931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2FastLaunchFullAccess',
     arn: 'arn:aws:iam::aws:policy/EC2FastLaunchFullAccess',
     description: 'EC2FastLaunchFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Compute', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10939,7 +10939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2FastLaunchServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/EC2FastLaunchServiceRolePolicy',
     description: 'EC2FastLaunchServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10947,7 +10947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2FleetTimeShiftableServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/EC2FleetTimeShiftableServiceRolePolicy',
     description: 'EC2FleetTimeShiftableServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10955,7 +10955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Ec2ImageBuilderCrossAccountDistributionAccess',
     arn: 'arn:aws:iam::aws:policy/Ec2ImageBuilderCrossAccountDistributionAccess',
     description: 'Ec2ImageBuilderCrossAccountDistributionAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10963,7 +10963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2ImageBuilderExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/EC2ImageBuilderExecutionPolicy',
     description: 'EC2ImageBuilderExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10971,7 +10971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2ImageBuilderLifecycleExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy',
     description: 'EC2ImageBuilderLifecycleExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10979,7 +10979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2InstanceConnect',
     arn: 'arn:aws:iam::aws:policy/EC2InstanceConnect',
     description: 'EC2InstanceConnect — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -10987,7 +10987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Ec2InstanceConnectEndpoint',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/Ec2InstanceConnectEndpoint',
     description: 'Ec2InstanceConnectEndpoint — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -10995,7 +10995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2InstanceProfileForImageBuilder',
     arn: 'arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilder',
     description: 'EC2InstanceProfileForImageBuilder — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11003,7 +11003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EC2InstanceProfileForImageBuilderECRContainerBuilds',
     arn: 'arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds',
     description: 'EC2InstanceProfileForImageBuilderECRContainerBuilds — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11011,7 +11011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ECRReplicationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/ECRReplicationServiceRolePolicy',
     description: 'ECRReplicationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11019,7 +11019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ECRTemplateServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/ECRTemplateServiceRolePolicy',
     description: 'ECRTemplateServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11027,7 +11027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ElastiCacheServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/ElastiCacheServiceRolePolicy',
     description: 'ElastiCacheServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11035,7 +11035,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ElasticLoadBalancingFullAccess',
     arn: 'arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess',
     description: 'ElasticLoadBalancingFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11043,7 +11043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ElasticLoadBalancingReadOnly',
     arn: 'arn:aws:iam::aws:policy/ElasticLoadBalancingReadOnly',
     description: 'ElasticLoadBalancingReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11107,7 +11107,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'EMRDescribeClusterPolicyForEMRWAL',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/EMRDescribeClusterPolicyForEMRWAL',
     description: 'EMRDescribeClusterPolicyForEMRWAL — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11131,7 +11131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'FMSServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/FMSServiceRolePolicy',
     description: 'FMSServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11139,7 +11139,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'FSxDeleteServiceLinkedRoleAccess',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/FSxDeleteServiceLinkedRoleAccess',
     description: 'FSxDeleteServiceLinkedRoleAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11163,7 +11163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'GitLabDuoWithAmazonQPermissionsPolicy',
     arn: 'arn:aws:iam::aws:policy/GitLabDuoWithAmazonQPermissionsPolicy',
     description: 'GitLabDuoWithAmazonQPermissionsPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11171,7 +11171,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'GlobalAcceleratorFullAccess',
     arn: 'arn:aws:iam::aws:policy/GlobalAcceleratorFullAccess',
     description: 'GlobalAcceleratorFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11179,7 +11179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'GlobalAcceleratorReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/GlobalAcceleratorReadOnlyAccess',
     description: 'GlobalAcceleratorReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11187,7 +11187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'GreengrassOTAUpdateArtifactAccess',
     arn: 'arn:aws:iam::aws:policy/service-role/GreengrassOTAUpdateArtifactAccess',
     description: 'GreengrassOTAUpdateArtifactAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11211,7 +11211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Health_OrganizationsServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/Health_OrganizationsServiceRolePolicy',
     description: 'Health_OrganizationsServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11219,7 +11219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMAccessAdvisorReadOnly',
     arn: 'arn:aws:iam::aws:policy/IAMAccessAdvisorReadOnly',
     description: 'IAMAccessAdvisorReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11227,7 +11227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMAccessAnalyzerFullAccess',
     arn: 'arn:aws:iam::aws:policy/IAMAccessAnalyzerFullAccess',
     description: 'IAMAccessAnalyzerFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11235,7 +11235,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMAccessAnalyzerReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/IAMAccessAnalyzerReadOnlyAccess',
     description: 'IAMAccessAnalyzerReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11243,7 +11243,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMFullAccess',
     arn: 'arn:aws:iam::aws:policy/IAMFullAccess',
     description: 'IAMFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'IAM', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11251,7 +11251,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/IAMReadOnlyAccess',
     description: 'IAMReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11259,7 +11259,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMSelfManageServiceSpecificCredentials',
     arn: 'arn:aws:iam::aws:policy/IAMSelfManageServiceSpecificCredentials',
     description: 'IAMSelfManageServiceSpecificCredentials — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11267,7 +11267,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMUserChangePassword',
     arn: 'arn:aws:iam::aws:policy/IAMUserChangePassword',
     description: 'IAMUserChangePassword — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11275,7 +11275,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IAMUserSSHKeys',
     arn: 'arn:aws:iam::aws:policy/IAMUserSSHKeys',
     description: 'IAMUserSSHKeys — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'IAM', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11299,7 +11299,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'IVSRecordToS3',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/IVSRecordToS3',
     description: 'IVSRecordToS3 — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11307,7 +11307,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'KafkaConnectServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/KafkaConnectServiceRolePolicy',
     description: 'KafkaConnectServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11315,7 +11315,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'KafkaServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/KafkaServiceRolePolicy',
     description: 'KafkaServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11323,7 +11323,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'KeyspacesCDCServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/KeyspacesCDCServiceRolePolicy',
     description: 'KeyspacesCDCServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11331,7 +11331,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'KeyspacesReplicationServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/KeyspacesReplicationServiceRolePolicy',
     description: 'KeyspacesReplicationServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11339,7 +11339,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'LakeFormationDataAccessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/LakeFormationDataAccessServiceRolePolicy',
     description: 'LakeFormationDataAccessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Analytics', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11347,7 +11347,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'LexBotPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/LexBotPolicy',
     description: 'LexBotPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11355,7 +11355,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'LexChannelPolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/LexChannelPolicy',
     description: 'LexChannelPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11363,7 +11363,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'LightsailExportAccess',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/LightsailExportAccess',
     description: 'LightsailExportAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Compute', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11371,7 +11371,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'MediaConnectGatewayInstanceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/MediaConnectGatewayInstanceRolePolicy',
     description: 'MediaConnectGatewayInstanceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11387,7 +11387,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'MemoryDBServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/MemoryDBServiceRolePolicy',
     description: 'MemoryDBServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11443,7 +11443,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NeptuneConsoleFullAccess',
     arn: 'arn:aws:iam::aws:policy/NeptuneConsoleFullAccess',
     description: 'NeptuneConsoleFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11451,7 +11451,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NeptuneFullAccess',
     arn: 'arn:aws:iam::aws:policy/NeptuneFullAccess',
     description: 'NeptuneFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Database', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11459,7 +11459,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NeptuneGraphReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/NeptuneGraphReadOnlyAccess',
     description: 'NeptuneGraphReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11467,7 +11467,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NeptuneReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/NeptuneReadOnlyAccess',
     description: 'NeptuneReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11475,7 +11475,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NetworkAdministrator',
     arn: 'arn:aws:iam::aws:policy/job-function/NetworkAdministrator',
     description: 'NetworkAdministrator — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11483,7 +11483,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'NetworkSecurityDirectorServiceLinkedRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/NetworkSecurityDirectorServiceLinkedRolePolicy',
     description: 'NetworkSecurityDirectorServiceLinkedRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11555,7 +11555,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'QBusinessQuicksightPluginPolicy',
     arn: 'arn:aws:iam::aws:policy/QBusinessQuicksightPluginPolicy',
     description: 'QBusinessQuicksightPluginPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11563,7 +11563,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'QBusinessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/QBusinessServiceRolePolicy',
     description: 'QBusinessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11571,7 +11571,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'QuickSightAccessForS3StorageManagementAnalyticsReadOnly',
     arn: 'arn:aws:iam::aws:policy/service-role/QuickSightAccessForS3StorageManagementAnalyticsReadOnly',
     description: 'QuickSightAccessForS3StorageManagementAnalyticsReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11579,7 +11579,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'RDSCloudHsmAuthorizationRole',
     arn: 'arn:aws:iam::aws:policy/service-role/RDSCloudHsmAuthorizationRole',
     description: 'RDSCloudHsmAuthorizationRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Database', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11635,7 +11635,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAAmazonEBSCSIDriverOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAAmazonEBSCSIDriverOperatorPolicy',
     description: 'ROSAAmazonEBSCSIDriverOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11643,7 +11643,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSACloudNetworkConfigOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSACloudNetworkConfigOperatorPolicy',
     description: 'ROSACloudNetworkConfigOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11651,7 +11651,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAControlPlaneOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAControlPlaneOperatorPolicy',
     description: 'ROSAControlPlaneOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11659,7 +11659,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAImageRegistryOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAImageRegistryOperatorPolicy',
     description: 'ROSAImageRegistryOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11667,7 +11667,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAIngressOperatorPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAIngressOperatorPolicy',
     description: 'ROSAIngressOperatorPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11675,7 +11675,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAInstallerPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAInstallerPolicy',
     description: 'ROSAInstallerPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11683,7 +11683,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAKMSProviderPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy',
     description: 'ROSAKMSProviderPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11691,7 +11691,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAKubeControllerPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAKubeControllerPolicy',
     description: 'ROSAKubeControllerPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11699,7 +11699,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAManageSubscription',
     arn: 'arn:aws:iam::aws:policy/ROSAManageSubscription',
     description: 'ROSAManageSubscription — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11707,7 +11707,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSANodePoolManagementPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSANodePoolManagementPolicy',
     description: 'ROSANodePoolManagementPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11715,7 +11715,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSASharedVPCEndpointPolicy',
     arn: 'arn:aws:iam::aws:policy/ROSASharedVPCEndpointPolicy',
     description: 'ROSASharedVPCEndpointPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11723,7 +11723,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSASharedVPCRoute53Policy',
     arn: 'arn:aws:iam::aws:policy/ROSASharedVPCRoute53Policy',
     description: 'ROSASharedVPCRoute53Policy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11731,7 +11731,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSASRESupportPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSASRESupportPolicy',
     description: 'ROSASRESupportPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11739,7 +11739,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ROSAWorkerInstancePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/ROSAWorkerInstancePolicy',
     description: 'ROSAWorkerInstancePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Containers', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11747,7 +11747,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Route53RecoveryReadinessServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/Route53RecoveryReadinessServiceRolePolicy',
     description: 'Route53RecoveryReadinessServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11755,7 +11755,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'Route53ResolverServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/Route53ResolverServiceRolePolicy',
     description: 'Route53ResolverServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11771,7 +11771,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'S3StorageLensServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/S3StorageLensServiceRolePolicy',
     description: 'S3StorageLensServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Storage', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -11779,7 +11779,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioAdminIAMConsolePolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioAdminIAMConsolePolicy',
     description: 'SageMakerStudioAdminIAMConsolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11787,7 +11787,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioAdminIAMDefaultExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioAdminIAMDefaultExecutionPolicy',
     description: 'SageMakerStudioAdminIAMDefaultExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11795,7 +11795,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioAdminIAMPermissiveExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioAdminIAMPermissiveExecutionPolicy',
     description: 'SageMakerStudioAdminIAMPermissiveExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11803,7 +11803,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioAdminProjectUserRolePolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioAdminProjectUserRolePolicy',
     description: 'SageMakerStudioAdminProjectUserRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11811,7 +11811,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockAgentServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockAgentServiceRolePolicy',
     description: 'SageMakerStudioBedrockAgentServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11819,7 +11819,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockChatAgentUserRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockChatAgentUserRolePolicy',
     description: 'SageMakerStudioBedrockChatAgentUserRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11827,7 +11827,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockEvaluationJobServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockEvaluationJobServiceRolePolicy',
     description: 'SageMakerStudioBedrockEvaluationJobServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11835,7 +11835,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockFlowServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockFlowServiceRolePolicy',
     description: 'SageMakerStudioBedrockFlowServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11843,7 +11843,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockFunctionExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockFunctionExecutionRolePolicy',
     description: 'SageMakerStudioBedrockFunctionExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11851,7 +11851,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockKnowledgeBaseCustomResourcePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockKnowledgeBaseCustomResourcePolicy',
     description: 'SageMakerStudioBedrockKnowledgeBaseCustomResourcePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11859,7 +11859,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockKnowledgeBaseServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockKnowledgeBaseServiceRolePolicy',
     description: 'SageMakerStudioBedrockKnowledgeBaseServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11867,7 +11867,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioBedrockPromptUserRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioBedrockPromptUserRolePolicy',
     description: 'SageMakerStudioBedrockPromptUserRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11875,7 +11875,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioDomainExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioDomainExecutionRolePolicy',
     description: 'SageMakerStudioDomainExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11883,7 +11883,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioDomainServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioDomainServiceRolePolicy',
     description: 'SageMakerStudioDomainServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11891,7 +11891,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioEMRContainersSystemNamespaceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioEMRContainersSystemNamespaceRolePolicy',
     description: 'SageMakerStudioEMRContainersSystemNamespaceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11899,7 +11899,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioEMRInstanceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioEMRInstanceRolePolicy',
     description: 'SageMakerStudioEMRInstanceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11907,7 +11907,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioEMRServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioEMRServiceRolePolicy',
     description: 'SageMakerStudioEMRServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11915,7 +11915,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioFullAccess',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioFullAccess',
     description: 'SageMakerStudioFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11923,7 +11923,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioProjectProvisioningRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioProjectProvisioningRolePolicy',
     description: 'SageMakerStudioProjectProvisioningRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11931,7 +11931,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioProjectRoleMachineLearningPolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioProjectRoleMachineLearningPolicy',
     description: 'SageMakerStudioProjectRoleMachineLearningPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11939,7 +11939,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioProjectUserRolePermissionsBoundary',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioProjectUserRolePermissionsBoundary',
     description: 'SageMakerStudioProjectUserRolePermissionsBoundary — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11947,7 +11947,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioProjectUserRolePolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioProjectUserRolePolicy',
     description: 'SageMakerStudioProjectUserRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11955,7 +11955,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioQueryExecutionRolePolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SageMakerStudioQueryExecutionRolePolicy',
     description: 'SageMakerStudioQueryExecutionRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11963,7 +11963,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioUserIAMConsolePolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioUserIAMConsolePolicy',
     description: 'SageMakerStudioUserIAMConsolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11971,7 +11971,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioUserIAMDefaultExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioUserIAMDefaultExecutionPolicy',
     description: 'SageMakerStudioUserIAMDefaultExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11979,7 +11979,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SageMakerStudioUserIAMPermissiveExecutionPolicy',
     arn: 'arn:aws:iam::aws:policy/SageMakerStudioUserIAMPermissiveExecutionPolicy',
     description: 'SageMakerStudioUserIAMPermissiveExecutionPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11987,7 +11987,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecretsManagerReadWrite',
     arn: 'arn:aws:iam::aws:policy/SecretsManagerReadWrite',
     description: 'SecretsManagerReadWrite — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -11995,7 +11995,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecurityAgentWebAppAPIPolicy',
     arn: 'arn:aws:iam::aws:policy/service-role/SecurityAgentWebAppAPIPolicy',
     description: 'SecurityAgentWebAppAPIPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12003,7 +12003,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecurityAgentWebAppPolicy',
     arn: 'arn:aws:iam::aws:policy/SecurityAgentWebAppPolicy',
     description: 'SecurityAgentWebAppPolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12011,7 +12011,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecurityAudit',
     arn: 'arn:aws:iam::aws:policy/SecurityAudit',
     description: 'SecurityAudit — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12019,7 +12019,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecurityLakeResourceManagementServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/SecurityLakeResourceManagementServiceRolePolicy',
     description: 'SecurityLakeResourceManagementServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -12027,7 +12027,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SecurityLakeServiceLinkedRole',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/SecurityLakeServiceLinkedRole',
     description: 'SecurityLakeServiceLinkedRole — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -12043,7 +12043,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'ServerMigrationConnector',
     arn: 'arn:aws:iam::aws:policy/ServerMigrationConnector',
     description: 'ServerMigrationConnector — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12131,7 +12131,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'SSMQuickSetupRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/SSMQuickSetupRolePolicy',
     description: 'SSMQuickSetupRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -12155,7 +12155,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'TranslateFullAccess',
     arn: 'arn:aws:iam::aws:policy/TranslateFullAccess',
     description: 'TranslateFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'AI', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12163,7 +12163,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'TranslateReadOnly',
     arn: 'arn:aws:iam::aws:policy/TranslateReadOnly',
     description: 'TranslateReadOnly — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'AI', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12179,7 +12179,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'VMImportExportRoleForAWSConnector',
     arn: 'arn:aws:iam::aws:policy/service-role/VMImportExportRoleForAWSConnector',
     description: 'VMImportExportRoleForAWSConnector — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Messaging', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12187,7 +12187,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'VPCLatticeFullAccess',
     arn: 'arn:aws:iam::aws:policy/VPCLatticeFullAccess',
     description: 'VPCLatticeFullAccess — AWS managed policy.',
-    tier: 'FullAccess', category: 'Management', isPrivileged: true, type: 'managed', scope: 'service',
+    tier: 'FullAccess', category: 'Networking', isPrivileged: true, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12195,7 +12195,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'VPCLatticeReadOnlyAccess',
     arn: 'arn:aws:iam::aws:policy/VPCLatticeReadOnlyAccess',
     description: 'VPCLatticeReadOnlyAccess — AWS managed policy.',
-    tier: 'ReadOnly', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'ReadOnly', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12203,7 +12203,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'VPCLatticeServicesInvokeAccess',
     arn: 'arn:aws:iam::aws:policy/VPCLatticeServicesInvokeAccess',
     description: 'VPCLatticeServicesInvokeAccess — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'managed', scope: 'service',
+    tier: 'Specialized', category: 'Networking', isPrivileged: false, type: 'managed', scope: 'service',
     privileges: [],
   },
   {
@@ -12211,7 +12211,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'WAFLoggingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/WAFLoggingServiceRolePolicy',
     description: 'WAFLoggingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -12219,7 +12219,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'WAFRegionalLoggingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/WAFRegionalLoggingServiceRolePolicy',
     description: 'WAFRegionalLoggingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {
@@ -12227,7 +12227,7 @@ export const AWS_POLICIES: AwsPolicy[] = [
     name: 'WAFV2LoggingServiceRolePolicy',
     arn: 'arn:aws:iam::aws:policy/aws-service-role/WAFV2LoggingServiceRolePolicy',
     description: 'WAFV2LoggingServiceRolePolicy — AWS managed policy.',
-    tier: 'Specialized', category: 'Management', isPrivileged: false, type: 'service-role', scope: 'service',
+    tier: 'Specialized', category: 'Security', isPrivileged: false, type: 'service-role', scope: 'service',
     privileges: [],
   },
   {

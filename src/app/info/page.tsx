@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import EntraScopeIcon from '@/components/EntraScopeIcon'
 import {
@@ -59,7 +57,7 @@ export default function InfoPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { name: 'Microsoft Entra ID', color: '#0078d4', desc: '144 built-in roles + role actions + Microsoft Graph API permissions, classificados pelo Enterprise Access Model (EAM).' },
-                { name: 'Azure RBAC', color: '#0078d4', desc: '923 roles built-in do Azure Resource Manager com Risk Tier e escopos de atribuição.' },
+                { name: 'Azure RBAC', color: '#0078d4', desc: '926 roles built-in do Azure Resource Manager com Risk Tier e escopos de atribuição.' },
                 { name: 'Google Cloud (GCP)', color: '#4285f4', desc: 'Roles predefinidas do GCP IAM por serviço, tier e categoria — Primitive, Predefined e Custom.' },
                 { name: 'Google Workspace', color: '#34a853', desc: 'Admin Roles predefinidas e OAuth Scopes classificados por sensibilidade.' },
                 { name: 'AWS IAM', color: '#ff9900', desc: 'Managed Policies, Service Roles e Permission Boundaries com categorização por serviço AWS.' },

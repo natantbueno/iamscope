@@ -14,12 +14,6 @@ const CAT_COLORS: Record<string, string> = {
   IoT: '#059669', Billing: '#475569', Messaging: '#d97706',
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  'managed': '#0891b2',
-  'service-role': '#7c3aed',
-  'permission-set': '#16a34a',
-}
-
 const CAT_ICONS: Record<string, React.ReactNode> = {
   IAM: <ShieldCheck size={15} />, Compute: <Server size={15} />, Storage: <HardDrive size={15} />,
   Database: <Database size={15} />, Networking: <Network size={15} />, Security: <Lock size={15} />,
@@ -43,16 +37,10 @@ export default function AwsDashboard() {
   }))
   const maxTier = Math.max(...tierCounts.map(t => t.count))
 
-  const byType = {
-    managed: AWS_POLICIES.filter(p => p.type === 'managed').length,
-    'service-role': AWS_POLICIES.filter(p => p.type === 'service-role').length,
-    'permission-set': AWS_POLICIES.filter(p => p.type === 'permission-set').length,
-  }
-
   return (
     <AppShell headerTitle="AWS IAM" headerSub="Managed Policies, Service Roles e Permission Sets">
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-5 max-w-4xl">
+        <div className="max-w-5xl px-6 py-6 space-y-6">
 
           {/* Stat cards */}
           <div className="grid grid-cols-4 gap-3">
@@ -72,7 +60,7 @@ export default function AwsDashboard() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Tier distribution */}
             <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
               <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Distribuição por Tier</h2>
@@ -91,42 +79,23 @@ export default function AwsDashboard() {
               </div>
             </div>
 
-            {/* Policy type breakdown */}
+            {/* Privileged policies */}
             <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Tipo de Policy</h2>
-              <div className="space-y-3">
-                {(Object.entries(byType) as [string, number][]).map(([type, count]) => (
-                  <div key={type} className="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TYPE_COLORS[type] }} />
-                    <span className="flex-1 text-[12px] text-gray-600 dark:text-gray-400 font-medium capitalize">{type.replace('-', ' ')}</span>
-                    <span className="text-[12px] font-bold" style={{ color: TYPE_COLORS[type] }}>{count}</span>
-                  </div>
-                ))}
-                <p className="text-[11px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
-                  AWS Managed — criadas e mantidas pela AWS.<br />
-                  Service Roles — para serviços assumirem ações.<br />
-                  Permission Sets — Identity Center multi-conta.
-                </p>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Policies Privilegiadas</h2>
+                <Link href="/aws/policies?filter=privileged" className="text-[11px] text-[#ff9900] hover:underline">ver todas</Link>
               </div>
-            </div>
-          </div>
-
-          {/* Privileged policies */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">Policies Privilegiadas</h2>
-              <Link href="/aws/policies?filter=privileged" className="text-[11px] text-[#ff9900] hover:underline">ver todas</Link>
-            </div>
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {privileged.slice(0, 12).map(p => (
-                <Link key={p.slug} href={`/aws/policies/${p.slug}`}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
-                  <ShieldAlert size={12} className="text-red-500 shrink-0" />
-                  <span className="flex-1 text-[12px] text-gray-700 dark:text-gray-300 group-hover:text-[#ff9900] transition-colors">{p.name}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: AWS_TIER_META[p.tier].bg, color: AWS_TIER_META[p.tier].color }}>{p.tier}</span>
-                  <ChevronRight size={11} className="text-gray-300 dark:text-gray-600 group-hover:text-[#ff9900]" />
-                </Link>
-              ))}
+              <div className="space-y-1 max-h-56 overflow-y-auto">
+                {privileged.slice(0, 12).map(p => (
+                  <Link key={p.slug} href={`/aws/policies/${p.slug}`}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+                    <ShieldAlert size={12} className="text-red-500 shrink-0" />
+                    <span className="flex-1 text-[12px] text-gray-700 dark:text-gray-300 group-hover:text-[#ff9900] transition-colors">{p.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: AWS_TIER_META[p.tier].bg, color: AWS_TIER_META[p.tier].color }}>{p.tier}</span>
+                    <ChevronRight size={11} className="text-gray-300 dark:text-gray-600 group-hover:text-[#ff9900]" />
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -148,9 +117,12 @@ export default function AwsDashboard() {
           </div>
 
           {/* Info bar */}
-          <div className="text-[12px] text-gray-400 dark:text-gray-500 px-1 border-l-2 border-[#ff9900]/40 pl-3">
-            AWS IAM Managed Policies são mantidas e atualizadas pela AWS. Service Roles permitem que serviços AWS assumam permissões de forma segura.
-            Permission Sets são usados via IAM Identity Center para acesso federado em múltiplas contas.
+          <div className="rounded-xl border border-[#ff9900]/30 bg-[#ff9900]/5 dark:bg-[#ff9900]/10 px-5 py-4 flex items-start gap-3">
+            <ShieldCheck size={15} className="text-[#ff9900] mt-0.5 shrink-0" />
+            <p className="text-[12px] text-[#7a4a00] dark:text-[#ffb84d] leading-relaxed">
+              AWS IAM Managed Policies são mantidas e atualizadas pela AWS. Service Roles permitem que serviços AWS assumam permissões de forma segura.
+              Permission Sets são usados via IAM Identity Center para acesso federado em múltiplas contas.
+            </p>
           </div>
 
         </div>

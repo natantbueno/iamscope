@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { GWS_ROLES, GWS_SCOPES, GWS_TIER_META, GWS_SCOPE_META, GwsTier, GwsScopeSensitivity } from '@/data/googleWorkspace'
 import { ExternalLink } from 'lucide-react'

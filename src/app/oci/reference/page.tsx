@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import AppShell from '@/components/AppShell'

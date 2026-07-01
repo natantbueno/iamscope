@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier } from '@/data/azureRbac'
 import { ExternalLink } from 'lucide-react'

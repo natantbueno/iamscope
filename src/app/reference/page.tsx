@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { EAM_META, CATEGORY_META, ROLES } from '@/data/roles'
 import { API_PERMISSIONS } from '@/data/apiPermissions'

@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import Link from 'next/link'
 import { ShieldAlert, GitCompare } from 'lucide-react'

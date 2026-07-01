@@ -18,6 +18,9 @@ module.exports = {
           onDark: '#85b7eb',   // texto azul sobre superficies escuras
           activeBg: '#0c2a47', // fundo do item de navegacao ativo (dark)
           activeRing: '#185fa5',
+          activeText: '#85b7eb',   // texto do item ativo na sidebar (dark)
+          activeBorder: '#185fa5', // borda/underline do item ativo
+          hoverBg: '#0d1f33',      // fundo do item em hover (dark, mais sutil que activeBg)
         },
         // Tokens de superficie/borda — substituem os hex repetidos (#dde3ec, #eef1f5...).
         surface: {
@@ -25,14 +28,25 @@ module.exports = {
           muted: '#eef1f5',
           subtle: '#f5f8fc',
         },
-        // Cores por Cloud Solution Provider (pontos/icones de plataforma).
+        // Cores por Cloud Solution Provider (pontos/icones de plataforma), com
+        // variante '-hover' ~10% mais escura para estados de interação.
+        // Entra ID reutiliza o mesmo azul do Azure (csp.azure) — é o mesmo
+        // token de marca (#0078d4) em ambos os produtos Microsoft, então não
+        // há necessidade de uma chave 'entra-id' separada aqui (ver token
+        // `entra.blue` já existente mais abaixo para uso específico do Entra).
         csp: {
           azure: '#0078d4',
+          'azure-hover': '#106ebe',
           aws: '#ff9900',
+          'aws-hover': '#e68a00',
           gcp: '#4285f4',
+          'gcp-hover': '#3b78e7',
           gws: '#34a853',
-          oci: '#C74634',
+          'gws-hover': '#2d9249',
+          oci: '#c74634',
+          'oci-hover': '#b03d2d',
           ibm: '#0f62fe',
+          'ibm-hover': '#0353e9',
         },
         // Mantido para compatibilidade com classes existentes (entra-blue etc.).
         entra: {

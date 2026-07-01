@@ -59,7 +59,7 @@ export default function OciDashboardPage() {
   return (
     <AppShell headerTitle="OCI IAM" headerSub={`${total} policy patterns · Oracle Cloud Infrastructure · Verb-based access model`}>
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl px-6 py-5 space-y-6">
+        <div className="max-w-5xl px-6 py-6 space-y-6">
 
         {/* Stat cards */}
         <div className="grid grid-cols-4 gap-3">
@@ -79,18 +79,23 @@ export default function OciDashboardPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Tier distribution */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-[#dde3ec] dark:border-gray-800 p-4">
-            <p className="text-[12px] font-semibold text-gray-600 dark:text-gray-400 mb-3">Distribuição por Verb Tier</p>
-            <div className="space-y-2.5">
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Distribuição por Verb Tier</h2>
+            <div className="space-y-3">
               {tierDist.map(({ tier, count, meta }) => (
-                <div key={tier} className="flex items-center gap-3">
-                  <span className="text-[11px] font-medium w-16 shrink-0" style={{ color: meta.color }}>{meta.label}</span>
-                  <div className="flex-1 h-2 rounded-full bg-gray-100 dark:bg-gray-800">
-                    <div className="h-2 rounded-full transition-all" style={{ width: `${(count / maxTier) * 100}%`, background: meta.color }} />
+                <div key={tier}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ background: meta.color }} />
+                      <span className="text-[12px] text-gray-600 dark:text-gray-400">{meta.label}</span>
+                    </div>
+                    <span className="text-[12px] font-semibold" style={{ color: meta.color }}>{count}</span>
                   </div>
-                  <span className="text-[11px] text-gray-500 w-6 text-right">{count}</span>
+                  <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
+                    <div className="h-1 rounded-full transition-all" style={{ width: `${(count / maxTier) * 100}%`, background: meta.color }} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -105,16 +110,18 @@ export default function OciDashboardPage() {
           </div>
 
           {/* Privileged policies */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-[#dde3ec] dark:border-gray-800 p-4">
-            <p className="text-[12px] font-semibold text-gray-600 dark:text-gray-400 mb-3">Políticas Privilegiadas</p>
-            <div className="space-y-1.5">
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
+              <Lock size={13} className="text-red-500" /> Políticas Privilegiadas
+            </h2>
+            <div className="space-y-1 max-h-56 overflow-y-auto">
               {privilegedPolicies.map(p => {
                 const meta = OCI_TIER_META[p.tier]
                 return (
                   <Link key={p.slug} href={`/oci/policies/${p.slug}`}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0" style={{ background: meta.bg, color: meta.color }}>{meta.label}</span>
-                    <span className="text-[12px] text-gray-700 dark:text-gray-300 group-hover:text-[#C74634] transition-colors truncate">{p.name}</span>
+                    className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group">
+                    <span className="text-[11px] text-gray-700 dark:text-gray-300 group-hover:text-[#C74634] truncate mr-2">{p.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: meta.bg, color: meta.color }}>{meta.label}</span>
                   </Link>
                 )
               })}
@@ -145,12 +152,15 @@ export default function OciDashboardPage() {
         </div>
 
         {/* Info bar */}
-        <div className="text-[11px] text-gray-400 dark:text-gray-600 flex items-center gap-4 pb-2">
-          <span>OCI IAM usa verbos: <strong className="text-gray-500">inspect · read · use · manage</strong></span>
-          <span>·</span>
-          <a href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/policygetstarted.htm" target="_blank" rel="noopener" className="hover:text-[#C74634] transition-colors">Oracle IAM Docs ↗</a>
-          <span>·</span>
-          <a href="https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/policyreference.htm" target="_blank" rel="noopener" className="hover:text-[#C74634] transition-colors">Policy Reference ↗</a>
+        <div className="rounded-xl border border-[#C74634]/30 bg-[#C74634]/5 dark:bg-[#C74634]/10 px-5 py-4 flex items-start gap-3">
+          <Shield size={15} className="text-[#C74634] mt-0.5 shrink-0" />
+          <p className="text-[12px] text-[#8a3326] dark:text-[#e8836f] leading-relaxed">
+            OCI IAM usa verbos: <strong>inspect · read · use · manage</strong>. Consulte a{' '}
+            <a href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/policygetstarted.htm" target="_blank" rel="noopener" className="underline hover:no-underline">Oracle IAM Docs</a>
+            {' '}e a{' '}
+            <a href="https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/policyreference.htm" target="_blank" rel="noopener" className="underline hover:no-underline">Policy Reference</a>
+            {' '}para detalhes de cada verbo.
+          </p>
         </div>
         </div>
       </div>

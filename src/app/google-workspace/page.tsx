@@ -42,69 +42,67 @@ export default function GwsDashboard() {
       headerSub="Admin Roles & OAuth Scopes reference"
     >
       <div className="flex-1 overflow-y-auto">
-      <div className="p-6 max-w-4xl space-y-6">
+      <div className="max-w-5xl px-6 py-6 space-y-6">
 
         {/* Stat cards */}
         <div className="grid grid-cols-4 gap-3">
-          <StatCard label="Admin Roles"    value={total}      accent href="/google-workspace/roles" />
-          <StatCard label="OAuth Scopes"   value={scopes}     blue   href="/google-workspace/api-permissions" />
-          <StatCard label="Privilegiadas"  value={privileged}        href="/google-workspace/roles?filter=privileged" />
-          <StatCard label="Restricted Scopes" value={restricted} danger href="/google-workspace/api-permissions?sensitivity=restricted" />
+          {[
+            { label: 'Admin Roles',        value: total,      href: '/google-workspace/roles',                            color: '#34a853' },
+            { label: 'OAuth Scopes',       value: scopes,     href: '/google-workspace/api-permissions',                  color: '#4285f4' },
+            { label: 'Privilegiadas',     value: privileged, href: '/google-workspace/roles?filter=privileged',          color: '#6b7280' },
+            { label: 'Restricted Scopes', value: restricted, href: '/google-workspace/api-permissions?sensitivity=restricted', color: '#dc2626' },
+          ].map((s) => (
+            <Link key={s.label} href={s.href}
+              className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-[#34a853]/40 dark:hover:border-[#34a853]/30 transition-colors group">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              </p>
+              <p className="text-[28px] font-bold leading-none" style={{ color: s.color }}>{s.value}</p>
+            </Link>
+          ))}
         </div>
 
-        {/* Tier breakdown */}
-        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center gap-1.5 mb-3">
-            <Shield size={14} className="text-[#34a853] dark:text-[#4ade80]" />
-            <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">
-              Classificação por Admin Tier
-            </h2>
-          </div>
-          <div className="space-y-2">
-            {byTier.map(({ tier, count, meta }) => (
-              <Link key={tier} href={`/google-workspace/roles?tier=${tier}`}
-                className="flex items-start gap-3 p-2 -mx-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
-                <div className="w-40 shrink-0 pt-0.5">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border"
-                    style={{ backgroundColor: meta.darkBg, color: meta.darkText, borderColor: meta.darkText + '40' }}>
-                    {meta.short} — {meta.label}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-2">
-                      <div className="h-2 rounded-full transition-all"
-                        style={{ width: `${(count / total) * 100}%`, backgroundColor: meta.darkText }} />
+        {/* Two-column: Admin Tier breakdown + Roles Privilegiadas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Distribuição por Admin Tier</h2>
+            <div className="space-y-3">
+              {byTier.map(({ tier, count, meta }) => (
+                <Link key={tier} href={`/google-workspace/roles?tier=${tier}`} className="block group">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ background: meta.darkText }} />
+                      <span className="text-[12px] text-gray-600 dark:text-gray-400 group-hover:underline">{meta.label}</span>
                     </div>
-                    <span className="text-[11px] text-gray-400 dark:text-gray-500 w-6 text-right tabular-nums">{count}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: meta.darkText }}>{count}</span>
                   </div>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug line-clamp-1">{meta.description}</p>
-                </div>
-                <ChevronRight size={15} className="text-gray-300 dark:text-gray-600 group-hover:text-[#34a853] dark:group-hover:text-[#4ade80] mt-1 shrink-0" />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Roles Privilegiadas */}
-        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center gap-1.5 mb-3">
-            <ShieldAlert size={14} className="text-red-500" />
-            <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">Roles Privilegiadas</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-            {GWS_ROLES.filter((r) => r.isPrivileged).slice(0, 6).map((role) => {
-              const meta = GWS_TIER_META[role.tier]
-              return (
-                <Link key={role.slug} href={`/google-workspace/roles/${role.slug}`}
-                  className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-[#0a2010] border border-[#dde3ec] dark:border-gray-700 hover:border-green-300 rounded-md px-2.5 py-1.5 transition-colors">
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
-                    style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>{meta.short}</span>
-                  <span className="text-[12px] font-medium text-[#34a853] dark:text-[#4ade80] flex-1 truncate">{role.name}</span>
-                  <ChevronRight size={13} className="text-gray-300 dark:text-gray-600 shrink-0" />
+                  <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
+                    <div className="h-1 rounded-full transition-all"
+                      style={{ width: `${(count / total) * 100}%`, backgroundColor: meta.darkText }} />
+                  </div>
                 </Link>
-              )
-            })}
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
+              <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
+            </h2>
+            <div className="space-y-1 max-h-56 overflow-y-auto">
+              {GWS_ROLES.filter((r) => r.isPrivileged).slice(0, 8).map((role) => {
+                const meta = GWS_TIER_META[role.tier]
+                return (
+                  <Link key={role.slug} href={`/google-workspace/roles/${role.slug}`}
+                    className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors group">
+                    <span className="text-[11px] text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400 truncate mr-2">{role.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
+                      {meta.short}
+                    </span>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         </div>
 
@@ -129,40 +127,18 @@ export default function GwsDashboard() {
         </div>
 
         {/* Info bar */}
-        <div className="bg-green-950/30 border border-green-900 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-            <Info size={15} className="text-green-400 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-medium text-green-300 mb-1">OAuth 2.0 & Service Accounts</p>
-              <p className="text-[12px] text-green-400 leading-relaxed">
-                Os escopos OAuth do Google Workspace definem o que uma aplicação pode acessar em nome de um usuário.
-                Escopos <strong className="text-green-300">Restricted</strong> exigem aprovação do Google antes de uso em apps publicados.
-                Use{' '}
-                <code className="font-mono text-[11px] bg-green-950 px-1 rounded">gam oauth info</code>{' '}
-                para inspecionar os tokens ativos no seu domínio.
-              </p>
-            </div>
-          </div>
+        <div className="rounded-xl border border-[#34a853]/30 bg-[#34a853]/5 dark:bg-[#34a853]/10 px-5 py-4 flex items-start gap-3">
+          <Info size={15} className="text-[#34a853] dark:text-[#4ade80] mt-0.5 shrink-0" />
+          <p className="text-[12px] text-[#1a5c28] dark:text-[#4ade80] leading-relaxed">
+            <strong>OAuth 2.0 & Service Accounts</strong> — os escopos OAuth do Google Workspace definem o que uma aplicação pode acessar em nome de um usuário.
+            Escopos <strong>Restricted</strong> exigem aprovação do Google antes de uso em apps publicados. Use{' '}
+            <code className="font-mono text-[11px] bg-[#34a853]/10 dark:bg-[#34a853]/20 px-1 rounded">gam oauth info</code>{' '}
+            para inspecionar os tokens ativos no seu domínio.
+          </p>
         </div>
 
       </div>
       </div>
     </AppShell>
-  )
-}
-
-function StatCard({ label, value, accent, blue, danger, href }: {
-  label: string; value: number; accent?: boolean; blue?: boolean; danger?: boolean; href: string
-}) {
-  const color = danger ? '#dc2626' : accent ? '#34a853' : blue ? '#4285f4' : '#6b7280'
-  return (
-    <Link href={href}
-      className="block bg-white dark:bg-gray-900 rounded-lg p-4 border border-[#dde3ec] dark:border-gray-800 shadow-sm hover:border-[#34a853]/40 dark:hover:border-[#34a853]/30 transition-colors group">
-      <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-        {label}
-        <ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-      </p>
-      <p className="text-[28px] font-bold leading-none" style={{ color }}>{value}</p>
-    </Link>
   )
 }

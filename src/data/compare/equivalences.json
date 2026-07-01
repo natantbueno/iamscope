@@ -3205,5 +3205,188 @@
         "notes": "Entra ID não possui role de administrador de monitoramento. Logs são acessados via Global Reader ou Reports Reader. Usar Azure RBAC para Log Analytics."
       }
     }
+  },
+  {
+    "id": "cost-management-admin",
+    "function": "cost-management-admin",
+    "tier": 1,
+    "name": "Cost Management Administrator",
+    "description": "Visualiza, analisa e otimiza gastos na nuvem — orçamentos, alertas de custo, alocação de despesas e recomendações de otimização — sem controle sobre métodos de pagamento, contratos ou fechamento de conta, diferente do Billing Administrator (Tier 0).",
+    "clouds": {
+      "azureRbac": {
+        "role": "Cost Management Contributor",
+        "slug": "cost-management-contributor",
+        "risk": "medium",
+        "keyPermissions": [
+          "Visualizar custos de todos os recursos no escopo atribuído",
+          "Criar e gerenciar orçamentos e alertas de gasto",
+          "Configurar exports de dados de custo para Storage Account",
+          "Aplicar recomendações de otimização do Azure Advisor"
+        ],
+        "mitigations": [
+          "Atribuir apenas a times de FinOps, separado de quem administra recursos técnicos",
+          "Revisar periodicamente orçamentos configurados versus gasto real",
+          "Não combinar com roles de Owner/Contributor de recursos na mesma identidade"
+        ]
+      },
+      "aws": {
+        "role": "AWSBillingConductorFullAccess",
+        "slug": "awsbillingconductorfullaccess",
+        "risk": "medium",
+        "keyPermissions": [
+          "Criar e gerenciar Billing Groups para alocação de custos entre contas",
+          "Configurar regras de pricing customizadas (Billing Conductor)",
+          "Gerar relatórios de custo agrupados por conta/tag",
+          "Não inclui alteração de método de pagamento da Organization"
+        ],
+        "mitigations": [
+          "Restringir a contas de management/billing da AWS Organization",
+          "Auditar mudanças em Billing Groups via CloudTrail",
+          "Separar de permissões de criação/exclusão de contas membro"
+        ]
+      },
+      "gcp": {
+        "role": "Billing Account Costs Manager",
+        "slug": "billing-costs-manager",
+        "risk": "medium",
+        "keyPermissions": [
+          "Visualizar e gerenciar orçamentos de uma billing account",
+          "Configurar alertas de gasto e exports para BigQuery",
+          "Vincular/desvincular projetos à billing account",
+          "Não pode alterar método de pagamento nem fechar a billing account"
+        ],
+        "mitigations": [
+          "Diferenciar de Billing Account Administrator (controle total, Tier 0)",
+          "Restringir vínculo/desvínculo de projetos a uma revisão de mudança",
+          "Exportar dados de custo para análise via BigQuery com acesso auditado"
+        ]
+      },
+      "oci": {
+        "role": "Budget Administrator",
+        "slug": "budget-administrator",
+        "risk": "medium",
+        "keyPermissions": [
+          "Criar, editar e excluir budgets em compartments",
+          "Configurar alert rules e thresholds de gasto",
+          "Visualizar spend atual versus budget"
+        ],
+        "mitigations": [
+          "Escopar budgets por compartment em vez de tenancy quando possível",
+          "Revisar alert rules configuradas trimestralmente",
+          "Combinar com Cost Analysis (read-only) para times sem necessidade de editar budgets"
+        ]
+      },
+      "ibmCloud": {
+        "role": "Billing — Editor",
+        "slug": "billing-editor",
+        "risk": "low",
+        "keyPermissions": [
+          "Visualizar faturas e relatórios de uso da conta",
+          "Gerenciar tags de alocação de custos",
+          "Visualizar limites de gastos configurados"
+        ],
+        "mitigations": [
+          "Diferenciar de Billing — Administrator (métodos de pagamento, Tier 0)",
+          "Revisar tags de alocação de custos periodicamente para precisão de chargeback"
+        ]
+      }
+    }
+  },
+  {
+    "id": "audit-log-admin",
+    "function": "audit-log-admin",
+    "tier": 2,
+    "name": "Audit Log Administrator",
+    "description": "Configura, gerencia ou consulta trilhas de auditoria imutáveis — quem fez o quê e quando — voltadas a investigações de segurança e compliance. Distinto do Monitoring Administrator, que foca em métricas operacionais e alertas de saúde do sistema.",
+    "clouds": {
+      "entraId": {
+        "role": "Reports Reader",
+        "slug": "reports-reader",
+        "risk": "low",
+        "keyPermissions": [
+          "Visualizar dashboard de relatórios de uso no Microsoft 365 admin center",
+          "Acessar relatórios de sign-in e atividade no Entra ID",
+          "Ler dados retornados pela Microsoft Graph reporting API"
+        ],
+        "mitigations": [
+          "Combinar com Diagnostic Settings + Log Analytics para retenção de longo prazo",
+          "Role é somente leitura — não permite configurar exportação, apenas consultar"
+        ],
+        "notes": "Não existe um 'administrador de auditoria' nativo no Entra ID; configuração de exportação de logs é feita via Diagnostic Settings, fora do escopo de roles de diretório."
+      },
+      "azureRbac": {
+        "role": "Log Analytics Contributor",
+        "slug": "log-analytics-contributor",
+        "risk": "medium",
+        "keyPermissions": [
+          "Gerenciar workspaces de Log Analytics onde logs de auditoria são armazenados",
+          "Configurar Diagnostic Settings para rotear logs de qualquer recurso",
+          "Executar queries KQL sobre logs de auditoria e atividade"
+        ],
+        "mitigations": [
+          "Separar de quem administra os recursos que geram os logs (segregação de funções)",
+          "Restringir exclusão/alteração de retenção de logs a um grupo dedicado de compliance"
+        ]
+      },
+      "aws": {
+        "role": "AWSCloudTrail_FullAccess",
+        "slug": "awscloudtrailfullaccess",
+        "risk": "medium",
+        "keyPermissions": [
+          "Criar, modificar e excluir trilhas do CloudTrail",
+          "Configurar entrega de logs para S3 e CloudWatch Logs",
+          "Habilitar/desabilitar logging de eventos de gerenciamento e dados"
+        ],
+        "mitigations": [
+          "Habilitar CloudTrail em todas as regiões com log file validation ativado",
+          "Proteger o bucket S3 de destino com política que impede exclusão mesmo por administradores",
+          "Alertar sobre qualquer tentativa de parar ou excluir uma trilha"
+        ]
+      },
+      "gcp": {
+        "role": "Logging Admin",
+        "slug": "logging-admin",
+        "risk": "medium",
+        "keyPermissions": [
+          "Gerenciar sinks de exportação de Cloud Audit Logs",
+          "Configurar buckets de log e políticas de retenção",
+          "Excluir entradas de log (fora dos Admin Activity logs, que são imutáveis)"
+        ],
+        "mitigations": [
+          "Admin Activity audit logs são sempre gravados e não podem ser desabilitados nem excluídos",
+          "Restringir exclusão de Data Access logs configuráveis a um grupo de compliance dedicado",
+          "Exportar logs para um projeto de log dedicado com acesso restrito"
+        ]
+      },
+      "oci": {
+        "role": "Audit Viewer",
+        "slug": "audit-viewer",
+        "risk": "low",
+        "keyPermissions": [
+          "Ler eventos do Audit service, que rastreia todas as chamadas de API na tenancy",
+          "Filtrar eventos por serviço e usuário",
+          "Exportar registros de auditoria"
+        ],
+        "mitigations": [
+          "O Audit service da OCI é somente leitura por design — não existe verb 'manage' para audit-events",
+          "Combinar com Object Storage para retenção de longo prazo dos eventos de auditoria"
+        ],
+        "notes": "A OCI não permite administrar (criar/excluir) eventos de auditoria — apenas inspecioná-los/lê-los, por design de plataforma."
+      },
+      "ibmCloud": {
+        "role": "Activity Tracker — Administrator",
+        "slug": "activity-tracker-administrator",
+        "risk": "medium",
+        "keyPermissions": [
+          "Gerenciar instâncias do IBM Cloud Activity Tracker",
+          "Configurar arquivamento de eventos de auditoria",
+          "Visualizar todos os eventos de auditoria da conta"
+        ],
+        "mitigations": [
+          "Restringir a times de segurança/compliance com necessidade comprovada",
+          "Configurar arquivamento de longo prazo para atender requisitos regulatórios"
+        ]
+      }
+    }
   }
 ]

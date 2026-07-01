@@ -1,5 +1,3 @@
-'use client'
-
 import AppShell from '@/components/AppShell'
 import { IBM_TIER_META, IbmTier } from '@/data/ibmCloud'
 import Link from 'next/link'
