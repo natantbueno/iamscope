@@ -1,0 +1,1 @@
+[{"action":"Microsoft.OperationalInsights/workspaces/query/read","type":"Actions"},{"action":"Microsoft.OperationalInsights/workspaces/read","type":"Actions"},{"action":"Microsoft.Insights/Logs/Read","type":"Actions"},{"action":"Microsoft.OperationalInsights/workspaces/tables/data/read","type":"DataActions"},{"action":"Microsoft.Insights/logs/data/read","type":"DataActions"}]

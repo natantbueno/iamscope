@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Relationships/serviceGroupMember/read","type":"Actions"},{"action":"Microsoft.Relationships/serviceGroupMember/write","type":"Actions"},{"action":"Microsoft.Relationships/serviceGroupMember/delete","type":"Actions"}]

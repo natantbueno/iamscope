@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.AzureResilienceManagement/usagePlans/read","type":"Actions"},{"action":"Microsoft.AzureResilienceManagement/usagePlans/enrollments/read","type":"Actions"}]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "global-admin",
+    "name": "Global Administrator / Root Access",
+    "tier": 0,
+    "description": "Controle administrativo total e irrestrito sobre todos os recursos, identidade e billing da plataforma."
+  },
+  {
+    "id": "billing-admin",
+    "name": "Billing Administrator",
+    "tier": 0,
+    "description": "Acesso completo a dados de billing, gerenciamento de custos, assinaturas e métodos de pagamento."
+  },
+  {
+    "id": "read-only-viewer",
+    "name": "Read-Only / Viewer (Global)",
+    "tier": 1,
+    "description": "Acesso global somente-leitura para visualizar todos os recursos e configurações sem direitos de modificação."
+  },
+  {
+    "id": "user-admin",
+    "name": "User Management Administrator",
+    "tier": 1,
+    "description": "Criar, atualizar e excluir contas de usuário, gerenciar membros de grupos e redefinir credenciais."
+  },
+  {
+    "id": "storage-admin",
+    "name": "Storage / Object Storage Administrator",
+    "tier": 2,
+    "description": "Controle total sobre serviços de armazenamento de objetos — criar/excluir buckets/containers e gerenciar dados armazenados."
+  }
+]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.HybridCompute/machines/*/read","type":"Actions"},{"action":"Microsoft.HybridConnectivity/endpoints/listCredentials/action","type":"Actions"}]

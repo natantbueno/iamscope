@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Compute/sshpublickeys/read","type":"Actions"},{"action":"Microsoft.Compute/sshpublickeys/write","type":"Actions"},{"action":"Microsoft.Compute/sshpublickeys/delete","type":"Actions"},{"action":"Microsoft.Compute/sshpublickeys/generatekeypair/action","type":"Actions"}]

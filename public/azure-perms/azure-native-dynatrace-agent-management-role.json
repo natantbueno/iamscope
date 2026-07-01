@@ -1,0 +1,1 @@
+[{"action":"Microsoft.KubernetesConfiguration/extensions/write","type":"Actions"},{"action":"Microsoft.KubernetesConfiguration/extensions/read","type":"Actions"}]

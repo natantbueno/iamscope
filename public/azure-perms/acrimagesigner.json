@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ContainerRegistry/registries/sign/write","type":"Actions"},{"action":"Microsoft.ContainerRegistry/registries/trustedCollections/write","type":"DataActions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ClassicStorage/storageAccounts/listkeys/action","type":"Actions"},{"action":"Microsoft.ClassicStorage/storageAccounts/regeneratekey/action","type":"Actions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AzureStackHCI/EdgeMachines/Read/*","type":"Actions"},{"action":"Microsoft.AzureStackHCI/EdgeMachines/Jobs/Read/*","type":"Actions"}]

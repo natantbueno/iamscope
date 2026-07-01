@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AppPlatform/Spring/configService/read","type":"DataActions"},{"action":"Microsoft.AppPlatform/Spring/configService/write","type":"DataActions"},{"action":"Microsoft.AppPlatform/Spring/configService/delete","type":"DataActions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AppPlatform/Spring/eurekaService/read","type":"DataActions"},{"action":"Microsoft.AppPlatform/Spring/eurekaService/write","type":"DataActions"},{"action":"Microsoft.AppPlatform/Spring/eurekaService/delete","type":"DataActions"}]

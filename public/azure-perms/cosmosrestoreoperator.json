@@ -1,0 +1,1 @@
+[{"action":"Microsoft.DocumentDB/locations/restorableDatabaseAccounts/restore/action","type":"Actions"},{"action":"Microsoft.DocumentDB/locations/restorableDatabaseAccounts/*/read","type":"Actions"},{"action":"Microsoft.DocumentDB/locations/restorableDatabaseAccounts/read","type":"Actions"}]

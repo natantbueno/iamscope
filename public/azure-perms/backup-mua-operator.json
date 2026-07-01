@@ -1,0 +1,1 @@
+[{"action":"Microsoft.DataProtection/*/action","type":"Actions"},{"action":"Microsoft.DataProtection/*/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"}]

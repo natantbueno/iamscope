@@ -1,0 +1,1 @@
+[{"action":"Microsoft.SignalRService/*/read","type":"Actions"},{"action":"Microsoft.SignalRService/SignalR/listkeys/action","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Support/*","type":"Actions"}]

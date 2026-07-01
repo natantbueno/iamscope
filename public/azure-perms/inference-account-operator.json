@@ -1,0 +1,1 @@
+[{"action":"Microsoft.InferenceService/inferenceAccounts/write","type":"Actions"},{"action":"Microsoft.InferenceService/inferenceAccounts/read","type":"Actions"},{"action":"Microsoft.InferenceService/inferenceAccounts/delete","type":"Actions"},{"action":"Microsoft.InferenceService/inferenceAccounts/invoke/*","type":"NotDataActions"}]

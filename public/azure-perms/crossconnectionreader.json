@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ClassicNetwork/expressRouteCrossConnections/*/read","type":"Actions"},{"action":"Microsoft.Network/expressRouteCrossConnections/*/read","type":"Actions"},{"action":"Microsoft.Features/providers/features/read","type":"Actions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ContainerService/managedClusters/agentPools/deleteMachines/action","type":"Actions"},{"action":"Microsoft.ContainerService/managedClusters/agentPools/machines/read","type":"Actions"},{"action":"Microsoft.ContainerService/managedClusters/agentPools/machines/write","type":"Actions"}]

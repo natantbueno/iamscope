@@ -1,0 +1,1 @@
+[{"action":"Microsoft.StreamAnalytics/locations/TestQuery/action","type":"Actions"},{"action":"Microsoft.StreamAnalytics/locations/OperationResults/read","type":"Actions"},{"action":"Microsoft.StreamAnalytics/locations/SampleInput/action","type":"Actions"},{"action":"Microsoft.StreamAnalytics/locations/CompileQuery/action","type":"Actions"}]

@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Management/managementGroups/read","type":"Actions"},{"action":"Microsoft.Management/managementGroups/subscriptions/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"}]

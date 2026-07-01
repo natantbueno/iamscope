@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AppConfiguration/configurationStores/*/read","type":"DataActions"},{"action":"Microsoft.AppConfiguration/configurationStores/*/write","type":"DataActions"},{"action":"Microsoft.AppConfiguration/configurationStores/*/delete","type":"DataActions"},{"action":"Microsoft.AppConfiguration/configurationStores/*/action","type":"DataActions"}]

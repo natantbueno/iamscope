@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Devices/IotHubs/*/read","type":"DataActions"},{"action":"Microsoft.Devices/IotHubs/fileUpload/notifications/action","type":"DataActions"}]

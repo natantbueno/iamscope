@@ -1,0 +1,1 @@
+[{"action":"Microsoft.KubernetesConfiguration/namespaces/read","type":"Actions"},{"action":"Microsoft.KubernetesConfiguration/namespaces/listUserCredential/action","type":"Actions"}]

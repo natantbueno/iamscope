@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Logic/workflows/read","type":"Actions"},{"action":"Microsoft.Logic/workflows/triggers/listCallbackUrl/action","type":"Actions"},{"action":"Microsoft.Web/sites/hostruntime/webhooks/api/workflows/triggers/listCallbackUrl/action","type":"Actions"},{"action":"Microsoft.Web/sites/read","type":"Actions"}]

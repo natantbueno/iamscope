@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Compute/disks/download/action","type":"DataActions"},{"action":"Microsoft.Compute/disks/upload/action","type":"DataActions"},{"action":"Microsoft.Compute/snapshots/download/action","type":"DataActions"},{"action":"Microsoft.Compute/snapshots/upload/action","type":"DataActions"}]

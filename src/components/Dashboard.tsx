@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { AlertTriangle, Star, ExternalLink, Shield, Layers, ChevronRight, KeyRound } from 'lucide-react'
+import { AlertTriangle, Star, Shield, Layers, ChevronRight, KeyRound } from 'lucide-react'
 import { ROLES, EAM_META, EamTier } from '@/data/roles'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
 import { useTheme } from './ThemeProvider'
@@ -28,9 +28,9 @@ export default function Dashboard() {
   }, {} as Record<string, number>)
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6 max-w-5xl">
       {/* Stats - agora clicáveis */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <StatCard label="Built-in Roles" value={totalRoles} accent href="/roles" />
         <StatCard label="Control Plane" value={controlPlaneRoles} danger href="/roles?tier=ControlPlane" />
         <StatCard label="Privilegiadas" value={privilegedRoles} href="/roles?filter=privileged" />
@@ -72,24 +72,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
-          <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 mb-2">Sobre este site</h2>
-          <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed mb-2">
-            Referência para roles e API permissions do Microsoft Entra ID, com classificação por tier do
-            Enterprise Access Model. Inspirado no{' '}
-            <a href="https://azure.permissions.cloud" target="_blank" rel="noopener noreferrer"
-              className="text-[#0078d4] dark:text-[#85b7eb] hover:underline inline-flex items-center gap-0.5">
-              azure.permissions.cloud <ExternalLink size={11} />
-            </a>{' '}
-            e nas classificações do{' '}
-            <a href="https://github.com/Cloud-Architekt/AzurePrivilegedIAM" target="_blank" rel="noopener noreferrer"
-              className="text-[#0078d4] dark:text-[#85b7eb] hover:underline inline-flex items-center gap-0.5">
-              EntraOps <ExternalLink size={11} />
-            </a>.
-          </p>
-        </div>
-
+      <div className="grid grid-cols-1 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
           <div className="flex items-center gap-1.5 mb-3">
             <Star size={14} className="text-amber-500" />
@@ -135,20 +118,15 @@ export default function Dashboard() {
 function StatCard({ label, value, accent, danger, href }: {
   label: string; value: number | string; accent?: boolean; danger?: boolean; href: string
 }) {
+  const color = danger ? '#dc2626' : accent ? '#0078d4' : '#6b7280'
   return (
     <Link href={href}
-      className="block bg-white dark:bg-gray-800 hover:bg-[#f5f8fc] dark:hover:bg-gray-700 rounded-lg p-3.5 transition-colors group border border-[#dde3ec] dark:border-gray-700 shadow-sm">
-      <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-1 flex items-center gap-1">
+      className="block bg-white dark:bg-gray-900 rounded-lg p-4 border border-[#dde3ec] dark:border-gray-800 shadow-sm hover:border-[#0078d4]/40 dark:hover:border-[#0078d4]/30 transition-colors group">
+      <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
         {label}
-        <ChevronRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+        <ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
       </p>
-      <p className={`font-semibold text-[22px] ${
-        danger ? 'text-red-600 dark:text-red-400'
-        : accent ? 'text-[#0078d4] dark:text-[#85b7eb]'
-        : 'text-gray-800 dark:text-gray-100'
-      }`}>
-        {value}
-      </p>
+      <p className="text-[28px] font-bold leading-none" style={{ color }}>{value}</p>
     </Link>
   )
 }

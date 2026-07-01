@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Network/virtualNetworks/read","type":"Actions"},{"action":"Microsoft.Network/virtualNetworks/subnets/read","type":"Actions"},{"action":"Microsoft.Network/virtualNetworks/usages/read","type":"Actions"},{"action":"Microsoft.Network/virtualNetworks/subnets/join/action","type":"Actions"}]

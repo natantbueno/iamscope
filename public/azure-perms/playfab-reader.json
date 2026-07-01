@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.PlayFab/*/read","type":"Actions"}]

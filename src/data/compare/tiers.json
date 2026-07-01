@@ -1,0 +1,35 @@
+[
+  {
+    "id": "tier0",
+    "level": 0,
+    "name": "Tier 0 — Control Plane",
+    "shortName": "Tier 0",
+    "description": "Acesso administrativo irrestrito sobre identidade, billing e todos os recursos. Comprometimento leva a tomada total do tenant/account.",
+    "color": "#ef4444",
+    "bg": "#ef444418",
+    "risk": "critical",
+    "label": "Critical"
+  },
+  {
+    "id": "tier1",
+    "level": 1,
+    "name": "Tier 1 — Management Plane",
+    "shortName": "Tier 1",
+    "description": "Acesso privilegiado para gerenciar usuários, grupos, políticas e configurações dentro de escopos definidos.",
+    "color": "#f97316",
+    "bg": "#f9731618",
+    "risk": "high",
+    "label": "High"
+  },
+  {
+    "id": "tier2",
+    "level": 2,
+    "name": "Tier 2 — Data / Workload Plane",
+    "shortName": "Tier 2",
+    "description": "Acesso limitado a workloads específicos, armazenamento de dados ou visibilidade somente-leitura sem controle administrativo.",
+    "color": "#eab308",
+    "bg": "#eab30818",
+    "risk": "medium",
+    "label": "Medium"
+  }
+]
