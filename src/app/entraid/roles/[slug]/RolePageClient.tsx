@@ -50,7 +50,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={`Entra ID · ${role.category} · EAM ${role.eamTier}`}
       headerBack={
-        <Link href="/roles" className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
+        <Link href="/entraid/roles" className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
           <ArrowLeft size={15} /> Voltar
         </Link>
       }
@@ -185,7 +185,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
             <h2 className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 mb-3">Roles relacionadas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {related.map((r) => (
-                <Link key={r.slug} href={`/roles/${r.slug}`}
+                <Link key={r.slug} href={`/entraid/roles/${r.slug}`}
                   className="block bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-3 transition-colors">
                   <div className="text-[13px] font-medium text-[#0078d4] dark:text-[#85b7eb] mb-1.5 truncate">{r.name}</div>
                   <div className="flex items-center gap-1.5">

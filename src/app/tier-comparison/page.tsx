@@ -4,6 +4,7 @@ import { ShieldAlert, GitCompare } from 'lucide-react'
 import { CloudId, CLOUD_META, CLOUD_ORDER, Equivalence, getCloudUrl } from '@/data/compare/types'
 import equivalencesData from '@/data/compare/equivalences.json'
 import tiersData from '@/data/compare/tiers.json'
+import ExportButton from '@/components/ExportButton'
 
 const equivalences = equivalencesData as Equivalence[]
 const tier0 = tiersData.find(t => t.level === 0)!
@@ -26,10 +27,24 @@ export default function TierComparisonPage() {
       headerTitle="Comparação de Tiers entre Clouds"
       headerSub="Onde está o verdadeiro Tier 0 em cada plataforma — root, org admin e as armadilhas de equivalência"
       headerActions={
-        <Link href="/compare" className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 hover:text-[#0078d4]">
-          <GitCompare size={14} />
-          <span>Ver comparativo completo (todos os tiers)</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/compare" className="hidden lg:flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 hover:text-[#0078d4]">
+            <GitCompare size={14} />
+            <span>Ver comparativo completo (todos os tiers)</span>
+          </Link>
+          <ExportButton
+            filename="tier0-comparison"
+            data={CLOUD_ORDER.map((cloud) => {
+              const entry = globalAdmin.clouds[cloud]
+              return {
+                cloud: CLOUD_META[cloud].label,
+                tier0Role: entry?.role ?? '',
+                scope: SCOPE_LABEL[cloud] ?? '',
+                note: TIER0_NOTES[cloud] ?? '',
+              }
+            })}
+          />
+        </div>
       }
     >
       <div className="flex-1 overflow-y-auto">

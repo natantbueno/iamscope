@@ -60,7 +60,7 @@ export const RISK_META: Record<RiskLevel, { label: string; color: string; bg: st
 
 export function getCloudUrl(cloud: CloudId, slug: string): string {
   const routes: Record<CloudId, string> = {
-    entraId:         `/roles/${slug}`,
+    entraId:         `/entraid/roles/${slug}`,
     azureRbac:       `/azure-rbac/roles/${slug}`,
     aws:             `/aws/policies/${slug}`,
     gcp:             `/gcp/roles/${slug}`,

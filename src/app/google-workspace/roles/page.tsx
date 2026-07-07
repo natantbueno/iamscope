@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ShieldAlert, ChevronRight } from 'lucide-react'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
+import ExportButton from '@/components/ExportButton'
 
 type SortCol = 'name' | 'category' | 'tier'
 type SortDir = 'asc' | 'desc'
@@ -98,6 +99,9 @@ function GwsRolesContent() {
     <AppShell
       headerTitle="Google Workspace — Admin Roles"
       headerSub={`${GWS_ROLES.length} roles · ${ALL_CATEGORIES.length} categorias · 5 admin tiers`}
+      headerActions={<ExportButton filename="google-workspace-roles" data={sorted.map((r) => ({
+        name: r.name, category: r.category, tier: r.tier, isPrivileged: r.isPrivileged, description: r.description,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

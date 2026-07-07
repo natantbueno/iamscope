@@ -10,6 +10,7 @@ import {
 } from '@/data/sod/rules'
 import SoDSeverityBadge from './SoDSeverityBadge'
 import SoDRuleDetailCard from './SoDRuleDetailCard'
+import ExportButton from './ExportButton'
 
 const ALL_CATEGORIES = Object.keys(SOD_CATEGORY_META) as SoDCategory[]
 const ALL_SEVERITIES = Object.keys(SOD_SEVERITY_META) as SoDSeverity[]
@@ -156,7 +157,17 @@ export default function SoDRulesCatalog() {
               className="w-full text-[12px] pl-7 pr-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500" />
           </div>
         </div>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">Exibindo {filtered.length} de {SOD_RULES.length} regras</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">Exibindo {filtered.length} de {SOD_RULES.length} regras</p>
+          <ExportButton
+            filename="sod-rules"
+            data={filtered.map((r) => ({
+              id: r.id, name: r.name, severity: r.severity, category: r.category,
+              cloud: r.cloud, roleA: r.roleA.name, roleB: r.roleB.name,
+              frameworks: r.frameworks,
+            }))}
+          />
+        </div>
       </div>
 
       {/* Tabela */}

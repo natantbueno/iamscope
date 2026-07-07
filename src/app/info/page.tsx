@@ -5,6 +5,7 @@ import {
   ShieldCheck, ListTree, KeyRound, GitCompare, Sparkles, Shield, RefreshCw,
 } from 'lucide-react'
 import { DATA_SYNC, getLatestSync } from '@/data/syncMeta'
+import ExportButton from '@/components/ExportButton'
 
 export default function InfoPage() {
   return (
@@ -139,9 +140,14 @@ export default function InfoPage() {
 
           {/* Frescor dos dados */}
           <section className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-1">
-              <RefreshCw size={16} className="text-[#0078d4] dark:text-[#85b7eb]" />
-              <h2 className="text-[15px] font-semibold text-gray-800 dark:text-gray-100">Frescor dos dados</h2>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex items-center gap-2">
+                <RefreshCw size={16} className="text-[#0078d4] dark:text-[#85b7eb]" />
+                <h2 className="text-[15px] font-semibold text-gray-800 dark:text-gray-100">Frescor dos dados</h2>
+              </div>
+              <ExportButton filename="data-sync-status" data={DATA_SYNC.map((d) => ({
+                dataset: d.label, platform: d.platform, lastSynced: d.lastSynced, source: d.sourceLabel, notes: d.notes ?? '',
+              }))} />
             </div>
             <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-4">
               Última verificação geral: <strong className="text-gray-700 dark:text-gray-300">{getLatestSync()}</strong>. Cada

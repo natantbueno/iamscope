@@ -7,6 +7,7 @@ import StatsBar from '@/components/StatsBar'
 import { getOciVerbs, getOciOperations, getOciResources } from '@/lib/ociVerbs'
 import { OCI_TIER_META, OciTier } from '@/data/oci'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: OciTier[] = ['Manage', 'Use', 'Read', 'Inspect']
 
@@ -50,6 +51,10 @@ function OciVerbsContent() {
     <AppShell
       headerTitle="OCI IAM Verb Actions"
       headerSub={`${stats.total} verb actions únicas · ${resources.length} resource types`}
+      headerActions={<ExportButton filename="oci-verb-actions" data={filtered.map((v) => ({
+        verb: v.verb, resource: v.resource, operation: v.operation, tier: v.tier,
+        isUsedByPrivileged: v.isUsedByPrivileged, usedByPoliciesCount: v.usedByPolicies.length,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

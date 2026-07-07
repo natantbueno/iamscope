@@ -123,7 +123,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
               {sorted.map((role) => (
                 <tr key={role.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                   <td className="px-4 py-3 align-top overflow-hidden">
-                    <Link href={`/roles/${role.slug}`} className="block">
+                    <Link href={`/entraid/roles/${role.slug}`} className="block">
                       <div className="font-medium text-[#0078d4] dark:text-[#85b7eb] text-[13px] group-hover:underline truncate">{role.name}</div>
                       <div className="text-[10px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 truncate">{role.id}</div>
                     </Link>
@@ -148,7 +148,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
                     )}
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <Link href={`/roles/${role.slug}`} className="text-gray-300 dark:text-gray-600 group-hover:text-[#0078d4] dark:group-hover:text-[#85b7eb] transition-colors">
+                    <Link href={`/entraid/roles/${role.slug}`} className="text-gray-300 dark:text-gray-600 group-hover:text-[#0078d4] dark:group-hover:text-[#85b7eb] transition-colors">
                       <ChevronRight size={16} />
                     </Link>
                   </td>

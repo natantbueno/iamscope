@@ -3,6 +3,7 @@ import { AWS_POLICIES, AWS_TIER_META, AwsTier } from '@/data/aws'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 
@@ -26,7 +27,10 @@ const AWS_DOCS = [
 
 export default function AwsReference() {
   return (
-    <AppShell headerTitle="AWS IAM Reference" headerSub="Tiers, tipos de policy e boas práticas">
+    <AppShell headerTitle="AWS IAM Reference" headerSub="Tiers, tipos de policy e boas práticas"
+      headerActions={<ExportButton filename="aws-data-sync" label="Exportar frescor dos dados"
+        data={DATA_SYNC.filter(d => d.platform === 'AWS IAM').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
+    >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-4xl space-y-6">
 

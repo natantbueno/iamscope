@@ -56,11 +56,12 @@ export const DATA_SYNC: DataSourceSync[] = [
   },
   {
     id: 'aws-policies',
-    label: 'AWS IAM — Managed Policies / Service Roles (497)',
+    label: 'AWS IAM — Managed Policies / Service Roles (1526)',
     platform: 'AWS IAM',
-    lastSynced: '2026-06-30',
+    lastSynced: '2026-07-06',
     sourceLabel: 'AWS Managed Policy Reference + documentação oficial AWS IAM',
     sourceUrl: 'https://docs.aws.amazon.com/aws-managed-policy/latest/reference/about-managed-policy-reference.html',
+    notes: 'Policy documents (actions por policy) populados em 2026-07-06 via dataset MAMIP (npm aws-iam-managed-policies, derivado da API oficial do IAM) após correção do parser do fetch script; 1524/1526 policies com statements. Tier/categoria re-derivados a partir dos statements reais.',
   },
   {
     id: 'gcp-roles',

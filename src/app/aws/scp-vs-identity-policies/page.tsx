@@ -2,6 +2,7 @@ import AppShell from '@/components/AppShell'
 import Link from 'next/link'
 import { AWS_POLICIES } from '@/data/aws'
 import { ExternalLink, ShieldAlert, ShieldCheck, Lock, Building2 } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 export default function ScpVsIdentityPoliciesPage() {
   const orgAccountAccessRole = AWS_POLICIES.find(p => p.slug === 'organization-account-access-role')
@@ -146,6 +147,15 @@ export default function ScpVsIdentityPoliciesPage() {
 
           {/* ── Related catalog entries ─────────────────── */}
           <Section id="related" title="Entradas relacionadas no catálogo">
+            <div className="flex justify-end mb-3">
+              <ExportButton
+                filename="aws-scp-vs-identity-policies-related"
+                data={[
+                  ...(orgAccountAccessRole ? [{ name: orgAccountAccessRole.name, slug: orgAccountAccessRole.slug, type: orgAccountAccessRole.type, description: orgAccountAccessRole.description }] : []),
+                  ...boundaries.map((b) => ({ name: b.name, slug: b.slug, type: b.type, description: b.description })),
+                ]}
+              />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {orgAccountAccessRole && (
                 <Link href={`/aws/policies/${orgAccountAccessRole.slug}`}

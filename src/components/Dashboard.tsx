@@ -44,10 +44,10 @@ export default function Dashboard() {
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Built-in Roles',  value: totalRoles,          href: '/roles',                      color: '#0078d4' },
-          { label: 'Control Plane',   value: controlPlaneRoles,   href: '/roles?tier=ControlPlane',     color: '#dc2626' },
-          { label: 'Privilegiadas',   value: privilegedRoles,     href: '/roles?filter=privileged',     color: '#6b7280' },
-          { label: 'API Permissions', value: API_PERMISSIONS.length, href: '/api-permissions',          color: '#6b7280' },
+          { label: 'Built-in Roles',  value: totalRoles,          href: '/entraid/roles',                      color: '#0078d4' },
+          { label: 'Control Plane',   value: controlPlaneRoles,   href: '/entraid/roles?tier=ControlPlane',     color: '#dc2626' },
+          { label: 'Privilegiadas',   value: privilegedRoles,     href: '/entraid/roles?filter=privileged',     color: '#6b7280' },
+          { label: 'API Permissions', value: API_PERMISSIONS.length, href: '/entraid/api-permissions',          color: '#6b7280' },
         ].map((s) => (
           <Link key={s.label} href={s.href}
             className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-[#0078d4]/40 dark:hover:border-[#0078d4]/30 transition-colors group">
@@ -69,7 +69,7 @@ export default function Dashboard() {
               const count = tierStats[tier] || 0
               const color = isDark ? meta.darkText : meta.textColor
               return (
-                <Link key={tier} href={`/roles?tier=${tier}`} className="block group">
+                <Link key={tier} href={`/entraid/roles?tier=${tier}`} className="block group">
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ background: color }} />
@@ -95,7 +95,7 @@ export default function Dashboard() {
               const role = ROLES.find((r) => r.name === name)
               if (!role) return null
               return (
-                <Link key={name} href={`/roles/${role.slug}`}
+                <Link key={name} href={`/entraid/roles/${role.slug}`}
                   className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] border border-[#dde3ec] dark:border-gray-700 hover:border-[#9dc3e8] rounded-md px-2.5 py-1.5 transition-colors">
                   <span className="text-[12px] font-medium text-[#0078d4] dark:text-[#85b7eb] flex-1 truncate">{role.name}</span>
                   {role.isPrivileged && <AlertTriangle size={11} className="text-red-500 shrink-0" />}
@@ -115,7 +115,7 @@ export default function Dashboard() {
             const meta = CATEGORY_META[cat]
             const color = isDark ? meta.darkText : meta.textColor
             return (
-              <Link key={cat} href={`/roles?category=${cat}`}
+              <Link key={cat} href={`/entraid/roles?category=${cat}`}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-[#f7f9fc] dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] hover:border-[#9dc3e8] dark:hover:border-[#185fa5] transition-colors">
                 <span className="shrink-0" style={{ color }}>{CATEGORY_ICONS[cat]}</span>
                 <div className="min-w-0">

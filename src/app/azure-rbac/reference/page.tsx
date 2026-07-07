@@ -2,6 +2,7 @@ import AppShell from '@/components/AppShell'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier } from '@/data/azureRbac'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
+import ExportButton from '@/components/ExportButton'
 
 const TIER_ORDER: AzureRbacTier[] = ['FullControl', 'AccessManagement', 'Contributor', 'DataPlane', 'Reader', 'Specialized']
 
@@ -14,6 +15,8 @@ export default function AzureRbacReferencePage() {
     <AppShell
       headerTitle="Reference"
       headerSub="Documentação técnica do Azure Role-Based Access Control"
+      headerActions={<ExportButton filename="azure-rbac-data-sync" label="Exportar frescor dos dados"
+        data={DATA_SYNC.filter((d) => d.platform === 'Azure RBAC').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl px-8 py-8 space-y-12">

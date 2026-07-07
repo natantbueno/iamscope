@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { OCI_TIER_META } from '@/data/oci'
 import { DATA_SYNC } from '@/data/syncMeta'
+import ExportButton from '@/components/ExportButton'
 
 const OCI_COLOR = '#C74634'
 
@@ -42,6 +43,8 @@ export default function OciReferencePage() {
       headerTitle="OCI IAM Reference"
       headerSub="Verb model, resource types, policy syntax and best practices"
       headerBack={<Link href="/oci" className="flex items-center gap-1 text-[13px] text-gray-500 hover:text-[#C74634] transition-colors"><ArrowLeft size={14} /> Dashboard</Link>}
+      headerActions={<ExportButton filename="oci-data-sync" label="Exportar frescor dos dados"
+        data={DATA_SYNC.filter(d => d.platform === 'OCI IAM').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 

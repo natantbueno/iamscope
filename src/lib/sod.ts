@@ -31,7 +31,7 @@ export function matchRoleByName(name: string, cloud: SoDCloudScope = 'both'): Re
   if (!n) return null
   if (cloud === 'entra-id' || cloud === 'both') {
     const r = ROLES.find((r) => r.name.toLowerCase() === n)
-    if (r) return { name: r.name, cloud: 'entra-id', slug: r.slug, url: `/roles/${r.slug}` }
+    if (r) return { name: r.name, cloud: 'entra-id', slug: r.slug, url: `/entraid/roles/${r.slug}` }
   }
   if (cloud === 'azure-rbac' || cloud === 'both') {
     const r = AZURE_ROLES.find((r) => r.name.toLowerCase() === n)

@@ -1,19 +1,16 @@
-import { getAllSlugsIncludingRedirects, getRoleBySlug, SLUG_REDIRECTS } from '@/lib/roles'
-import RolePageClient from './RolePageClient'
-import { notFound, redirect } from 'next/navigation'
+// Stub de redirect permanente — /roles/[slug] migrado para /entraid/roles/[slug]
+// em 2026-07. Mantém TODOS os slugs antigos (incluindo aliases pré-rebranding)
+// como páginas estáticas de meta refresh para não quebrar links externos.
+import { getAllSlugsIncludingRedirects, SLUG_REDIRECTS } from '@/lib/roles'
+import { redirect } from 'next/navigation'
 
 export function generateStaticParams() {
   return getAllSlugsIncludingRedirects().map((slug) => ({ slug }))
 }
 
-export default async function RolePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Redirect({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-
-  // Slug renomeado (ex.: rebranding Azure AD → Microsoft Entra) — redireciona para o slug atual.
-  const newSlug = SLUG_REDIRECTS[slug]
-  if (newSlug) redirect(`/roles/${newSlug}/`)
-
-  const role = getRoleBySlug(slug)
-  if (!role) notFound()
-  return <RolePageClient slug={slug} />
+  // Alias antigo → já resolve direto para o slug atual no novo caminho.
+  const target = SLUG_REDIRECTS[slug] ?? slug
+  redirect(`/entraid/roles/${target}/`)
 }

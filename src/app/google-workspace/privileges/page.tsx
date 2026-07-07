@@ -6,6 +6,7 @@ import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { GWS_ROLES, GWS_TIER_META, GwsTier } from '@/data/googleWorkspace'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 // Derive unique admin API privileges from all roles
 interface GwsPrivEntry {
@@ -79,6 +80,9 @@ function GwsPrivilegesContent() {
     <AppShell
       headerTitle="Google Workspace — Admin API Privileges"
       headerSub={`${stats.total} privilégios únicos · ${stats.roles} roles com API privileges`}
+      headerActions={<ExportButton filename="google-workspace-privileges" data={filtered.map((p) => ({
+        privilege: p.privilege, category: p.category, usedByRolesCount: p.usedByRoles.length,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

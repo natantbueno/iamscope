@@ -151,7 +151,7 @@ async function buildIndex(): Promise<AdvisorRole[]> {
       description: r.description,
       tier: r.eamTier,
       tierColor: entraColors[r.eamTier] ?? '#6b7280',
-      href: `/roles/${r.slug}`,
+      href: `/entraid/roles/${r.slug}`,
       isPrivileged: r.isPrivileged,
       corpus: [r.name, r.description, r.richDescription ?? '', perms].join(' '),
     })

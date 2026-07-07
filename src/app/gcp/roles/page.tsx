@@ -7,6 +7,7 @@ import { ChevronRight, ShieldAlert } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GcpCategory } from '@/data/gcp'
 import { useColumnResize } from '@/hooks/useColumnResize'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
@@ -51,6 +52,10 @@ function GcpRolesContent() {
     <AppShell
       headerTitle="GCP IAM Roles"
       headerSub={`${filtered.length} de ${GCP_ROLES.length} predefined roles`}
+      headerActions={<ExportButton filename="gcp-roles" data={filtered.map((r) => ({
+        name: r.name, roleId: r.roleId, tier: r.tier, category: r.category,
+        isPrivileged: r.isPrivileged, description: r.description,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
 

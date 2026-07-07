@@ -5,6 +5,7 @@ import { Search, Copy, CheckCheck } from 'lucide-react'
 import { RolePermission, EamTier, EAM_META } from '@/data/roles'
 import { useTheme } from './ThemeProvider'
 import EamTierBadge from './EamTierBadge'
+import ExportButton from './ExportButton'
 
 export default function RolePermissionsList({ permissions }: { permissions: RolePermission[] }) {
   const [search, setSearch] = useState('')
@@ -65,6 +66,11 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
             </button>
           )
         })}
+        <ExportButton
+          wrapperClassName="ml-auto"
+          filename="role-permissions"
+          data={filtered.map((p) => ({ action: p.action, category: p.category, tier: p.tier }))}
+        />
       </div>
 
       {/* Table */}
