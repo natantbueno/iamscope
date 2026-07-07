@@ -14,7 +14,8 @@ import { IBM_ROLES } from '@/data/ibmCloud'
 // Mapa de rotas declarativo: plataforma -> view -> caminho.
 // Fonte única de verdade para navegação, busca e troca de plataforma.
 const ROUTES: Record<Platform, Partial<Record<View, string>>> = {
-  entraId:         { dashboard: '/',                 roles: '/roles',                          apiPermissions: '/api-permissions',                 roleActions: '/role-actions', reference: '/reference', info: '/info', pim: '/pim' },
+  home:            {},
+  entraId:         { dashboard: '/entraid',          roles: '/entraid/roles',                  apiPermissions: '/entraid/api-permissions',         roleActions: '/entraid/role-actions', reference: '/entraid/reference', info: '/info', pim: '/entraid/pim' },
   azureRbac:       { dashboard: '/azure-rbac',       roles: '/azure-rbac/roles',                                                                                                  reference: '/azure-rbac/reference' },
   googleWorkspace: { dashboard: '/google-workspace', roles: '/google-workspace/roles',          apiPermissions: '/google-workspace/api-permissions', actions: '/google-workspace/privileges', reference: '/google-workspace/reference' },
   ibmCloud:        { dashboard: '/ibm-cloud',        roles: '/ibm-cloud/roles',       actions: '/ibm-cloud/actions',       reference: '/ibm-cloud/reference' },
@@ -38,7 +39,6 @@ export default function AppShell({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [search, setSearch] = useState('')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   // Fecha o drawer mobile ao navegar para outra rota.
@@ -46,12 +46,15 @@ export default function AppShell({
 
   const totalRoleActions = useMemo(() => getRoleActions().length, [])
 
+  // '/entraid/*' e páginas globais (advisor/sod/evaluate/info) caem no
+  // fallback 'entraId' — mesma sidebar padrão de antes da migração.
   const isAzureRbac = pathname.startsWith('/azure-rbac')
   const isGws       = pathname.startsWith('/google-workspace')
   const isIbm       = pathname.startsWith('/ibm-cloud')
   const isGcp       = pathname.startsWith('/gcp')
   const isAws       = pathname.startsWith('/aws')
   const isOci       = pathname.startsWith('/oci')
+  const isHome      = pathname === '/'
 
   const platform: Platform = isGws
     ? 'googleWorkspace'
@@ -65,11 +68,14 @@ export default function AppShell({
     ? 'aws'
     : isOci
     ? 'oci'
+    : isHome
+    ? 'home'
     : 'entraId'
 
   const view = (() => {
     if (
       pathname === '/' ||
+      pathname === '/entraid' || pathname === '/entraid/' ||
       pathname === '/azure-rbac' || pathname === '/azure-rbac/' ||
       pathname === '/google-workspace' || pathname === '/google-workspace/' ||
       pathname === '/ibm-cloud' || pathname === '/ibm-cloud/' ||
@@ -77,11 +83,11 @@ export default function AppShell({
       pathname === '/aws' || pathname === '/aws/' ||
       pathname === '/oci' || pathname === '/oci/'
     ) return 'dashboard' as const
-    if (pathname.startsWith('/api-permissions') || pathname.startsWith('/google-workspace/api-permissions')) return 'apiPermissions' as const
-    if (pathname.startsWith('/role-actions')) return 'roleActions' as const
-    if (pathname.startsWith('/pim')) return 'pim' as const
+    if (pathname.startsWith('/entraid/api-permissions') || pathname.startsWith('/google-workspace/api-permissions')) return 'apiPermissions' as const
+    if (pathname.startsWith('/entraid/role-actions')) return 'roleActions' as const
+    if (pathname.startsWith('/entraid/pim')) return 'pim' as const
     if (
-      pathname.startsWith('/reference') ||
+      pathname.startsWith('/entraid/reference') ||
       pathname.startsWith('/azure-rbac/reference') ||
       pathname.startsWith('/google-workspace/reference') ||
       pathname.startsWith('/ibm-cloud/reference') ||
@@ -104,36 +110,32 @@ export default function AppShell({
     if (path) router.push(path)
   }
 
-  const handleSearchChange = (val: string) => {
-    setSearch(val)
-    if (!val) return
-    // No Entra ID a busca respeita a view atual (roles / API permissions / role actions).
-    // Nas demais plataformas a busca sempre cai na listagem principal (roles/policies).
-    const base =
-      platform === 'entraId'
-        ? view === 'apiPermissions' ? '/api-permissions'
-          : view === 'roleActions'  ? '/role-actions'
-          : '/roles'
-        : ROUTES[platform].roles ?? ROUTES[platform].dashboard ?? '/'
-    router.push(`${base}?q=${encodeURIComponent(val)}`)
-  }
+  // Rota-alvo da busca da sidebar. O estado da busca vive na URL (?q=), dentro
+  // de SidebarSearch — aqui só se decide PARA ONDE a busca aponta.
+  // No Entra ID a busca respeita a view atual (roles / API permissions / role
+  // actions); nas demais plataformas cai na listagem principal (roles/policies).
+  const searchBasePath =
+    platform === 'entraId'
+      ? view === 'apiPermissions' ? '/entraid/api-permissions'
+        : view === 'roleActions'  ? '/entraid/role-actions'
+        : '/entraid/roles'
+      : ROUTES[platform].roles ?? ROUTES[platform].dashboard ?? '/'
 
   const handleCategoryFilter = (cat: RoleCategory) => {
-    router.push(`/roles?category=${encodeURIComponent(cat)}`)
+    router.push(`/entraid/roles?category=${encodeURIComponent(cat)}`)
   }
 
   const sidebar = (
     <Sidebar
       platform={platform}
       view={view}
-      search={search}
+      searchBasePath={searchBasePath}
       totalRoles={ROLES.length}
       totalApiPerms={API_PERMISSIONS.length}
       totalRoleActions={totalRoleActions}
       totalAzureRoles={AZURE_ROLES.length}
       totalIbmRoles={IBM_ROLES.length}
       onViewChange={handleViewChange}
-      onSearchChange={handleSearchChange}
       onCategoryFilter={handleCategoryFilter}
     />
   )

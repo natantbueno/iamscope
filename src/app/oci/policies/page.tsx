@@ -7,6 +7,7 @@ import { ShieldAlert, ChevronRight, Search, X } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { OCI_POLICIES, OCI_TIER_META, OciTier, OciCategory } from '@/data/oci'
 import { useColumnResize } from '@/hooks/useColumnResize'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: OciTier[] = ['Manage', 'Use', 'Read', 'Inspect']
 
@@ -51,7 +52,11 @@ function OciPoliciesContent() {
   }, [query, tier, category, privileged])
 
   return (
-    <AppShell headerTitle="OCI IAM Policies" headerSub={`${filtered.length} de ${OCI_POLICIES.length} policy patterns`}>
+    <AppShell headerTitle="OCI IAM Policies" headerSub={`${filtered.length} de ${OCI_POLICIES.length} policy patterns`}
+      headerActions={<ExportButton filename="oci-policies" data={filtered.map((p) => ({
+        name: p.name, tier: p.tier, category: p.category, isPrivileged: p.isPrivileged, description: p.description,
+      }))} />}
+    >
       <div className="flex flex-col flex-1 min-h-0">
         {/* Filters */}
         <div className="px-4 py-3 border-b border-[#dde3ec] dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-2">

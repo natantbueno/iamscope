@@ -7,6 +7,7 @@ import StatsBar from '@/components/StatsBar'
 import { getIbmActions, getIbmServices, getIbmOperations } from '@/lib/ibmActions'
 import { IBM_TIER_META, IbmTier } from '@/data/ibmCloud'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
 
@@ -50,6 +51,10 @@ function IbmActionsContent() {
     <AppShell
       headerTitle="IBM Cloud IAM Actions"
       headerSub={`${stats.total} actions únicas · ${stats.services} serviços`}
+      headerActions={<ExportButton filename="ibm-cloud-actions" data={filtered.map((a) => ({
+        action: a.action, service: a.service, resource: a.resource, operation: a.operation,
+        tier: a.tier, isUsedByPrivileged: a.isUsedByPrivileged, usedByRolesCount: a.usedByRoles.length,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

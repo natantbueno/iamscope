@@ -7,6 +7,7 @@ import { AWS_POLICIES, AWS_TIER_META, AwsTier, AwsCategory, AwsPolicyType } from
 import { ShieldAlert, ChevronRight, Search, X } from 'lucide-react'
 import Link from 'next/link'
 import { useColumnResize } from '@/hooks/useColumnResize'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const TYPES: AwsPolicyType[] = ['managed', 'service-role', 'permission-set', 'permission-boundary']
@@ -62,7 +63,12 @@ function AwsPoliciesContent() {
   const { widths: colWidths, onMouseDown: startResize } = useColumnResize([220, 280, 110, 110, 100, 60])
 
   return (
-    <AppShell headerTitle="AWS IAM Policies" headerSub={`${AWS_POLICIES.length} policies — Managed, Service Roles e Permission Sets`}>
+    <AppShell headerTitle="AWS IAM Policies" headerSub={`${AWS_POLICIES.length} policies — Managed, Service Roles e Permission Sets`}
+      headerActions={<ExportButton filename="aws-policies" data={filtered.map((p) => ({
+        name: p.name, arn: p.arn, tier: p.tier, category: p.category, type: p.type,
+        isPrivileged: p.isPrivileged, description: p.description,
+      }))} />}
+    >
       <div className="flex flex-col flex-1 min-h-0">
 
         {/* Filters */}

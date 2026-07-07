@@ -237,7 +237,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         <td className="px-3 py-2 align-middle">
                           <div className="flex items-center gap-1 flex-wrap max-w-xs">
                             {entry.usedByRoles.slice(0, isExpanded ? undefined : 2).map((r) => (
-                              <Link key={r.slug} href={`/roles/${r.slug}`}
+                              <Link key={r.slug} href={`/entraid/roles/${r.slug}`}
                                 className="inline-flex items-center gap-0.5 text-[10px] bg-gray-100 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] text-gray-600 dark:text-gray-300 hover:text-[#0078d4] dark:hover:text-[#85b7eb] px-1.5 py-0.5 rounded border border-[#dde3ec] dark:border-gray-700 transition-colors">
                                 {r.isPrivileged && <AlertTriangle size={9} className="text-red-400 shrink-0" />}
                                 {r.name}

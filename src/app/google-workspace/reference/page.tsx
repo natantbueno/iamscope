@@ -2,13 +2,17 @@ import AppShell from '@/components/AppShell'
 import { GWS_ROLES, GWS_SCOPES, GWS_TIER_META, GWS_SCOPE_META, GwsTier, GwsScopeSensitivity } from '@/data/googleWorkspace'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
+import ExportButton from '@/components/ExportButton'
 
 const TIER_ORDER: GwsTier[] = ['SuperAdmin', 'DelegatedAdmin', 'ServiceAdmin', 'SpecializedAdmin', 'ReadOnly']
 const SENS_ORDER: GwsScopeSensitivity[] = ['restricted', 'sensitive', 'standard']
 
 export default function GwsReferencePage() {
   return (
-    <AppShell headerTitle="Google Workspace — Reference" headerSub="Documentação técnica das Admin Roles e OAuth Scopes">
+    <AppShell headerTitle="Google Workspace — Reference" headerSub="Documentação técnica das Admin Roles e OAuth Scopes"
+      headerActions={<ExportButton filename="google-workspace-data-sync" label="Exportar frescor dos dados"
+        data={DATA_SYNC.filter((d) => d.platform === 'Google Workspace').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
+    >
       <div className="flex-1 overflow-y-auto">
       <div className="px-8 py-8 space-y-12 max-w-3xl">
 

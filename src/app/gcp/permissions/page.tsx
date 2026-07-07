@@ -7,6 +7,7 @@ import StatsBar from '@/components/StatsBar'
 import { getGcpPermissions, getGcpServices, getGcpVerbs } from '@/lib/gcpPermissions'
 import { GCP_TIER_META, GcpTier } from '@/data/gcp'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
@@ -50,6 +51,10 @@ function GcpPermissionsContent() {
     <AppShell
       headerTitle="GCP IAM Permissions"
       headerSub={`${stats.total} permissões únicas · ${stats.services} serviços`}
+      headerActions={<ExportButton filename="gcp-permissions" data={filtered.map((p) => ({
+        permission: p.permission, service: p.service, verb: p.verb, tier: p.tier,
+        isUsedByPrivileged: p.isUsedByPrivileged, usedByRolesCount: p.usedByRoles.length,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

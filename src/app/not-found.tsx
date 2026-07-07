@@ -9,7 +9,7 @@ export default function NotFound() {
       <p className="text-[14px] text-gray-500 dark:text-gray-400 mb-6">
         A role que você procura não existe ou foi renomeada.
       </p>
-      <Link href="/roles"
+      <Link href="/entraid/roles"
         className="text-[13px] px-4 py-2 rounded-md bg-[#0078d4] text-white hover:bg-[#106ebe] transition-colors">
         Ver todas as roles
       </Link>

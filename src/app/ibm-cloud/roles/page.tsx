@@ -7,6 +7,7 @@ import { ChevronRight, ShieldAlert } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { IBM_ROLES, IBM_TIER_META, IbmTier, IbmCategory, IbmAccessModel } from '@/data/ibmCloud'
 import { useColumnResize } from '@/hooks/useColumnResize'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
 
@@ -74,6 +75,10 @@ function IbmRolesContent() {
     <AppShell
       headerTitle="IBM Cloud IAM Roles"
       headerSub={`${filtered.length} de ${IBM_ROLES.length} roles`}
+      headerActions={<ExportButton filename="ibm-cloud-roles" data={filtered.map((r) => ({
+        name: r.name, tier: r.tier, category: r.category, accessModel: r.accessModel,
+        isPrivileged: r.isPrivileged, description: r.description,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
 

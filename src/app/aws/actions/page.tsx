@@ -1,12 +1,13 @@
 'use client'
 
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { getAwsActions, getAwsServices } from '@/lib/awsActions'
 import { AWS_TIER_META, AwsTier } from '@/data/aws'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
+import ExportButton from '@/components/ExportButton'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'Operator', 'Specialized', 'ReadOnly']
 
@@ -50,6 +51,10 @@ function AwsActionsContent() {
     <AppShell
       headerTitle="AWS IAM Actions"
       headerSub={`${stats.total} action patterns · ${stats.services} serviços`}
+      headerActions={<ExportButton filename="aws-actions" data={filtered.map((a) => ({
+        action: a.action, service: a.service, tier: a.tier, isWildcard: a.isWildcard,
+        isUsedByPrivileged: a.isUsedByPrivileged, usedByPoliciesCount: a.usedByPolicies.length,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
@@ -91,18 +96,21 @@ function AwsActionsContent() {
               </label>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
             <span className="text-[10px] text-gray-500 uppercase tracking-wider">Serviço:</span>
-            <button onClick={() => { setService('all'); setPage(1) }}
-              className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${service === 'all' ? 'bg-[#ff9900] text-black border-[#ff9900]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-              Todos
-            </button>
-            {services.map(s => (
-              <button key={s} onClick={() => { setService(service === s ? 'all' : s); setPage(1) }}
-                className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors font-mono ${service === s ? 'bg-[#ff9900] text-black border-[#ff9900]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-                {s}
+            <ServiceSelect
+              services={services}
+              actions={actions}
+              value={service}
+              onChange={(s) => { setService(s); setPage(1) }}
+            />
+            {service !== 'all' && (
+              <button onClick={() => { setService('all'); setPage(1) }}
+                className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-300 transition-colors"
+                title="Limpar filtro de serviço">
+                <X size={12} /> limpar
               </button>
-            ))}
+            )}
             <span className="text-[10px] text-gray-500 ml-auto">{filtered.length} actions</span>
           </div>
         </div>
@@ -189,5 +197,109 @@ export default function AwsActionsPage() {
     <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
       <AwsActionsContent />
     </Suspense>
+  )
+}
+
+// ── Seletor de serviço compacto com busca ────────────────────────────────────
+// Substitui a antiga parede de ~400 pills (um botão por serviço), que ocupava
+// a página inteira. Dropdown com busca, contagem de actions por serviço e
+// lista rolável.
+function ServiceSelect({ services, actions, value, onChange }: {
+  services: string[]
+  actions: { service: string }[]
+  value: string
+  onChange: (s: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const rootRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const counts = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const a of actions) m.set(a.service, (m.get(a.service) ?? 0) + 1)
+    return m
+  }, [actions])
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open])
+
+  // Foca a busca ao abrir
+  useEffect(() => { if (open) inputRef.current?.focus() }, [open])
+
+  const q = query.trim().toLowerCase()
+  const visible = q ? services.filter((s) => s.toLowerCase().includes(q)) : services
+
+  const pick = (s: string) => { onChange(s); setOpen(false); setQuery('') }
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`flex items-center gap-1.5 text-[11px] pl-2.5 pr-2 py-1 rounded-md border transition-colors ${
+          value !== 'all'
+            ? 'bg-[#ff990020] text-[#ff9900] border-[#ff990060]'
+            : 'text-gray-400 border-gray-700 hover:border-gray-500 hover:text-gray-300 bg-gray-800'
+        }`}
+      >
+        {value === 'all' ? 'Todos os serviços' : <code className="font-mono">{value}</code>}
+        <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1 z-30 w-72 rounded-lg border border-gray-700 bg-gray-900 shadow-2xl overflow-hidden">
+          <div className="relative border-b border-gray-800">
+            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setOpen(false)
+                if (e.key === 'Enter' && visible.length > 0) pick(visible[0])
+              }}
+              placeholder={`Buscar entre ${services.length} serviços...`}
+              className="w-full text-[11px] pl-7 pr-2.5 py-2 bg-transparent text-gray-100 placeholder-gray-500 outline-none"
+            />
+          </div>
+          <ul role="listbox" className="max-h-64 overflow-y-auto py-1">
+            {!q && (
+              <li>
+                <button onClick={() => pick('all')}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 text-[11px] text-left transition-colors ${
+                    value === 'all' ? 'text-[#ff9900] bg-[#ff990010]' : 'text-gray-300 hover:bg-gray-800'
+                  }`}>
+                  Todos os serviços
+                </button>
+              </li>
+            )}
+            {visible.map((s) => (
+              <li key={s}>
+                <button onClick={() => pick(s)}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left transition-colors ${
+                    value === s ? 'bg-[#ff990015]' : 'hover:bg-gray-800'
+                  }`}>
+                  <code className={`text-[11px] font-mono ${value === s ? 'text-[#ff9900]' : 'text-gray-300'}`}>{s}</code>
+                  <span className="text-[10px] text-gray-500 tabular-nums">{counts.get(s) ?? 0}</span>
+                </button>
+              </li>
+            ))}
+            {visible.length === 0 && (
+              <li className="px-3 py-2 text-[11px] text-gray-500">Nenhum serviço encontrado.</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }

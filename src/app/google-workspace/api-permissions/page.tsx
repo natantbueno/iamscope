@@ -7,6 +7,7 @@ import { GWS_SCOPES, GWS_SCOPE_META, GwsService, GwsScopeSensitivity } from '@/d
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
+import ExportButton from '@/components/ExportButton'
 
 type SortCol = 'name' | 'service' | 'sensitivity'
 type SortDir = 'asc' | 'desc'
@@ -87,6 +88,9 @@ function GwsScopesContent() {
     <AppShell
       headerTitle="Google Workspace — OAuth Scopes"
       headerSub={`${GWS_SCOPES.length} escopos · ${ALL_SERVICES.length} serviços · 3 níveis de sensibilidade`}
+      headerActions={<ExportButton filename="google-workspace-oauth-scopes" data={sorted.map((s) => ({
+        name: s.name, scope: s.scope, service: s.service, sensitivity: s.sensitivity, description: s.description,
+      }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[

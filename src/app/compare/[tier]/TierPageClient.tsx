@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import CompareTable from '@/components/CompareTable'
+import ExportButton from '@/components/ExportButton'
 import { Equivalence, CLOUD_ORDER, CloudId } from '@/data/compare/types'
 import equivalencesData from '@/data/compare/equivalences.json'
 import tiersData from '@/data/compare/tiers.json'
@@ -43,6 +44,17 @@ export default function TierPageClient({ tier }: { tier: string }) {
               {tierMeta.label}
             </span>
             <p className="text-[12px] text-gray-500 dark:text-gray-400">{tierMeta.description}</p>
+            <ExportButton
+              wrapperClassName="ml-auto"
+              filename={`multi-cloud-compare-${tier}`}
+              data={filtered.map((eq) => {
+                const row: Record<string, unknown> = {
+                  name: eq.name, function: eq.function, tier: eq.tier, description: eq.description,
+                }
+                ;(CLOUD_ORDER as CloudId[]).forEach((c) => { row[c] = eq.clouds[c]?.role ?? '' })
+                return row
+              })}
+            />
           </div>
           <div className="flex gap-2 mt-2">
             {(['tier0', 'tier1', 'tier2'] as const).map(t => {

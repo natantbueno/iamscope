@@ -176,28 +176,47 @@ function parsePolicyPage(html, name) {
   const descMatch = text.match(/Description:\s*([^.]+(?:\.[^.]+){0,2}\.)/) || text.match(/Description:\s*(.{0,400}?)(?:\s{2,}|Using this policy|Policy details)/)
   let description = descMatch ? descMatch[1].trim() : ''
 
-  // JSON policy document — localizar "Statement" e extrair o objeto balanceado que o contém
+  // JSON policy document — vive num bloco <code class="json"> em que o HTML da
+  // AWS envolve chaves/colchetes em <span> (ex.: <span>{</span>). Por isso o
+  // parse direto do HTML bruto falhava (v2 gerava statements: [] para todas as
+  // 1526 políticas — corrigido em 2026-07): é preciso remover as tags DENTRO
+  // do bloco de código antes do JSON.parse.
   let statements = []
-  const stmtIdx = html.indexOf('"Statement"')
-  if (stmtIdx !== -1) {
-    // Recua até o '{' de abertura do objeto JSON que contém "Statement"
-    let braceStart = html.lastIndexOf('{', stmtIdx)
-    // Pode haver aninhamento — tenta recuar mais se o balanceamento a partir daqui não fechar antes do fim do doc
-    while (braceStart !== -1) {
-      const candidate = decodeEntities(extractBalancedJson(html, braceStart) || '')
-      if (candidate) {
-        try {
-          const doc = JSON.parse(candidate)
-          if (doc && doc.Statement) {
-            statements = Array.isArray(doc.Statement) ? doc.Statement : [doc.Statement]
-            break
-          }
-        } catch {
-          // ignora e tenta um '{' anterior
-        }
+  const codeBlocks = html.match(/<code[^>]*class="[^"]*json[^"]*"[^>]*>[\s\S]*?<\/code>/gi) || []
+  for (const block of codeBlocks) {
+    const inner = decodeEntities(block.replace(/<[^>]+>/g, ''))
+    const braceStart = inner.indexOf('{')
+    if (braceStart === -1) continue
+    const candidate = extractBalancedJson(inner, braceStart)
+    if (!candidate) continue
+    try {
+      const doc = JSON.parse(candidate)
+      if (doc && doc.Statement) {
+        statements = Array.isArray(doc.Statement) ? doc.Statement : [doc.Statement]
+        break
       }
-      braceStart = html.lastIndexOf('{', braceStart - 1)
-      if (statements.length > 0) break
+    } catch {
+      // bloco não era o policy document — tenta o próximo
+    }
+  }
+  // Fallback: método antigo (busca balanceada no HTML bruto), caso o formato mude
+  if (statements.length === 0) {
+    const stmtIdx = html.indexOf('"Statement"')
+    if (stmtIdx !== -1) {
+      let braceStart = html.lastIndexOf('{', stmtIdx)
+      while (braceStart !== -1 && statements.length === 0) {
+        const candidate = decodeEntities(extractBalancedJson(html, braceStart) || '')
+        if (candidate) {
+          try {
+            const doc = JSON.parse(candidate.replace(/<[^>]+>/g, ''))
+            if (doc && doc.Statement) {
+              statements = Array.isArray(doc.Statement) ? doc.Statement : [doc.Statement]
+              break
+            }
+          } catch { /* tenta um '{' anterior */ }
+        }
+        braceStart = html.lastIndexOf('{', braceStart - 1)
+      }
     }
   }
 
@@ -395,6 +414,22 @@ function generateTs(policies) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
+  // --from-cache: pula o fetch e regenera src/data/aws.ts a partir de
+  // scripts/aws-policies-raw.json (útil quando os statements foram populados
+  // por outra fonte, ou para re-gerar sem rebuscar 1500+ páginas).
+  if (process.argv.includes('--from-cache')) {
+    if (!fs.existsSync(CACHE_FILE)) {
+      console.error(`❌ --from-cache: ${CACHE_FILE} não existe. Rode sem a flag primeiro.`)
+      process.exit(1)
+    }
+    const cached = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf-8'))
+    console.log(`📦 --from-cache: ${cached.length} políticas lidas de aws-policies-raw.json`)
+    const withStmts = cached.filter((p) => p.statements && p.statements.length > 0)
+    console.log(`   ${withStmts.length} com statements`)
+    generateAndWrite(cached)
+    return
+  }
+
   console.log('🔍 Buscando AWS Managed Policies em docs.aws.amazon.com...\n')
 
   console.log('  ⬇  Página-índice (policy-list.html)...')
@@ -441,7 +476,11 @@ async function main() {
   fs.writeFileSync(CACHE_FILE, JSON.stringify(valid, null, 2), 'utf-8')
   console.log(`💾 Cache bruto salvo em scripts/aws-policies-raw.json`)
 
-  // ── Classificação e dedupe (por nome exato, evita o bug de duplicatas já corrigido manualmente) ──
+  generateAndWrite(valid)
+}
+
+// ── Classificação, dedupe e geração do .ts (compartilhado com --from-cache) ──
+function generateAndWrite(valid) {
   const seenNames = new Set()
   const seenSlugs = {}
   const policies = []
@@ -481,7 +520,7 @@ async function main() {
   }
 
   console.log(`\n✅ Arquivo gerado: src/data/aws.ts`)
-  console.log(`   Total: ${policies.length} políticas únicas (${names.length - policies.length} descartadas por falha de fetch ou duplicata)\n`)
+  console.log(`   Total: ${policies.length} políticas únicas (${valid.length - policies.length} duplicatas descartadas)\n`)
   console.log('Por Tier:')
   for (const [t, c] of Object.entries(byTier).sort((a, b) => b[1] - a[1])) console.log(`  ${t.padEnd(20)} ${c}`)
   console.log('\nPor Categoria:')

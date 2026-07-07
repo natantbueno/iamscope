@@ -205,3 +205,66 @@ export function exportAzureRbacCSV(roles: AzureRbacRole[]) {
 export function exportAzureRbacJSON(roles: AzureRbacRole[]) {
   download('azure-rbac-roles.json', JSON.stringify(roles, null, 2), 'application/json')
 }
+
+// ---------- Genérico (usado pelo ExportButton.tsx nas demais páginas do site) ----------
+// Mesmas três saídas (Excel/CSV/JSON) do modelo Entra ID, mas parametrizadas por
+// linhas/nome de arquivo arbitrários — evita duplicar a lógica de serialização
+// em cada página que só precisa exportar uma lista simples.
+
+export function exportGenericCSV(filename: string, rows: Record<string, unknown>[]) {
+  download(filename.endsWith('.csv') ? filename : `${filename}.csv`, toCSV(rows), 'text/csv;charset=utf-8')
+}
+
+export function exportGenericJSON(filename: string, data: unknown) {
+  download(filename.endsWith('.json') ? filename : `${filename}.json`, JSON.stringify(data, null, 2), 'application/json')
+}
+
+export function exportGenericExcel(filename: string, rows: Record<string, unknown>[], sheetName = 'Sheet1') {
+  if (rows.length === 0) return
+  const headers = Object.keys(rows[0])
+
+  const escapeXml = (s: unknown) =>
+    String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+
+  const headerCells = headers
+    .map((h) => `<Cell ss:StyleID="hdr"><Data ss:Type="String">${escapeXml(h)}</Data></Cell>`)
+    .join('')
+
+  const bodyRows = rows
+    .map((row) => {
+      const cells = headers
+        .map((h) => {
+          const val = row[h]
+          const type = typeof val === 'number' || typeof val === 'boolean' ? 'Number' : 'String'
+          const out = typeof val === 'boolean' ? (val ? 1 : 0) : val
+          return `<Cell><Data ss:Type="${type}">${escapeXml(out)}</Data></Cell>`
+        })
+        .join('')
+      return `<Row>${cells}</Row>`
+    })
+    .join('')
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <Styles>
+  <Style ss:ID="hdr">
+   <Font ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#0078D4" ss:Pattern="Solid"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="${escapeXml(sheetName.slice(0, 31))}">
+  <Table>
+   <Row>${headerCells}</Row>
+   ${bodyRows}
+  </Table>
+ </Worksheet>
+</Workbook>`
+
+  download(filename.endsWith('.xls') ? filename : `${filename}.xls`, xml, 'application/vnd.ms-excel')
+}
