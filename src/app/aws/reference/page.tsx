@@ -5,6 +5,8 @@ import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'AWS IAM Reference' }
+
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 
 const CAT_COLORS: Record<string, string> = {

@@ -26,10 +26,14 @@ function getActivePlatform(pathname: string): CloudId | null {
   if (pathname.startsWith('/gcp'))              return 'gcp'
   if (pathname.startsWith('/aws'))              return 'aws'
   if (pathname.startsWith('/oci'))              return 'oci'
-  // Cross-platform tools (/compare, /advisor, /info) — no cloud active
+  // Ferramentas multi-cloud — nenhuma cloud fica ativa no menu superior
   if (
     pathname.startsWith('/compare') ||
     pathname.startsWith('/advisor') ||
+    pathname.startsWith('/permission-scope') ||
+    pathname.startsWith('/tier-comparison') ||
+    pathname.startsWith('/evaluate') ||
+    pathname.startsWith('/sod') ||
     pathname.startsWith('/info')
   ) return null
   return 'entraId'

@@ -7,6 +7,8 @@ import {
 import { DATA_SYNC, getLatestSync } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Sobre' }
+
 export default function InfoPage() {
   return (
     <AppShell

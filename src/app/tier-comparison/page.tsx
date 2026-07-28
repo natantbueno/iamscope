@@ -6,6 +6,8 @@ import equivalencesData from '@/data/compare/equivalences.json'
 import tiersData from '@/data/compare/tiers.json'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Comparação de Tiers' }
+
 const equivalences = equivalencesData as Equivalence[]
 const tier0 = tiersData.find(t => t.level === 0)!
 const globalAdmin = equivalences.find(eq => eq.id === 'global-admin')!

@@ -206,6 +206,28 @@ export function exportAzureRbacJSON(roles: AzureRbacRole[]) {
   download('azure-rbac-roles.json', JSON.stringify(roles, null, 2), 'application/json')
 }
 
+/**
+ * Resultado da busca por permissão: uma linha por par (role, permissão que casou),
+ * para permitir auditar "quem tem esta permissão" fora do site.
+ */
+export function exportAzureRbacMatchedPermsCSV(
+  roles: AzureRbacRole[],
+  matched: Map<string, string[]>,
+) {
+  const rows = roles.flatMap((r) =>
+    (matched.get(r.slug) ?? []).map((action) => ({
+      role: r.name,
+      roleId: r.id,
+      matchedPermission: action,
+      tier: r.tier,
+      category: r.category,
+      isPrivileged: r.isPrivileged,
+      totalPermissions: r.permissionCount,
+    })),
+  )
+  download('azure-rbac-roles-by-permission.csv', toCSV(rows), 'text/csv;charset=utf-8')
+}
+
 // ---------- Genérico (usado pelo ExportButton.tsx nas demais páginas do site) ----------
 // Mesmas três saídas (Excel/CSV/JSON) do modelo Entra ID, mas parametrizadas por
 // linhas/nome de arquivo arbitrários — evita duplicar a lógica de serialização

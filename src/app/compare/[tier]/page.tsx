@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tier } = await params
   const names: Record<string, string> = { tier0: 'Tier 0 — Control Plane', tier1: 'Tier 1 — Management Plane', tier2: 'Tier 2 — Data/Workload Plane' }
-  return { title: `Compare · ${names[tier] ?? tier}`, description: 'Comparativo de equivalências IAM por tier entre plataformas cloud.' }
+  return { title: `Multi-Cloud Compare · ${names[tier] ?? tier}`, description: 'Comparativo de equivalências IAM por tier entre plataformas cloud.' }
 }
 
 export default async function TierPage({ params }: Props) {

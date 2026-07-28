@@ -11,7 +11,7 @@ import {
   exportPermissionsCSV, exportPermissionsJSON,
   exportRoleActionsCSV, exportRoleActionsJSON,
   exportApiPermissionsCSV, exportApiPermissionsJSON,
-  exportAzureRbacCSV, exportAzureRbacJSON,
+  exportAzureRbacCSV, exportAzureRbacJSON, exportAzureRbacMatchedPermsCSV,
 } from '@/lib/export'
 
 type ApiPermission = typeof API_PERMISSIONS[number]
@@ -20,7 +20,9 @@ type Props =
   | { mode?: 'roles';       roles?: EntraRole[];            label?: string }
   | { mode: 'roleActions';  roleActions: RoleActionEntry[]; label?: string }
   | { mode: 'apiPerms';     apiPerms: ApiPermission[];      label?: string }
-  | { mode: 'azureRbac';   azureRoles: AzureRbacRole[];    label?: string }
+  | { mode: 'azureRbac';   azureRoles: AzureRbacRole[];    label?: string
+      /** slug -> permissões que casaram com a busca por permissão, quando ativa. */
+      matchedPerms?: Map<string, string[]> | null }
 
 export default function ExportMenu(props: Props) {
   const { label = 'Exportar' } = props
@@ -109,7 +111,9 @@ export default function ExportMenu(props: Props) {
           })()}
 
           {mode === 'azureRbac' && (() => {
-            const azureRoles = (props as { azureRoles: AzureRbacRole[] }).azureRoles
+            const { azureRoles, matchedPerms } = props as {
+              azureRoles: AzureRbacRole[]; matchedPerms?: Map<string, string[]> | null
+            }
             return (
               <>
                 <MenuLabel>Azure RBAC Roles</MenuLabel>
@@ -119,6 +123,16 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportAzureRbacJSON(azureRoles))}>
                   JSON
                 </MenuItem>
+                {matchedPerms && matchedPerms.size > 0 && (
+                  <>
+                    <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
+                    <MenuLabel>Busca por permissão</MenuLabel>
+                    <MenuItem icon={<FileText size={14} className="text-blue-600" />}
+                      onClick={() => run(() => exportAzureRbacMatchedPermsCSV(azureRoles, matchedPerms))}>
+                      CSV (uma linha por permissão)
+                    </MenuItem>
+                  </>
+                )}
               </>
             )
           })()}

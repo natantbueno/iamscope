@@ -4,6 +4,8 @@ import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Azure RBAC Reference' }
+
 const TIER_ORDER: AzureRbacTier[] = ['FullControl', 'AccessManagement', 'Contributor', 'DataPlane', 'Reader', 'Specialized']
 
 export default function AzureRbacReferencePage() {

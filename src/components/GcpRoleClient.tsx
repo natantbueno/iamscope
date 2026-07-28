@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Globe, Copy, CheckCheck, Search, Code, ChevronDown } from 'lucide-react'
+import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Globe, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META } from '@/data/gcp'
+import PermissionsTable from '@/components/PermissionsTable'
 
 const CAT_COLORS: Record<string, string> = {
   IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
@@ -27,11 +28,9 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
     .filter(r => r.category === role.category && r.slug !== role.slug)
     .slice(0, 5)
 
-  const [permSearch, setPermSearch] = useState('')
   const [jsonExpanded, setJsonExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const filteredPerms = (role.permissions || []).filter(p => p.toLowerCase().includes(permSearch.toLowerCase()))
 
   const roleJson = JSON.stringify({
     name: role.roleId,
@@ -142,23 +141,28 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
                   <span className="text-[11px] font-normal text-gray-400">({role.permissions.length})</span>
                 </span>
               </h2>
-              <input
-                type="text"
-                placeholder="Filtrar permissions..."
-                value={permSearch}
-                onChange={e => setPermSearch(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-500 mb-3 outline-none focus:border-[#4285f4]"
+              <PermissionsTable
+                rows={(role.permissions ?? []).map((perm) => {
+                  const parts = perm.split('.')
+                  return {
+                    permission: perm,
+                    service: parts[0] ?? '',
+                    resource: parts.length > 2 ? parts.slice(1, -1).join('.') : '',
+                    verb: parts.length > 1 ? parts[parts.length - 1] : '',
+                  }
+                })}
+                columns={[
+                  { key: 'permission', label: 'Permission' },
+                  { key: 'service',    label: 'Serviço', mono: true, width: 'w-32' },
+                  { key: 'resource',   label: 'Recurso', mono: true, width: 'w-40' },
+                  { key: 'verb',       label: 'Verbo',   badge: true, width: 'w-28' },
+                ]}
+                filterKey="verb"
+                accent="#4285f4"
+                filename={`gcp-${role.slug}-permissions`}
+                noun="permissions"
+                searchPlaceholder="Filtrar permissions..."
               />
-              <div className="space-y-1 max-h-64 overflow-y-auto">
-                {filteredPerms.map((perm, i) => (
-                  <div key={i} className="flex items-center gap-2 px-2 py-1 rounded bg-gray-50 dark:bg-gray-800/50">
-                    <code className="text-[11px] font-mono text-gray-600 dark:text-gray-400">{perm}</code>
-                  </div>
-                ))}
-                {filteredPerms.length === 0 && (
-                  <p className="text-[11px] text-gray-500 py-2">Nenhuma permission encontrada.</p>
-                )}
-              </div>
             </div>
           )}
 

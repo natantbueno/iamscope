@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import SodClient from './SodClient'
 
 export const metadata: Metadata = {
-  title: 'SoD Analyzer — IAM Scope',
+  title: 'SoD Analyzer',
   description: 'Segregation of Duties para Entra ID e Azure RBAC — catálogo de regras, matriz de conflito e avaliação de usuário, 100% client-side.',
 }
 

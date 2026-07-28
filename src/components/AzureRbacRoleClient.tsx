@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Copy, CheckCheck, ExternalLink, ShieldAlert, Hash, Tag, Layers, BookOpen, Shield, ChevronDown, ChevronUp, Code2 } from 'lucide-react'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacPermission, AzurePermType } from '@/data/azureRbac'
 import AppShell from '@/components/AppShell'
+import PermissionsTable from '@/components/PermissionsTable'
 
 const TYPE_COLORS: Record<AzurePermType, { bg: string; text: string; label: string }> = {
   Actions:        { bg: '#e6f4ea', text: '#1a5c28', label: 'Actions' },
@@ -19,6 +20,11 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
   const [loadingPerms, setLoadingPerms] = useState(true)
   const [copied, setCopied] = useState(false)
 
+  // Descrições OFICIAIS de cada action, extraídas de
+  // learn.microsoft.com/azure/role-based-access-control/permissions/*.
+  // Carregado sob demanda e compartilhado entre todas as roles.
+  const [actionDocs, setActionDocs] = useState<Record<string, string>>({})
+
   useEffect(() => {
     setLoadingPerms(true)
     fetch(`/azure-perms/${slug}.json`)
@@ -26,6 +32,13 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
       .then((data) => { setPerms(data); setLoadingPerms(false) })
       .catch(() => { setPerms([]); setLoadingPerms(false) })
   }, [slug])
+
+  useEffect(() => {
+    fetch('/azure-action-descriptions.json')
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((d: Record<string, string>) => setActionDocs(d))
+      .catch(() => setActionDocs({}))
+  }, [])
 
   const permsByType = useMemo(() => {
     const groups: Partial<Record<AzurePermType, string[]>> = {}
@@ -132,46 +145,60 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
             <p className="text-[12px] leading-relaxed" style={{ color: meta.darkText }}>{meta.description}</p>
           </section>
 
-          {/* Description */}
+          {/* Description — texto oficial da Microsoft, literal */}
           <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-            <h2 className="text-[14px] font-semibold text-gray-100 mb-2">Descrição</h2>
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="text-[14px] font-semibold text-gray-100">Descrição</h2>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 bg-gray-800 border border-gray-700 px-1.5 py-0.5 rounded">
+                Microsoft
+              </span>
+            </div>
             <p className="text-[13px] text-gray-300 leading-relaxed">{role.description}</p>
           </section>
 
           {/* Permissions */}
           <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-            <h2 className="text-[14px] font-semibold text-gray-100 mb-4">
-              Permissões
-              {loadingPerms && <span className="ml-2 text-[11px] text-gray-400 font-normal">Carregando...</span>}
-            </h2>
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              <h2 className="text-[14px] font-semibold text-gray-100">Permissões</h2>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 bg-gray-800 border border-gray-700 px-1.5 py-0.5 rounded">
+                Microsoft
+              </span>
+              {loadingPerms && <span className="text-[11px] text-gray-400 font-normal">Carregando...</span>}
+              <a
+                href="https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles"
+                target="_blank"
+                rel="noreferrer"
+                className="ml-auto inline-flex items-center gap-1 text-[11px] text-[#85b7eb] hover:underline"
+              >
+                Azure built-in roles <ExternalLink size={11} />
+              </a>
+            </div>
             {!loadingPerms && perms.length === 0 && (
               <p className="text-[13px] text-gray-400">Nenhuma permissão registrada.</p>
             )}
-            <div className="space-y-4">
-              {(['Actions', 'NotActions', 'DataActions', 'NotDataActions'] as AzurePermType[]).map((type) => {
-                const actions = permsByType[type]
-                if (!actions?.length) return null
-                const tc = TYPE_COLORS[type]
-                return (
-                  <div key={type}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded"
-                        style={{ backgroundColor: tc.bg, color: tc.text }}>{tc.label}</span>
-                      <span className="text-[11px] text-gray-500">
-                        {actions.length} {actions.length === 1 ? 'entrada' : 'entradas'}
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      {actions.map((action) => (
-                        <div key={action} className="flex items-center gap-2 px-3 py-1.5 rounded bg-gray-800 border border-gray-700">
-                          <code className="text-[11px] font-mono text-gray-200 break-all">{action}</code>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            {perms.length > 0 && (
+              <PermissionsTable
+                rows={perms.map((p) => ({
+                  permission: p.action,
+                  type: p.type,
+                  description: actionDocs[p.action] ?? '',
+                }))}
+                columns={[
+                  { key: 'permission',  label: 'Action' },
+                  { key: 'type',        label: 'Tipo', badge: true, width: 'w-36' },
+                  { key: 'description', label: 'Descrição (Microsoft)' },
+                ]}
+                filterKey="type"
+                colors={{
+                  Actions: '#34d399', NotActions: '#f87171',
+                  DataActions: '#60a5fa', NotDataActions: '#fbbf24',
+                }}
+                accent="#85b7eb"
+                filename={`azure-rbac-${slug}-permissoes`}
+                noun="permissões"
+                searchPlaceholder="Filtrar action ou descrição..."
+              />
+            )}
           </section>
 
           {/* Role Definition JSON */}

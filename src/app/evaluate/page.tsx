@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import EvaluateClient from './EvaluateClient'
 
 export const metadata: Metadata = {
-  title: 'Role Evaluator — entra.permissions',
+  title: 'Role Evaluator',
   description: 'Avalie o risco de qualquer role multi-cloud colando o JSON — 100% client-side, sem chamadas externas.',
 }
 

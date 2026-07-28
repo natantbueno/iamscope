@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { ExternalLink, Users, ShieldCheck, Layers, Network } from 'lucide-react'
 import { IBM_ACCESS_PRIMITIVES } from '@/data/ibmAccessPrimitives'
 
+export const metadata = { title: 'Access Groups & Trusted Profiles' }
+
 export default function IbmAccessGroupsPage() {
   const accessGroup = IBM_ACCESS_PRIMITIVES.find(p => p.slug === 'access-group')!
   const trustedProfile = IBM_ACCESS_PRIMITIVES.find(p => p.slug === 'trusted-profile')!

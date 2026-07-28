@@ -8,6 +8,8 @@ import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Entra ID — Reference' }
+
 const TIER_ORDER: EamTier[] = ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified']
 
 const CATEGORIES: { badge: string; description: string }[] = [

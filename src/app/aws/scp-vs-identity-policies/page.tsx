@@ -4,6 +4,8 @@ import { AWS_POLICIES } from '@/data/aws'
 import { ExternalLink, ShieldAlert, ShieldCheck, Lock, Building2 } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'SCP vs Identity Policies' }
+
 export default function ScpVsIdentityPoliciesPage() {
   const orgAccountAccessRole = AWS_POLICIES.find(p => p.slug === 'organization-account-access-role')
   const boundaries = AWS_POLICIES.filter(p => p.type === 'permission-boundary')

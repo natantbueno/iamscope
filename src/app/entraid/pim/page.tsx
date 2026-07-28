@@ -5,6 +5,8 @@ import EamTierBadge from '@/components/EamTierBadge'
 import { ExternalLink, Clock, ShieldCheck, UserCheck, Timer, AlertTriangle } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Privileged Identity Management (PIM)' }
+
 export default function PimPage() {
   // As roles Control Plane privilegiadas são as melhores candidatas a eligible assignment em PIM.
   const topControlPlaneRoles = ROLES

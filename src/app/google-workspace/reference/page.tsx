@@ -4,6 +4,8 @@ import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'Google Workspace — Reference' }
+
 const TIER_ORDER: GwsTier[] = ['SuperAdmin', 'DelegatedAdmin', 'ServiceAdmin', 'SpecializedAdmin', 'ReadOnly']
 const SENS_ORDER: GwsScopeSensitivity[] = ['restricted', 'sensitive', 'standard']
 

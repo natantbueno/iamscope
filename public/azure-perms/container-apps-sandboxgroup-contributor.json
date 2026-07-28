@@ -1,0 +1,1 @@
+[{"action":"Microsoft.App/sandboxGroups/*/read","type":"Actions"},{"action":"Microsoft.App/sandboxGroups/*/write","type":"Actions"},{"action":"Microsoft.App/sandboxGroups/*/delete","type":"Actions"}]

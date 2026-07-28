@@ -5,13 +5,22 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
 import Link from 'next/link'
-import { ChevronUp, ChevronDown, ChevronsUpDown, ShieldAlert, ChevronRight } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, ShieldAlert, ChevronRight, Search, X } from 'lucide-react'
 import ExportMenu from '@/components/ExportMenu'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 
 type SortCol = 'name' | 'category' | 'tier' | 'permissionCount'
 type SortDir = 'asc' | 'desc'
+
+/**
+ * Índice invertido permissão -> roles, gerado por scripts/build-azure-perms-index.js.
+ * `index` guarda posições dentro de `slugs` (mais compacto que repetir o slug).
+ */
+interface PermIndex {
+  slugs: string[]
+  index: Record<string, number[]>
+}
 
 const TIER_ORDER: Record<AzureRbacTier, number> = {
   FullControl: 0, AccessManagement: 1, Contributor: 2, DataPlane: 3, Reader: 4, Specialized: 5,
@@ -50,7 +59,43 @@ function AzureRbacRolesContent() {
   const [sortCol, setSortCol]         = useState<SortCol>('name')
   const [sortDir, setSortDir]         = useState<SortDir>('asc')
 
-  const { widths, onMouseDown } = useColumnResize([200, 240, 100, 150, 80, 60])
+  // Busca por permissão — usa o índice invertido gerado em build time
+  // (public/azure-perms-index.json). Carregado sob demanda: só baixa o índice
+  // quando o usuário realmente digita algo, para não pesar a página.
+  const [permQuery, setPermQuery]   = useState('')
+  const [permIndex, setPermIndex]   = useState<PermIndex | null>(null)
+  const [permLoading, setPermLoad]  = useState(false)
+  const [permError, setPermError]   = useState(false)
+
+  useEffect(() => {
+    if (!permQuery.trim() || permIndex || permLoading) return
+    setPermLoad(true)
+    fetch('/azure-perms-index.json')
+      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() })
+      .then((data: PermIndex) => { setPermIndex(data); setPermError(false) })
+      .catch(() => setPermError(true))
+      .finally(() => setPermLoad(false))
+  }, [permQuery, permIndex, permLoading])
+
+  // slug -> permissões que casam com a busca atual
+  const permMatches = useMemo(() => {
+    const q = permQuery.trim().toLowerCase()
+    if (!q || !permIndex) return null
+    const bySlug = new Map<string, string[]>()
+    for (const action of Object.keys(permIndex.index)) {
+      if (!action.toLowerCase().includes(q)) continue
+      for (const i of permIndex.index[action]) {
+        const slug = permIndex.slugs[i]
+        if (!slug) continue
+        const arr = bySlug.get(slug)
+        if (arr) arr.push(action)
+        else bySlug.set(slug, [action])
+      }
+    }
+    return bySlug
+  }, [permQuery, permIndex])
+
+  const { widths, onMouseDown } = useColumnResize([200, 240, 220, 100, 150, 80, 60])
 
   // Sync state from URL params — fires on every navigation (sidebar clicks)
   useEffect(() => {
@@ -71,9 +116,10 @@ function AzureRbacRolesContent() {
       const matchTier    = activeTier === 'all' || r.tier === activeTier
       const matchCat     = activeCat  === 'all' || r.category === activeCat
       const matchPriv    = !privilegedOnly || r.isPrivileged
-      return matchSearch && matchTier && matchCat && matchPriv
+      const matchPerm    = !permMatches || permMatches.has(r.slug)
+      return matchSearch && matchTier && matchCat && matchPriv && matchPerm
     })
-  }, [search, activeTier, activeCat, privilegedOnly])
+  }, [search, activeTier, activeCat, privilegedOnly, permMatches])
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => {
     let cmp = 0
@@ -107,7 +153,7 @@ function AzureRbacRolesContent() {
     <AppShell
       headerTitle="Azure RBAC — Built-in Roles"
       headerSub={`${AZURE_ROLES.length} roles · ${ALL_CATEGORIES.length} categorias · 6 risk tiers`}
-      headerActions={<ExportMenu mode="azureRbac" azureRoles={sorted} />}
+      headerActions={<ExportMenu mode="azureRbac" azureRoles={sorted} matchedPerms={permMatches} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
@@ -185,6 +231,49 @@ function AzureRbacRolesContent() {
               </button>
             ))}
           </div>
+
+          {/* Row 3: busca por permissão */}
+          <div className="flex items-center gap-2 flex-wrap mt-2 pt-2 border-t border-gray-800">
+            <div className="relative flex-1 min-w-[260px] max-w-xl">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                type="text"
+                value={permQuery}
+                onChange={(e) => setPermQuery(e.target.value)}
+                placeholder="Buscar permissão (ex.: Microsoft.Storage/storageAccounts/listKeys/action)"
+                aria-label="Buscar roles por permissão"
+                className="w-full text-[12px] pl-8 pr-8 py-1.5 rounded-md border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-[#0078d4] transition-colors"
+              />
+              {permQuery && (
+                <button
+                  onClick={() => setPermQuery('')}
+                  aria-label="Limpar busca por permissão"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+            {permLoading && (
+              <span className="text-[11px] text-gray-500">Carregando índice de permissões…</span>
+            )}
+            {permError && (
+              <span className="text-[11px] text-red-400">
+                Falha ao carregar o índice de permissões.
+              </span>
+            )}
+            {permMatches && !permLoading && (
+              <span className="text-[11px] text-[#85b7eb]">
+                {permMatches.size} role(s) com permissão correspondente
+              </span>
+            )}
+            {!permQuery && !permLoading && (
+              <span className="text-[11px] text-gray-600">
+                Busca por permissão exata ou parcial em todas as {AZURE_ROLES.length} roles
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Table */}
@@ -197,6 +286,7 @@ function AzureRbacRolesContent() {
               <col style={{ width: widths[3] }} />
               <col style={{ width: widths[4] }} />
               <col style={{ width: widths[5] }} />
+              <col style={{ width: widths[6] }} />
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
@@ -207,10 +297,15 @@ function AzureRbacRolesContent() {
                   <div onMouseDown={onMouseDown(1)} onClick={(e) => e.stopPropagation()}
                     className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />
                 </th>
-                <RszTh col="category"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>Categoria</RszTh>
-                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Risk Tier</RszTh>
-                <RszTh col="permissionCount" active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown} right>Permissões</RszTh>
-                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown}>Priv.</RszTh>
+                <th className="relative px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider overflow-hidden select-none">
+                  Permissão
+                  <div onMouseDown={onMouseDown(2)} onClick={(e) => e.stopPropagation()}
+                    className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />
+                </th>
+                <RszTh col="category"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Categoria</RszTh>
+                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown}>Risk Tier</RszTh>
+                <RszTh col="permissionCount" active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown} right>Permissões</RszTh>
+                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={6} onMD={onMouseDown}>Priv.</RszTh>
                 <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-10"></th>
               </tr>
             </thead>
@@ -227,6 +322,30 @@ function AzureRbacRolesContent() {
                     </td>
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
                       <p className="text-[11px] text-gray-400 leading-snug line-clamp-2">{role.description}</p>
+                    </td>
+                    {/* Permissão — mostra as ações que casaram com a busca */}
+                    <td className="px-4 py-2.5 align-middle overflow-hidden">
+                      {(() => {
+                        const hits = permMatches?.get(role.slug)
+                        if (!hits || hits.length === 0) {
+                          return <span className="text-[11px] text-gray-700">—</span>
+                        }
+                        const shown = hits.slice(0, 2)
+                        return (
+                          <div className="flex flex-col gap-0.5" title={hits.join('\n')}>
+                            {shown.map((a) => (
+                              <code key={a} className="text-[10px] font-mono text-[#85b7eb] leading-snug break-all line-clamp-1">
+                                {a}
+                              </code>
+                            ))}
+                            {hits.length > shown.length && (
+                              <span className="text-[10px] text-gray-500">
+                                +{hits.length - shown.length} outra(s)
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       {(() => {

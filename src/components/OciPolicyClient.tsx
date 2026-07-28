@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ShieldAlert, CheckSquare, ExternalLink, Copy, CheckCheck, Code, ChevronDown, Search } from 'lucide-react'
+import { ArrowLeft, ShieldAlert, CheckSquare, ExternalLink, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { OCI_POLICIES, OCI_TIER_META } from '@/data/oci'
+import PermissionsTable from '@/components/PermissionsTable'
 
 const CAT_COLORS: Record<string, string> = {
   Identity: '#6366f1', Compute: '#0891b2', Storage: '#0d9488',
@@ -35,11 +36,9 @@ export default function OciPolicyClient({ slug }: { slug: string }) {
   const catColor = CAT_COLORS[policy.category] ?? '#6b7280'
   const related = OCI_POLICIES.filter(p => p.category === policy.category && p.slug !== policy.slug).slice(0, 5)
 
-  const [actionSearch, setActionSearch] = useState('')
   const [jsonExpanded, setJsonExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const filteredActions = (policy.verbActions || []).filter(a => a.toLowerCase().includes(actionSearch.toLowerCase()))
 
   const policyJson = JSON.stringify({
     policyName: policy.name,
@@ -164,23 +163,26 @@ export default function OciPolicyClient({ slug }: { slug: string }) {
                 <span className="text-[11px] font-normal text-gray-400">({policy.verbActions.length})</span>
               </span>
             </p>
-            <input
-              type="text"
-              placeholder="Filtrar actions..."
-              value={actionSearch}
-              onChange={e => setActionSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-500 mb-3 outline-none focus:border-[#C74634]"
+            <PermissionsTable
+              rows={(policy.verbActions ?? []).map((action) => {
+                const i = action.lastIndexOf('_')
+                return {
+                  permission: action,
+                  resource: i === -1 ? action : action.substring(0, i),
+                  operation: i === -1 ? '' : action.substring(i + 1),
+                }
+              })}
+              columns={[
+                { key: 'permission', label: 'Verb Action' },
+                { key: 'resource',   label: 'Resource Type', mono: true, width: 'w-48' },
+                { key: 'operation',  label: 'Operação', badge: true, width: 'w-32' },
+              ]}
+              filterKey="operation"
+              accent="#C74634"
+              filename={`oci-${policy.slug}-verb-actions`}
+              noun="verb actions"
+              searchPlaceholder="Filtrar actions..."
             />
-            <div className="space-y-1 max-h-64 overflow-y-auto">
-              {filteredActions.map((action, i) => (
-                <div key={i} className="flex items-center gap-2 px-2 py-1 rounded bg-gray-50 dark:bg-gray-800/50">
-                  <code className="text-[11px] font-mono text-gray-600 dark:text-gray-400">{action}</code>
-                </div>
-              ))}
-              {filteredActions.length === 0 && (
-                <p className="text-[11px] text-gray-500 py-2">Nenhuma action encontrada.</p>
-              )}
-            </div>
           </div>
         )}
 

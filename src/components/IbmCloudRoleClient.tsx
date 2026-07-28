@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Copy, CheckCheck, Code, ChevronDown, Search } from 'lucide-react'
+import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { IBM_ROLES, IBM_TIER_META } from '@/data/ibmCloud'
+import PermissionsTable from '@/components/PermissionsTable'
 
 const CATEGORY_COLORS: Record<string, string> = {
   Identity: '#7c3aed', Platform: '#0f62fe', Infrastructure: '#ea580c',
@@ -17,14 +18,12 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
   const role = IBM_ROLES.find(r => r.slug === slug)
   if (!role) return notFound()
 
-  const [actionSearch, setActionSearch] = useState('')
   const [jsonExpanded, setJsonExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const tier = IBM_TIER_META[role.tier]
   const catColor = CATEGORY_COLORS[role.category] || '#6366f1'
 
-  const filteredActions = (role.actions || []).filter(a => a.toLowerCase().includes(actionSearch.toLowerCase()))
 
   const roleJson = JSON.stringify({
     display_name: role.name,
@@ -129,23 +128,28 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
                   <span className="text-[11px] font-normal text-gray-400">({role.actions.length})</span>
                 </span>
               </h2>
-              <input
-                type="text"
-                placeholder="Filtrar actions..."
-                value={actionSearch}
-                onChange={e => setActionSearch(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-500 mb-3 outline-none focus:border-[#0f62fe]"
+              <PermissionsTable
+                rows={(role.actions ?? []).map((action) => {
+                  const parts = action.split('.')
+                  return {
+                    permission: action,
+                    service: parts[0] ?? '',
+                    resource: parts.length > 2 ? parts[1] : '',
+                    operation: parts.length > 2 ? parts.slice(2).join('.') : (parts[1] ?? ''),
+                  }
+                })}
+                columns={[
+                  { key: 'permission', label: 'IAM Action' },
+                  { key: 'service',    label: 'Serviço', mono: true, width: 'w-40' },
+                  { key: 'resource',   label: 'Recurso', mono: true, width: 'w-32' },
+                  { key: 'operation',  label: 'Operação', badge: true, width: 'w-32' },
+                ]}
+                filterKey="operation"
+                accent="#4589ff"
+                filename={`ibm-cloud-${role.slug}-actions`}
+                noun="actions"
+                searchPlaceholder="Filtrar actions..."
               />
-              <div className="space-y-1 max-h-64 overflow-y-auto">
-                {filteredActions.map((action, i) => (
-                  <div key={i} className="flex items-center gap-2 px-2 py-1 rounded bg-gray-50 dark:bg-gray-800/50">
-                    <code className="text-[11px] font-mono text-gray-600 dark:text-gray-400">{action}</code>
-                  </div>
-                ))}
-                {filteredActions.length === 0 && (
-                  <p className="text-[11px] text-gray-500 py-2">Nenhuma action encontrada.</p>
-                )}
-              </div>
             </div>
           )}
 

@@ -6,7 +6,7 @@ import {
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
   ChevronDown, Shield, ChevronRight, ChevronLeft,
   Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Sparkles,
-  GitCompare, Timer, ShieldAlert,
+  GitCompare, Timer, ShieldAlert, ScanSearch,
 } from 'lucide-react'
 import { RoleCategory, EAM_META, EamTier } from '@/data/roles'
 import { AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
@@ -259,6 +259,19 @@ export default function Sidebar({
             <>
               <span className="flex-1 text-[12px] font-medium text-amber-300 group-hover:text-amber-200">SoD Analyzer</span>
               <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 bg-amber-900/60 px-1.5 py-0.5 rounded">Beta</span>
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => router.push('/permission-scope')}
+          title="Permission Scope"
+          className={`flex items-center gap-2 rounded-lg bg-teal-950/60 hover:bg-teal-900/60 border border-teal-800/50 hover:border-teal-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+        >
+          <ScanSearch size={14} className="text-teal-400 shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="flex-1 text-[12px] font-medium text-teal-300 group-hover:text-teal-200">Permission Scope</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-teal-500 bg-teal-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>

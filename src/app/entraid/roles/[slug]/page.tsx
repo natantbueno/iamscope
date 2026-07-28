@@ -2,6 +2,12 @@ import { getAllSlugsIncludingRedirects, getRoleBySlug, SLUG_REDIRECTS } from '@/
 import RolePageClient from './RolePageClient'
 import { notFound, redirect } from 'next/navigation'
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const role = getRoleBySlug(SLUG_REDIRECTS[slug] ?? slug)
+  return { title: role ? `${role.name} · Entra ID` : 'Entra ID' }
+}
+
 export function generateStaticParams() {
   return getAllSlugsIncludingRedirects().map((slug) => ({ slug }))
 }

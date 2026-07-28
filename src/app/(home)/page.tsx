@@ -7,7 +7,7 @@
 // src/app/page.tsx movido para /entraid nesta sessão.
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ShieldAlert, FileJson, GitCompare, Github, Info, Sparkles, ShieldCheck } from 'lucide-react'
+import { ShieldAlert, FileJson, GitCompare, Github, Info, Sparkles, ShieldCheck, ScanSearch } from 'lucide-react'
 
 import AppShell from '@/components/AppShell'
 import { ROLES } from '@/data/roles'
@@ -26,7 +26,7 @@ import { getOciVerbs, getOciResources } from '@/lib/ociVerbs'
 import { getIbmActions, getIbmServices } from '@/lib/ibmActions'
 
 export const metadata: Metadata = {
-  title: 'Multi-Cloud IAM Reference — IAM Scope',
+  title: 'Multi-Cloud IAM Reference',
   description:
     'Roles, permissions and policies for 7 cloud providers — with EAM classification, SoD analysis and risk evaluation.',
 }
@@ -202,6 +202,14 @@ export default function HomePage() {
                   description={`${SOD_RULES.length} conflict rules across Entra ID and Azure RBAC`}
                 />
                 <ToolCard
+                  href="/permission-scope"
+                  color="teal"
+                  beta
+                  icon={<ScanSearch size={18} />}
+                  title="Permission Scope"
+                  description="Find every role that grants a given permission, across all 7 clouds"
+                />
+                <ToolCard
                   href="/tier-comparison"
                   color="red"
                   icon={<ShieldCheck size={18} />}
@@ -257,6 +265,7 @@ const TOOL_COLORS = {
   emerald: { card: 'bg-emerald-950/60 hover:bg-emerald-900/60 border-emerald-800/50 hover:border-emerald-700/70', icon: 'text-emerald-400', title: 'text-emerald-300 group-hover:text-emerald-200', betaText: 'text-emerald-500', betaBg: 'bg-emerald-900/60' },
   amber:   { card: 'bg-amber-950/60 hover:bg-amber-900/60 border-amber-800/50 hover:border-amber-700/70',       icon: 'text-amber-400',   title: 'text-amber-300 group-hover:text-amber-200',     betaText: 'text-amber-500',   betaBg: 'bg-amber-900/60' },
   red:     { card: 'bg-red-950/60 hover:bg-red-900/60 border-red-800/50 hover:border-red-700/70',               icon: 'text-red-400',     title: 'text-red-300 group-hover:text-red-200',         betaText: 'text-red-500',     betaBg: 'bg-red-900/60' },
+  teal:    { card: 'bg-teal-950/60 hover:bg-teal-900/60 border-teal-800/50 hover:border-teal-700/70',           icon: 'text-teal-400',    title: 'text-teal-300 group-hover:text-teal-200',       betaText: 'text-teal-500',    betaBg: 'bg-teal-900/60' },
 } as const
 
 function ToolCard({ href, icon, title, description, color, beta }: {

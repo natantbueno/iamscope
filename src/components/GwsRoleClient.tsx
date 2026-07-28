@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, ShieldAlert, Hash, Tag, Layers, CheckSquare, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import { GWS_ROLES, GWS_TIER_META } from '@/data/googleWorkspace'
 import AppShell from '@/components/AppShell'
+import PermissionsTable from '@/components/PermissionsTable'
 
 export default function GwsRoleClient({ slug }: { slug: string }) {
   const role = GWS_ROLES.find((r) => r.slug === slug)
@@ -23,11 +24,9 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
 
   const meta = GWS_TIER_META[role.tier]
 
-  const [privSearch, setPrivSearch] = useState('')
   const [jsonExpanded, setJsonExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const filteredPrivs = (role.apiPrivileges || []).filter(p => p.toLowerCase().includes(privSearch.toLowerCase()))
 
   const roleJson = JSON.stringify({
     roleId: role.slug,
@@ -150,23 +149,26 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
                 <span className="text-[12px] font-normal text-gray-500">({role.apiPrivileges.length})</span>
               </span>
             </h2>
-            <input
-              type="text"
-              placeholder="Filtrar privileges..."
-              value={privSearch}
-              onChange={e => setPrivSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-500 mb-3 outline-none focus:border-[#4ade80]"
+            <PermissionsTable
+              rows={(role.apiPrivileges ?? []).map((priv) => {
+                const i = priv.indexOf('_')
+                return {
+                  permission: priv,
+                  area: i === -1 ? priv : priv.substring(0, i),
+                  operation: i === -1 ? '' : priv.substring(i + 1).replace(/_/g, ' '),
+                }
+              })}
+              columns={[
+                { key: 'permission', label: 'API Privilege' },
+                { key: 'area',       label: 'Área', badge: true, width: 'w-36' },
+                { key: 'operation',  label: 'Operação', width: 'w-48' },
+              ]}
+              filterKey="area"
+              accent="#4ade80"
+              filename={`google-workspace-${role.slug}-privileges`}
+              noun="privileges"
+              searchPlaceholder="Filtrar privileges..."
             />
-            <div className="space-y-1 max-h-64 overflow-y-auto">
-              {filteredPrivs.map((priv, i) => (
-                <div key={i} className="flex items-center gap-2 px-2 py-1 rounded bg-gray-800/50">
-                  <code className="text-[11px] font-mono text-gray-400">{priv}</code>
-                </div>
-              ))}
-              {filteredPrivs.length === 0 && (
-                <p className="text-[11px] text-gray-500 py-2">Nenhum privilege encontrado.</p>
-              )}
-            </div>
           </section>
         )}
 

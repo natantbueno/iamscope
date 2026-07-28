@@ -5,6 +5,8 @@ import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'IBM Cloud IAM Reference' }
+
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
 
 export default function IbmReferenceePage() {

@@ -5,6 +5,8 @@ import { OCI_TIER_META } from '@/data/oci'
 import { DATA_SYNC } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 
+export const metadata = { title: 'OCI IAM Reference' }
+
 const OCI_COLOR = '#C74634'
 
 const VERBS = [

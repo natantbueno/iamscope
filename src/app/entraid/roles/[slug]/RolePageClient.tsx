@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { getRoleBySlug, getRelatedRoles } from '@/lib/roles'
-import { EAM_META } from '@/data/roles'
+import { EAM_META, EamTier } from '@/data/roles'
 import CategoryBadge from '@/components/CategoryBadge'
 import EamTierBadge from '@/components/EamTierBadge'
 import RolePermissionsList from '@/components/RolePermissionsList'
@@ -32,6 +32,26 @@ export default function RolePageClient({ slug }: { slug: string }) {
     userAccess: role.permissions.filter((p) => p.tier === 'UserAccess').length,
     unclassified: role.permissions.filter((p) => p.tier === 'Unclassified').length,
   }), [role])
+
+  // Composição de tiers da role e quais ações sustentam a classificação.
+  // Existe porque o tier da role é o MAIOR tier entre suas ações: uma única
+  // ação de Control Plane entre 42 já a torna Tier 0. Sem mostrar isso, o
+  // texto do tier ("controle total do tenant") passa a impressão errada em
+  // roles de leitura como AI Reader e Global Reader.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tierBreakdown = useMemo(() => {
+    const ORDER: EamTier[] = ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified']
+    const counts = ORDER
+      .map((t) => [t, role.permissions.filter((p) => p.tier === t).length] as [EamTier, number])
+      .filter(([, n]) => n > 0)
+    const driving = role.permissions.filter((p) => p.tier === role.eamTier)
+    return {
+      total: role.permissions.length,
+      counts,
+      driving: driving.length,
+      drivingActions: driving.slice(0, 3).map((p) => p.action),
+    }
+  }, [role])
 
   const copyId = () => {
     navigator.clipboard.writeText(role.id)
@@ -115,6 +135,54 @@ export default function RolePageClient({ slug }: { slug: string }) {
           <p className="text-[12px] leading-relaxed" style={{ color: isDark ? eam.darkText : eam.textColor }}>
             {eam.description}
           </p>
+
+          {/* Por que ESTA role caiu neste tier.
+              O texto acima define o tier; ele não descreve o alcance da role.
+              Uma role entra no tier da sua ação mais alta — então uma única
+              ação de Control Plane entre dezenas basta para classificá-la como
+              Tier 0, sem que ela tenha controle total do tenant. */}
+          {tierBreakdown.total > 0 && (
+            <div className="mt-3 pt-3 border-t" style={{ borderColor: (isDark ? eam.darkText : eam.textColor) + '30' }}>
+              <p className="text-[12px] leading-relaxed" style={{ color: isDark ? eam.darkText : eam.textColor }}>
+                Esta role é classificada como <strong>{eam.label}</strong> porque{' '}
+                {tierBreakdown.driving === 0 ? (
+                  <>a classificação vem da definição da própria role na fonte, não de suas ações listadas aqui.</>
+                ) : tierBreakdown.driving === tierBreakdown.total ? (
+                  <>todas as suas {tierBreakdown.total} ações são desse tier.</>
+                ) : (
+                  <>
+                    <strong>{tierBreakdown.driving}</strong> de {tierBreakdown.total} ações
+                    {' '}({(tierBreakdown.driving / tierBreakdown.total * 100).toFixed(0)}%) são desse tier —
+                    o tier da role acompanha sempre a ação de maior privilégio, não o conjunto.
+                  </>
+                )}
+              </p>
+              <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                {tierBreakdown.counts.map(([t, n]) => (
+                  <span key={t} className="text-[10px] px-2 py-0.5 rounded-full border"
+                    style={{
+                      color: isDark ? EAM_META[t].darkText : EAM_META[t].textColor,
+                      borderColor: (isDark ? EAM_META[t].darkText : EAM_META[t].textColor) + '50',
+                    }}>
+                    {n} {EAM_META[t].label}
+                  </span>
+                ))}
+              </div>
+              {tierBreakdown.driving > 0 && tierBreakdown.driving <= 3 && (
+                <div className="mt-2">
+                  <p className="text-[11px] opacity-80 mb-1" style={{ color: isDark ? eam.darkText : eam.textColor }}>
+                    {tierBreakdown.driving === 1 ? 'Ação responsável:' : 'Ações responsáveis:'}
+                  </p>
+                  {tierBreakdown.drivingActions.map((a) => (
+                    <code key={a} className="block text-[10px] font-mono break-all opacity-90"
+                      style={{ color: isDark ? eam.darkText : eam.textColor }}>
+                      {a}
+                    </code>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Description */}
@@ -138,6 +206,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
           ) : (
             <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{role.description}</p>
           )}
+
         </section>
 
         {/* Role Definition JSON */}

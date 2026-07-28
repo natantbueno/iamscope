@@ -4,7 +4,8 @@ import { useState } from 'react'
 import AppShell from '@/components/AppShell'
 import { AWS_POLICIES, AWS_TIER_META } from '@/data/aws'
 import Link from 'next/link'
-import { ArrowLeft, ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, ChevronUp, Code2, Search } from 'lucide-react'
+import { ArrowLeft, ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, ChevronUp, Code2 } from 'lucide-react'
+import PermissionsTable from '@/components/PermissionsTable'
 
 const CAT_COLORS: Record<string, string> = {
   IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', Database: '#7c3aed',
@@ -126,7 +127,7 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
 
           {/* IAM Actions */}
           {policy.actions && policy.actions.length > 0 && (
-            <AwsActionsSection actions={policy.actions} typeColor={typeColor ?? '#0891b2'} />
+            <AwsActionsSection actions={policy.actions} slug={policy.slug} />
           )}
 
           {/* Policy Document JSON */}
@@ -174,38 +175,35 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
   )
 }
 
-function AwsActionsSection({ actions, typeColor }: { actions: string[]; typeColor: string }) {
-  const [search, setSearch] = useState('')
-  const filtered = search
-    ? actions.filter(a => a.toLowerCase().includes(search.toLowerCase()))
-    : actions
-
+function AwsActionsSection({ actions, slug }: { actions: string[]; slug: string }) {
   return (
     <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">IAM Actions ({actions.length})</p>
-        <div className="relative">
-          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filtrar actions..."
-            className="bg-gray-800 border border-gray-700 rounded-md pl-7 pr-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-500 outline-none focus:border-gray-600 w-48"
-          />
-        </div>
-      </div>
-      <div className="space-y-1">
-        {filtered.map((action, i) => (
-          <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: typeColor }} />
-            <code className="text-[11px] font-mono text-gray-700 dark:text-gray-300">{action}</code>
-          </div>
-        ))}
-        {filtered.length === 0 && (
-          <p className="text-[12px] text-gray-500 py-2">Nenhuma action encontrada.</p>
-        )}
-      </div>
+      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">
+        IAM Actions ({actions.length})
+      </p>
+      <PermissionsTable
+        rows={actions.map((action) => {
+          const i = action.indexOf(':')
+          return {
+            permission: action,
+            service: i === -1 ? action : action.substring(0, i),
+            operation: i === -1 ? '' : action.substring(i + 1),
+            wildcard: action.includes('*') ? 'Wildcard' : 'Específica',
+          }
+        })}
+        columns={[
+          { key: 'permission', label: 'IAM Action' },
+          { key: 'service',    label: 'Serviço', mono: true, width: 'w-36' },
+          { key: 'operation',  label: 'Operação', mono: true },
+          { key: 'wildcard',   label: 'Escopo', badge: true, width: 'w-32' },
+        ]}
+        filterKey="wildcard"
+        colors={{ Wildcard: '#fbbf24', 'Específica': '#34d399' }}
+        accent="#ff9900"
+        filename={`aws-${slug}-actions`}
+        noun="actions"
+        searchPlaceholder="Filtrar actions..."
+      />
     </div>
   )
 }
