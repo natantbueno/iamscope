@@ -1,0 +1,1 @@
+["cloudtrace.traces.patch","monitoring.timeSeries.create","pubsub.subscriptions.consume","pubsub.subscriptions.get","pubsub.topics.get","pubsub.topics.publish","resourcemanager.projects.get"]

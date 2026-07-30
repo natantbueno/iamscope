@@ -1,1 +1,0 @@
-[{"action":"Microsoft.CodeSigning/*/read","type":"Actions"},{"action":"Microsoft.CodeSigning/IdentityVerification/Read","type":"DataActions"},{"action":"Microsoft.CodeSigning/IdentityVerification/Write","type":"DataActions"},{"action":"Microsoft.CodeSigning/IdentityVerification/Delete","type":"DataActions"}]

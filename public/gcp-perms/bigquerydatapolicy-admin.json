@@ -1,0 +1,1 @@
+["bigquery.dataPolicies.attach","bigquery.dataPolicies.create","bigquery.dataPolicies.delete","bigquery.dataPolicies.get","bigquery.dataPolicies.getIamPolicy","bigquery.dataPolicies.list","bigquery.dataPolicies.setIamPolicy","bigquery.dataPolicies.update"]

@@ -1,0 +1,1 @@
+["resourcemanager.projects.get","resourcemanager.projects.list","telemetry.consumers.getIamPolicy","telemetry.consumers.setIamPolicy","telemetry.consumers.writeLogs","telemetry.consumers.writeMetrics","telemetry.consumers.writeTraces","telemetry.traces.write"]

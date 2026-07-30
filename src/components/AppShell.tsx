@@ -16,12 +16,11 @@ import { IBM_ROLES } from '@/data/ibmCloud'
 const ROUTES: Record<Platform, Partial<Record<View, string>>> = {
   home:            {},
   entraId:         { dashboard: '/entraid',          roles: '/entraid/roles',                  apiPermissions: '/entraid/api-permissions',         roleActions: '/entraid/role-actions', reference: '/entraid/reference', info: '/info', pim: '/entraid/pim' },
-  azureRbac:       { dashboard: '/azure-rbac',       roles: '/azure-rbac/roles',                                                                                                  reference: '/azure-rbac/reference' },
+  azureRbac:       { dashboard: '/azure-rbac',       roles: '/azure-rbac/roles',       apiPermissions: '/azure-rbac/permissions',                                                                                                  reference: '/azure-rbac/reference' },
   googleWorkspace: { dashboard: '/google-workspace', roles: '/google-workspace/roles',          apiPermissions: '/google-workspace/api-permissions', actions: '/google-workspace/privileges', reference: '/google-workspace/reference' },
   ibmCloud:        { dashboard: '/ibm-cloud',        roles: '/ibm-cloud/roles',       actions: '/ibm-cloud/actions',       reference: '/ibm-cloud/reference' },
   gcp:             { dashboard: '/gcp',              roles: '/gcp/roles',             actions: '/gcp/permissions',         reference: '/gcp/reference' },
   aws:             { dashboard: '/aws',              roles: '/aws/policies',          actions: '/aws/actions',             reference: '/aws/reference' },
-  oci:             { dashboard: '/oci',              roles: '/oci/policies',          actions: '/oci/verbs',               reference: '/oci/reference' },
 }
 
 export default function AppShell({
@@ -53,7 +52,6 @@ export default function AppShell({
   const isIbm       = pathname.startsWith('/ibm-cloud')
   const isGcp       = pathname.startsWith('/gcp')
   const isAws       = pathname.startsWith('/aws')
-  const isOci       = pathname.startsWith('/oci')
   const isHome      = pathname === '/'
 
   const platform: Platform = isGws
@@ -66,8 +64,6 @@ export default function AppShell({
     ? 'gcp'
     : isAws
     ? 'aws'
-    : isOci
-    ? 'oci'
     : isHome
     ? 'home'
     : 'entraId'
@@ -80,10 +76,9 @@ export default function AppShell({
       pathname === '/google-workspace' || pathname === '/google-workspace/' ||
       pathname === '/ibm-cloud' || pathname === '/ibm-cloud/' ||
       pathname === '/gcp' || pathname === '/gcp/' ||
-      pathname === '/aws' || pathname === '/aws/' ||
-      pathname === '/oci' || pathname === '/oci/'
+      pathname === '/aws' || pathname === '/aws/'
     ) return 'dashboard' as const
-    if (pathname.startsWith('/entraid/api-permissions') || pathname.startsWith('/google-workspace/api-permissions')) return 'apiPermissions' as const
+    if (pathname.startsWith('/entraid/api-permissions') || pathname.startsWith('/google-workspace/api-permissions') || pathname.startsWith('/azure-rbac/permissions')) return 'apiPermissions' as const
     if (pathname.startsWith('/entraid/role-actions')) return 'roleActions' as const
     if (pathname.startsWith('/entraid/pim')) return 'pim' as const
     if (
@@ -92,8 +87,7 @@ export default function AppShell({
       pathname.startsWith('/google-workspace/reference') ||
       pathname.startsWith('/ibm-cloud/reference') ||
       pathname.startsWith('/gcp/reference') ||
-      pathname.startsWith('/aws/reference') ||
-      pathname.startsWith('/oci/reference')
+      pathname.startsWith('/aws/reference')
     ) return 'reference' as const
     if (pathname.startsWith('/info')) return 'info' as const
     if (

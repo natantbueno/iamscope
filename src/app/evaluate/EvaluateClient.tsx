@@ -128,8 +128,8 @@ function EmptyState() {
       <ShieldCheck size={32} className="text-gray-300 dark:text-gray-700 mb-3" />
       <p className="text-[14px] font-medium text-gray-600 dark:text-gray-300 mb-1">Cole o JSON de um role para começar</p>
       <p className="text-[12px] text-gray-400 dark:text-gray-500 max-w-sm">
-        Funciona com o JSON exportado de qualquer uma das 7 clouds catalogadas: Entra ID, Azure RBAC, AWS IAM, GCP IAM,
-        Google Workspace, OCI IAM e IBM Cloud IAM. A cloud é detectada automaticamente pela estrutura do JSON.
+        Funciona com o JSON exportado de qualquer uma das 6 clouds catalogadas: Entra ID, Azure RBAC, AWS IAM, GCP IAM,
+        Google Workspace e IBM Cloud IAM. A cloud é detectada automaticamente pela estrutura do JSON.
       </p>
     </div>
   )

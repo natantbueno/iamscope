@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSImportExportReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["importexport:ListJobs","importexport:GetStatus"],"Resource":"*"}]},"actions":["importexport:GetStatus","importexport:ListJobs"],"notActions":[]}

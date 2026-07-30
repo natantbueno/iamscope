@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Sovereign/landingZoneAccounts/*","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Resources/deployments/*","type":"Actions"}]

@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSIoTWirelessFullPublishAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["iot:DescribeEndpoint","iot:Publish"],"Resource":"*"}]},"actions":["iot:DescribeEndpoint","iot:Publish"],"notActions":[]}

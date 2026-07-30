@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonMachineLearningReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["machinelearning:Describe*","machinelearning:Get*"],"Resource":"*"}]},"actions":["machinelearning:Describe*","machinelearning:Get*"],"notActions":[]}

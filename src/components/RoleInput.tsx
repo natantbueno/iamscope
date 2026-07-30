@@ -36,10 +36,6 @@ const EXAMPLES: Record<EvaluateCloud, string> = {
   "roleName": "Super Admin",
   "isSuperAdminRole": true
 }`,
-  oci: `{
-  "id": "ocid1.policy.oc1..examplex",
-  "name": "TenancyAdministrator"
-}`,
   ibmCloud: `{
   "crn": "crn:v1:bluemix:public:iam::::role:Administrator",
   "display_name": "Administrator"

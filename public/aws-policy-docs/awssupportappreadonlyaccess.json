@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSSupportAppReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["support:DescribeCases","support:DescribeCommunications"],"Resource":"*"}]},"actions":["support:DescribeCases","support:DescribeCommunications"],"notActions":[]}

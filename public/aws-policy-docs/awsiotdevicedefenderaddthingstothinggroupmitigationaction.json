@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderAddThingsToThingGroupMitigationAction","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["iot:ListPrincipalThings","iot:AddThingToThingGroup"],"Resource":["*"]}]},"actions":["iot:AddThingToThingGroup","iot:ListPrincipalThings"],"notActions":[]}

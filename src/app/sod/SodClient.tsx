@@ -9,6 +9,7 @@ import SoDRulesCatalog from '@/components/SoDRulesCatalog'
 import SoDMatrix from '@/components/SoDMatrix'
 import SoDUserEvaluator from '@/components/SoDUserEvaluator'
 import SoDSeverityBadge from '@/components/SoDSeverityBadge'
+import SodScriptCard from '@/components/SodScriptCard'
 import { SOD_RULES, SOD_SEVERITY_META, SOD_CATEGORY_META, SoDSeverity, SoDCategory } from '@/data/sod/rules'
 
 const VALID_TABS: SoDTab[] = ['catalog', 'matrix', 'evaluate']
@@ -79,7 +80,19 @@ export default function SodClient() {
         <SoDTabs active={activeTab} onChange={setTab} />
         {activeTab === 'catalog' && <SoDRulesCatalog />}
         {activeTab === 'matrix' && <SoDMatrix />}
-        {activeTab === 'evaluate' && <SoDUserEvaluator />}
+        {activeTab === 'evaluate' && (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {/*
+              O avaliador manual cobre uma identidade por vez, colando as roles.
+              O script cobre o tenant inteiro. Ficam juntos porque respondem à
+              mesma pergunta em escalas diferentes.
+            */}
+            <div className="px-4 pt-4">
+              <SodScriptCard ruleCount={SOD_RULES.length} />
+            </div>
+            <SoDUserEvaluator />
+          </div>
+        )}
       </div>
     </AppShell>
   )

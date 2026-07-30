@@ -1,0 +1,1 @@
+["datastore.backups.get","datastore.backups.list","datastore.backups.restoreDatabase","datastore.databases.create","datastore.databases.getMetadata","datastore.databases.list","datastore.operations.get","datastore.operations.list"]

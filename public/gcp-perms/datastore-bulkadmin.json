@@ -1,0 +1,1 @@
+["datastore.databases.bulkDelete","datastore.databases.getMetadata","datastore.operations.cancel","datastore.operations.get","datastore.operations.list","resourcemanager.projects.get","resourcemanager.projects.list"]

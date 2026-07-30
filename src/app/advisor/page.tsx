@@ -14,7 +14,6 @@ const PLATFORMS: { value: AdvisorPlatform | 'all'; label: string; color: string 
   { value: 'ibmCloud',        label: 'IBM Cloud',            color: '#0f62fe' },
   { value: 'gcp',             label: 'GCP IAM',              color: '#4285f4' },
   { value: 'aws',             label: 'AWS IAM',              color: '#ff9900' },
-  { value: 'oci',             label: 'OCI IAM',              color: '#C74634' },
 ]
 
 const EXAMPLES = [
@@ -28,7 +27,6 @@ const EXAMPLES = [
   'Gerenciar certificados SSL e chaves SSH',
   'Acesso somente leitura ao S3 e DynamoDB na AWS',
   'Administrar contas de serviço e funções no GCP IAM',
-  'Permitir gerenciar compartments e policies no OCI',
   'Criar e rotacionar segredos no Key Vault do Azure',
   'Acesso a billing e custos sem tocar em recursos',
   'Gerenciar pipelines de CI/CD e repositórios de containers',
@@ -111,7 +109,7 @@ export default function AdvisorPage() {
               <div>
                 <p className="text-[13px] font-medium text-gray-800 dark:text-gray-200">Role Advisor — busca semântica cross-platform</p>
                 <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">
-                  Descreva em linguagem natural o que você precisa fazer. O advisor pesquisa em <strong>{'>'}1.700 roles</strong> do Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM, AWS IAM e OCI IAM e retorna as mais relevantes para o seu contexto.
+                  Descreva em linguagem natural o que você precisa fazer. O advisor pesquisa em <strong>{'>'}1.700 roles</strong> do Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM e AWS IAM e retorna as mais relevantes para o seu contexto.
                 </p>
               </div>
             </div>

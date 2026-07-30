@@ -1,1 +1,0 @@
-[{"action":"Microsoft.AzureStackHCI/DevicePools/read","type":"Actions"},{"action":"Microsoft.AzureStackHCI/DevicePools/ClaimDevices/action","type":"Actions"},{"action":"Microsoft.AzureStackHCI/DevicePools/ReleaseDevices/action","type":"Actions"}]

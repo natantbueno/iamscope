@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSDirectConnectFullAccess","version":"v3 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["directconnect:*","ec2:DescribeVpnGateways","ec2:DescribeTransitGateways"],"Resource":"*"}]},"actions":["directconnect:*","ec2:DescribeTransitGateways","ec2:DescribeVpnGateways"],"notActions":[]}

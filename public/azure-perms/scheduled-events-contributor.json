@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Maintenance/scheduledevents/acknowledge/action","type":"Actions"},{"action":"Microsoft.Compute/VirtualMachines/read","type":"Actions"},{"action":"Microsoft.Compute/VirtualMachineScaleSets/read","type":"Actions"},{"action":"Microsoft.Compute/AvailabilitySets/read","type":"Actions"}]

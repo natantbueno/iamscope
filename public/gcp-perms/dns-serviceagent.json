@@ -1,0 +1,1 @@
+["compute.globalNetworkEndpointGroups.attachNetworkEndpoints","compute.globalNetworkEndpointGroups.create","compute.globalNetworkEndpointGroups.delete","compute.globalNetworkEndpointGroups.detachNetworkEndpoints","compute.globalNetworkEndpointGroups.get","compute.globalOperations.get","compute.healthChecks.get"]

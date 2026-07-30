@@ -1,0 +1,1 @@
+["clientauthconfig.brands.get","clientauthconfig.brands.list","clientauthconfig.clients.get","clientauthconfig.clients.list","firebase.clients.get","firebase.clients.list","firebaseappcheck.resourcePolicies.get","oauthconfig.clientpolicy.get","oauthconfig.testusers.get","oauthconfig.verification.get","resourcemanager.projects.get","resourcemanager.projects.list"]

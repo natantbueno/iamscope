@@ -1,0 +1,1 @@
+["firebaseauth.configs.get","firebaseauth.users.get","identitytoolkit.tenants.get","identitytoolkit.tenants.getIamPolicy","identitytoolkit.tenants.list"]

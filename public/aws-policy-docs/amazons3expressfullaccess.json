@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonS3ExpressFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"S3ExpressFullAccess","Effect":"Allow","Action":"s3express:*","Resource":"*"}]},"actions":["s3express:*"],"notActions":[]}

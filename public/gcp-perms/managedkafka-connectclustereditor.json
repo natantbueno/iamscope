@@ -1,0 +1,1 @@
+["managedkafka.connectClusters.create","managedkafka.connectClusters.delete","managedkafka.connectClusters.get","managedkafka.connectClusters.list","managedkafka.connectClusters.update","managedkafka.connectors.get","managedkafka.connectors.list"]

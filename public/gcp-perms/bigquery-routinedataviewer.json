@@ -1,0 +1,1 @@
+["bigquery.datasets.get","bigquery.models.getData","bigquery.models.getMetadata","bigquery.routines.get","bigquery.routines.list","bigquery.tables.get","bigquery.tables.getData","bigquery.tables.list"]

@@ -80,15 +80,6 @@ export const DATA_SYNC: DataSourceSync[] = [
     sourceUrl: 'https://developers.google.com/workspace/admin/roles',
   },
   {
-    id: 'oci-policies',
-    label: 'OCI IAM — Policy Patterns (126)',
-    platform: 'OCI IAM',
-    lastSynced: '2026-06-30',
-    sourceLabel: 'Oracle Cloud Infrastructure — Identity & Policy Reference',
-    sourceUrl: 'https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/policyreference.htm',
-    notes: 'Catálogo sintético de padrões de policy — a OCI não publica um catálogo nomeado equivalente ao de managed policies da AWS.',
-  },
-  {
     id: 'ibm-roles',
     label: 'IBM Cloud IAM — Roles & Access (157)',
     platform: 'IBM Cloud',

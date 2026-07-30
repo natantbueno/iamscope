@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
-import { getAwsActions, getAwsServices } from '@/lib/awsActions'
+import { getAwsActions, type AwsActionEntry } from '@/lib/awsActions'
 import { AWS_TIER_META, AwsTier } from '@/data/aws'
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
@@ -15,8 +15,22 @@ function AwsActionsContent() {
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
-  const actions  = useMemo(() => getAwsActions(), [])
-  const services = useMemo(() => getAwsServices(), [])
+  // O índice de actions vive em public/aws-actions-index.json (fora do
+  // bundle) — carrega sob demanda, como as páginas de Azure e GCP.
+  const [actions, setActions] = useState<AwsActionEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    getAwsActions()
+      .then((a) => { if (alive) { setActions(a); setLoading(false) } })
+      .catch(() => { if (alive) { setLoadError(true); setLoading(false) } })
+    return () => { alive = false }
+  }, [])
+
+  const services = useMemo(
+    () => [...new Set(actions.map((a) => a.service).filter(Boolean))].sort(), [actions])
 
   const [tier,     setTier]     = useState<AwsTier | 'all'>('all')
   const [service,  setService]  = useState('all')
@@ -57,6 +71,15 @@ function AwsActionsContent() {
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        {loadError && (
+          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-[12px] text-red-600 dark:text-red-400">
+            Não foi possível carregar o índice de actions da AWS
+            (<code className="font-mono">/aws-actions-index.json</code>).
+          </div>
+        )}
+        {loading && !loadError && (
+          <div className="m-4 text-[12px] text-gray-400">Carregando actions da AWS…</div>
+        )}
         <StatsBar stats={[
           { label: 'Total',       value: stats.total,      color: 'orange' },
           { label: 'Wildcards',   value: stats.wildcards,  color: 'red' },

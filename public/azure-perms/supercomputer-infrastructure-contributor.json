@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Insights/alertRules/*","type":"Actions"},{"action":"Microsoft.Resources/deployments/*","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.SupercomputerInfrastructure/*","type":"Actions"}]

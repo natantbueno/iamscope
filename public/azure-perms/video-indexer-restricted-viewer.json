@@ -1,1 +1,0 @@
-[{"action":"Microsoft.VideoIndexer/*/read","type":"Actions"},{"action":"Microsoft.VideoIndexer/accounts/*/action","type":"Actions"},{"action":"Microsoft.VideoIndexer/*/write","type":"NotActions"},{"action":"Microsoft.VideoIndexer/*/delete","type":"NotActions"},{"action":"Microsoft.VideoIndexer/accounts/generateAccessToken/action","type":"NotActions"}]

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Maps/accounts/services/*/read","type":"DataActions"},{"action":"Microsoft.Maps/accounts/services/batch/action","type":"DataActions"}]

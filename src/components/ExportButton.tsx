@@ -26,7 +26,7 @@ interface ExportButtonProps {
   wrapperClassName?: string
 }
 
-const ACRONYMS = new Set(['aws', 'gcp', 'oci', 'ibm', 'gws', 'sod', 'pim', 'api', 'iam', 'scp'])
+const ACRONYMS = new Set(['aws', 'gcp', 'ibm', 'gws', 'sod', 'pim', 'api', 'iam', 'scp'])
 
 function titleFromFilename(filename: string): string {
   return filename

@@ -1,7 +1,7 @@
 'use client'
 
 // Tabela de permissões com busca — o mesmo padrão do bloco "Permissões completas"
-// da página de role do Entra ID, generalizado para as 7 clouds.
+// da página de role do Entra ID, generalizado para as 6 clouds.
 //
 // Cada cloud descreve a permissão de um jeito diferente (action, permission,
 // verb action, privilege...) e com metadados diferentes (tier, service, verb,

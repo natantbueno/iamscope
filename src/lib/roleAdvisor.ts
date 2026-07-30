@@ -1,7 +1,7 @@
 // ── Role Advisor — cross-platform TF-IDF-style search ────────────────────────
 // Works 100% client-side, no backend needed.
 
-export type AdvisorPlatform = 'entraId' | 'azureRbac' | 'googleWorkspace' | 'ibmCloud' | 'gcp' | 'aws' | 'oci'
+export type AdvisorPlatform = 'entraId' | 'azureRbac' | 'googleWorkspace' | 'ibmCloud' | 'gcp' | 'aws'
 
 export interface AdvisorRole {
   /** Unique key: platform:slug */
@@ -112,7 +112,6 @@ async function buildIndex(): Promise<AdvisorRole[]> {
     { IBM_ROLES, IBM_TIER_META },
     { GCP_ROLES, GCP_TIER_META },
     { AWS_POLICIES, AWS_TIER_META },
-    { OCI_POLICIES, OCI_TIER_META },
   ] = await Promise.all([
     import('@/data/roles'),
     import('@/data/azureRbac'),
@@ -120,7 +119,6 @@ async function buildIndex(): Promise<AdvisorRole[]> {
     import('@/data/ibmCloud'),
     import('@/data/gcp'),
     import('@/data/aws'),
-    import('@/data/oci'),
   ])
 
   const entraColors: Record<string, string> = {
@@ -223,7 +221,10 @@ async function buildIndex(): Promise<AdvisorRole[]> {
       tierColor: meta?.color ?? '#6b7280',
       href: `/gcp/roles/${r.slug}`,
       isPrivileged: r.isPrivileged,
-      corpus: [r.name, r.description, r.category, r.roleId, ...(r.privileges ?? [])].join(' '),
+      // As permissões do GCP saíram do bundle (public/gcp-perms/), então o
+      // corpus usa só os metadados. Buscar por permissão é papel do
+      // Permission Scope, que carrega o índice sob demanda.
+      corpus: [r.name, r.description, r.category, r.roleId].join(' '),
     })
   }
 
@@ -241,27 +242,12 @@ async function buildIndex(): Promise<AdvisorRole[]> {
       tierColor: meta?.color ?? '#6b7280',
       href: `/aws/policies/${p.slug}`,
       isPrivileged: p.isPrivileged,
-      corpus: [p.name, p.description, p.category, p.arn, p.type, ...(p.privileges ?? [])].join(' '),
+      // As actions da AWS saíram do bundle (public/aws-policy-docs/), então o
+      // corpus usa só metadados. Busca por action é papel do Permission Scope.
+      corpus: [p.name, p.description, p.category, p.arn, p.type].join(' '),
     })
   }
 
-  // ── OCI IAM ──
-  for (const p of OCI_POLICIES) {
-    const meta = OCI_TIER_META[p.tier]
-    roles.push({
-      key: `oci:\${p.slug}`,
-      platform: 'oci',
-      platformLabel: 'OCI IAM',
-      platformColor: '#C74634',
-      name: p.name,
-      description: p.description,
-      tier: meta?.label ?? p.tier,
-      tierColor: meta?.color ?? '#6b7280',
-      href: `/oci/policies/\${p.slug}`,
-      isPrivileged: p.isPrivileged,
-      corpus: [p.name, p.description, p.category, ...p.resourceTypes, ...p.privileges].join(' '),
-    })
-  }
 
   INDEX = roles
   return roles

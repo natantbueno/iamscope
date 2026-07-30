@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonS3FilesClientReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"S3FilesPermissions","Effect":"Allow","Action":["s3files:ClientMount"],"Resource":"*"}]},"actions":["s3files:ClientMount"],"notActions":[]}

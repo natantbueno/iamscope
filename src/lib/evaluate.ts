@@ -17,24 +17,24 @@
 //    equivalences.json; caso contrário, mostra aviso honesto de indisponibilidade.
 //
 // 2. Identificador nativo da plataforma (o que aparece no JSON exportado da
-//    API real) só é armazenado no dataset do site para 4 das 7 clouds:
+//    API real) só é armazenado no dataset do site para 4 das 6 clouds:
 //      Entra ID    → id (GUID / roleTemplateId)
 //      Azure RBAC  → id (GUID do roleDefinition)
 //      AWS         → arn
 //      GCP         → roleId (formato "roles/xxx")
 //    As outras 3 só têm slug/name no dataset do site — sem roleId numérico
-//    (Google Workspace), sem OCID (OCI) e sem CRN (IBM Cloud). Nessas 3
+//    (Google Workspace) e sem CRN (IBM Cloud). Nesses casos
 //    clouds o matching é necessariamente por nome (case-insensitive),
 //    nunca por ID nativo da plataforma.
 //
 // 3. Lista de permissões granulares no bundle:
 //      Entra ID           → permissions[] (action + category + tier individual)
 //      AWS / GCP / GWS /
-//      OCI / IBM Cloud     → privileges[] (texto) e um array bruto opcional
+//      IBM Cloud           → privileges[] (texto) e um array bruto opcional
 //                            (actions / permissions / apiPrivileges / verbActions)
 //      Azure RBAC          → NÃO tem lista no bundle .ts, só permissionCount.
 //                            A lista real mora em public/azure-perms/{slug}.json,
-//                            buscada sob demanda via fetchAzurePermissions().
+//                            buscada sob demanda via fetchExternalPermissions().
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { ROLES, EntraRole, EamTier } from '@/data/roles'
@@ -42,7 +42,6 @@ import { AZURE_ROLES, AzureRbacRole, AzureRbacTier, AzureRbacPermission, AZURE_T
 import { AWS_POLICIES, AwsPolicy, AwsTier, AWS_TIER_META } from '@/data/aws'
 import { GCP_ROLES, GcpRole, GcpTier, GCP_TIER_META } from '@/data/gcp'
 import { GWS_ROLES, GwsAdminRole, GwsTier, GWS_TIER_META } from '@/data/googleWorkspace'
-import { OCI_POLICIES, OciPolicy, OciTier, OCI_TIER_META } from '@/data/oci'
 import { IBM_ROLES, IbmRole, IbmTier, IBM_TIER_META } from '@/data/ibmCloud'
 import { CloudId, CLOUD_META, RiskLevel, getCloudUrl } from '@/data/compare/types'
 import equivalencesData from '@/data/compare/equivalences.json'
@@ -50,7 +49,7 @@ import tiersData from '@/data/compare/tiers.json'
 
 export type EvaluateCloud = CloudId
 
-export const EVALUATE_CLOUDS: EvaluateCloud[] = ['entraId', 'azureRbac', 'aws', 'gcp', 'googleWorkspace', 'oci', 'ibmCloud']
+export const EVALUATE_CLOUDS: EvaluateCloud[] = ['entraId', 'azureRbac', 'aws', 'gcp', 'googleWorkspace', 'ibmCloud']
 
 // ── Tipos auxiliares dos dados de comparação ────────────────────────────────
 
@@ -129,8 +128,9 @@ export interface EvaluationResultData {
   tier: EvaluationTier
   permissions: EvaluatedPermission[]
   permissionCountHint: number | null // usado quando a lista completa não está no bundle (Azure RBAC)
-  needsAzurePermFetch: boolean       // sinaliza a UI para buscar public/azure-perms/{slug}.json
-  azureSlug: string | null
+  /** Sinaliza a UI para buscar as permissões fora do bundle (Azure RBAC, GCP). */
+  needsPermFetch: boolean
+  permFetchSlug: string | null
   risk: EvaluationRisk
 }
 
@@ -173,10 +173,6 @@ export function detectCloud(json: unknown): DetectionResult {
     return { cloud: 'googleWorkspace', reason: '"kind": "admin#directory#role" encontrado' }
   }
 
-  // OCI — OCID
-  if (typeof j.id === 'string' && j.id.startsWith('ocid1.')) {
-    return { cloud: 'oci', reason: '"id" com prefixo "ocid1." encontrado' }
-  }
 
   // IBM Cloud — CRN
   const crn = j.crn ?? j.id
@@ -231,7 +227,6 @@ function extractIdentity(cloud: EvaluateCloud, j: Record<string, any>): { name: 
         id: j.roleId != null ? String(j.roleId) : null,
         description: j.roleDescription ?? j.description ?? null,
       }
-    case 'oci':
       return {
         name: j.name ?? j.displayName ?? '',
         id: typeof j.id === 'string' ? j.id : null,
@@ -276,10 +271,6 @@ function extractRawPermissions(cloud: EvaluateCloud, j: Record<string, any>): Ev
       case 'googleWorkspace': {
         const privs: any[] = j.rolePrivileges ?? []
         return privs.map((p) => ({ name: p.privilegeName ?? String(p) }))
-      }
-      case 'oci': {
-        const statements: string[] = j.statements ?? []
-        return statements.map((s) => ({ name: s }))
       }
       case 'ibmCloud': {
         const actions: string[] = j.actions ?? []
@@ -351,23 +342,14 @@ function matchGcp(j: Record<string, any>): { record: GcpRole; matchedBy: Matched
   return null
 }
 
-// Google Workspace, OCI e IBM Cloud: o dataset do site não guarda o
-// identificador nativo da plataforma (roleId numérico / OCID / CRN),
+// Google Workspace e IBM Cloud: o dataset do site não guarda o
+// identificador nativo da plataforma (roleId numérico / CRN),
 // então o match só pode ser feito por nome (case-insensitive).
 
 function matchGws(j: Record<string, any>): { record: GwsAdminRole; matchedBy: MatchedBy } | null {
   const nameCandidate = j.roleName ?? j.name
   if (typeof nameCandidate === 'string' && nameCandidate.trim()) {
     const byName = GWS_ROLES.find((r) => r.name.toLowerCase() === nameCandidate.trim().toLowerCase())
-    if (byName) return { record: byName, matchedBy: 'name' }
-  }
-  return null
-}
-
-function matchOci(j: Record<string, any>): { record: OciPolicy; matchedBy: MatchedBy } | null {
-  const nameCandidate = j.name ?? j.displayName
-  if (typeof nameCandidate === 'string' && nameCandidate.trim()) {
-    const byName = OCI_POLICIES.find((p) => p.name.toLowerCase() === nameCandidate.trim().toLowerCase())
     if (byName) return { record: byName, matchedBy: 'name' }
   }
   return null
@@ -406,9 +388,6 @@ const GCP_TIER_LEVEL: Record<GcpTier, 0 | 1 | 2> = {
 const GWS_TIER_LEVEL: Record<GwsTier, 0 | 1 | 2> = {
   SuperAdmin: 0, DelegatedAdmin: 1, ServiceAdmin: 1, SpecializedAdmin: 1, ReadOnly: 2,
 }
-const OCI_TIER_LEVEL: Record<OciTier, 0 | 1 | 2> = {
-  Manage: 1, Use: 1, Read: 2, Inspect: 2, // refinado por escopo em getTierInfo()
-}
 const IBM_TIER_LEVEL: Record<IbmTier, 0 | 1 | 2> = {
   AccountAdmin: 0, PlatformAdmin: 1, PlatformOperator: 1, ServiceManager: 1, ReadOnly: 2,
 }
@@ -439,14 +418,6 @@ function getTierInfo(cloud: EvaluateCloud, record: any): { level: 0 | 1 | 2 | nu
       const meta = GWS_TIER_META[r.tier]
       return { level: GWS_TIER_LEVEL[r.tier], rawTier: r.tier, rawLabel: meta.label, rawDescription: meta.description }
     }
-    case 'oci': {
-      const r = record as OciPolicy
-      const meta = OCI_TIER_META[r.tier]
-      // Refinamento: "Manage" em escopo tenancy sobre all-resources é Tier 0 real (equivalente a root).
-      let level = OCI_TIER_LEVEL[r.tier]
-      if (r.tier === 'Manage' && r.scope === 'tenancy' && r.resourceTypes?.includes('all-resources')) level = 0
-      return { level, rawTier: r.tier, rawLabel: meta.label, rawDescription: meta.description }
-    }
     case 'ibmCloud': {
       const r = record as IbmRole
       const meta = IBM_TIER_META[r.tier]
@@ -462,22 +433,14 @@ function extractDatasetPermissions(cloud: EvaluateCloud, record: any): Evaluated
     case 'entraId':
       return (record as EntraRole).permissions.map((p) => ({ name: p.action, tier: p.tier }))
     case 'azureRbac':
-      return [] // não há lista no bundle — ver needsAzurePermFetch / fetchAzurePermissions()
-    case 'aws': {
-      const r = record as AwsPolicy
-      return (r.actions ?? r.privileges).map((a) => ({ name: a }))
-    }
-    case 'gcp': {
-      const r = record as GcpRole
-      return (r.permissions ?? r.privileges).map((a) => ({ name: a }))
-    }
+      return [] // não há lista no bundle — ver needsPermFetch / fetchExternalPermissions()
+    case 'aws':
+      return [] // idem Azure/GCP: vive em public/aws-policy-docs/{slug}.json
+    case 'gcp':
+      return [] // idem Azure: vive em public/gcp-perms/{slug}.json
     case 'googleWorkspace': {
       const r = record as GwsAdminRole
       return (r.apiPrivileges ?? r.privileges).map((a) => ({ name: a }))
-    }
-    case 'oci': {
-      const r = record as OciPolicy
-      return (r.verbActions ?? r.privileges).map((a) => ({ name: a }))
     }
     case 'ibmCloud': {
       const r = record as IbmRole
@@ -486,15 +449,36 @@ function extractDatasetPermissions(cloud: EvaluateCloud, record: any): Evaluated
   }
 }
 
-// Enriquecimento sob demanda das Actions detalhadas do Azure RBAC — mesmo
-// asset estático (public/azure-perms/{slug}.json) já usado na página de
-// detalhe da role. Chamar apenas quando needsAzurePermFetch === true.
-export async function fetchAzurePermissions(slug: string): Promise<EvaluatedPermission[]> {
+/**
+ * Enriquecimento sob demanda para as clouds cujas permissões não vivem no
+ * bundle — hoje Azure RBAC e GCP. Usa os mesmos assets estáticos das páginas
+ * de detalhe: public/azure-perms/{slug}.json e public/gcp-perms/{slug}.json.
+ *
+ * Chamar apenas quando needsPermFetch === true.
+ */
+export async function fetchExternalPermissions(
+  cloud: EvaluateCloud, slug: string,
+): Promise<EvaluatedPermission[]> {
   try {
-    const res = await fetch(`/azure-perms/${slug}.json`)
-    if (!res.ok) return []
-    const data = (await res.json()) as AzureRbacPermission[]
-    return data.map((p) => ({ name: p.action, tier: p.type }))
+    if (cloud === 'azureRbac') {
+      const res = await fetch(`/azure-perms/${slug}.json`)
+      if (!res.ok) return []
+      const data = (await res.json()) as AzureRbacPermission[]
+      return data.map((p) => ({ name: p.action, tier: p.type }))
+    }
+    if (cloud === 'gcp') {
+      const res = await fetch(`/gcp-perms/${slug}.json`)
+      if (!res.ok) return []
+      const data = (await res.json()) as string[]
+      return data.map((a) => ({ name: a }))
+    }
+    if (cloud === 'aws') {
+      const res = await fetch(`/aws-policy-docs/${slug}.json`)
+      if (!res.ok) return []
+      const data = (await res.json()) as { actions?: string[] }
+      return (data.actions ?? []).map((a) => ({ name: a }))
+    }
+    return []
   } catch {
     return []
   }
@@ -530,7 +514,6 @@ function findRecordBySlug(cloud: EvaluateCloud, slug: string): any | null {
     case 'aws': return AWS_POLICIES.find((p) => p.slug === slug) ?? null
     case 'gcp': return GCP_ROLES.find((r) => r.slug === slug) ?? null
     case 'googleWorkspace': return GWS_ROLES.find((r) => r.slug === slug) ?? null
-    case 'oci': return OCI_POLICIES.find((p) => p.slug === slug) ?? null
     case 'ibmCloud': return IBM_ROLES.find((r) => r.slug === slug) ?? null
   }
 }
@@ -566,9 +549,12 @@ export function getResultForSlug(cloud: EvaluateCloud, slug: string): Evaluation
         : `O tier interno "${tierInfo.rawLabel}" desta plataforma ainda está marcado como não classificado (Unclassified) no modelo EAM deste site.`,
     },
     permissions,
-    permissionCountHint: cloud === 'azureRbac' ? (record as AzureRbacRole).permissionCount : null,
-    needsAzurePermFetch: cloud === 'azureRbac',
-    azureSlug: cloud === 'azureRbac' ? record.slug : null,
+    permissionCountHint:
+      cloud === 'azureRbac' ? (record as AzureRbacRole).permissionCount
+      : cloud === 'gcp' ? (record as GcpRole).permissionCount
+      : null,
+    needsPermFetch: cloud === 'azureRbac' || cloud === 'gcp' || cloud === 'aws',
+    permFetchSlug: cloud === 'azureRbac' || cloud === 'gcp' || cloud === 'aws' ? record.slug : null,
     risk,
   }
 }
@@ -601,7 +587,6 @@ export function evaluateRole(rawText: string, manualCloud?: EvaluateCloud | null
     case 'aws': matchResult = matchAws(j); break
     case 'gcp': matchResult = matchGcp(j); break
     case 'googleWorkspace': matchResult = matchGws(j); break
-    case 'oci': matchResult = matchOci(j); break
     case 'ibmCloud': matchResult = matchIbm(j); break
   }
 
@@ -629,8 +614,8 @@ export function evaluateRole(rawText: string, manualCloud?: EvaluateCloud | null
         },
         permissions: extractRawPermissions(cloud, j),
         permissionCountHint: null,
-        needsAzurePermFetch: false,
-        azureSlug: null,
+        needsPermFetch: false,
+        permFetchSlug: null,
         risk: { available: false },
       },
     }
@@ -666,9 +651,12 @@ export function evaluateRole(rawText: string, manualCloud?: EvaluateCloud | null
           : `O tier interno "${tierInfo.rawLabel}" desta plataforma ainda está marcado como não classificado (Unclassified) no modelo EAM deste site.`,
       },
       permissions,
-      permissionCountHint: cloud === 'azureRbac' ? (record as AzureRbacRole).permissionCount : null,
-      needsAzurePermFetch: cloud === 'azureRbac',
-      azureSlug: cloud === 'azureRbac' ? record.slug : null,
+      permissionCountHint:
+        cloud === 'azureRbac' ? (record as AzureRbacRole).permissionCount
+        : cloud === 'gcp' ? (record as GcpRole).permissionCount
+        : null,
+      needsPermFetch: cloud === 'azureRbac' || cloud === 'gcp' || cloud === 'aws',
+      permFetchSlug: cloud === 'azureRbac' || cloud === 'gcp' || cloud === 'aws' ? record.slug : null,
       risk,
     },
   }

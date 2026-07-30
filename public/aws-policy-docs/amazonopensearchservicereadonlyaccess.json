@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonOpenSearchServiceReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["es:Describe*","es:List*","es:Get*"],"Resource":"*"}]},"actions":["es:Describe*","es:Get*","es:List*"],"notActions":[]}

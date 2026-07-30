@@ -1,13 +1,33 @@
 import { GCP_ROLES, GcpTier } from '@/data/gcp'
 
+/**
+ * Índice de permissões do GCP.
+ *
+ * MUDANÇA IMPORTANTE: as permissões não vivem mais em GCP_ROLES[].permissions.
+ * São ~13.6 mil permissões distintas em ~131 mil vínculos role→permissão; no
+ * bundle isso custaria vários MB de JS. Ficam em public/gcp-perms-index.json,
+ * gerado por scripts/fetch-gcp-roles-from-docs.js e buscado sob demanda —
+ * mesmo desenho de public/azure-perms-index.json.
+ *
+ * Por isso getGcpPermissions() agora é assíncrono. Para exibir apenas a
+ * contagem, use GCP_PERMISSION_COUNT / GCP_SERVICE_COUNT de '@/data/gcp',
+ * que são constantes e não disparam download.
+ */
+
 export interface GcpPermEntry {
-  permission: string   // e.g. compute.instances.get
-  service: string      // e.g. compute
-  resource: string     // e.g. instances
-  verb: string         // e.g. get
+  permission: string   // ex.: compute.instances.get
+  service: string      // ex.: compute
+  resource: string     // ex.: instances
+  verb: string         // ex.: get
   tier: GcpTier
   usedByRoles: { name: string; slug: string; isPrivileged: boolean }[]
   isUsedByPrivileged: boolean
+}
+
+/** Formato de public/gcp-perms-index.json */
+interface GcpPermsIndex {
+  slugs: string[]
+  index: Record<string, number[]>
 }
 
 function parsePermission(perm: string): { service: string; resource: string; verb: string } {
@@ -20,46 +40,70 @@ function parsePermission(perm: string): { service: string; resource: string; ver
   return { service, resource, verb }
 }
 
+const TIER_ORDER: Record<GcpTier, number> = {
+  ProjectOwner: 0, Admin: 1, Editor: 2, Operator: 3, Developer: 4, Viewer: 5, Specialized: 6,
+}
+
 let _cache: GcpPermEntry[] | null = null
+let _inflight: Promise<GcpPermEntry[]> | null = null
 
-export function getGcpPermissions(): GcpPermEntry[] {
-  if (_cache) return _cache
-
-  const map = new Map<string, GcpPermEntry>()
-
-  for (const role of GCP_ROLES) {
-    if (!role.permissions || role.permissions.length === 0) continue
-    for (const perm of role.permissions) {
-      if (!map.has(perm)) {
-        map.set(perm, {
-          permission: perm,
-          ...parsePermission(perm),
-          tier: role.tier,
-          usedByRoles: [],
-          isUsedByPrivileged: false,
-        })
-      }
-      const entry = map.get(perm)!
-      if (!entry.usedByRoles.some((r) => r.slug === role.slug)) {
-        entry.usedByRoles.push({ name: role.name, slug: role.slug, isPrivileged: role.isPrivileged })
-        if (role.isPrivileged) entry.isUsedByPrivileged = true
-        // take the highest (lowest tier order) tier seen
-        const tierOrder: Record<GcpTier, number> = { ProjectOwner: 0, Admin: 1, Editor: 2, Operator: 3, Developer: 4, Viewer: 5, Specialized: 6 }
-        if (tierOrder[role.tier] < tierOrder[entry.tier]) {
-          entry.tier = role.tier
-        }
-      }
-    }
-  }
-
-  _cache = Array.from(map.values()).sort((a, b) => a.permission.localeCompare(b.permission))
+/** Já carregado? Devolve sem disparar rede — útil para render inicial. */
+export function getGcpPermissionsSync(): GcpPermEntry[] | null {
   return _cache
 }
 
-export function getGcpServices(): string[] {
-  return [...new Set(getGcpPermissions().map((p) => p.service))].sort()
+export async function getGcpPermissions(): Promise<GcpPermEntry[]> {
+  if (_cache) return _cache
+  if (_inflight) return _inflight
+
+  _inflight = (async () => {
+    const res = await fetch('/gcp-perms-index.json')
+    if (!res.ok) throw new Error(`Falha ao carregar gcp-perms-index.json (HTTP ${res.status})`)
+    const data: GcpPermsIndex = await res.json()
+
+    const bySlug = new Map(GCP_ROLES.map((r) => [r.slug, r]))
+
+    const out: GcpPermEntry[] = []
+    for (const [perm, roleIdxs] of Object.entries(data.index)) {
+      const entry: GcpPermEntry = {
+        permission: perm,
+        ...parsePermission(perm),
+        tier: 'Specialized',
+        usedByRoles: [],
+        isUsedByPrivileged: false,
+      }
+      let best = Number.POSITIVE_INFINITY
+      for (const i of roleIdxs) {
+        const role = bySlug.get(data.slugs[i])
+        if (!role) continue
+        entry.usedByRoles.push({ name: role.name, slug: role.slug, isPrivileged: role.isPrivileged })
+        if (role.isPrivileged) entry.isUsedByPrivileged = true
+        const order = TIER_ORDER[role.tier]
+        if (order < best) { best = order; entry.tier = role.tier }
+      }
+      out.push(entry)
+    }
+
+    out.sort((a, b) => a.permission.localeCompare(b.permission))
+    _cache = out
+    _inflight = null
+    return out
+  })()
+
+  return _inflight
 }
 
-export function getGcpVerbs(): string[] {
-  return [...new Set(getGcpPermissions().map((p) => p.verb).filter(Boolean))].sort()
+export async function getGcpServices(): Promise<string[]> {
+  return [...new Set((await getGcpPermissions()).map((p) => p.service))].sort()
+}
+
+export async function getGcpVerbs(): Promise<string[]> {
+  return [...new Set((await getGcpPermissions()).map((p) => p.verb).filter(Boolean))].sort()
+}
+
+/** Permissões de uma role específica, sem baixar o índice inteiro. */
+export async function getGcpRolePermissions(slug: string): Promise<string[]> {
+  const res = await fetch(`/gcp-perms/${slug}.json`)
+  if (!res.ok) throw new Error(`Falha ao carregar permissões de ${slug} (HTTP ${res.status})`)
+  return res.json()
 }

@@ -1,0 +1,1 @@
+["aiplatform.endpoints.predict","aiplatform.locations.get","aiplatform.ragCorpora.query","discoveryengine.servingConfigs.search","iam.serviceAccounts.getAccessToken","iam.serviceAccounts.getOpenIdToken","logging.logEntries.create","logging.logEntries.route","serviceusage.services.use","storage.objects.get"]

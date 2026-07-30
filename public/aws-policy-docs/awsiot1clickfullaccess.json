@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSIoT1ClickFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["iot1click:*"],"Effect":"Allow","Resource":"*"}]},"actions":["iot1click:*"],"notActions":[]}

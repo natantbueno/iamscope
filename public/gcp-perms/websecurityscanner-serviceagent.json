@@ -1,0 +1,1 @@
+["appengine.applications.get","cloudasset.assets.listResource","compute.addresses.list","compute.backendServices.get","compute.forwardingRules.get","compute.globalForwardingRules.get","compute.sslCertificates.list","compute.targetHttpProxies.get","compute.targetHttpsProxies.get","compute.urlMaps.get"]

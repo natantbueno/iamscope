@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSIoT1ClickReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["iot1click:Describe*","iot1click:Get*","iot1click:List*"],"Effect":"Allow","Resource":"*"}]},"actions":["iot1click:Describe*","iot1click:Get*","iot1click:List*"],"notActions":[]}

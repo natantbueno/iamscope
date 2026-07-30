@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["elasticfilesystem:ClientMount","elasticfilesystem:DescribeMountTargets"],"Resource":"*"}]},"actions":["elasticfilesystem:ClientMount","elasticfilesystem:DescribeMountTargets"],"notActions":[]}

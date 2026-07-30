@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Kubernetes/connectedClusters/read","type":"Actions"},{"action":"Microsoft.Kubernetes/connectedClusters/write","type":"Actions"},{"action":"Microsoft.Kubernetes/connectedClusters/delete","type":"Actions"},{"action":"Microsoft.Kubernetes/registeredSubscriptions/read","type":"Actions"}]

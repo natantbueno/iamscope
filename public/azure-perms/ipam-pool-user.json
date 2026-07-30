@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Network/networkManagers/ipamPools/*/read","type":"Actions"},{"action":"Microsoft.Network/networkManagers/ipamPools/*/action","type":"Actions"},{"action":"Microsoft.Network/networkManagers/ipamPools/*/write","type":"Actions"}]

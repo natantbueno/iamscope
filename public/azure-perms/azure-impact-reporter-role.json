@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Impact/WorkloadImpacts/*","type":"Actions"},{"action":"Microsoft.Impact/ImpactCategories/read","type":"Actions"},{"action":"Microsoft.Impact/TopologyImpacts/*","type":"Actions"},{"action":"Microsoft.Impact/getUploadToken/action","type":"Actions"}]

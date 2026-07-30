@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: '%s · IAM Scope',
   },
   description:
-    'Referência de roles e permissões de IAM em 7 clouds (Microsoft Entra ID, Azure RBAC, AWS, GCP, Google Workspace, OCI e IBM Cloud), com classificação de risco por tier inspirada no Enterprise Access Model.',
+    'Referência de roles e permissões de IAM em 6 clouds (Microsoft Entra ID, Azure RBAC, AWS, GCP, Google Workspace e IBM Cloud), com classificação de risco por tier inspirada no Enterprise Access Model.',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',

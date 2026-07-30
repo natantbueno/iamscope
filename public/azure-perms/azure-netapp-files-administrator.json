@@ -1,1 +1,0 @@
-[{"action":"Microsoft.NetApp/*/read","type":"Actions"},{"action":"Microsoft.NetApp/*/write","type":"Actions"},{"action":"Microsoft.NetApp/*/delete","type":"Actions"},{"action":"Microsoft.NetApp/*/action","type":"Actions"}]

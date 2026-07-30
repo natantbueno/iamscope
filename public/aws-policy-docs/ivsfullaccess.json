@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/IVSFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"IVSFullAccess","Effect":"Allow","Action":["ivs:*","ivschat:*"],"Resource":"*"}]},"actions":["ivs:*","ivschat:*"],"notActions":[]}

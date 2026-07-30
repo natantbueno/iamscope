@@ -1,0 +1,1 @@
+["logging.logEntries.create","monitoring.timeSeries.create","telemetry.traces.write"]

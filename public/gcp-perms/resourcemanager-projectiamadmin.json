@@ -1,0 +1,1 @@
+["iam.policybindings.get","iam.policybindings.list","resourcemanager.projects.createPolicyBinding","resourcemanager.projects.deletePolicyBinding","resourcemanager.projects.get","resourcemanager.projects.getIamPolicy","resourcemanager.projects.searchPolicyBindings","resourcemanager.projects.setIamPolicy","resourcemanager.projects.updatePolicyBinding"]

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Storage/storageAccounts/encryptionScopes/read","type":"Actions"},{"action":"Microsoft.Storage/storageAccounts/encryptionScopes/write","type":"Actions"}]

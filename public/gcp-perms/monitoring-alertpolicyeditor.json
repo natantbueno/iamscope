@@ -1,0 +1,1 @@
+["monitoring.alertPolicies.create","monitoring.alertPolicies.createTagBinding","monitoring.alertPolicies.delete","monitoring.alertPolicies.deleteTagBinding","monitoring.alertPolicies.get","monitoring.alertPolicies.list","monitoring.alertPolicies.listEffectiveTags","monitoring.alertPolicies.listTagBindings","monitoring.alertPolicies.update"]

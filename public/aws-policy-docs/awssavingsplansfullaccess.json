@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSSavingsPlansFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"savingsplans:*","Resource":"*"}]},"actions":["savingsplans:*"],"notActions":[]}

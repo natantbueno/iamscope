@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonS3TablesReadOnlyAccess","version":"v3 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3tables:Get*","s3tables:List*"],"Resource":"*"}]},"actions":["s3tables:Get*","s3tables:List*"],"notActions":[]}

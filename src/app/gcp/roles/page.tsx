@@ -8,6 +8,7 @@ import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GcpCategory } from '@/data/gcp'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
+import DeprecatedBadge from '@/components/DeprecatedBadge'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
@@ -144,7 +145,10 @@ function GcpRolesContent() {
                   <tr key={role.slug} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                     <td className="px-4 py-3 align-top overflow-hidden">
                       <Link href={`/gcp/roles/${role.slug}`} className="block">
-                        <div className="font-medium text-[#4285f4] text-[13px] group-hover:underline truncate">{role.name}</div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="font-medium text-[#4285f4] text-[13px] group-hover:underline truncate">{role.name}</div>
+                          {role.deprecated && <DeprecatedBadge compact />}
+                        </div>
                       </Link>
                     </td>
                     <td className="px-4 py-3 align-top overflow-hidden">

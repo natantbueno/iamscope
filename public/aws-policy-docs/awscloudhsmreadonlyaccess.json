@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSCloudHSMReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["cloudhsm:Get*","cloudhsm:List*","cloudhsm:Describe*"],"Resource":"*"}]},"actions":["cloudhsm:Describe*","cloudhsm:Get*","cloudhsm:List*"],"notActions":[]}

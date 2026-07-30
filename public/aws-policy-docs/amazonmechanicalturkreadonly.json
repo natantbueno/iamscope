@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonMechanicalTurkReadOnly","version":"v3 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["mechanicalturk:Get*","mechanicalturk:List*"],"Resource":["*"]}]},"actions":["mechanicalturk:Get*","mechanicalturk:List*"],"notActions":[]}

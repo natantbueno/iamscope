@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Authorization/roleAssignments/read","type":"Actions"},{"action":"Microsoft.Authorization/roleDefinitions/read","type":"Actions"},{"action":"Microsoft.PortalServices/copilotSettings/conversations/action","type":"DataActions"}]

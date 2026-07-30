@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonManagedBlockchainFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["managedblockchain:*"],"Resource":["*"]}]},"actions":["managedblockchain:*"],"notActions":[]}

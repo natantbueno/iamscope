@@ -11,7 +11,6 @@ const CLOUDS = [
   { id: 'aws',             label: 'AWS IAM',         href: '/aws',              color: '#ff9900' },
   { id: 'gcp',             label: 'GCP IAM',         href: '/gcp',              color: '#0f9d58' },
   { id: 'googleWorkspace', label: 'G. Workspace',    href: '/google-workspace', color: '#34a853' },
-  { id: 'oci',             label: 'Oracle Cloud',    href: '/oci',              color: '#C74634' },
   { id: 'ibmCloud',        label: 'IBM Cloud',       href: '/ibm-cloud',        color: '#08bdba' },
 ] as const
 
@@ -25,7 +24,6 @@ function getActivePlatform(pathname: string): CloudId | null {
   if (pathname.startsWith('/ibm-cloud'))        return 'ibmCloud'
   if (pathname.startsWith('/gcp'))              return 'gcp'
   if (pathname.startsWith('/aws'))              return 'aws'
-  if (pathname.startsWith('/oci'))              return 'oci'
   // Ferramentas multi-cloud — nenhuma cloud fica ativa no menu superior
   if (
     pathname.startsWith('/compare') ||

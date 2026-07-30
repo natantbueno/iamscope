@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/aws-service-role/AmazonCognitoIdpEmailServiceRolePolicy","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["ses:SendEmail","ses:SendRawEmail"],"Resource":"*"},{"Effect":"Deny","Action":["ses:List*"],"Resource":"*"}]},"actions":["ses:List*","ses:SendEmail","ses:SendRawEmail"],"notActions":[]}

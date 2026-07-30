@@ -1,1 +1,0 @@
-[{"action":"Microsoft.DocumentDB/databaseAccounts/read","type":"Actions"},{"action":"Microsoft.Security/advancedThreatProtectionSettings/read","type":"Actions"},{"action":"Microsoft.Security/advancedThreatProtectionSettings/write","type":"Actions"}]

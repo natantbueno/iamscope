@@ -1,9 +1,9 @@
 'use client'
 
-// Permission Scope — busca reversa de permissão em todas as 7 clouds.
+// Permission Scope — busca reversa de permissão em todas as 6 clouds.
 //
 // O usuário digita uma permissão qualquer (role action do Entra, action do
-// Azure, ação IAM da AWS, permission do GCP, verb do OCI, ação do IBM Cloud ou
+// Azure, ação IAM da AWS, permission do GCP, ação do IBM Cloud ou
 // privilege do Google Workspace) e a página mostra todas as roles/policies que
 // a concedem, agrupadas por cloud.
 //
@@ -24,6 +24,7 @@ import { AZURE_ROLES } from '@/data/azureRbac'
 import {
   ScopeMatch, ScopeRoleRef, CLOUD_TERMS,
   searchLocalPermissions, countLocalMatches, getLocalIndexStats,
+  ensureLocalPermissionIndex,
 } from '@/lib/permissionScope'
 
 interface AzurePermIndex { slugs: string[]; index: Record<string, number[]> }
@@ -73,6 +74,20 @@ function PermissionScopeContent() {
       .finally(() => setAzureLoading(false))
   }, [query, azureIndex, azureLoading])
 
+  // As permissões do GCP também saíram do bundle (public/gcp-perms-index.json).
+  // Sem esperar por elas, a busca voltaria sem nenhum resultado de GCP — e sem
+  // avisar, que é pior do que demorar um instante a mais.
+  const [gcpReady, setGcpReady] = useState(false)
+
+  useEffect(() => {
+    if (!query.trim() || gcpReady) return
+    let alive = true
+    ensureLocalPermissionIndex()
+      .catch(() => { /* as outras clouds continuam respondendo */ })
+      .finally(() => { if (alive) setGcpReady(true) })
+    return () => { alive = false }
+  }, [query, gcpReady])
+
   // Mantém ?q= na URL para o resultado ser compartilhável.
   useEffect(() => {
     const current = searchParams.get('q') ?? ''
@@ -119,8 +134,11 @@ function PermissionScopeContent() {
     return out
   }, [query, azureIndex, azureBySlug])
 
-  const localMatches = useMemo(() => searchLocalPermissions(query, PER_CLOUD_LIMIT), [query])
-  const localCounts  = useMemo(() => countLocalMatches(query), [query])
+  // gcpReady entra nas dependências de propósito: quando o índice do GCP
+  // termina de carregar, a busca precisa ser refeita para incluí-lo.
+  const localMatches = useMemo(
+    () => searchLocalPermissions(query, PER_CLOUD_LIMIT), [query, gcpReady])
+  const localCounts  = useMemo(() => countLocalMatches(query), [query, gcpReady])
 
   // O índice das 6 clouds é construído na primeira vez que é tocado. Calcular o
   // total já na renderização inicial atrasaria o primeiro paint à toa, então

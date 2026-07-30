@@ -1,1 +1,0 @@
-[{"action":"Microsoft.CognitiveSearch/indexes/schema/*","type":"DataActions"},{"action":"Microsoft.CognitiveSearch/indexes/documents/*","type":"DataActions"}]

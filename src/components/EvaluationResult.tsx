@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ExternalLink, ShieldQuestion, Copy, CheckCheck, ChevronDown, ChevronUp, Github } from 'lucide-react'
-import { EvaluationResultData, EvaluatedPermission, fetchAzurePermissions } from '@/lib/evaluate'
+import { EvaluationResultData, EvaluatedPermission, fetchExternalPermissions } from '@/lib/evaluate'
 import { CLOUD_META, RISK_META } from '@/data/compare/types'
 import MitigationList from './MitigationList'
 
@@ -24,16 +24,16 @@ export default function EvaluationResult({ data }: { data: EvaluationResultData 
   useEffect(() => {
     setAzurePerms(null)
     setExpanded(false)
-    if (data.needsAzurePermFetch && data.azureSlug) {
+    if (data.needsPermFetch && data.permFetchSlug) {
       setLoadingAzure(true)
-      fetchAzurePermissions(data.azureSlug).then((perms) => {
+      fetchExternalPermissions(data.cloud, data.permFetchSlug).then((perms) => {
         setAzurePerms(perms)
         setLoadingAzure(false)
       })
     }
   }, [data])
 
-  const permissions = data.needsAzurePermFetch ? (azurePerms ?? []) : data.permissions
+  const permissions = data.needsPermFetch ? (azurePerms ?? []) : data.permissions
   const visiblePermissions = expanded ? permissions : permissions.slice(0, PAGE_SIZE)
   const cloudMeta = CLOUD_META[data.cloud]
 

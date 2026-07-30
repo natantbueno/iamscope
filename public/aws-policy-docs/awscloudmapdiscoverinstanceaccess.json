@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["servicediscovery:DiscoverInstances","servicediscovery:DiscoverInstancesRevision"],"Resource":["*"]}]},"actions":["servicediscovery:DiscoverInstances","servicediscovery:DiscoverInstancesRevision"],"notActions":[]}

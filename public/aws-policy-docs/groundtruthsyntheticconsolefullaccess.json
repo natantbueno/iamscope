@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/GroundTruthSyntheticConsoleFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["sagemaker-groundtruth-synthetic:*","s3:ListBucket"],"Resource":"*"}]},"actions":["s3:ListBucket","sagemaker-groundtruth-synthetic:*"],"notActions":[]}

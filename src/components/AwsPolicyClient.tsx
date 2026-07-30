@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AppShell from '@/components/AppShell'
 import { AWS_POLICIES, AWS_TIER_META } from '@/data/aws'
+import { getAwsPolicyDoc, type AwsPolicyDoc } from '@/lib/awsActions'
 import Link from 'next/link'
 import { ArrowLeft, ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, ChevronUp, Code2 } from 'lucide-react'
 import PermissionsTable from '@/components/PermissionsTable'
@@ -22,6 +23,23 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function AwsPolicyClient({ slug }: { slug: string }) {
   const policy = AWS_POLICIES.find(p => p.slug === slug)
+
+  // Documento JSON oficial + actions vivem em public/aws-policy-docs/<slug>.json.
+  // Os hooks ficam ANTES do early return de "not found" — chamá-los depois
+  // quebraria as regras de hooks quando a policy não existe.
+  const [doc, setDoc] = useState<AwsPolicyDoc | null>(null)
+  const [docError, setDocError] = useState(false)
+
+  useEffect(() => {
+    if (!policy) return
+    let alive = true
+    setDoc(null)
+    setDocError(false)
+    getAwsPolicyDoc(policy.slug)
+      .then((d) => { if (alive) setDoc(d) })
+      .catch(() => { if (alive) setDocError(true) })
+    return () => { alive = false }
+  }, [policy])
 
   if (!policy) {
     return (
@@ -112,26 +130,48 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
             <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed">{tier.description}</p>
           </div>
 
-          {/* Privileges */}
+          {/*
+            Metadados oficiais da AWS. Isto substituiu o bloco "Capabilities",
+            que listava policy.privileges — campo que era só um prefixo do
+            array de actions, não um texto de capacidades.
+          */}
           <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">Capabilities ({policy.privileges.length})</p>
-            <div className="space-y-1.5">
-              {policy.privileges.map((priv, i) => (
-                <div key={i} className="flex items-start gap-2">
+            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">
+              Detalhes da policy <span className="normal-case font-normal">— dados da AWS</span>
+            </p>
+            <dl className="space-y-1.5">
+              {([
+                ['Tipo', policy.officialType],
+                ['Criada em', policy.createdAt],
+                ['Última edição', policy.editedAt],
+                ['Versão', policy.version],
+              ] as const).filter(([, v]) => v).map(([k, v]) => (
+                <div key={k} className="flex items-start gap-2">
                   <CheckSquare size={13} className="shrink-0 mt-0.5" style={{ color: typeColor }} />
-                  <span className="text-[12px] text-gray-600 dark:text-gray-400">{priv}</span>
+                  <dt className="text-[12px] text-gray-400 w-28 shrink-0">{k}</dt>
+                  <dd className="text-[12px] text-gray-600 dark:text-gray-400">{v}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
 
-          {/* IAM Actions */}
-          {policy.actions && policy.actions.length > 0 && (
-            <AwsActionsSection actions={policy.actions} slug={policy.slug} />
+          {policy.deprecated && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
+              <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
+              <p className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                A AWS indica que esta policy está em <strong>caminho de depreciação</strong>.
+                Veja a descrição acima para a orientação oficial.
+              </p>
+            </div>
           )}
 
-          {/* Policy Document JSON */}
-          <AwsPolicyDocumentJson policy={policy} />
+          {/* IAM Actions + documento JSON oficial, ambos de public/aws-policy-docs/ */}
+          {policy.actionCount > 0 && (
+            <AwsActionsSection actions={doc?.actions ?? []} slug={policy.slug}
+              total={policy.actionCount} loading={doc === null && !docError} />
+          )}
+
+          <AwsPolicyDocumentJson doc={doc} error={docError} />
 
           {/* Related */}
           {related.length > 0 && (
@@ -175,12 +215,16 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
   )
 }
 
-function AwsActionsSection({ actions, slug }: { actions: string[]; slug: string }) {
+function AwsActionsSection(
+  { actions, slug, total, loading }:
+  { actions: string[]; slug: string; total: number; loading: boolean },
+) {
   return (
     <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
       <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">
-        IAM Actions ({actions.length})
+        IAM Actions ({total.toLocaleString('pt-BR')})
       </p>
+      {loading && <p className="text-[12px] text-gray-400 mb-2">Carregando actions…</p>}
       <PermissionsTable
         rows={actions.map((action) => {
           const i = action.indexOf(':')
@@ -208,20 +252,37 @@ function AwsActionsSection({ actions, slug }: { actions: string[]; slug: string 
   )
 }
 
-function AwsPolicyDocumentJson({ policy }: { policy: { actions?: string[]; privileges: string[]; name: string } }) {
+/**
+ * Documento JSON REAL da policy, como a AWS publica.
+ *
+ * Antes este bloco *montava* um documento fictício — Version fixa em
+ * "2012-10-17", um único Statement e Resource sempre "*" — a partir da lista
+ * de actions. Isso escondia Condition, NotAction, Resource específico e
+ * múltiplos Statements, ou seja, mostrava uma policy que não existe.
+ * Agora vem de public/aws-policy-docs/<slug>.json.
+ */
+function AwsPolicyDocumentJson(
+  { doc, error }: { doc: AwsPolicyDoc | null; error: boolean },
+) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const jsonObj = {
-    Version: "2012-10-17",
-    Statement: [{
-      Effect: "Allow",
-      Action: policy.actions ?? policy.privileges,
-      Resource: "*"
-    }]
+  if (error) {
+    return (
+      <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
+        <p className="text-[12px] text-red-500">Não foi possível carregar o documento JSON desta policy.</p>
+      </div>
+    )
+  }
+  if (!doc) {
+    return (
+      <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
+        <p className="text-[12px] text-gray-400">Carregando documento JSON…</p>
+      </div>
+    )
   }
 
-  const jsonStr = JSON.stringify(jsonObj, null, 2)
+  const jsonStr = JSON.stringify(doc.document, null, 2)
   const lines = jsonStr.split('\n')
   const PREVIEW_LINES = 12
   const showLines = expanded ? lines : lines.slice(0, PREVIEW_LINES)

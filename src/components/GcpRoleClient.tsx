@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Globe, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META } from '@/data/gcp'
+import { getGcpRolePermissions } from '@/lib/gcpPermissions'
 import PermissionsTable from '@/components/PermissionsTable'
 
 const CAT_COLORS: Record<string, string> = {
@@ -31,13 +32,27 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
   const [jsonExpanded, setJsonExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
+  // As permissões vivem em public/gcp-perms/<slug>.json (fora do bundle).
+  const [permissions, setPermissions] = useState<string[] | null>(null)
+  const [permsError, setPermsError] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    if (role.permissionCount === 0) { setPermissions([]); return }
+    setPermissions(null)
+    setPermsError(false)
+    getGcpRolePermissions(role.slug)
+      .then((p) => { if (alive) setPermissions(p) })
+      .catch(() => { if (alive) setPermsError(true) })
+    return () => { alive = false }
+  }, [role.slug, role.permissionCount])
 
   const roleJson = JSON.stringify({
     name: role.roleId,
     title: role.name,
     description: role.description,
-    stage: 'GA',
-    includedPermissions: role.permissions || role.privileges,
+    stage: role.stage ?? 'GA',
+    includedPermissions: permissions ?? [],
   }, null, 2)
 
   const jsonLines = roleJson.split('\n')
@@ -79,8 +94,10 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
               <div className="text-[12px] font-semibold text-gray-700 dark:text-gray-300 capitalize">{role.scope}</div>
             </div>
             <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Privilégios</div>
-              <div className="text-[12px] font-semibold text-[#4285f4]">{role.privileges.length}</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Permissões</div>
+              <div className="text-[12px] font-semibold text-[#4285f4]">
+                {role.permissionCount > 0 ? role.permissionCount.toLocaleString('pt-BR') : '—'}
+              </div>
             </div>
           </div>
 
@@ -115,34 +132,68 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
             <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{role.description}</p>
           </div>
 
-          {/* Privileges */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Privilégios / Capacidades
-              <span className="ml-2 text-[11px] font-normal text-gray-400">({role.privileges.length})</span>
-            </h2>
-            <div className="space-y-2">
-              {role.privileges.map((priv, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <CheckSquare size={13} className="mt-0.5 shrink-0" style={{ color: tier.color }} />
-                  <span className="text-[12px] text-gray-600 dark:text-gray-400">{priv}</span>
-                </div>
-              ))}
+          {/* Lowest-level resources — dado oficial do Google */}
+          {role.lowestResources && role.lowestResources.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                Recursos de menor nível onde esta role pode ser concedida
+              </h2>
+              <p className="text-[11px] text-gray-400 mb-3">Lowest-level resources — documentação do Google</p>
+              <div className="space-y-2">
+                {role.lowestResources.map((res, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <CheckSquare size={13} className="mt-0.5 shrink-0" style={{ color: tier.color }} />
+                    <span className="text-[12px] text-gray-600 dark:text-gray-400">{res}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Permissions */}
-          {role.permissions && role.permissions.length > 0 && (
+          {role.deprecated && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
+              <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
+              <p className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                A descrição oficial do Google indica que esta role está{' '}
+                <strong>descontinuada</strong>. Veja o texto acima para a alternativa recomendada.
+              </p>
+            </div>
+          )}
+
+          {/* Basic roles: o Google não publica a lista de permissões */}
+          {role.permissionsNote && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
+              <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
+              <div className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                <p>{role.permissionsNote}</p>
+                <code className="mt-2 inline-block font-mono text-[11px] bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded">
+                  gcloud iam roles describe {role.roleId}
+                </code>
+              </div>
+            </div>
+          )}
+
+          {/* Permissions — carregadas de public/gcp-perms/<slug>.json */}
+          {role.permissionCount > 0 && (
             <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
               <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 <span className="flex items-center gap-2">
                   <Code size={13} style={{ color: tier.color }} />
                   Permissions
-                  <span className="text-[11px] font-normal text-gray-400">({role.permissions.length})</span>
+                  <span className="text-[11px] font-normal text-gray-400">({role.permissionCount.toLocaleString('pt-BR')})</span>
                 </span>
               </h2>
+              {permsError && (
+                <p className="text-[12px] text-red-500">
+                  Não foi possível carregar as permissões desta role.
+                </p>
+              )}
+              {!permsError && permissions === null && (
+                <p className="text-[12px] text-gray-400">Carregando permissões…</p>
+              )}
+              {!permsError && permissions !== null && (
               <PermissionsTable
-                rows={(role.permissions ?? []).map((perm) => {
+                rows={permissions.map((perm) => {
                   const parts = perm.split('.')
                   return {
                     permission: perm,
@@ -163,6 +214,7 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
                 noun="permissions"
                 searchPlaceholder="Filtrar permissions..."
               />
+              )}
             </div>
           )}
 

@@ -1,0 +1,1 @@
+["appengine.applications.get","datastore.databases.getMetadata","datastore.operations.get","datastore.operations.list","datastore.schemas.create","datastore.schemas.delete","datastore.schemas.get","datastore.schemas.list","datastore.schemas.update","resourcemanager.projects.get","resourcemanager.projects.list"]

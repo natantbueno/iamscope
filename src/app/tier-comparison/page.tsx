@@ -18,7 +18,6 @@ const TIER0_NOTES: Partial<Record<CloudId, string>> = {
   aws: 'O root user da conta é o Tier 0 absoluto — não pode ser restringido por SCP, permission boundary ou identity policy. OrganizationAccountAccessRole é o Tier 0 operacional de qualquer conta membro, criado automaticamente pela AWS Organizations e frequentemente mais amplo que a policy AdministratorAccess.',
   gcp: 'Organization Admin opera no nível da hierarquia de recursos (organização), enquanto Project Owner — mais comumente citado — é limitado a um único projeto. Confundir os dois subestima o blast radius real de uma organização GCP.',
   azureRbac: 'Owner no nível de Management Group root é equivalente a controle total de todas as subscriptions da tenant — escopo maior que Owner em uma subscription isolada.',
-  oci: 'Tenancy Administrator tem "manage all-resources in tenancy" — equivalente ao root de outras clouds, sem limite de compartment.',
   ibmCloud: 'Administrator (All Services) no nível de conta é o Tier 0 — trusted profiles com essa role herdada por workloads automatizados ampliam o blast radius além de identidades humanas.',
   googleWorkspace: 'Super Admin controla identidade e dados de todos os usuários do domínio — é o Tier 0 do workspace, mas não necessariamente do GCP (são planos de controle separados que compartilham apenas a conta Google).',
 }
@@ -63,7 +62,7 @@ export default function TierComparisonPage() {
               GCP) ao Tier 0 real — o que subestima o blast radius verdadeiro.
             </p>
             <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed">
-              Esta página isola especificamente a equivalência de Tier 0 entre as 7 clouds do catálogo, com a
+              Esta página isola especificamente a equivalência de Tier 0 entre as 6 clouds do catálogo, com a
               primitiva de acesso <strong className="text-gray-800 dark:text-gray-200">correta</strong> — não apenas a
               mais nomeada — para cada uma.
             </p>
@@ -153,7 +152,7 @@ export default function TierComparisonPage() {
           <Section id="model" title="Modelo de Tiers (EAM)">
             <p className="text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
               O restante do modelo de 3 tiers (Tier 1 — Management Plane e Tier 2 — Data/Workload Plane) aplica-se
-              igualmente a todas as 7 clouds e está disponível na íntegra no{' '}
+              igualmente a todas as 6 clouds e está disponível na íntegra no{' '}
               <Link href="/compare" className="text-[#0078d4] dark:text-[#85b7eb] hover:underline">comparativo multi-cloud completo</Link>,
               que cobre todas as funções catalogadas (billing admin, security admin, privileged role admin,
               conditional access admin, entre outras).
@@ -175,7 +174,6 @@ const SCOPE_LABEL: Partial<Record<CloudId, string>> = {
   azureRbac: 'Management Group / Subscription',
   aws: 'Conta (root: além de qualquer política)',
   gcp: 'Organização',
-  oci: 'Tenancy',
   ibmCloud: 'Conta',
   googleWorkspace: 'Domínio (Workspace)',
 }

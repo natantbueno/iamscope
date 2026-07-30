@@ -1,0 +1,1 @@
+["compute.globalOperations.get","compute.instances.deleteAccessConfig","compute.instances.get","compute.instances.setMetadata","compute.regionOperations.get","compute.zoneOperations.get","iam.serviceAccounts.actAs","pubsub.topics.publish","securitycenter.findings.list","storage.buckets.get","storage.buckets.update"]

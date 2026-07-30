@@ -12,19 +12,15 @@ import { RoleCategory, EAM_META, EamTier } from '@/data/roles'
 import { AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
 import { GWS_TIER_META, GWS_ROLES, GWS_SCOPES, GwsTier } from '@/data/googleWorkspace'
 import { IBM_TIER_META, IBM_ROLES, IbmTier } from '@/data/ibmCloud'
-import { GCP_TIER_META, GCP_ROLES, GcpTier, GcpCategory } from '@/data/gcp'
-import { AWS_TIER_META, AWS_POLICIES, AwsTier, AwsCategory } from '@/data/aws'
-import { OCI_TIER_META, OCI_POLICIES, OciTier, OciCategory } from '@/data/oci'
+import { GCP_TIER_META, GCP_ROLES, GCP_PERMISSION_COUNT, GcpTier, GcpCategory } from '@/data/gcp'
+import { AWS_TIER_META, AWS_POLICIES, AWS_ACTION_COUNT, AwsTier, AwsCategory } from '@/data/aws'
 import { IBM_ACCESS_PRIMITIVES } from '@/data/ibmAccessPrimitives'
-import { getGcpPermissions } from '@/lib/gcpPermissions'
-import { getAwsActions } from '@/lib/awsActions'
-import { getOciVerbs } from '@/lib/ociVerbs'
 import { getIbmActions } from '@/lib/ibmActions'
 import EntraScopeIcon from './EntraScopeIcon'
 import SidebarSearch from './SidebarSearch'
 import { useRouter } from 'next/navigation'
 
-export type Platform = 'home' | 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'googleWorkspace' | 'oci' | 'ibmCloud'
+export type Platform = 'home' | 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'googleWorkspace' | 'ibmCloud'
 export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info' | 'actions' | 'pim'
 
 interface SidebarProps {
@@ -52,6 +48,14 @@ const ENTRA_CATEGORIES: { label: string; cat: RoleCategory; icon: React.ReactNod
 
 
 const ENTRA_TIERS: EamTier[] = ['ControlPlane', 'ManagementPlane', 'UserAccess']
+
+// Contagem de actions distintas do Azure — vem do índice gerado em build time.
+// Fica hardcoded aqui para não puxar o JSON inteiro para dentro do bundle;
+// scripts/build-azure-perms-index.js imprime o número ao rodar.
+// ATENÇÃO: este número precisa ser atualizado à mão sempre que o índice for
+// regerado. Já ficou desatualizado uma vez (marcava 5128 quando o índice tinha
+// 2697) — se divergir, a sidebar mostra um número que a página desmente.
+const AZURE_ACTIONS_COUNT = 2697
 
 const AZURE_TIERS: AzureRbacTier[] = ['FullControl','AccessManagement','Contributor','DataPlane','Reader','Specialized']
 
@@ -101,7 +105,9 @@ const GCP_CATEGORIES: { label: string; cat: GcpCategory; icon: React.ReactNode }
   { label: 'Management',   cat: 'Management',    icon: <Globe size={14} /> },
 ]
 const GCP_ROLES_COUNT = GCP_ROLES.length
-const GCP_PERMISSIONS_COUNT = getGcpPermissions().length
+// Constante gerada em src/data/gcp.ts: mostrar o número não deve baixar o
+// índice de 13,6 mil permissões.
+const GCP_PERMISSIONS_COUNT = GCP_PERMISSION_COUNT
 
 const AWS_TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
@@ -122,37 +128,18 @@ const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
   { label: 'IoT',          cat: 'IoT',          icon: <Globe size={14} /> },
 ]
 const AWS_POLICIES_COUNT = AWS_POLICIES.length
-const AWS_ACTIONS_COUNT = getAwsActions().length
+// Constante gerada em src/data/aws.ts: mostrar o número não deve baixar o
+// índice de 16 mil actions.
+const AWS_ACTIONS_COUNT = AWS_ACTION_COUNT
 
-const OCI_TIERS: OciTier[] = ['Manage', 'Use', 'Read', 'Inspect']
-const OCI_CATS: { label: string; cat: OciCategory; icon: React.ReactNode }[] = [
-  { label: 'Identity',   cat: 'Identity',   icon: <Shield size={14} /> },
-  { label: 'Compute',    cat: 'Compute',    icon: <Cpu size={14} /> },
-  { label: 'Storage',    cat: 'Storage',    icon: <HardDrive size={14} /> },
-  { label: 'Networking', cat: 'Networking', icon: <Network size={14} /> },
-  { label: 'Database',   cat: 'Database',   icon: <Database size={14} /> },
-  { label: 'Security',   cat: 'Security',   icon: <Lock size={14} /> },
-  { label: 'DevOps',     cat: 'DevOps',     icon: <Workflow size={14} /> },
-  { label: 'Containers', cat: 'Containers', icon: <Boxes size={14} /> },
-  { label: 'Serverless', cat: 'Serverless', icon: <Settings2 size={14} /> },
-  { label: 'Messaging',  cat: 'Messaging',  icon: <Globe size={14} /> },
-  { label: 'Analytics',  cat: 'Analytics',  icon: <Eye size={14} /> },
-  { label: 'Monitoring', cat: 'Monitoring', icon: <Eye size={14} /> },
-  { label: 'AI',         cat: 'AI',         icon: <BrainCircuit size={14} /> },
-  { label: 'Billing',    cat: 'Billing',    icon: <Layers size={14} /> },
-  { label: 'Management', cat: 'Management', icon: <Globe size={14} /> },
-]
-const OCI_POLICIES_COUNT = OCI_POLICIES.length
-const OCI_VERBS_COUNT = getOciVerbs().length
 
-// Links das 7 clouds — mesmas cores do CloudNav.tsx — usados na sidebar da Home.
+// Links das 6 clouds — mesmas cores do CloudNav.tsx — usados na sidebar da Home.
 const CLOUD_LINKS: { label: string; href: string; color: string }[] = [
   { label: 'Entra ID',        href: '/entraid',          color: '#0078d4' },
   { label: 'Azure RBAC',      href: '/azure-rbac',       color: '#5c2d91' },
   { label: 'AWS IAM',         href: '/aws',              color: '#ff9900' },
   { label: 'GCP IAM',         href: '/gcp',              color: '#0f9d58' },
   { label: 'Google Workspace',href: '/google-workspace', color: '#34a853' },
-  { label: 'Oracle Cloud',    href: '/oci',              color: '#C74634' },
   { label: 'IBM Cloud',       href: '/ibm-cloud',        color: '#08bdba' },
 ]
 
@@ -170,8 +157,6 @@ export default function Sidebar({
   const [gcpCatOpen, setGcpCatOpen] = useState(true)
   const [awsTierOpen, setAwsTierOpen] = useState(true)
   const [awsCatOpen, setAwsCatOpen] = useState(true)
-  const [ociTierOpen, setOciTierOpen] = useState(true)
-  const [ociCatOpen, setOciCatOpen] = useState(true)
   const [catOpen, setCatOpen] = useState(true)
 
   return (
@@ -345,15 +330,6 @@ export default function Sidebar({
               href="https://developers.google.com/identity/protocols/oauth2/scopes" />
           </div>
 
-          <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — Oracle Cloud</p>
-            <ExtLink icon={<BookOpen size={15} />}      label="OCI IAM Docs"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/overview.htm" />
-            <ExtLink icon={<Layers size={15} />}        label="Policy Reference"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/policyreference.htm" />
-            <ExtLink icon={<AlertTriangle size={15} />} label="Common Policies"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/commonpolicies.htm" />
-          </div>
 
           <div>
             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — IBM Cloud</p>
@@ -418,6 +394,7 @@ export default function Sidebar({
             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/azure-rbac')} />
             <NavItem icon={<Shield size={15} />}          label="Built-in Roles" active={view === 'roles'}     badge={String(totalAzureRoles)} onClick={() => router.push('/azure-rbac/roles')} />
+            <NavItem icon={<KeyRound size={15} />}        label="Permissões"     active={view === 'apiPermissions'} badge={String(AZURE_ACTIONS_COUNT)} onClick={() => router.push('/azure-rbac/permissions')} />
             <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="2" onClick={() => router.push('/azure-rbac/reference')} />
           </div>
 
@@ -592,53 +569,6 @@ export default function Sidebar({
       )}
 
 
-      {/* Nav — OCI IAM */}
-      {!collapsed && platform === 'oci' && (
-        <nav className="flex-1 overflow-y-auto p-2 space-y-4">
-          <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
-            <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/oci')} />
-            <NavItem icon={<ShieldCheck size={15} />}     label="IAM Policies"   active={view === 'roles'}     badge={String(OCI_POLICIES_COUNT)} onClick={() => router.push('/oci/policies')} />
-            <NavItem icon={<ListTree size={15} />}        label="Verb Actions"   active={view === 'actions'}   badge={String(OCI_VERBS_COUNT)} onClick={() => router.push('/oci/verbs')} />
-            <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="3" onClick={() => router.push('/oci/reference')} />
-          </div>
-
-          <div>
-            <SectionToggle label="Verb Tier" open={ociTierOpen} onToggle={() => setOciTierOpen((o) => !o)} />
-            {ociTierOpen && OCI_TIERS.map((tier) => {
-              const m = OCI_TIER_META[tier]
-              return (
-                <button key={tier} onClick={() => router.push(`/oci/policies?tier=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
-                  <span className="flex-1">{m.label}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          <div>
-            <SectionToggle label="Categorias" open={ociCatOpen} onToggle={() => setOciCatOpen((o) => !o)} />
-            {ociCatOpen && OCI_CATS.map(({ label, cat, icon }) => (
-              <button key={cat} onClick={() => router.push(`/oci/policies?category=${cat}`)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-                <span className="text-[#C74634] shrink-0">{icon}</span>
-                <span className="flex-1">{label}</span>
-              </button>
-            ))}
-          </div>
-
-          <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
-            <ExtLink icon={<BookOpen size={15} />}      label="OCI IAM Docs"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/overview.htm" />
-            <ExtLink icon={<Layers size={15} />}        label="Policy Reference"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/policyreference/policyreference.htm" />
-            <ExtLink icon={<AlertTriangle size={15} />} label="Common Policies"
-              href="https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/commonpolicies.htm" />
-          </div>
-        </nav>
-      )}
 
       {/* Nav — IBM Cloud */}
       {!collapsed && platform === 'ibmCloud' && (
@@ -702,7 +632,7 @@ export default function Sidebar({
       <div className="p-4 border-t border-gray-800">
         <p className="text-[11px] text-gray-500 leading-relaxed">
           {platform === 'home'
-            ? <><span>Referência multi-cloud de IAM</span><br /><span>7 plataformas em um só lugar</span></>
+            ? <><span>Referência multi-cloud de IAM</span><br /><span>6 plataformas em um só lugar</span></>
             : platform === 'entraId'
             ? <><span>Tiering: Enterprise Access Model</span><br /><span>Fontes: Microsoft Learn, EntraOps</span></>
             : platform === 'googleWorkspace'
@@ -713,8 +643,6 @@ export default function Sidebar({
             ? <><span>Role Tier: classificação própria</span><br /><span>Fontes: Google Cloud IAM Docs</span></>
             : platform === 'aws'
             ? <><span>Access Tier: classificação própria</span><br /><span>Fontes: AWS Documentation</span></>
-            : platform === 'oci'
-            ? <><span>Verb Tier: inspect · read · use · manage</span><br /><span>Fontes: Oracle Cloud Docs</span></>
             : <><span>Fontes: Microsoft Learn, Azure Docs</span><br /><span>Risk Tier: classificação própria</span></>
           }
         </p>

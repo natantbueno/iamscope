@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.Network/virtualNetworks/read","type":"Actions"},{"action":"Microsoft.Network/networkSecurityGroups/read","type":"Actions"}]

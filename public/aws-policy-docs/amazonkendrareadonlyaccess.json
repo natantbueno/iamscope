@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonKendraReadOnlyAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["kendra:Describe*","kendra:List*","kendra:Query","kendra:GetQuerySuggestions"],"Resource":"*"}]},"actions":["kendra:Describe*","kendra:GetQuerySuggestions","kendra:List*","kendra:Query"],"notActions":[]}

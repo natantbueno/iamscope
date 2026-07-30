@@ -1,1 +1,0 @@
-[{"action":"Microsoft.ProviderHub/*/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/resourceGroups/read","type":"Actions"},{"action":"Microsoft.ResourceHealth/availabilityStatuses/read","type":"Actions"}]

@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/CloudSearchFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["cloudsearch:*"],"Effect":"Allow","Resource":"*"}]},"actions":["cloudsearch:*"],"notActions":[]}

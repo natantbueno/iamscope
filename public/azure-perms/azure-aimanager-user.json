@@ -1,1 +1,0 @@
-[{"action":"Microsoft.ContainerService/aiManagers/listCredential/action","type":"Actions"},{"action":"Microsoft.ContainerService/aiManagers/namespaces/listCredential/action","type":"Actions"},{"action":"Microsoft.ContainerService/aiManagers/read","type":"Actions"},{"action":"Microsoft.ContainerService/aiManagers/*/read","type":"Actions"}]

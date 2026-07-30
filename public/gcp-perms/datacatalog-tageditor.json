@@ -1,0 +1,1 @@
+["bigquery.connections.updateTag","bigquery.datasets.updateTag","bigquery.models.updateTag","bigquery.routines.updateTag","bigquery.tables.updateTag","datacatalog.entries.updateTag","datacatalog.entryGroups.updateTag","dataplex.entries.update","pubsub.topics.updateTag"]

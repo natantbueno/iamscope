@@ -43,8 +43,6 @@ module.exports = {
           'gcp-hover': '#3b78e7',
           gws: '#34a853',
           'gws-hover': '#2d9249',
-          oci: '#c74634',
-          'oci-hover': '#b03d2d',
           ibm: '#0f62fe',
           'ibm-hover': '#0353e9',
         },

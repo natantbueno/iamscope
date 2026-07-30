@@ -1,10 +1,10 @@
 'use client'
 
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
-import { getGcpPermissions, getGcpServices, getGcpVerbs } from '@/lib/gcpPermissions'
+import { getGcpPermissions, type GcpPermEntry } from '@/lib/gcpPermissions'
 import { GCP_TIER_META, GcpTier } from '@/data/gcp'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
@@ -15,9 +15,24 @@ function GcpPermissionsContent() {
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
-  const permissions = useMemo(() => getGcpPermissions(), [])
-  const services    = useMemo(() => getGcpServices(), [])
-  const verbs       = useMemo(() => getGcpVerbs(), [])
+  // O índice de permissões vive em public/gcp-perms-index.json (fora do
+  // bundle) — por isso carrega sob demanda, como a página da Azure.
+  const [permissions, setPermissions] = useState<GcpPermEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    getGcpPermissions()
+      .then((p) => { if (alive) { setPermissions(p); setLoading(false) } })
+      .catch(() => { if (alive) { setLoadError(true); setLoading(false) } })
+    return () => { alive = false }
+  }, [])
+
+  const services = useMemo(
+    () => [...new Set(permissions.map((p) => p.service))].sort(), [permissions])
+  const verbs = useMemo(
+    () => [...new Set(permissions.map((p) => p.verb).filter(Boolean))].sort(), [permissions])
 
   const [tier,    setTier]    = useState<GcpTier | 'all'>('all')
   const [service, setService] = useState('all')
@@ -57,6 +72,15 @@ function GcpPermissionsContent() {
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        {loadError && (
+          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-[12px] text-red-600 dark:text-red-400">
+            Não foi possível carregar o índice de permissões do GCP
+            (<code className="font-mono">/gcp-perms-index.json</code>).
+          </div>
+        )}
+        {loading && !loadError && (
+          <div className="m-4 text-[12px] text-gray-400">Carregando permissões do GCP…</div>
+        )}
         <StatsBar stats={[
           { label: 'Total',         value: stats.total,     color: 'green' },
           { label: 'Project Owner', value: stats.owner,     color: 'red' },
@@ -89,32 +113,48 @@ function GcpPermissionsContent() {
               Privilegiadas only
             </label>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Serviço:</span>
-            <button onClick={() => { setService('all'); setPage(1) }}
-              className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${service === 'all' ? 'bg-[#0f9d58] text-white border-[#0f9d58]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-              Todos
-            </button>
-            {services.map(s => (
-              <button key={s} onClick={() => { setService(service === s ? 'all' : s); setPage(1) }}
-                className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${service === s ? 'bg-[#0f9d58] text-white border-[#0f9d58]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-                {s}
+          {/*
+            Serviço e Verbo são <select>, não chips: com os dados oficiais são
+            314 serviços e milhares de verbos. Como chips, os filtros ocupavam
+            várias telas e empurravam a tabela para fora da página.
+          */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <label className="flex items-center gap-1.5">
+              <span className="text-[10px] text-gray-500 uppercase tracking-wider">Serviço</span>
+              <select
+                value={service}
+                onChange={(e) => { setService(e.target.value); setPage(1) }}
+                className="text-[11px] bg-gray-900 border border-gray-700 rounded-md px-2 py-1 text-gray-300 focus:border-[#0f9d58] focus:outline-none max-w-[220px]"
+              >
+                <option value="all">Todos ({services.length})</option>
+                {services.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </label>
+
+            <label className="flex items-center gap-1.5">
+              <span className="text-[10px] text-gray-500 uppercase tracking-wider">Verbo</span>
+              <select
+                value={verb}
+                onChange={(e) => { setVerb(e.target.value); setPage(1) }}
+                className="text-[11px] font-mono bg-gray-900 border border-gray-700 rounded-md px-2 py-1 text-gray-300 focus:border-[#0f9d58] focus:outline-none max-w-[220px]"
+              >
+                <option value="all">Todos ({verbs.length})</option>
+                {verbs.map((v) => <option key={v} value={v}>{v}</option>)}
+              </select>
+            </label>
+
+            {(service !== 'all' || verb !== 'all') && (
+              <button
+                onClick={() => { setService('all'); setVerb('all'); setPage(1) }}
+                className="text-[11px] px-2 py-1 rounded-md border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+              >
+                Limpar filtros
               </button>
-            ))}
-            <span className="text-[10px] text-gray-500 ml-auto">{filtered.length} permissões</span>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Verbo:</span>
-            <button onClick={() => { setVerb('all'); setPage(1) }}
-              className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${verb === 'all' ? 'bg-[#0f9d58] text-white border-[#0f9d58]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-              Todos
-            </button>
-            {verbs.map(v => (
-              <button key={v} onClick={() => { setVerb(verb === v ? 'all' : v); setPage(1) }}
-                className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors font-mono ${verb === v ? 'bg-[#0f9d58] text-white border-[#0f9d58]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-                {v}
-              </button>
-            ))}
+            )}
+
+            <span className="text-[10px] text-gray-500 ml-auto">
+              {filtered.length.toLocaleString('pt-BR')} permissões
+            </span>
           </div>
         </div>
 

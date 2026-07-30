@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSNetworkManagerReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["networkmanager:Describe*","networkmanager:Get*","networkmanager:List*"],"Resource":"*"}]},"actions":["networkmanager:Describe*","networkmanager:Get*","networkmanager:List*"],"notActions":[]}

@@ -1,0 +1,1 @@
+["bigquery.datasets.get","bigquery.jobs.create","bigquery.tables.create","bigquery.tables.update","bigquery.tables.updateData"]

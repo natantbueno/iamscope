@@ -13,22 +13,18 @@ import AppShell from '@/components/AppShell'
 import { ROLES } from '@/data/roles'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
 import { AZURE_ROLES } from '@/data/azureRbac'
-import { AWS_POLICIES } from '@/data/aws'
-import { GCP_ROLES } from '@/data/gcp'
+import { AWS_POLICIES, AWS_ACTION_COUNT, AWS_SERVICE_COUNT } from '@/data/aws'
+import { GCP_ROLES, GCP_PERMISSION_COUNT, GCP_SERVICE_COUNT } from '@/data/gcp'
 import { GWS_ROLES, GWS_SCOPES } from '@/data/googleWorkspace'
-import { OCI_POLICIES } from '@/data/oci'
 import { IBM_ROLES } from '@/data/ibmCloud'
 import { SOD_RULES } from '@/data/sod/rules'
 import { getRoleActions } from '@/lib/roleActions'
-import { getAwsActions, getAwsServices } from '@/lib/awsActions'
-import { getGcpPermissions, getGcpServices } from '@/lib/gcpPermissions'
-import { getOciVerbs, getOciResources } from '@/lib/ociVerbs'
 import { getIbmActions, getIbmServices } from '@/lib/ibmActions'
 
 export const metadata: Metadata = {
   title: 'Multi-Cloud IAM Reference',
   description:
-    'Roles, permissions and policies for 7 cloud providers — with EAM classification, SoD analysis and risk evaluation.',
+    'Roles, permissions and policies for 6 cloud providers — with EAM classification, SoD analysis and risk evaluation.',
 }
 
 // ── Stats calculadas em build time ──────────────────────────────────────────
@@ -60,13 +56,13 @@ function buildClouds(): CloudCard[] {
     },
     {
       name: 'AWS IAM', href: '/aws',
-      metrics: `${fmt(AWS_POLICIES.length)} Policies · ${fmt(getAwsActions().length)} Actions · ${fmt(getAwsServices().length)} Services`,
+      metrics: `${fmt(AWS_POLICIES.length)} Policies · ${fmt(AWS_ACTION_COUNT)} Actions · ${fmt(AWS_SERVICE_COUNT)} Services`,
       total: AWS_POLICIES.length,
       dotClass: 'bg-csp-aws', hoverBorder: 'hover:border-csp-aws', barClass: 'bg-csp-aws',
     },
     {
       name: 'GCP IAM', href: '/gcp',
-      metrics: `${fmt(GCP_ROLES.length)} Roles · ${fmt(getGcpPermissions().length)} Permissions · ${fmt(getGcpServices().length)} Services`,
+      metrics: `${fmt(GCP_ROLES.length)} Roles · ${fmt(GCP_PERMISSION_COUNT)} Permissions · ${fmt(GCP_SERVICE_COUNT)} Services`,
       total: GCP_ROLES.length,
       dotClass: 'bg-csp-gcp', hoverBorder: 'hover:border-csp-gcp', barClass: 'bg-csp-gcp',
     },
@@ -75,12 +71,6 @@ function buildClouds(): CloudCard[] {
       metrics: `${fmt(GWS_ROLES.length)} Roles · ${fmt(GWS_ROLES.filter((r) => r.isPrivileged).length)} Privilegiadas · ${fmt(GWS_SCOPES.length)} OAuth Scopes`,
       total: GWS_ROLES.length,
       dotClass: 'bg-csp-gws', hoverBorder: 'hover:border-csp-gws', barClass: 'bg-csp-gws',
-    },
-    {
-      name: 'OCI IAM', href: '/oci',
-      metrics: `${fmt(OCI_POLICIES.length)} Policies · ${fmt(getOciVerbs().length)} Verbs · ${fmt(getOciResources().length)} Resources`,
-      total: OCI_POLICIES.length,
-      dotClass: 'bg-csp-oci', hoverBorder: 'hover:border-csp-oci', barClass: 'bg-csp-oci',
     },
     {
       name: 'IBM Cloud', href: '/ibm-cloud',
@@ -100,7 +90,7 @@ export default function HomePage() {
   return (
     <AppShell
       headerTitle="Multi-Cloud IAM Reference"
-      headerSub="Roles, permissions e policies de 7 cloud providers"
+      headerSub="Roles, permissions e policies de 6 cloud providers"
     >
       <div className="flex-1 overflow-y-auto">
         <div className="relative">
@@ -116,7 +106,7 @@ export default function HomePage() {
                 Multi-Cloud IAM Reference
               </h1>
               <p className="text-[13px] sm:text-[14px] text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed mb-6">
-                Roles, permissions and policies for 7 cloud providers — with EAM classification,
+                Roles, permissions and policies for 6 cloud providers — with EAM classification,
                 SoD analysis and risk evaluation
               </p>
             </section>
@@ -207,7 +197,7 @@ export default function HomePage() {
                   beta
                   icon={<ScanSearch size={18} />}
                   title="Permission Scope"
-                  description="Find every role that grants a given permission, across all 7 clouds"
+                  description="Find every role that grants a given permission, across all 6 clouds"
                 />
                 <ToolCard
                   href="/tier-comparison"

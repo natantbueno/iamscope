@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonHoneycodeReadOnlyAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["honeycode:List*","honeycode:Get*","honeycode:Describe*","honeycode:Query*"],"Resource":"*","Effect":"Allow"}]},"actions":["honeycode:Describe*","honeycode:Get*","honeycode:List*","honeycode:Query*"],"notActions":[]}

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Authorization/policyenrollments/*","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Microsoft.PolicyInsights/*","type":"Actions"},{"action":"Microsoft.Resources/deployments/*","type":"Actions"}]

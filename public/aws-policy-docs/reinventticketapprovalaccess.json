@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/ReInventTicketApprovalAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"AllowBillToAWSActions","Effect":"Allow","Action":["eventsbilltoaws:info","eventsbilltoaws:approve"],"Resource":"*"}]},"actions":["eventsbilltoaws:approve","eventsbilltoaws:info"],"notActions":[]}

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Experimentation/experimentWorkspaces/read","type":"Actions"},{"action":"Microsoft.Experimentation/experimentWorkspaces/read","type":"DataActions"},{"action":"Microsoft.Experimentation/experimentWorkspaces/experimentationGroups/read","type":"DataActions"}]

@@ -1,0 +1,1 @@
+["pubsub.topics.get","pubsub.topics.publish","storage.objects.create","storage.objects.delete","storage.objects.get","transcoder.jobs.create","transcoder.jobs.delete","transcoder.jobs.get"]

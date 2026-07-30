@@ -1,0 +1,1 @@
+["datastore.databases.getMetadata","datastore.databases.list","datastore.userCreds.create","datastore.userCreds.delete","datastore.userCreds.get","datastore.userCreds.list","datastore.userCreds.update"]

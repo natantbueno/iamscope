@@ -1,0 +1,1 @@
+["compute.nodeGroups.get","compute.nodeGroups.getIamPolicy","compute.nodeGroups.list","compute.nodeTemplates.get","compute.nodeTemplates.getIamPolicy","compute.nodeTemplates.list","compute.nodeTypes.get","compute.nodeTypes.list"]

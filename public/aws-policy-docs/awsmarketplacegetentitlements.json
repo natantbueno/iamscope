@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSMarketplaceGetEntitlements","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"AWSMarketplaceGetEntitlements","Effect":"Allow","Action":["aws-marketplace:GetEntitlements"],"Resource":"*"}]},"actions":["aws-marketplace:GetEntitlements"],"notActions":[]}

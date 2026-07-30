@@ -1,1 +1,0 @@
-[{"action":"Microsoft.AgFoodPlatform/farmBeats/sensorPartnerScope/*","type":"DataActions"},{"action":"Microsoft.AgFoodPlatform/farmBeats/sensorPartnerScope/sensors/delete","type":"NotDataActions"}]

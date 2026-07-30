@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Authorization/*/read","type":"Actions"},{"action":"Anyscale.Platform/*/read","type":"Actions"},{"action":"Anyscale.Platform/*/read","type":"DataActions"}]

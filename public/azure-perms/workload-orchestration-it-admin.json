@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Edge/contexts/eventGridFilters/delete","type":"Actions"},{"action":"Microsoft.Edge/contexts/eventGridFilters/read","type":"Actions"},{"action":"Microsoft.Edge/contexts/eventGridFilters/write","type":"Actions"},{"action":"Microsoft.Edge/contexts/read","type":"Actions"}]

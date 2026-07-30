@@ -1,10 +1,10 @@
 // Permission Scope — busca reversa de permissão em todas as clouds.
 //
 // A pergunta que esta lib responde é: "dada uma permissão qualquer, quais roles
-// (ou policies) a concedem?" — em qualquer uma das 7 plataformas do catálogo.
+// (ou policies) a concedem?" — em qualquer uma das 6 plataformas do catálogo.
 //
 // Reaproveita os índices que já existem no site (getRoleActions, getAwsActions,
-// getGcpPermissions, getOciVerbs, getIbmActions), que já invertem a relação
+// getGcpPermissions, getIbmActions), que já invertem a relação
 // role -> permissão e são cacheados em memória. Google Workspace não tinha um
 // helper equivalente, então é montado aqui a partir de privileges/apiPrivileges.
 //
@@ -15,9 +15,8 @@
 
 import { CloudId } from '@/data/compare/types'
 import { getRoleActions } from './roleActions'
-import { getAwsActions } from './awsActions'
-import { getGcpPermissions } from './gcpPermissions'
-import { getOciVerbs } from './ociVerbs'
+import { getAwsActions, getAwsActionsSync } from './awsActions'
+import { getGcpPermissions, getGcpPermissionsSync } from './gcpPermissions'
 import { getIbmActions } from './ibmActions'
 import { GWS_ROLES } from '@/data/googleWorkspace'
 
@@ -40,7 +39,6 @@ export const CLOUD_TERMS: Record<CloudId, { permission: string; principal: strin
   azureRbac:       { permission: 'Action',        principal: 'roles' },
   aws:             { permission: 'IAM action',    principal: 'policies' },
   gcp:             { permission: 'Permission',    principal: 'roles' },
-  oci:             { permission: 'Verb action',   principal: 'policies' },
   ibmCloud:        { permission: 'IAM action',    principal: 'roles' },
   googleWorkspace: { permission: 'Privilege',     principal: 'roles' },
 }
@@ -86,14 +84,14 @@ export function getLocalPermissionIndex(): ScopeMatch[] {
   for (const e of getRoleActions()) {
     out.push({ cloud: 'entraId', permission: e.action, roles: e.usedByRoles })
   }
-  for (const e of getAwsActions()) {
+  for (const e of getAwsActionsSync() ?? []) {
     out.push({ cloud: 'aws', permission: e.action, roles: e.usedByPolicies })
   }
-  for (const e of getGcpPermissions()) {
+  // GCP saiu do bundle: as permissões vêm de public/gcp-perms-index.json.
+  // Aqui usamos só o que já estiver em memória — quem precisa do índice
+  // completo chama ensureLocalPermissionIndex() antes.
+  for (const e of getGcpPermissionsSync() ?? []) {
     out.push({ cloud: 'gcp', permission: e.permission, roles: e.usedByRoles })
-  }
-  for (const e of getOciVerbs()) {
-    out.push({ cloud: 'oci', permission: e.verb, roles: e.usedByPolicies })
   }
   for (const e of getIbmActions()) {
     out.push({ cloud: 'ibmCloud', permission: e.action, roles: e.usedByRoles })
@@ -104,6 +102,26 @@ export function getLocalPermissionIndex(): ScopeMatch[] {
 
   _cache = out
   return out
+}
+
+/**
+ * Garante que GCP e AWS estejam no índice antes de montá-lo.
+ *
+ * getLocalPermissionIndex() é síncrono e não pode esperar rede; sem esta
+ * chamada, uma busca feita antes de os índices chegarem devolveria zero
+ * resultados dessas clouds silenciosamente — pior do que demorar um instante.
+ */
+export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
+  const pending: Promise<unknown>[] = []
+  if (getGcpPermissionsSync() === null) pending.push(getGcpPermissions())
+  if (getAwsActionsSync() === null) pending.push(getAwsActions())
+
+  if (pending.length) {
+    // allSettled: se o índice de uma cloud falhar, as outras continuam valendo
+    await Promise.allSettled(pending)
+    _cache = null // rebuild, agora com o que tiver chegado
+  }
+  return getLocalPermissionIndex()
 }
 
 /**

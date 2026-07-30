@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Edge/connectivityStatuses/delete","type":"Actions"},{"action":"Microsoft.Edge/connectivityStatuses/write","type":"Actions"},{"action":"Microsoft.Edge/locations/operationStatuses/write","type":"Actions"},{"action":"Microsoft.Edge/updates/delete","type":"Actions"},{"action":"Microsoft.Edge/updates/write","type":"Actions"}]

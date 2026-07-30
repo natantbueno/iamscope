@@ -1,1 +1,0 @@
-[{"action":"Microsoft.ProjectBabylon/accounts/read","type":"Actions"},{"action":"Microsoft.ProjectBabylon/accounts/data/read","type":"DataActions"},{"action":"Microsoft.ProjectBabylon/accounts/data/write","type":"DataActions"}]

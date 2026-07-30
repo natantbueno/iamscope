@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Resources/subscriptions/read","type":"Actions"},{"action":"Microsoft.Resources/subscriptions/operationresults/read","type":"Actions"},{"action":"Microsoft.Authorization/*/read","type":"Actions"}]

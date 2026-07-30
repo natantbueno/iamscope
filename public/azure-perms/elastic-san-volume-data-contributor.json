@@ -1,1 +1,0 @@
-[{"action":"Microsoft.ElasticSan/elasticsans/volumeGroups/volumes/write","type":"Actions"},{"action":"Microsoft.ElasticSan/elasticsans/volumeGroups/volumes/read","type":"Actions"},{"action":"Microsoft.ElasticSan/elasticsans/volumeGroups/volumes/data/read","type":"DataActions"},{"action":"Microsoft.ElasticSan/elasticsans/volumeGroups/volumes/data/write","type":"DataActions"}]

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.OnlineExperimentation/workspaces/read","type":"DataActions"},{"action":"Microsoft.OnlineExperimentation/workspaces/write","type":"DataActions"},{"action":"Microsoft.OnlineExperimentation/workspaces/delete","type":"DataActions"},{"action":"Microsoft.OnlineExperimentation/workspaces/action","type":"DataActions"}]

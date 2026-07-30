@@ -1,4 +1,4 @@
-export type CloudId     = 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'oci' | 'ibmCloud' | 'googleWorkspace'
+export type CloudId     = 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'ibmCloud' | 'googleWorkspace'
 export type RiskLevel   = 'critical' | 'high' | 'medium' | 'low'
 export type TierLevel   = 0 | 1 | 2
 
@@ -44,12 +44,11 @@ export const CLOUD_META: Record<CloudId, { label: string; shortLabel: string; co
   azureRbac:       { label: 'Azure RBAC',      shortLabel: 'Azure',  color: '#008ad7' },
   aws:             { label: 'AWS IAM',          shortLabel: 'AWS',    color: '#ff9900' },
   gcp:             { label: 'GCP IAM',          shortLabel: 'GCP',    color: '#4285f4' },
-  oci:             { label: 'OCI IAM',          shortLabel: 'OCI',    color: '#C74634' },
   ibmCloud:        { label: 'IBM Cloud',        shortLabel: 'IBM',    color: '#0f62fe' },
   googleWorkspace: { label: 'Google Workspace', shortLabel: 'GWS',    color: '#34a853' },
 }
 
-export const CLOUD_ORDER: CloudId[] = ['entraId', 'azureRbac', 'aws', 'gcp', 'oci', 'ibmCloud', 'googleWorkspace']
+export const CLOUD_ORDER: CloudId[] = ['entraId', 'azureRbac', 'aws', 'gcp', 'ibmCloud', 'googleWorkspace']
 
 export const RISK_META: Record<RiskLevel, { label: string; color: string; bg: string }> = {
   critical: { label: 'Critical', color: '#ef4444', bg: '#ef444418' },
@@ -64,7 +63,6 @@ export function getCloudUrl(cloud: CloudId, slug: string): string {
     azureRbac:       `/azure-rbac/roles/${slug}`,
     aws:             `/aws/policies/${slug}`,
     gcp:             `/gcp/roles/${slug}`,
-    oci:             `/oci/policies/${slug}`,
     ibmCloud:        `/ibm-cloud/roles/${slug}`,
     googleWorkspace: `/google-workspace/roles/${slug}`,
   }

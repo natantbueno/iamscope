@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Authorization/roleDefinitions/read","type":"Actions"},{"action":"Microsoft.Authorization/roleAssignments/read","type":"Actions"},{"action":"Microsoft.AzureBusinessContinuity/deletedUnifiedProtectedItems/read","type":"Actions"}]

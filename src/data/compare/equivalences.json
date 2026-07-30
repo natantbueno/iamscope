@@ -82,25 +82,6 @@
           "Auditar Cloud Audit Logs diariamente"
         ]
       },
-      "oci": {
-        "role": "Tenancy Administrator",
-        "slug": "tenancy-administrator",
-        "risk": "critical",
-        "keyPermissions": [
-          "manage all-resources in tenancy",
-          "Criar/excluir qualquer política IAM",
-          "Gerenciar billing e assinaturas",
-          "Acessar todos os compartments",
-          "Criar/excluir usuários e grupos"
-        ],
-        "mitigations": [
-          "Usar isolamento por compartment — evitar políticas tenancy-wide",
-          "Habilitar Cloud Guard com detector de Tenancy Admin",
-          "Exigir MFA para todos os usuários admin",
-          "Monitorar OCI Audit logs para ações admin",
-          "Rotacionar API keys a cada 90 dias"
-        ]
-      },
       "ibmCloud": {
         "role": "Administrator (All Services)",
         "slug": "administrator",
@@ -225,25 +206,6 @@
           "Restringir via constraints de Organization Policy"
         ]
       },
-      "oci": {
-        "role": "Billing Administrator",
-        "slug": "billing-administrator",
-        "risk": "critical",
-        "keyPermissions": [
-          "manage usage-reports in tenancy",
-          "manage cost-reports in tenancy",
-          "manage subscriptions in tenancy",
-          "Visualizar e baixar faturas",
-          "Gerenciar métodos de pagamento"
-        ],
-        "mitigations": [
-          "Atribuir apenas ao grupo Finance no nível de tenancy",
-          "Habilitar alertas de OCI Budget",
-          "Monitorar com detectores de anomalia de custo do Cloud Guard",
-          "Auditar todas as chamadas de API de billing via serviço OCI Audit",
-          "Separar admin de billing do admin de IAM"
-        ]
-      },
       "ibmCloud": {
         "role": "Billing Manager",
         "slug": "billing-manager",
@@ -365,25 +327,6 @@
           "Evitar no nível de organização — usar escopo de folder/projeto",
           "Revisar concessões de Viewer trimestralmente"
         ]
-      },
-      "oci": {
-        "role": "Identity Reader + Service Inspectors",
-        "risk": "medium",
-        "keyPermissions": [
-          "inspect all-resources in tenancy (listagem básica)",
-          "read all-resources in compartment (visão detalhada)",
-          "Visualizar configurações sem dados sensíveis",
-          "Listar todos os serviços e recursos OCI",
-          "Ler eventos de auditoria"
-        ],
-        "mitigations": [
-          "Usar inspect (não read) para tarefas puras de inventário",
-          "Habilitar logging OCI Audit para todas as operações de leitura",
-          "Escopo para compartment específico em vez de tenancy",
-          "Adicionar condições where para limitar leituras de dados sensíveis",
-          "Revisar e certificar acesso trimestralmente"
-        ],
-        "notes": "OCI não tem um único role 'viewer' — combinar verbos inspect/read por serviço"
       },
       "ibmCloud": {
         "role": "Viewer (All Services)",
@@ -511,25 +454,6 @@
         ],
         "notes": "Para gerenciamento de usuários do Workspace, usar Google Workspace User Management Admin em vez disso"
       },
-      "oci": {
-        "role": "IAM Administrator",
-        "slug": "iam-administrator",
-        "risk": "critical",
-        "keyPermissions": [
-          "manage users in tenancy",
-          "manage groups in tenancy",
-          "manage dynamic-groups in tenancy",
-          "manage policies in tenancy",
-          "manage compartments in tenancy"
-        ],
-        "mitigations": [
-          "OCI IAM Administrator pode gerenciar políticas — efetivamente Tier 0",
-          "Separar gerenciamento de usuários do gerenciamento de políticas",
-          "Usar políticas com escopo de compartment quando possível",
-          "Monitorar via serviço OCI Audit eventos de Identity",
-          "Exigir MFA para todos os administradores IAM"
-        ]
-      },
       "ibmCloud": {
         "role": "User Management Editor",
         "slug": "user-management-editor",
@@ -652,25 +576,6 @@
           "Habilitar Object Versioning e políticas de retenção",
           "Monitorar com Cloud Audit Logs Data Access para GCS",
           "Preferir roles/storage.objectAdmin para acesso apenas a dados"
-        ]
-      },
-      "oci": {
-        "role": "Object Storage Administrator",
-        "slug": "object-storage-administrator",
-        "risk": "high",
-        "keyPermissions": [
-          "manage buckets in compartment",
-          "manage objects in compartment",
-          "Configurar regras de lifecycle e replicação",
-          "Definir políticas de bucket e visibilidade",
-          "Criar e excluir buckets"
-        ],
-        "mitigations": [
-          "Habilitar logging de auditoria do Object Storage",
-          "Configurar regras de retenção e locks de bucket",
-          "Restringir com isolamento de compartment",
-          "Monitorar com detectores do Cloud Guard para Object Storage",
-          "Habilitar versionamento em buckets críticos"
         ]
       },
       "ibmCloud": {
@@ -796,24 +701,6 @@
           "Revisar bindings IAM com Recommender API mensalmente"
         ]
       },
-      "oci": {
-        "role": "CloudGuardOperator",
-        "risk": "high",
-        "keyPermissions": [
-          "manage cloud-guard-family in tenancy — administração completa do Cloud Guard",
-          "manage security-zones in tenancy — zonas de segurança e receitas de política",
-          "manage vss-family in tenancy — Vulnerability Scanning Service",
-          "read audit-events in tenancy — leitura de eventos de auditoria OCI",
-          "manage bastion in tenancy — sessões de acesso privilegiado via Bastion"
-        ],
-        "mitigations": [
-          "Restringir a grupos de usuários dedicados com políticas de compartimento granulares",
-          "Habilitar auditoria de OCI Audit Service para todas as ações de segurança",
-          "Exigir autenticação multifator para contas com acesso a políticas de segurança",
-          "Usar OCI Identity Domains com revisões de acesso periódicas",
-          "Configurar notificações OCI Events para alterações em security-zones"
-        ]
-      },
       "ibmCloud": {
         "role": "Security and Compliance Center Administrator",
         "risk": "high",
@@ -933,24 +820,6 @@
           "Configurar alertas no Cloud Monitoring para mutações em roles/iam.admin",
           "Implementar Org Policy constraints/iam.allowedPolicyMemberDomains para restringir membros",
           "Exigir Workforce Identity Federation com MFA para titulares desta função"
-        ]
-      },
-      "oci": {
-        "role": "manage policies in tenancy",
-        "risk": "critical",
-        "keyPermissions": [
-          "manage policies in tenancy — criar, editar e excluir qualquer política IAM na tenancy",
-          "manage groups in tenancy — criar grupos e adicionar usuários a grupos privilegiados",
-          "manage users in tenancy — administração completa de usuários OCI",
-          "manage dynamic-groups in tenancy — gerenciar grupos dinâmicos para instâncias",
-          "manage identity-providers in tenancy — configurar federação de identidade"
-        ],
-        "mitigations": [
-          "Restringir 'manage policies in tenancy' a um grupo de administradores mínimo documentado",
-          "Habilitar OCI Audit para todas as operações de política IAM na tenancy",
-          "Implementar separação de funções: administrador de políticas ≠ administrador de usuários",
-          "Revisar políticas mensalmente com OCI Identity Policy Advisor",
-          "Configurar alarmes OCI para criação ou modificação de políticas de alta permissão"
         ]
       },
       "ibmCloud": {
@@ -1076,24 +945,6 @@
           "Implementar aprovação no processo de mudança para alterações em service perimeters"
         ]
       },
-      "oci": {
-        "role": "manage authentication-policies in tenancy",
-        "risk": "high",
-        "keyPermissions": [
-          "manage authentication-policies in tenancy — configurar políticas de senha e MFA",
-          "manage identity-providers in tenancy — gerenciar provedores de identidade federada",
-          "manage network-sources in tenancy — criar fontes de rede para restrição de IP",
-          "manage domains in tenancy — configurar domínios de identidade OCI",
-          "use tag-namespaces in tenancy — aplicar tags para controle de acesso baseado em atributo"
-        ],
-        "mitigations": [
-          "Testar alterações em políticas de autenticação em ambiente de não-produção primeiro",
-          "Habilitar OCI Audit para todas as operações em authentication-policies",
-          "Configurar notificações OCI Events para alterações em políticas de autenticação",
-          "Revisar configurações de MFA e políticas de senha trimestralmente",
-          "Manter pelo menos dois administradores com acesso às políticas de autenticação"
-        ]
-      },
       "ibmCloud": {
         "role": "Administrator (IAM Settings)",
         "risk": "high",
@@ -1213,25 +1064,6 @@
           "Monitorar iam.serviceAccountKeys.create via Cloud Audit Logs com alertas",
           "Implementar rotação automática de chaves via Secret Manager quando inevitáveis"
         ]
-      },
-      "oci": {
-        "role": "manage instance-principals in tenancy",
-        "risk": "high",
-        "keyPermissions": [
-          "manage dynamic-groups in tenancy — criar grupos dinâmicos para instâncias e funções",
-          "manage policies in compartment — criar políticas de acesso para entidades de serviço",
-          "manage api-keys in tenancy — gerenciar chaves de API para usuários de serviço",
-          "manage auth-tokens in tenancy — tokens de autenticação para integração de APIs",
-          "manage service-gateways in compartment — acesso de serviço sem internet público"
-        ],
-        "mitigations": [
-          "Preferir instance principals e resource principals em vez de credenciais de usuário",
-          "Revisar grupos dinâmicos mensalmente para remover instâncias não autorizadas",
-          "Monitorar criação de chaves de API via OCI Audit com alertas automáticos",
-          "Limitar escopo de políticas de dynamic-groups ao compartimento necessário",
-          "Rotacionar chaves de API e tokens de autenticação a cada 90 dias"
-        ],
-        "notes": "OCI usa dynamic-groups e instance principals como equivalente a service principals. O papel 'manage app-catalog-listing' é para publicação de aplicativos no Marketplace OCI."
       },
       "ibmCloud": {
         "role": "Service ID Creator",
@@ -1354,24 +1186,6 @@
           "Implementar rotação automática de chaves simétricas a cada 90 dias no Cloud KMS"
         ]
       },
-      "oci": {
-        "role": "manage vaults in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage vaults in compartment — criar e administrar cofres OCI Vault",
-          "manage keys in compartment — criar e rotacionar chaves mestras de criptografia",
-          "manage secrets in compartment — criar e gerenciar segredos no OCI Vault",
-          "use key-delegate in compartment — delegar uso de chaves a serviços OCI",
-          "manage virtual-vaults in compartment — cofres virtuais isolados para multi-tenancy"
-        ],
-        "mitigations": [
-          "Usar HSM-backed keys (Virtual Private Vault) para dados de maior criticidade",
-          "Habilitar rotação automática de chaves de criptografia no OCI Vault",
-          "Monitorar operações de vault via OCI Audit com alertas para operações de exclusão",
-          "Restringir acesso a secrets e keys via compartimento dedicado com políticas granulares",
-          "Revisar acessos a vaults e chaves mensalmente e revogar permissões não utilizadas"
-        ]
-      },
       "ibmCloud": {
         "role": "Manager (Key Protect)",
         "risk": "high",
@@ -1490,24 +1304,6 @@
           "Configurar alertas no Security Command Center para findings de alta severidade",
           "Revisar relatórios de conformidade via Google Cloud Compliance Reports mensalmente",
           "Exportar logs de auditoria para bucket GCS imutável com retenção definida por política"
-        ]
-      },
-      "oci": {
-        "role": "manage cloud-guard-family in tenancy",
-        "risk": "high",
-        "keyPermissions": [
-          "manage cloud-guard-family in tenancy — administração do Cloud Guard para conformidade",
-          "read audit-events in tenancy — acesso a todos os eventos de auditoria OCI",
-          "manage security-zone-recipes in tenancy — receitas de zona de segurança para conformidade",
-          "read all-resources in tenancy — visibilidade de recursos para avaliação de conformidade",
-          "manage announcements-subscription in tenancy — alertas de conformidade e vulnerabilidades"
-        ],
-        "mitigations": [
-          "Configurar detectores personalizados no Cloud Guard para requisitos regulatórios específicos",
-          "Exportar eventos de auditoria OCI para Object Storage com retenção de 12+ meses",
-          "Revisar findings do Cloud Guard semanalmente e atribuir responsáveis por remediação",
-          "Implementar OCI Security Zones para garantir conformidade contínua de recursos",
-          "Configurar notificações automáticas para problemas críticos de conformidade detectados"
         ]
       },
       "ibmCloud": {
@@ -1630,25 +1426,6 @@
         ],
         "notes": "O GCP não possui equivalente nativo ao Exchange Online. Para email corporativo, usa-se Google Workspace com a função Gmail Admin delegada."
       },
-      "oci": {
-        "role": "N/A",
-        "risk": "low",
-        "keyPermissions": [
-          "OCI Email Delivery — serviço para envio de email transacional (SMTP)",
-          "manage email-family in compartment — gerenciar domínios e remetentes aprovados",
-          "OCI não possui serviço de email corporativo (mailbox) nativo",
-          "Integração com Microsoft Exchange ou Google Workspace para email corporativo",
-          "use smtp-credentials in tenancy — credenciais SMTP para aplicativos de envio"
-        ],
-        "mitigations": [
-          "Verificar todos os domínios de envio no OCI Email Delivery para evitar spoofing",
-          "Configurar SPF e DKIM via OCI Email Delivery para domínios de envio",
-          "Monitorar volume de envio via OCI Monitoring para detectar uso indevido",
-          "Restringir criação de remetentes aprovados a administradores via política IAM OCI",
-          "Auditar credenciais SMTP mensalmente e revogar as não utilizadas"
-        ],
-        "notes": "OCI não possui solução de email corporativo (caixas de correio). O OCI Email Delivery é apenas para envio transacional SMTP."
-      },
       "ibmCloud": {
         "role": "N/A",
         "risk": "low",
@@ -1767,24 +1544,6 @@
           "Revisar membros de grupos com acesso a recursos GCP críticos mensalmente",
           "Implementar processo de aprovação para adição de membros a grupos privilegiados",
           "Usar Recommender API para identificar grupos com permissões excessivas"
-        ]
-      },
-      "oci": {
-        "role": "manage groups in tenancy",
-        "risk": "high",
-        "keyPermissions": [
-          "manage groups in tenancy — criar, modificar e excluir grupos IAM na tenancy OCI",
-          "manage users in tenancy — adicionar e remover usuários de grupos",
-          "manage dynamic-groups in tenancy — grupos baseados em atributos de instâncias",
-          "manage compartments in tenancy — grupos podem ter acesso por compartimento",
-          "read audit-events in tenancy — verificar ações realizadas por membros de grupos"
-        ],
-        "mitigations": [
-          "Documentar propósito e proprietário para cada grupo criado na tenancy OCI",
-          "Revisar mensalmente associações de grupos e remover usuários inativos",
-          "Monitorar criação de novos grupos via OCI Audit com alertas automáticos",
-          "Implementar separação entre quem cria grupos e quem define políticas de acesso",
-          "Auditar grupos com políticas de alta permissão (manage * in tenancy) trimestralmente"
         ]
       },
       "ibmCloud": {
@@ -1907,24 +1666,6 @@
         ],
         "notes": "O GCP não possui função IAM equivalente ao Authentication Administrator. Gerenciamento de autenticação é feito via Google Workspace Admin ou Cloud Identity Admin."
       },
-      "oci": {
-        "role": "manage authentication-policies in tenancy",
-        "risk": "high",
-        "keyPermissions": [
-          "manage authentication-policies in tenancy — configurar requisitos de senha e MFA",
-          "manage users in tenancy — redefinir senhas e tokens de usuários OCI",
-          "manage mfa-totp-devices in tenancy — gerenciar dispositivos TOTP de usuários",
-          "use auth-tokens in tenancy — tokens de autenticação para APIs OCI",
-          "manage smtp-credentials in tenancy — credenciais SMTP para autenticação de email"
-        ],
-        "mitigations": [
-          "Habilitar MFA obrigatório para todos os usuários com acesso ao OCI Console",
-          "Monitorar resets de senha via OCI Audit com alertas para operações em massa",
-          "Implementar processo de verificação de identidade antes de redefinir credenciais",
-          "Revisar políticas de senha OCI trimestralmente para garantir requisitos de complexidade",
-          "Auditar usuários sem MFA habilitado mensalmente e exigir ativação com prazo definido"
-        ]
-      },
       "ibmCloud": {
         "role": "Manager (IAM Identity Service)",
         "risk": "high",
@@ -2045,25 +1786,6 @@
         ],
         "notes": "GCP/Google Workspace usa Chrome Enterprise para gerenciamento de dispositivos. Para dispositivos não-Chrome, integrar com terceiros como Jamf ou Microsoft Intune."
       },
-      "oci": {
-        "role": "N/A",
-        "risk": "low",
-        "keyPermissions": [
-          "OCI não possui serviço nativo de MDM/gerenciamento de endpoints corporativos",
-          "OCI Bastion — acesso seguro a instâncias sem exposição pública (similar ao SSM)",
-          "manage bastion in compartment — criar sessões de acesso a instâncias privadas",
-          "use osms-managed-instances in compartment — OS Management Service para patches",
-          "manage osms-managed-instance-groups in compartment — grupos de instâncias para patching"
-        ],
-        "mitigations": [
-          "Usar OCI OS Management Service para patching centralizado de instâncias",
-          "Monitorar instâncias não conformes com políticas de patch via OCI Monitoring",
-          "Implementar OCI Bastion para acesso remoto seguro sem portas SSH expostas",
-          "Integrar com ferramentas de MDM de terceiros para dispositivos de usuários finais",
-          "Auditar sessões OCI Bastion mensalmente e revogar acessos não utilizados"
-        ],
-        "notes": "OCI não possui serviço de MDM (Mobile Device Management) nativo. Para gerenciamento de endpoints corporativos, integrar com Microsoft Intune ou VMware Workspace ONE."
-      },
       "ibmCloud": {
         "role": "N/A",
         "risk": "low",
@@ -2163,24 +1885,6 @@
           "Monitorar alterações de firewall via Cloud Audit Logs com alertas automáticos",
           "Implementar Hierarchical Firewall Policies para regras de rede em nível organizacional",
           "Revisar regras de firewall VPC mensalmente e remover regras excessivamente permissivas"
-        ]
-      },
-      "oci": {
-        "role": "manage virtual-network-family in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage virtual-network-family in compartment — VCNs, sub-redes, security lists, route tables",
-          "manage drgs in compartment — Dynamic Routing Gateways para conectividade",
-          "manage load-balancers in compartment — balanceadores de carga e listeners",
-          "manage network-security-groups in compartment — grupos de segurança de rede",
-          "manage internet-gateways in compartment — gateways de acesso à internet"
-        ],
-        "mitigations": [
-          "Usar OCI Network Firewall para inspeção de tráfego L7 em VCNs",
-          "Habilitar OCI VCN Flow Logs para análise de tráfego e detecção de anomalias",
-          "Monitorar alterações em security lists e NSGs via OCI Audit com alertas",
-          "Revisar rotas de rede e internet gateways trimestralmente para minimizar exposição",
-          "Implementar OCI Bastion para acesso remoto sem exposição de portas públicas"
         ]
       },
       "ibmCloud": {
@@ -2303,24 +2007,6 @@
           "Revisar instâncias com endereços IP públicos mensalmente e usar Cloud NAT quando possível"
         ]
       },
-      "oci": {
-        "role": "manage instance-family in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage instances in compartment — criar, iniciar, parar e encerrar instâncias OCI",
-          "manage instance-images in compartment — criar e gerenciar imagens customizadas",
-          "manage boot-volumes in compartment — gerenciar volumes de boot e backups",
-          "manage volume-backups in compartment — criar e restaurar backups de volumes",
-          "manage instance-configurations in compartment — templates de configuração de instâncias"
-        ],
-        "mitigations": [
-          "Usar OCI Cloud Guard para detectar instâncias com configurações inseguras",
-          "Habilitar Oracle Cloud Agent para monitoramento e gestão de instâncias",
-          "Monitorar criação de instâncias via OCI Audit com alertas para formas não aprovadas",
-          "Restringir acesso SSH a instâncias via OCI Bastion sem exposição de porta 22",
-          "Revisar instâncias paradas mensalmente e encerrar as não necessárias para reduzir custos"
-        ]
-      },
       "ibmCloud": {
         "role": "Operator (VPC Infrastructure Services)",
         "risk": "high",
@@ -2439,24 +2125,6 @@
           "Monitorar exportações de dados de banco de dados via Cloud Audit Logs com alertas",
           "Habilitar backups automáticos com retenção de 7+ dias e testar restaurações periodicamente",
           "Revisar usuários de banco de dados e contas com acesso privilegiado mensalmente"
-        ]
-      },
-      "oci": {
-        "role": "manage database-family in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage databases in compartment — criar e gerenciar bancos de dados Oracle",
-          "manage db-systems in compartment — gerenciar sistemas de banco de dados OCI",
-          "manage autonomous-database in compartment — Autonomous Database (ADB)",
-          "manage backups in compartment — criar e restaurar backups de banco de dados",
-          "manage db-homes in compartment — gerenciar Oracle Database Homes"
-        ],
-        "mitigations": [
-          "Habilitar Oracle Data Safe para avaliação de segurança e mascaramento de dados",
-          "Usar criptografia TDE nativa do Oracle Database para dados em repouso",
-          "Restringir acesso de rede a bancos de dados via VCN Security Lists e NSGs",
-          "Monitorar atividade de banco de dados via Oracle Audit Vault integrado ao Data Safe",
-          "Revisar acessos privilegiados a bancos de dados de produção mensalmente"
         ]
       },
       "ibmCloud": {
@@ -2579,24 +2247,6 @@
           "Revisar Kubernetes RBAC (ClusterRoleBindings) mensalmente via Recommender API"
         ]
       },
-      "oci": {
-        "role": "manage cluster-family in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage clusters in compartment — criar e gerenciar clusters OCI Container Engine (OKE)",
-          "manage cluster-node-pools in compartment — gerenciar pools de nós do cluster",
-          "manage repos in compartment — repositórios do OCI Container Registry (OCIR)",
-          "use vnics in compartment — interfaces de rede para nós do cluster",
-          "manage cluster-workload-mappings in compartment — acesso a workloads do cluster"
-        ],
-        "mitigations": [
-          "Habilitar verificação de vulnerabilidades no OCI Container Registry para imagens",
-          "Usar OCI Cloud Guard para detectar configurações inseguras em clusters OKE",
-          "Restringir acesso ao API server do cluster OKE via endpoint privado",
-          "Monitorar atividades suspeitas nos pods via logs de auditoria do Kubernetes",
-          "Revisar RBAC do Kubernetes e associações de service accounts mensalmente"
-        ]
-      },
       "ibmCloud": {
         "role": "Manager (Kubernetes Service)",
         "risk": "high",
@@ -2715,24 +2365,6 @@
           "Monitorar consultas DNS suspeitas via Cloud DNS logging integrado ao Cloud Logging",
           "Restringir criação de zonas DNS públicas a administradores com aprovação formal",
           "Revisar políticas de DNS privadas e response policies mensalmente"
-        ]
-      },
-      "oci": {
-        "role": "manage dns in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage dns in compartment — criar e gerenciar zonas DNS e registros no OCI DNS",
-          "manage dns-zones in compartment — administrar zonas DNS públicas e privadas",
-          "manage dns-records in compartment — criar e modificar registros de nomes DNS",
-          "manage dns-steering-policies in compartment — políticas de roteamento de tráfego DNS",
-          "manage dns-views in compartment — visualizações DNS para resolução privada em VCN"
-        ],
-        "mitigations": [
-          "Monitorar alterações de registros DNS via OCI Audit com alertas para registros críticos",
-          "Restringir modificação de registros NS e SOA a administradores de rede sênior",
-          "Habilitar DNSSEC para zonas DNS públicas críticas no OCI DNS",
-          "Revisar políticas de roteamento de tráfego DNS mensalmente para detectar desvios",
-          "Implementar resolução DNS privada via OCI DNS Views para recursos internos"
         ]
       },
       "ibmCloud": {
@@ -2855,24 +2487,6 @@
           "Armazenar backups em região GCP diferente para proteção contra desastre regional"
         ]
       },
-      "oci": {
-        "role": "manage backup in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage boot-volume-backups in compartment — backups de volumes de boot de instâncias",
-          "manage volume-backups in compartment — backups de volumes de bloco de dados",
-          "manage db-backups in compartment — backups de bancos de dados Oracle na OCI",
-          "manage auto-db-backups in compartment — backups automáticos de Autonomous Database",
-          "manage volume-group-backups in compartment — backups de grupos de volumes"
-        ],
-        "mitigations": [
-          "Habilitar backups automáticos com retenção de 30+ dias para workloads de produção",
-          "Usar compartimento dedicado para armazenamento de backups com acesso restrito",
-          "Monitorar falhas de backup via OCI Monitoring com alertas para políticas violadas",
-          "Testar restaurações de backup trimestralmente e documentar RTO/RPO alcançados",
-          "Configurar replicação de backups entre regiões OCI para proteção contra desastre"
-        ]
-      },
       "ibmCloud": {
         "role": "Manager (Backup for VPC)",
         "risk": "high",
@@ -2991,24 +2605,6 @@
           "Monitorar builds Cloud Build via Cloud Audit Logs com alertas para falhas ou acessos anômalos",
           "Restringir triggers de build a repositórios e branches aprovados via Cloud Build Triggers",
           "Revisar permissões de contas de serviço usadas em pipelines mensalmente"
-        ]
-      },
-      "oci": {
-        "role": "manage devops-family in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage devops-project in compartment — projetos DevOps OCI com pipelines e repositórios",
-          "manage build-pipelines in compartment — pipelines de build com estágios CI",
-          "manage deployment-pipelines in compartment — pipelines de deploy com aprovações",
-          "manage repositories in compartment — repositórios de código OCI DevOps",
-          "manage triggers in compartment — gatilhos automáticos para execução de pipelines"
-        ],
-        "mitigations": [
-          "Configurar aprovações de gate em estágios de deploy para ambientes de produção",
-          "Usar Dynamic Groups e Instance Principals para autenticação de pipelines sem credenciais",
-          "Monitorar execuções de pipeline via OCI Monitoring com alertas para falhas de deploy",
-          "Restringir acesso a pipelines de produção a grupos de usuários sênior aprovados",
-          "Auditar gatilhos de pipeline e suas configurações de branch trimestralmente"
         ]
       },
       "ibmCloud": {
@@ -3131,24 +2727,6 @@
           "Revisar políticas de retenção de log e configurações de sink mensalmente"
         ]
       },
-      "oci": {
-        "role": "manage log-groups in compartment",
-        "risk": "high",
-        "keyPermissions": [
-          "manage log-groups in compartment — criar grupos de log no OCI Logging",
-          "manage logs in compartment — habilitar e configurar logs de serviços OCI",
-          "manage log-content in compartment — consultar e exportar conteúdo de logs",
-          "manage alarms in compartment — criar alarmes no OCI Monitoring para alertas",
-          "manage metrics in compartment — consultar e gerenciar métricas de recursos OCI"
-        ],
-        "mitigations": [
-          "Configurar retenção de logs mínima de 90 dias para logs de auditoria de segurança",
-          "Exportar logs OCI para Object Storage com Object Lock para conformidade e imutabilidade",
-          "Monitorar consultas de log com conteúdo sensível via OCI Audit com alertas",
-          "Restringir manage log-content a administradores de segurança com necessidade comprovada",
-          "Revisar grupos de log e logs habilitados mensalmente para garantir cobertura completa"
-        ]
-      },
       "ibmCloud": {
         "role": "Manager (IBM Cloud Monitoring)",
         "risk": "high",
@@ -3261,21 +2839,6 @@
           "Exportar dados de custo para análise via BigQuery com acesso auditado"
         ]
       },
-      "oci": {
-        "role": "Budget Administrator",
-        "slug": "budget-administrator",
-        "risk": "medium",
-        "keyPermissions": [
-          "Criar, editar e excluir budgets em compartments",
-          "Configurar alert rules e thresholds de gasto",
-          "Visualizar spend atual versus budget"
-        ],
-        "mitigations": [
-          "Escopar budgets por compartment em vez de tenancy quando possível",
-          "Revisar alert rules configuradas trimestralmente",
-          "Combinar com Cost Analysis (read-only) para times sem necessidade de editar budgets"
-        ]
-      },
       "ibmCloud": {
         "role": "Billing — Editor",
         "slug": "billing-editor",
@@ -3357,21 +2920,6 @@
           "Restringir exclusão de Data Access logs configuráveis a um grupo de compliance dedicado",
           "Exportar logs para um projeto de log dedicado com acesso restrito"
         ]
-      },
-      "oci": {
-        "role": "Audit Viewer",
-        "slug": "audit-viewer",
-        "risk": "low",
-        "keyPermissions": [
-          "Ler eventos do Audit service, que rastreia todas as chamadas de API na tenancy",
-          "Filtrar eventos por serviço e usuário",
-          "Exportar registros de auditoria"
-        ],
-        "mitigations": [
-          "O Audit service da OCI é somente leitura por design — não existe verb 'manage' para audit-events",
-          "Combinar com Object Storage para retenção de longo prazo dos eventos de auditoria"
-        ],
-        "notes": "A OCI não permite administrar (criar/excluir) eventos de auditoria — apenas inspecioná-los/lê-los, por design de plataforma."
       },
       "ibmCloud": {
         "role": "Activity Tracker — Administrator",

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.PowerApps/*/permissions/write","type":"Actions"},{"action":"Microsoft.PowerApps/*/read","type":"Actions"},{"action":"Microsoft.PowerApps/*/delete","type":"NotActions"},{"action":"Microsoft.PowerApps/*/write","type":"NotActions"}]

@@ -8,6 +8,7 @@ import { ShieldAlert, ChevronRight, Search, X } from 'lucide-react'
 import Link from 'next/link'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
+import DeprecatedBadge from '@/components/DeprecatedBadge'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const TYPES: AwsPolicyType[] = ['managed', 'service-role', 'permission-set', 'permission-boundary']
@@ -165,6 +166,7 @@ function AwsPoliciesContent() {
                       <div className="flex items-center gap-1.5">
                         {p.isPrivileged && <ShieldAlert size={11} className="text-red-500 shrink-0" />}
                         <Link href={`/aws/policies/${p.slug}`} className="font-medium text-[#ff9900] truncate text-[13px] group-hover:underline transition-colors">{p.name}</Link>
+                        {p.deprecated && <DeprecatedBadge compact />}
                       </div>
                     </td>
                     <td className="px-4 py-3 align-top text-gray-500 dark:text-gray-400" style={{ width: colWidths[1], minWidth: colWidths[1] }}>

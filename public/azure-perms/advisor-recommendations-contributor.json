@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Advisor/recommendations/read","type":"Actions"},{"action":"Microsoft.Advisor/recommendations/write","type":"Actions"},{"action":"Microsoft.Advisor/recommendations/available/action","type":"Actions"}]

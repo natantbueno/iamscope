@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSLambdaExecute","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["logs:*"],"Resource":"arn:aws:logs:*:*:*"},{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject"],"Resource":"arn:aws:s3:::*"}]},"actions":["logs:*","s3:GetObject","s3:PutObject"],"notActions":[]}

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.DeviceOnboarding/discoveryServices/*","type":"Actions"},{"action":"Microsoft.DeviceOnboarding/locations/operationStatuses/read","type":"Actions"}]

@@ -1,1 +1,0 @@
-[{"action":"Microsoft.Edge/targets/read","type":"Actions"},{"action":"Microsoft.Edge/solutionTemplates/read","type":"Actions"},{"action":"Microsoft.Edge/solutionTemplates/versions/read","type":"Actions"},{"action":"Microsoft.Edge/targets/solutions/versions/read","type":"Actions"},{"action":"Microsoft.Edge/targets/updateExternalValidationStatus/action","type":"Actions"}]

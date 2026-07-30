@@ -1,1 +1,0 @@
-[{"action":"Microsoft.KeyVault/vaults/read","type":"Actions"},{"action":"Microsoft.KeyVault/vaults/secrets/setSecret/action","type":"DataActions"}]
