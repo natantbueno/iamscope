@@ -14,7 +14,7 @@ export default function MitigationList({ items, color = '#6b7280' }: MitigationL
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2">
           <Shield size={12} className="shrink-0 mt-0.5" style={{ color }} />
-          <span className="text-[11px] text-gray-400 dark:text-gray-400 leading-relaxed">{item}</span>
+          <span className="text-3xs text-fg-subtle dark:text-gray-400 leading-relaxed">{item}</span>
         </li>
       ))}
     </ul>

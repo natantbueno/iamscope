@@ -1,17 +1,28 @@
 'use client'
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { getGcpPermissions, type GcpPermEntry } from '@/lib/gcpPermissions'
-import { GCP_TIER_META, GcpTier } from '@/data/gcp'
+// TIER_META vem de '@/data/tierMeta', não do módulo de dados. Os dois exportam
+// o mesmo objeto, mas importar pelo módulo de dados arrasta o dataset inteiro
+// para o bundle desta rota — que é justamente o que tierMeta.ts foi criado
+// para evitar. Ver o cabeçalho de src/data/tierMeta.ts.
+import { GCP_TIER_META } from '@/data/tierMeta'
+import type { GcpTier } from '@/data/gcp'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
 function GcpPermissionsContent() {
+  const t = useT()
+  const fmt = useNumberFormat()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
@@ -39,8 +50,6 @@ function GcpPermissionsContent() {
   const [verb,    setVerb]    = useState('all')
   const [privOnly, setPrivOnly] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-  const PAGE_SIZE = 100
 
   const filtered = useMemo(() => permissions.filter((p) => {
     if (tier    !== 'all' && p.tier    !== tier)    return false
@@ -51,7 +60,7 @@ function GcpPermissionsContent() {
     return true
   }), [permissions, tier, service, verb, privOnly, q])
 
-  const paginated = useMemo(() => filtered.slice(0, page * PAGE_SIZE), [filtered, page])
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
 
   const stats = useMemo(() => ({
     total:     permissions.length,
@@ -73,43 +82,43 @@ function GcpPermissionsContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         {loadError && (
-          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-[12px] text-red-600 dark:text-red-400">
-            Não foi possível carregar o índice de permissões do GCP
+          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-tiny text-red-600 dark:text-red-400">
+            {t('perm.gcpLoadFailed')}{' '}
             (<code className="font-mono">/gcp-perms-index.json</code>).
           </div>
         )}
         {loading && !loadError && (
-          <div className="m-4 text-[12px] text-gray-400">Carregando permissões do GCP…</div>
+          <div className="m-4 text-tiny text-fg-subtle">{t('perm.loadingGcp')}</div>
         )}
         <StatsBar stats={[
           { label: 'Total',         value: stats.total,     color: 'green' },
           { label: 'Project Owner', value: stats.owner,     color: 'red' },
           { label: 'Admin',         value: stats.admin,     color: 'orange' },
           { label: 'Viewer',        value: stats.viewer,    color: 'green' },
-          { label: 'Privilegiadas', value: stats.privileged,color: 'red' },
-          { label: 'Serviços',      value: stats.services,  color: 'gray' },
+          { label: t('filter.privileged'), value: stats.privileged, color: 'red' },
+          { label: t('label.services'),    value: stats.services,   color: 'gray' },
         ]} />
 
         {/* Filters */}
-        <div className="px-4 pt-3 pb-2 border-b border-gray-800 bg-gray-900 flex flex-col gap-2 shrink-0">
+        <div className="px-4 pt-3 pb-2 border-b border-line bg-surface flex flex-col gap-2 shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
             {/* Tier filter */}
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Tier:</span>
+            <span className="text-2xs text-fg-muted uppercase tracking-wider">Tier:</span>
             {(['all', ...TIERS] as const).map((t) => {
               const meta = t !== 'all' ? GCP_TIER_META[t] : null
               return (
                 <button key={t} onClick={() => { setTier(t); setPage(1) }}
-                  className="text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap"
+                  className="text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap"
                   style={tier === t && meta ? { backgroundColor: meta.color + '25', color: meta.color, borderColor: meta.color + '60' }
-                    : tier === t ? { backgroundColor: '#0f9d5820', color: '#0f9d58', borderColor: '#0f9d5860' }
+                    : tier === t ? { backgroundColor: '#4285f420', color: '#4285f4', borderColor: '#4285f460' }
                     : { color: '#6b7280', borderColor: '#374151' }}>
                   {t === 'all' ? 'Todos' : meta!.label}
                 </button>
               )
             })}
-            <label className="ml-auto flex items-center gap-1.5 text-[11px] text-gray-400 cursor-pointer">
+            <label className="ml-auto flex items-center gap-1.5 text-3xs text-fg-subtle cursor-pointer">
               <input type="checkbox" checked={privOnly} onChange={e => { setPrivOnly(e.target.checked); setPage(1) }}
-                className="accent-[#0f9d58]" />
+                className="accent-csp-gcp" />
               Privilegiadas only
             </label>
           </div>
@@ -120,11 +129,11 @@ function GcpPermissionsContent() {
           */}
           <div className="flex items-center gap-3 flex-wrap">
             <label className="flex items-center gap-1.5">
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider">Serviço</span>
+              <span className="text-2xs text-fg-muted uppercase tracking-wider">{t('table.service')}</span>
               <select
                 value={service}
                 onChange={(e) => { setService(e.target.value); setPage(1) }}
-                className="text-[11px] bg-gray-900 border border-gray-700 rounded-md px-2 py-1 text-gray-300 focus:border-[#0f9d58] focus:outline-none max-w-[220px]"
+                className="text-3xs bg-surface border border-line-strong rounded-md px-2 py-1 text-fg-muted focus:border-csp-gcp focus:outline-none max-w-[220px]"
               >
                 <option value="all">Todos ({services.length})</option>
                 {services.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -132,11 +141,11 @@ function GcpPermissionsContent() {
             </label>
 
             <label className="flex items-center gap-1.5">
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider">Verbo</span>
+              <span className="text-2xs text-fg-muted uppercase tracking-wider">{t('table.verb')}</span>
               <select
                 value={verb}
                 onChange={(e) => { setVerb(e.target.value); setPage(1) }}
-                className="text-[11px] font-mono bg-gray-900 border border-gray-700 rounded-md px-2 py-1 text-gray-300 focus:border-[#0f9d58] focus:outline-none max-w-[220px]"
+                className="text-3xs font-mono bg-surface border border-line-strong rounded-md px-2 py-1 text-fg-muted focus:border-csp-gcp focus:outline-none max-w-[220px]"
               >
                 <option value="all">Todos ({verbs.length})</option>
                 {verbs.map((v) => <option key={v} value={v}>{v}</option>)}
@@ -146,29 +155,29 @@ function GcpPermissionsContent() {
             {(service !== 'all' || verb !== 'all') && (
               <button
                 onClick={() => { setService('all'); setVerb('all'); setPage(1) }}
-                className="text-[11px] px-2 py-1 rounded-md border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+                className="text-3xs px-2 py-1 rounded-md border border-line-strong text-fg-subtle hover:text-fg hover:border-gray-500 transition-colors"
               >
                 Limpar filtros
               </button>
             )}
 
-            <span className="text-[10px] text-gray-500 ml-auto">
-              {filtered.length.toLocaleString('pt-BR')} permissões
+            <span className="text-2xs text-fg-muted ml-auto">
+              {fmt(filtered.length)} {t('noun.permissions')}
             </span>
           </div>
         </div>
 
         {/* Table */}
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-[12px] border-collapse">
+          <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-800 border-b border-gray-700">
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-6"></th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Permissão</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-36">Serviço</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-28">Verbo</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-32">Tier</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-20">Roles</th>
+              <tr className="bg-surface-alt border-b border-line-strong">
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-6"></th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider">{t('table.permission')}</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-36">{t('table.service')}</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-28">{t('table.verb')}</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-32">Tier</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-20">Roles</th>
               </tr>
             </thead>
             <tbody>
@@ -178,35 +187,35 @@ function GcpPermissionsContent() {
                 return (
                   <>
                     <tr key={p.permission}
-                      className="border-b border-gray-800 hover:bg-gray-800/60 transition-colors cursor-pointer"
+                      className="border-b border-line hover:bg-surface-alt/60 transition-colors cursor-pointer"
                       onClick={() => setExpanded(isExp ? null : p.permission)}>
                       <td className="px-4 py-2.5 align-middle text-gray-600">
                         {isExp ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                       </td>
                       <td className="px-4 py-2.5 align-middle">
-                        <code className="text-[11px] font-mono text-[#4ade80]">{p.permission}</code>
-                        {p.isUsedByPrivileged && <span className="ml-2 text-[9px] uppercase font-bold text-red-400 bg-red-900/30 border border-red-800/50 px-1.5 py-0.5 rounded">priv</span>}
+                        <code className="text-3xs font-mono text-success-fg">{p.permission}</code>
+                        {p.isUsedByPrivileged && <span className="ml-2 text-micro uppercase font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 px-1.5 py-0.5 rounded">priv</span>}
                       </td>
-                      <td className="px-4 py-2.5 align-middle text-gray-400">{p.service}</td>
+                      <td className="px-4 py-2.5 align-middle text-fg-subtle">{p.service}</td>
                       <td className="px-4 py-2.5 align-middle">
-                        <code className="text-[11px] text-gray-400 font-mono">{p.verb}</code>
+                        <code className="text-3xs text-fg-subtle font-mono">{p.verb}</code>
                       </td>
                       <td className="px-4 py-2.5 align-middle">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full border font-medium"
+                        <span className="text-2xs px-2 py-0.5 rounded-full border font-medium"
                           style={{ color: meta.color, backgroundColor: meta.bg, borderColor: meta.color + '40' }}>
                           {meta.label}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 align-middle text-gray-500">{p.usedByRoles.length}</td>
+                      <td className="px-4 py-2.5 align-middle text-fg-muted">{p.usedByRoles.length}</td>
                     </tr>
                     {isExp && (
-                      <tr key={p.permission + '-exp'} className="border-b border-gray-800 bg-gray-900/60">
+                      <tr key={p.permission + '-exp'} className="border-b border-line bg-surface/60">
                         <td colSpan={6} className="px-8 py-2.5">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">Usada pelas roles:</p>
+                          <p className="text-2xs text-fg-muted uppercase tracking-wider mb-1.5">Usada pelas roles:</p>
                           <div className="flex flex-wrap gap-1.5">
                             {p.usedByRoles.map((r) => (
                               <span key={r.slug}
-                                className={`text-[10px] px-2 py-0.5 rounded border ${r.isPrivileged ? 'text-red-400 bg-red-900/20 border-red-800/40' : 'text-gray-300 bg-gray-800 border-gray-700'}`}>
+                                className={`text-2xs px-2 py-0.5 rounded border ${r.isPrivileged ? 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-800/40' : 'text-fg-muted bg-surface-alt border-line-strong'}`}>
                                 {r.name}
                               </span>
                             ))}
@@ -220,17 +229,14 @@ function GcpPermissionsContent() {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="flex items-center justify-center h-48 text-gray-500 text-[14px]">Nenhuma permissão encontrada.</div>
-          )}
-          {paginated.length < filtered.length && (
-            <div className="flex justify-center py-4">
-              <button onClick={() => setPage(p => p + 1)}
-                className="text-[12px] px-4 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors">
-                Mostrar mais ({filtered.length - paginated.length} restantes)
-              </button>
-            </div>
+            <div className="flex items-center justify-center h-48 text-fg-muted text-note">{t('empty.permissions')}</div>
           )}
         </div>
+        <Pagination
+          total={filtered.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#4285f4" noun="noun.permissions"
+        />
       </div>
     </AppShell>
   )
@@ -238,7 +244,7 @@ function GcpPermissionsContent() {
 
 export default function GcpPermissionsPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <GcpPermissionsContent />
     </Suspense>
   )

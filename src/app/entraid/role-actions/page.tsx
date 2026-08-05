@@ -7,8 +7,10 @@ import RoleActionsTable from '@/components/RoleActionsTable'
 import StatsBar from '@/components/StatsBar'
 import ExportMenu from '@/components/ExportMenu'
 import { getRoleActions, getUniqueNamespaces, getUniqueVerbs, getUniqueCategories } from '@/lib/roleActions'
+import { useT } from '@/i18n/LanguageProvider'
 
 function RoleActionsContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
@@ -36,11 +38,11 @@ function RoleActionsContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total único', value: stats.total, color: 'blue' },
+          { label: t('label.totalUnique'), value: stats.total, color: 'blue' },
           { label: 'Control Plane', value: stats.control, color: 'red' },
           { label: 'Management Plane', value: stats.management, color: 'orange' },
           { label: 'User Access', value: stats.userAccess, color: 'green' },
-          { label: 'Usadas por roles priv.', value: stats.privileged, color: 'red' },
+          { label: t('label.usedByPriv'), value: stats.privileged, color: 'red' },
           { label: 'Namespaces', value: stats.namespaces, color: 'gray' },
         ]} />
         <RoleActionsTable
@@ -57,7 +59,7 @@ function RoleActionsContent() {
 
 export default function RoleActionsPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <RoleActionsContent />
     </Suspense>
   )

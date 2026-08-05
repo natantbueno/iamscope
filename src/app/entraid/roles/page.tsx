@@ -7,6 +7,7 @@ import RolesTable, { FilterType } from '@/components/RolesTable'
 import ExportMenu from '@/components/ExportMenu'
 import StatsBar from '@/components/StatsBar'
 import { ROLES, RoleCategory } from '@/data/roles'
+import { useT } from '@/i18n/LanguageProvider'
 
 const TIER_VALUES = ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified']
 const CATEGORY_VALUES: RoleCategory[] = ['Identity', 'Application', 'Security', 'Compliance', 'M365', 'Device', 'Other']
@@ -22,6 +23,7 @@ const GLOBAL_STATS = {
 }
 
 function RolesContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -99,7 +101,7 @@ function RolesContent() {
           { label: 'Control Plane', value: GLOBAL_STATS.control, color: 'red', href: '/entraid/roles?tier=ControlPlane' },
           { label: 'Management Plane', value: GLOBAL_STATS.management, color: 'orange', href: '/entraid/roles?tier=ManagementPlane' },
           { label: 'User Access', value: GLOBAL_STATS.userAccess, color: 'green', href: '/entraid/roles?tier=UserAccess' },
-          { label: 'Não classificadas', value: GLOBAL_STATS.unclassified, color: 'gray', href: '/entraid/roles?tier=Unclassified' },
+          { label: t('label.unclassifiedFem'), value: GLOBAL_STATS.unclassified, color: 'gray', href: '/entraid/roles?tier=Unclassified' },
           { label: 'Privilegiadas', value: GLOBAL_STATS.privileged, color: 'red', href: '/entraid/roles?filter=privileged' },
         ]} />
         <RolesTable
@@ -116,7 +118,7 @@ function RolesContent() {
 
 export default function RolesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <RolesContent />
     </Suspense>
   )

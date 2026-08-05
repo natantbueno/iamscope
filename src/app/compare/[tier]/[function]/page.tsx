@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const eq = equivalences.find(e => e.id === funcId)
   return {
     title: `Multi-Cloud Compare · ${eq?.name ?? funcId}`,
-    description: eq?.description ?? 'Comparativo de equivalências IAM por função entre plataformas cloud.',
+    description: eq?.description ?? 'IAM equivalences by function, compared across cloud platforms.',
   }
 }
 

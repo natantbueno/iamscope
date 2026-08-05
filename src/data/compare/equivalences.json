@@ -45,8 +45,7 @@
         ]
       },
       "aws": {
-        "role": "Root User / OrganizationAccountAccessRole",
-        "slug": "organization-account-access-role",
+        "role": "Root User / AdministratorAccess",
         "risk": "critical",
         "keyPermissions": [
           "Root user: acesso irrestrito, não é limitável por nenhuma policy, SCP ou permission boundary",
@@ -61,11 +60,12 @@
           "Habilitar AWS Organizations SCPs para restringir até admins (root não é afetado)",
           "Usar AWS IAM Identity Center com credenciais temporárias para acesso humano do dia-a-dia",
           "Habilitar CloudTrail em todas as regiões e monitorar AssumeRole para esta role"
-        ]
+        ],
+        "notes": "O root user da conta não é uma policy e não tem página de detalhe. A OrganizationAccountAccessRole, que o AWS Organizations cria na conta-membro, anexa AdministratorAccess — é essa a policy vinculada aqui.",
+        "slug": "administratoraccess"
       },
       "gcp": {
-        "role": "Organization Admin",
-        "slug": "resourcemanager-org-admin",
+        "role": "roles/resourcemanager.organizationAdmin",
         "risk": "critical",
         "keyPermissions": [
           "resourcemanager.organizations.* — controle total da hierarquia de recursos da organização",
@@ -80,11 +80,11 @@
           "Habilitar VPC Service Controls",
           "Exigir OS Login e 2FA para todas as contas admin",
           "Auditar Cloud Audit Logs diariamente"
-        ]
+        ],
+        "slug": "resourcemanager-organizationadmin"
       },
       "ibmCloud": {
         "role": "Administrator (All Services)",
-        "slug": "administrator",
         "risk": "critical",
         "keyPermissions": [
           "Controle IAM total sobre todos os serviços",
@@ -99,7 +99,9 @@
           "Usar trusted profiles para workloads automatizados",
           "Implementar IP allowlists via network sources",
           "Exigir MFA TOTP para todas as identidades admin"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre All Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
         "role": "Super Admin",
@@ -168,28 +170,28 @@
         ]
       },
       "aws": {
-        "role": "AWSBillingReadOnlyAccess",
-        "slug": "awsbillingreadonlyaccess",
+        "role": "Billing",
+        "slug": "billing",
         "risk": "high",
         "keyPermissions": [
-          "aws-portal:ViewBilling",
-          "aws-portal:ViewPaymentMethods",
-          "budgets:ViewBudget",
-          "cur:DescribeReportDefinitions",
-          "ce:GetCostAndUsage"
+          "aws-portal:ModifyBilling — alterar configurações de billing da conta",
+          "aws-portal:ModifyPaymentMethods — alterar forma de pagamento e cartão cadastrado",
+          "aws-portal:ModifyAccount — alterar dados cadastrais e fiscais da conta",
+          "budgets:ModifyBudget — criar e alterar orçamentos e seus alertas",
+          "cur:PutReportDefinition — configurar o Cost and Usage Report"
         ],
         "mitigations": [
-          "Habilitar AWS Cost Anomaly Detection",
-          "Definir alertas de billing via CloudWatch",
-          "Restringir via condição de política IAM com MFA",
-          "Usar consolidated billing do AWS Organizations",
-          "Auditar via eventos de billing no CloudTrail"
+          "Habilitar o acesso de IAM ao billing na conta de gerenciamento — sem isso a policy não tem efeito",
+          "Alertar sobre aws-portal:ModifyPaymentMethods: trocar forma de pagamento é dano financeiro direto",
+          "Exigir MFA na condição da policy para qualquer ação de billing",
+          "Manter o e-mail e o telefone do root user fora do alcance de quem administra billing",
+          "Auditar eventos de billing no CloudTrail da conta de gerenciamento, onde eles são registrados"
         ],
-        "notes": "Para gerenciamento completo de billing, use permissão da conta root ou AWSBillingConductorFullAccess"
+        "notes": "A job-function policy Billing é a de administração. AWSBillingReadOnlyAccess, que estava aqui antes, é somente-leitura e agora aparece na linha Billing / Invoice Reader."
       },
       "gcp": {
         "role": "Billing Account Administrator",
-        "slug": "billing-account-administrator",
+        "slug": "billing-admin",
         "risk": "critical",
         "keyPermissions": [
           "billing.accounts.close (fechar billing account)",
@@ -207,8 +209,7 @@
         ]
       },
       "ibmCloud": {
-        "role": "Billing Manager",
-        "slug": "billing-manager",
+        "role": "Administrator (Billing)",
         "risk": "high",
         "keyPermissions": [
           "Visualizar faturas e histórico de pagamentos",
@@ -223,10 +224,12 @@
           "Usar IBM Cloud Activity Tracker para eventos de billing",
           "Combinar com restrições de IP via network sources",
           "Revisar acesso trimestralmente"
-        ]
+        ],
+        "notes": "A IBM não publica uma role \"Billing Manager\". Billing é um serviço de gerenciamento de conta, e o acesso a ele é a role de plataforma Administrator atribuída sobre esse serviço.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
-        "role": "Billing Admin (Google Cloud)",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "Gerenciar assinatura do Google Workspace",
@@ -241,7 +244,8 @@
           "Usar acesso somente-leitura para necessidades de relatório de custo",
           "Auditar alterações de licença via log de auditoria admin",
           "Exigir MFA em contas de admin de billing"
-        ]
+        ],
+        "notes": "Não há role pré-construída de faturamento. O privilégio oficial é Billing Management, atribuível por custom role. Reseller Admin cobre faturamento apenas no contexto de revenda."
       }
     }
   },
@@ -330,7 +334,6 @@
       },
       "ibmCloud": {
         "role": "Viewer (All Services)",
-        "slug": "viewer",
         "risk": "medium",
         "keyPermissions": [
           "Visualizar instâncias e configurações de serviço",
@@ -345,11 +348,12 @@
           "Combinar com IBM Cloud Monitoring para detecção de anomalias",
           "Usar trusted profiles para operações de leitura automatizadas",
           "Revisar atribuições de Viewer trimestralmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Viewer sobre All Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-viewer"
       },
       "googleWorkspace": {
-        "role": "Reports Admin",
-        "slug": "reports-admin",
+        "role": "N/A",
         "risk": "medium",
         "keyPermissions": [
           "Visualizar todos os relatórios de auditoria e uso",
@@ -365,7 +369,7 @@
           "Combinar com exportações do BigQuery para análise em grande escala",
           "Revisar atribuições semestralmente"
         ],
-        "notes": "Google Workspace não tem um único role global somente-leitura; Reports Admin é o mais próximo para fins de auditoria"
+        "notes": "Não há role somente-leitura global. Groups Reader é a única read-only pré-construída e alcança apenas grupos. Para leitura ampla, use custom role com os privilégios Read de Users, Groups e Organizational Units."
       }
     }
   },
@@ -416,7 +420,7 @@
         "notes": "Azure RBAC separa acesso a recursos do gerenciamento de usuários. User Access Administrator é para atribuições RBAC, não gerenciamento de contas."
       },
       "aws": {
-        "role": "IAM User Management (custom policy)",
+        "role": "IAMFullAccess",
         "risk": "high",
         "keyPermissions": [
           "iam:CreateUser, iam:DeleteUser",
@@ -432,11 +436,12 @@
           "Monitorar com CloudTrail para eventos IAM",
           "Preferir AWS IAM Identity Center para gerenciamento do ciclo de vida de usuários"
         ],
-        "notes": "AWS não tem uma managed policy única para gerenciamento de usuários. Combine ações IAM com permission boundaries."
+        "notes": "IAMFullAccess é a policy gerenciada mais próxima, e é ampla demais para o dia a dia: concede também iam:CreatePolicy e iam:AttachRolePolicy, o que permite escalar privilégio. Para gestão de usuários, prefira policy própria restrita a iam:*User* e iam:*Group*.",
+        "slug": "iamfullaccess"
       },
       "gcp": {
         "role": "roles/iam.admin",
-        "slug": "iam-administrator",
+        "slug": "iam-admin",
         "risk": "critical",
         "keyPermissions": [
           "iam.roles.create, iam.roles.delete (criar/excluir roles)",
@@ -455,8 +460,7 @@
         "notes": "Para gerenciamento de usuários do Workspace, usar Google Workspace User Management Admin em vez disso"
       },
       "ibmCloud": {
-        "role": "User Management Editor",
-        "slug": "user-management-editor",
+        "role": "Editor (User Management)",
         "risk": "high",
         "keyPermissions": [
           "Convidar usuários para a conta",
@@ -471,7 +475,9 @@
           "Restringir apenas a times de RH/TI",
           "Auditar eventos de convite e remoção de usuários mensalmente",
           "Combinar com processos de governança de identidade"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Editor sobre User Management. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-editor"
       },
       "googleWorkspace": {
         "role": "User Management Admin",
@@ -580,7 +586,6 @@
       },
       "ibmCloud": {
         "role": "Manager (Object Storage)",
-        "slug": "object-storage-manager",
         "risk": "high",
         "keyPermissions": [
           "Criar e excluir buckets",
@@ -595,10 +600,12 @@
           "Habilitar versionamento de objetos em buckets de produção",
           "Configurar IBM Cloud Security Advisor para ICOS",
           "Rotacionar chaves HMAC regularmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Object Storage. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
-        "role": "Google Drive Admin (delegação via Super Admin)",
+        "role": "Storage Admin",
         "risk": "high",
         "keyPermissions": [
           "Acessar e gerenciar todos os shared drives",
@@ -614,7 +621,8 @@
           "Monitorar eventos de auditoria do Drive via API Admin Reports",
           "Usar Context-Aware Access para operações admin do Drive"
         ],
-        "notes": "Google Workspace Drive admin requer delegação de Super Admin. Não há role standalone de 'Storage Admin'."
+        "notes": "Storage Admin é role pré-construída oficial: define limites de armazenamento e concede acesso total a Reports e às configurações do Drive.",
+        "slug": "storage-admin"
       }
     }
   },
@@ -681,7 +689,8 @@
           "Revisar via AWS IAM Access Advisor para remover permissões não utilizadas",
           "Exigir autenticação MFA para todas as chamadas de API de segurança críticas"
         ],
-        "notes": "Combinar SecurityAudit (somente leitura) com AWSSecurityHubFullAccess e AmazonGuardDutyFullAccess para administração completa de segurança."
+        "notes": "Combinar SecurityAudit (somente leitura) com AWSSecurityHubFullAccess e AmazonGuardDutyFullAccess para administração completa de segurança.",
+        "slug": "securityaudit"
       },
       "gcp": {
         "role": "roles/iam.securityAdmin",
@@ -699,10 +708,11 @@
           "Habilitar Cloud Audit Logs (Data Access) para todas as operações IAM",
           "Configurar alertas no Security Command Center para mutações de política",
           "Revisar bindings IAM com Recommender API mensalmente"
-        ]
+        ],
+        "slug": "iam-securityadmin"
       },
       "ibmCloud": {
-        "role": "Security and Compliance Center Administrator",
+        "role": "Administrator (Security and Compliance Center)",
         "risk": "high",
         "keyPermissions": [
           "Administrador da instância Security and Compliance Center (SCC) — escopo completo",
@@ -717,10 +727,12 @@
           "Exigir autenticação IBMid com MFA para contas com papel de administrador",
           "Revisar permissões mensalmente usando IBM Cloud IAM Access Reports",
           "Configurar alertas no IBM Cloud Monitoring para ações administrativas de segurança"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre Security and Compliance Center. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
-        "role": "Security Admin",
+        "role": "N/A",
         "risk": "critical",
         "keyPermissions": [
           "Acesso completo ao Google Admin Console — Central de Segurança (Security Center)",
@@ -735,7 +747,8 @@
           "Configurar alertas de auditoria para todas as ações de administrador de segurança",
           "Revisar admins delegados mensalmente no relatório de administradores do Workspace",
           "Usar Super Admin somente para contas break-glass; delegar funções específicas"
-        ]
+        ],
+        "notes": "Não há role pré-construída de segurança. Os privilégios oficiais são Security (User Security Management, Security Settings) e Security Center, atribuíveis por custom role."
       }
     }
   },
@@ -802,7 +815,8 @@
           "Habilitar CloudTrail com alertas para iam:PassRole e iam:CreateRole",
           "Exigir MFA para todas as ações IAM via condição aws:MultiFactorAuthPresent"
         ],
-        "notes": "IAMFullAccess equivale a Administrador de Funções Privilegiadas no contexto AWS. Preferir políticas customizadas com permission boundaries para limitar escopo."
+        "notes": "IAMFullAccess equivale a Administrador de Funções Privilegiadas no contexto AWS. Preferir políticas customizadas com permission boundaries para limitar escopo.",
+        "slug": "iamfullaccess"
       },
       "gcp": {
         "role": "roles/iam.admin",
@@ -820,7 +834,8 @@
           "Configurar alertas no Cloud Monitoring para mutações em roles/iam.admin",
           "Implementar Org Policy constraints/iam.allowedPolicyMemberDomains para restringir membros",
           "Exigir Workforce Identity Federation com MFA para titulares desta função"
-        ]
+        ],
+        "slug": "iam-admin"
       },
       "ibmCloud": {
         "role": "Administrator (IAM)",
@@ -838,7 +853,9 @@
           "Separar responsabilidades: administrador IAM ≠ administrador de recursos",
           "Revisar políticas IAM mensalmente com IBM Cloud IAM Access Report",
           "Exigir MFA IBMid com hardware TOTP para contas com papel de Administrador IAM"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre IAM. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
         "role": "Super Admin",
@@ -857,7 +874,8 @@
           "Configurar alertas de auditoria para todas as ações de Super Admin",
           "Criar contas break-glass documentadas em cofre físico para recuperação de emergência"
         ],
-        "notes": "O Google Workspace não possui função equivalente a PIM; todas as atribuições são permanentes. Implementar controles compensatórios rigorosos."
+        "notes": "O Google Workspace não possui função equivalente a PIM; todas as atribuições são permanentes. Implementar controles compensatórios rigorosos.",
+        "slug": "super-admin"
       }
     }
   },
@@ -925,7 +943,8 @@
           "Revisar SCPs trimestralmente para garantir que não bloqueiam operações críticas",
           "Manter SCP de proteção de contas de administrador de emergência (break-glass)"
         ],
-        "notes": "AWS não possui Acesso Condicional nativo; SCPs e IAM Conditions (aws:RequestedRegion, aws:MultiFactorAuthPresent) são os equivalentes mais próximos."
+        "notes": "AWS não possui Acesso Condicional nativo; SCPs e IAM Conditions (aws:RequestedRegion, aws:MultiFactorAuthPresent) são os equivalentes mais próximos.",
+        "slug": "awsorganizationsfullaccess"
       },
       "gcp": {
         "role": "roles/accesscontextmanager.policyAdmin",
@@ -943,7 +962,8 @@
           "Manter lista de acesso de emergência para contas break-glass fora dos perímetros",
           "Revisar níveis de acesso e perímetros mensalmente com Cloud Asset Inventory",
           "Implementar aprovação no processo de mudança para alterações em service perimeters"
-        ]
+        ],
+        "slug": "accesscontextmanager-policyadmin"
       },
       "ibmCloud": {
         "role": "Administrator (IAM Settings)",
@@ -961,10 +981,12 @@
           "Exigir aprovação de segundo administrador para alterações de restrição de IP",
           "Revisar configurações de autenticação mensalmente com IBM Cloud IAM reports",
           "Documentar todas as alterações de configuração de autenticação com justificativa"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre IAM Settings. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
-        "role": "Security Admin",
+        "role": "N/A",
         "risk": "critical",
         "keyPermissions": [
           "Configurar políticas de Context-Aware Access para aplicativos Google Workspace",
@@ -979,7 +1001,8 @@
           "Configurar alertas de auditoria para alterações em políticas Context-Aware Access",
           "Revisar políticas de acesso mensalmente e remover regras obsoletas",
           "Documentar e aprovar formalmente todas as alterações em políticas de acesso condicional"
-        ]
+        ],
+        "notes": "Não há role pré-construída. O equivalente é o privilégio Data Security (Access level management, Rule management), que controla o context-aware access."
       }
     }
   },
@@ -1045,7 +1068,8 @@
           "Preferir IRSA (IAM Roles for Service Accounts) para workloads Kubernetes",
           "Monitorar iam:PassRole via CloudTrail com alertas para serviços não autorizados",
           "Revisar funções de aplicativo com AWS IAM Access Analyzer mensalmente"
-        ]
+        ],
+        "slug": "iamfullaccess"
       },
       "gcp": {
         "role": "roles/iam.serviceAccountAdmin",
@@ -1063,10 +1087,11 @@
           "Auditar chaves de SA com mais de 90 dias de idade via Cloud Asset Inventory",
           "Monitorar iam.serviceAccountKeys.create via Cloud Audit Logs com alertas",
           "Implementar rotação automática de chaves via Secret Manager quando inevitáveis"
-        ]
+        ],
+        "slug": "iam-serviceaccountadmin"
       },
       "ibmCloud": {
-        "role": "Service ID Creator",
+        "role": "Administrator (IAM Identity Service)",
         "risk": "high",
         "keyPermissions": [
           "Criar e gerenciar IDs de serviço (Service IDs) para autenticação de aplicativos",
@@ -1081,7 +1106,9 @@
           "Monitorar criação de Service IDs via IBM Cloud Activity Tracker",
           "Revisar políticas de acesso de Service IDs mensalmente no IBM Cloud IAM",
           "Usar Trusted Profiles em vez de chaves de API para workloads em IBM Cloud"
-        ]
+        ],
+        "notes": "Cobre registrar e gerenciar service IDs e suas API keys. Quando a conta restringe a criação de service IDs, a IBM exige adicionalmente a role Service ID Creator, que é específica desse serviço e não está entre as 7 roles canônicas do IAM.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
         "role": "Services Admin",
@@ -1100,7 +1127,8 @@
           "Implementar processo formal de aprovação para novos aplicativos de terceiros",
           "Usar Google Workspace App Access Control para bloquear aplicativos não aprovados"
         ],
-        "notes": "O Google Workspace não possui conceito de Service Principals como o Entra ID. A gestão de credenciais de aplicativo é feita via Google Cloud IAM (contas de serviço) integrado ao Workspace."
+        "notes": "O Google Workspace não possui conceito de Service Principals como o Entra ID. A gestão de credenciais de aplicativo é feita via Google Cloud IAM (contas de serviço) integrado ao Workspace.",
+        "slug": "services-admin"
       }
     }
   },
@@ -1166,7 +1194,8 @@
           "Monitorar uso de chaves KMS via CloudTrail com alertas para kms:Decrypt em massa",
           "Restringir acesso a chaves KMS com condições de política por tag e origem de rede",
           "Implementar Multi-Region Keys apenas quando estritamente necessário para DR"
-        ]
+        ],
+        "slug": "awskeymanagementservicepoweruser"
       },
       "gcp": {
         "role": "roles/cloudkms.admin",
@@ -1184,7 +1213,8 @@
           "Usar CMEK (Customer-Managed Encryption Keys) para dados críticos no GCP",
           "Revisar IAM policies de chaves KMS mensalmente via Cloud Asset Inventory",
           "Implementar rotação automática de chaves simétricas a cada 90 dias no Cloud KMS"
-        ]
+        ],
+        "slug": "cloudkms-admin"
       },
       "ibmCloud": {
         "role": "Manager (Key Protect)",
@@ -1202,7 +1232,9 @@
           "Monitorar operações de chaves via IBM Cloud Activity Tracker with LogDNA",
           "Implementar separação entre gerenciamento de chaves e operações de criptografia",
           "Revisar políticas de acesso ao Key Protect e Secrets Manager mensalmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Key Protect. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -1286,7 +1318,8 @@
           "Monitorar alterações em trilhas CloudTrail via alarmes CloudWatch",
           "Revisar frameworks de conformidade no Audit Manager trimestralmente",
           "Restringir exportação de evidências de auditoria a buckets S3 com criptografia e logging"
-        ]
+        ],
+        "slug": "awsauditmanageradministratoraccess"
       },
       "gcp": {
         "role": "roles/iam.securityReviewer",
@@ -1304,10 +1337,11 @@
           "Configurar alertas no Security Command Center para findings de alta severidade",
           "Revisar relatórios de conformidade via Google Cloud Compliance Reports mensalmente",
           "Exportar logs de auditoria para bucket GCS imutável com retenção definida por política"
-        ]
+        ],
+        "slug": "iam-securityreviewer"
       },
       "ibmCloud": {
-        "role": "Security and Compliance Center Administrator",
+        "role": "Administrator (Security and Compliance Center)",
         "risk": "high",
         "keyPermissions": [
           "Administrador do IBM Security and Compliance Center para gestão de perfis",
@@ -1322,10 +1356,12 @@
           "Revisar relatórios de conformidade mensalmente com stakeholders de segurança",
           "Configurar alertas automáticos para scores de conformidade abaixo do limiar definido",
           "Restringir exportação de relatórios de conformidade a usuários com necessidade comprovada"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre Security and Compliance Center. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
-        "role": "Audit Admin",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "Acesso completo ao Google Workspace Admin Reports para logs de auditoria",
@@ -1340,7 +1376,8 @@
           "Restringir acesso ao Google Vault a usuários com necessidade legal documentada",
           "Exportar logs de auditoria para armazenamento imutável com retenção adequada",
           "Revisar permissões de Audit Admin trimestralmente e remover acessos não utilizados"
-        ]
+        ],
+        "notes": "Não há role pré-construída. Os privilégios oficiais são Reports (logs de auditoria) e Google Vault (retenção, holds, eDiscovery) — este último não vem junto com Service Settings."
       }
     }
   },
@@ -1405,7 +1442,8 @@
           "Restringir acesso ao Amazon WorkMail a grupos de AD específicos via integração",
           "Auditar alterações de configuração SES via CloudTrail com alertas automáticos",
           "Implementar políticas de autorização SES para limitar endereços de envio por aplicativo"
-        ]
+        ],
+        "slug": "amazonworkmailfullaccess"
       },
       "gcp": {
         "role": "N/A",
@@ -1446,7 +1484,7 @@
         "notes": "IBM Cloud não possui serviço de email corporativo nativo. Para email transacional, usa-se o serviço IBM Cloud Email (baseado em SendGrid)."
       },
       "googleWorkspace": {
-        "role": "Gmail Admin",
+        "role": "Services Admin",
         "risk": "high",
         "keyPermissions": [
           "Gerenciar configurações do Gmail para toda a organização no Admin Console",
@@ -1461,7 +1499,9 @@
           "Revisar mensalmente regras de roteamento de email e filtros de conteúdo",
           "Monitorar tentativas de phishing via Central de Segurança do Google Workspace",
           "Implementar DKIM, SPF e DMARC para todos os domínios gerenciados no Workspace"
-        ]
+        ],
+        "slug": "services-admin",
+        "notes": "Não existe role de Gmail. A administração das configurações do Gmail é feita pelo Services Admin, ou por custom role com o privilégio Gmail (Settings, Email Log Search, Access Admin Quarantine)."
       }
     }
   },
@@ -1526,7 +1566,8 @@
           "Monitorar iam:AddUserToGroup para grupos privilegiados via CloudTrail com alertas",
           "Implementar convenção de nomenclatura de grupos IAM para facilitar auditorias",
           "Usar AWS SSO/IAM Identity Center com grupos gerenciados externamente para maior controle"
-        ]
+        ],
+        "slug": "iamfullaccess"
       },
       "gcp": {
         "role": "roles/iam.admin",
@@ -1544,7 +1585,8 @@
           "Revisar membros de grupos com acesso a recursos GCP críticos mensalmente",
           "Implementar processo de aprovação para adição de membros a grupos privilegiados",
           "Usar Recommender API para identificar grupos com permissões excessivas"
-        ]
+        ],
+        "slug": "iam-admin"
       },
       "ibmCloud": {
         "role": "Administrator (Access Groups)",
@@ -1562,7 +1604,9 @@
           "Usar regras dinâmicas para associação automatizada em vez de membros manuais quando possível",
           "Implementar separação entre administrador de Access Groups e atribuidor de políticas",
           "Auditar políticas de Access Groups trimestralmente e remover permissões excessivas"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre Access Groups. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-administrator"
       },
       "googleWorkspace": {
         "role": "Groups Admin",
@@ -1580,7 +1624,8 @@
           "Implementar política de nomenclatura de grupos para facilitar identificação e auditoria",
           "Restringir criação de grupos por usuários finais via configurações do Admin Console",
           "Auditar grupos sem proprietário definido mensalmente e atribuir responsáveis"
-        ]
+        ],
+        "slug": "groups-admin"
       }
     }
   },
@@ -1645,7 +1690,8 @@
           "Monitorar iam:DeactivateMFADevice via CloudTrail com alertas imediatos",
           "Implementar aprovação de segundo administrador para desativação de MFA de usuários",
           "Revisar usuários IAM sem MFA habilitado semanalmente e exigir ativação"
-        ]
+        ],
+        "slug": "iamuserchangepassword"
       },
       "gcp": {
         "role": "N/A",
@@ -1682,7 +1728,9 @@
           "Implementar processo formal para reset de credenciais com verificação de identidade",
           "Revisar configurações de autenticação e provedores de identidade trimestralmente",
           "Configurar alertas para tentativas de login suspeitas e desativação de MFA"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre IAM Identity Service. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
         "role": "User Management Admin",
@@ -1700,7 +1748,8 @@
           "Exigir verificação de identidade do solicitante antes de redefinir credenciais",
           "Registrar todas as operações de gerenciamento de usuários no log de auditoria Admin",
           "Implementar aprovação de gerente para redefinição de credenciais de contas privilegiadas"
-        ]
+        ],
+        "slug": "user-management-admin"
       }
     }
   },
@@ -1765,10 +1814,11 @@
           "Restringir ssm:SendCommand a documentos SSM aprovados via condição de política",
           "Monitorar execuções de comando via CloudTrail com alertas para comandos suspeitos",
           "Implementar aprovação obrigatória no Change Manager para alterações em produção"
-        ]
+        ],
+        "slug": "amazonssmfullaccess"
       },
       "gcp": {
-        "role": "roles/chrome.management.admin",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "chrome.management.* — administração completa de dispositivos Chrome Enterprise",
@@ -1784,7 +1834,7 @@
           "Implementar processo formal de aprovação para novas políticas de dispositivo",
           "Revisar certificados e configurações de rede implantados em dispositivos Chrome"
         ],
-        "notes": "GCP/Google Workspace usa Chrome Enterprise para gerenciamento de dispositivos. Para dispositivos não-Chrome, integrar com terceiros como Jamf ou Microsoft Intune."
+        "notes": "O GCP IAM não gerencia endpoints. O privilégio equivalente é do Google Workspace / Chrome Enterprise — ver a coluna GWS desta mesma linha. Para dispositivos não-Chrome, a gestão é feita por MDM de terceiros integrado ao Workspace."
       },
       "ibmCloud": {
         "role": "N/A",
@@ -1821,7 +1871,8 @@
           "Exigir senha ou PIN mínimo em dispositivos com acesso a dados corporativos",
           "Revisar dispositivos não sincronizados há mais de 30 dias e tomar ação de revogação",
           "Implementar aprovação para inscrição de novos dispositivos pessoais (BYOD)"
-        ]
+        ],
+        "slug": "mobile-admin"
       }
     }
   },
@@ -1867,7 +1918,8 @@
           "Monitorar alterações em Security Groups via AWS Config com regras de conformidade",
           "Restringir regras 0.0.0.0/0 em Security Groups via AWS Config Managed Rules",
           "Revisar peering de VPC e Transit Gateway attachments trimestralmente"
-        ]
+        ],
+        "slug": "amazonvpcfullaccess"
       },
       "gcp": {
         "role": "roles/compute.networkAdmin",
@@ -1885,7 +1937,8 @@
           "Monitorar alterações de firewall via Cloud Audit Logs com alertas automáticos",
           "Implementar Hierarchical Firewall Policies para regras de rede em nível organizacional",
           "Revisar regras de firewall VPC mensalmente e remover regras excessivamente permissivas"
-        ]
+        ],
+        "slug": "compute-networkadmin"
       },
       "ibmCloud": {
         "role": "Editor (VPC Infrastructure Services)",
@@ -1903,7 +1956,9 @@
           "Usar IBM Cloud Internet Services (CIS) para proteção DDoS e WAF",
           "Revisar regras de Network ACL e Security Groups trimestralmente",
           "Implementar IBM Cloud Schematics para gerenciar configurações de rede via IaC"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Editor sobre VPC Infrastructure Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-editor"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -1987,7 +2042,8 @@
           "Monitorar lançamento de instâncias em regiões não autorizadas via AWS Config",
           "Restringir ec2:RunInstances por tipos de instância aprovados via condição de política",
           "Revisar instâncias EC2 paradas há mais de 30 dias mensalmente e encerrar as desnecessárias"
-        ]
+        ],
+        "slug": "amazonec2fullaccess"
       },
       "gcp": {
         "role": "roles/compute.admin",
@@ -2005,7 +2061,8 @@
           "Monitorar criação de instâncias via Cloud Audit Logs com alertas para tipos não aprovados",
           "Implementar Org Policy constraints/compute.trustedImageProjects para restringir imagens",
           "Revisar instâncias com endereços IP públicos mensalmente e usar Cloud NAT quando possível"
-        ]
+        ],
+        "slug": "compute-admin"
       },
       "ibmCloud": {
         "role": "Operator (VPC Infrastructure Services)",
@@ -2023,7 +2080,9 @@
           "Monitorar criação de instâncias via IBM Cloud Activity Tracker com alertas",
           "Restringir perfis de instância (vCPU/RAM) via políticas IAM de recursos",
           "Revisar instâncias paradas mensalmente e excluir as não necessárias"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Operator sobre VPC Infrastructure Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-operator"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -2107,7 +2166,8 @@
           "Restringir acesso de rede RDS a Security Groups específicos sem exposição pública",
           "Monitorar Performance Insights para consultas de alto impacto e acesso anômalo",
           "Habilitar AWS CloudTrail para registrar todas as chamadas de API RDS com alertas"
-        ]
+        ],
+        "slug": "amazonrdsfullaccess"
       },
       "gcp": {
         "role": "roles/cloudsql.admin",
@@ -2125,7 +2185,8 @@
           "Monitorar exportações de dados de banco de dados via Cloud Audit Logs com alertas",
           "Habilitar backups automáticos com retenção de 7+ dias e testar restaurações periodicamente",
           "Revisar usuários de banco de dados e contas com acesso privilegiado mensalmente"
-        ]
+        ],
+        "slug": "cloudsql-admin"
       },
       "ibmCloud": {
         "role": "Manager (Databases for PostgreSQL)",
@@ -2143,7 +2204,9 @@
           "Monitorar métricas de banco de dados via IBM Cloud Monitoring para anomalias",
           "Revisar credenciais de banco de dados e rotacionar a cada 90 dias",
           "Testar restaurações de backup mensalmente para validar integridade de backups"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Databases for PostgreSQL. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -2193,8 +2256,7 @@
     "description": "Administrador de contêineres e orquestração Kubernetes com controle sobre clusters, workloads, políticas de rede, controle de acesso baseado em função (RBAC) e registros de imagens de contêiner.",
     "clouds": {
       "azureRbac": {
-        "role": "Azure Kubernetes Service Contributor",
-        "slug": "azure-kubernetes-service-contributor",
+        "role": "Azure Kubernetes Service Contributor Role",
         "risk": "high",
         "keyPermissions": [
           "Microsoft.ContainerService/managedClusters/* — gerenciar clusters AKS completamente",
@@ -2209,7 +2271,8 @@
           "Restringir acesso ao API server do AKS via authorized IP ranges",
           "Monitorar imagens de contêiner com Microsoft Defender para vulnerabilidades",
           "Revisar RBAC do Kubernetes (ClusterRoleBindings) mensalmente para remover acessos excessivos"
-        ]
+        ],
+        "slug": "azure-kubernetes-service-contributor-role"
       },
       "aws": {
         "role": "AmazonEKSClusterPolicy",
@@ -2227,7 +2290,8 @@
           "Restringir acesso ao endpoint do cluster EKS via private endpoint e CIDR allowlist",
           "Monitorar imagens ECR com Amazon Inspector para vulnerabilidades de CVE",
           "Revisar aws-auth ConfigMap do EKS mensalmente para remover mapeamentos obsoletos"
-        ]
+        ],
+        "slug": "amazoneksclusterpolicy"
       },
       "gcp": {
         "role": "roles/container.admin",
@@ -2245,7 +2309,8 @@
           "Habilitar GKE Autopilot para clusters gerenciados com security posture endurecida",
           "Monitorar ameaças em clusters via Security Command Center com GKE Threat Detection",
           "Revisar Kubernetes RBAC (ClusterRoleBindings) mensalmente via Recommender API"
-        ]
+        ],
+        "slug": "container-admin"
       },
       "ibmCloud": {
         "role": "Manager (Kubernetes Service)",
@@ -2263,7 +2328,9 @@
           "Restringir acesso ao API server de clusters a redes privadas via private endpoint",
           "Monitorar logs de auditoria Kubernetes via IBM Log Analysis para atividades suspeitas",
           "Revisar RBAC de cluster e service accounts com acesso privilegiado mensalmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Kubernetes Service. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -2347,7 +2414,8 @@
           "Restringir route53domains:TransferDomain com aprovação adicional para prevenir sequestro",
           "Habilitar VPC DNS logging via Route 53 Resolver Query Logging para análise",
           "Revisar políticas de tráfego e registros de failover mensalmente"
-        ]
+        ],
+        "slug": "amazonroute53fullaccess"
       },
       "gcp": {
         "role": "roles/dns.admin",
@@ -2365,7 +2433,8 @@
           "Monitorar consultas DNS suspeitas via Cloud DNS logging integrado ao Cloud Logging",
           "Restringir criação de zonas DNS públicas a administradores com aprovação formal",
           "Revisar políticas de DNS privadas e response policies mensalmente"
-        ]
+        ],
+        "slug": "dns-admin"
       },
       "ibmCloud": {
         "role": "Manager (DNS Services)",
@@ -2383,10 +2452,12 @@
           "Revisar registros DNS críticos (MX, NS) mensalmente para detectar alterações não autorizadas",
           "Habilitar IBM Cloud Internet Services (CIS) para proteção DNSSEC em domínios públicos",
           "Auditar zonas DNS privadas e registros de resolutores customizados trimestralmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre DNS Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
-        "role": "Domain Admin",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "Gerenciar registros DNS do domínio principal e domínios adicionais no Workspace",
@@ -2402,7 +2473,7 @@
           "Revisar registros MX e SPF/DKIM/DMARC mensalmente para garantir integridade",
           "Usar registrador de domínio com autenticação de dois fatores para proteção adicional"
         ],
-        "notes": "O Domain Admin no Google Workspace refere-se à administração de domínios no Admin Console. O gerenciamento de registros DNS do domínio em si é feito no registrador (ex: Google Domains, Cloudflare)."
+        "notes": "Não há role pré-construída. O privilégio oficial é Domains (Domain Settings, Domain Management), que inclui adicionar e remover domínios e aliases."
       },
       "entraId": {
         "role": "N/A",
@@ -2467,7 +2538,8 @@
           "Usar cofres de backup em contas AWS separadas para proteção contra ransomware",
           "Testar restaurações a partir de backups trimestralmente com documentação de RTO/RPO",
           "Implementar política de retenção de backup mínima de 30 dias para dados de produção"
-        ]
+        ],
+        "slug": "awsbackupfullaccess"
       },
       "gcp": {
         "role": "roles/backupdr.admin",
@@ -2485,7 +2557,8 @@
           "Monitorar falhas de backup via Cloud Monitoring com alertas para políticas violadas",
           "Testar restaurações a partir de backups mensalmente com validação de dados",
           "Armazenar backups em região GCP diferente para proteção contra desastre regional"
-        ]
+        ],
+        "slug": "backupdr-admin"
       },
       "ibmCloud": {
         "role": "Manager (Backup for VPC)",
@@ -2503,10 +2576,12 @@
           "Testar restaurações de backup mensalmente para validar integridade e processo de DR",
           "Armazenar cópias de backup em região IBM Cloud diferente para recuperação regional",
           "Auditar políticas de backup e retenção trimestralmente para garantir conformidade com SLAs"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Backup for VPC. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
-        "role": "Vault Admin",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "Criar e gerenciar retenções legais (holds) no Google Vault para dados do Workspace",
@@ -2521,7 +2596,8 @@
           "Implementar aprovação de dois administradores para remoção de holds legais",
           "Revisar políticas de retenção trimestralmente para garantir conformidade com LGPD/GDPR",
           "Separar função de Vault Admin da função de leitura de conteúdo de usuários"
-        ]
+        ],
+        "notes": "Não há role pré-construída. O privilégio oficial é Google Vault, que cobre retenção, holds e exportação. Restaurar usuários excluídos é exclusivo do Super Admin."
       },
       "entraId": {
         "role": "N/A",
@@ -2587,7 +2663,8 @@
           "Habilitar notificações CodePipeline via SNS para monitorar execuções de pipeline",
           "Restringir execução de pipeline de produção a branches protegidos via regras de branch",
           "Auditar permissões de funções de execução de CodePipeline trimestralmente"
-        ]
+        ],
+        "slug": "awscodepipeline-fullaccess"
       },
       "gcp": {
         "role": "roles/cloudbuild.builds.editor",
@@ -2605,7 +2682,8 @@
           "Monitorar builds Cloud Build via Cloud Audit Logs com alertas para falhas ou acessos anômalos",
           "Restringir triggers de build a repositórios e branches aprovados via Cloud Build Triggers",
           "Revisar permissões de contas de serviço usadas em pipelines mensalmente"
-        ]
+        ],
+        "slug": "cloudbuild-builds-editor"
       },
       "ibmCloud": {
         "role": "Manager (Continuous Delivery)",
@@ -2623,7 +2701,9 @@
           "Monitorar execuções de pipeline via IBM Cloud Activity Tracker com alertas",
           "Restringir acesso a toolchains de produção a engenheiros sênior aprovados",
           "Revisar integrações de ferramentas e suas credenciais armazenadas mensalmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre Continuous Delivery. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
         "role": "N/A",
@@ -2707,7 +2787,8 @@
           "Configurar exportação automática de logs para S3 com Object Lock para imutabilidade",
           "Restringir logs:GetLogEvents de log groups com dados sensíveis via política de recurso",
           "Revisar retenção de log groups mensalmente e ajustar para conformidade com política"
-        ]
+        ],
+        "slug": "cloudwatchfullaccess"
       },
       "gcp": {
         "role": "roles/monitoring.admin",
@@ -2725,7 +2806,8 @@
           "Configurar sinks de log para bucket GCS com retenção imutável para conformidade",
           "Monitorar acesso a logs de auditoria via Cloud Audit Logs para consultas suspeitas",
           "Revisar políticas de retenção de log e configurações de sink mensalmente"
-        ]
+        ],
+        "slug": "monitoring-admin"
       },
       "ibmCloud": {
         "role": "Manager (IBM Cloud Monitoring)",
@@ -2743,10 +2825,12 @@
           "Monitorar consultas de log com padrões suspeitos via alertas no IBM Cloud Monitoring",
           "Exportar logs de auditoria para Object Storage com política de retenção de 12+ meses",
           "Revisar usuários e equipes com acesso a instâncias de monitoramento mensalmente"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Manager sobre IBM Cloud Monitoring. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-manager"
       },
       "googleWorkspace": {
-        "role": "Reports Admin",
+        "role": "N/A",
         "risk": "high",
         "keyPermissions": [
           "Acesso completo ao Admin Reports para logs de auditoria de todos os serviços Workspace",
@@ -2761,7 +2845,8 @@
           "Monitorar uso da Audit API por aplicativos de terceiros via log de auditoria Admin",
           "Habilitar alertas de segurança no Alert Center para eventos de login e acesso suspeito",
           "Revisar integrações SIEM com acesso à Audit API do Workspace trimestralmente"
-        ]
+        ],
+        "notes": "Não há role pré-construída. O privilégio oficial é Reports, que dá acesso a relatórios de uso e logs de auditoria e não pode ser limitado a unidades organizacionais."
       },
       "entraId": {
         "role": "N/A",
@@ -2825,7 +2910,7 @@
       },
       "gcp": {
         "role": "Billing Account Costs Manager",
-        "slug": "billing-costs-manager",
+        "slug": "billing-costsmanager",
         "risk": "medium",
         "keyPermissions": [
           "Visualizar e gerenciar orçamentos de uma billing account",
@@ -2840,8 +2925,8 @@
         ]
       },
       "ibmCloud": {
-        "role": "Billing — Editor",
-        "slug": "billing-editor",
+        "role": "Editor (Billing)",
+        "slug": "platform-editor",
         "risk": "low",
         "keyPermissions": [
           "Visualizar faturas e relatórios de uso da conta",
@@ -2851,7 +2936,8 @@
         "mitigations": [
           "Diferenciar de Billing — Administrator (métodos de pagamento, Tier 0)",
           "Revisar tags de alocação de custos periodicamente para precisão de chargeback"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Editor sobre Billing. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias."
       }
     }
   },
@@ -2893,7 +2979,7 @@
       },
       "aws": {
         "role": "AWSCloudTrail_FullAccess",
-        "slug": "awscloudtrailfullaccess",
+        "slug": "awscloudtrail-fullaccess",
         "risk": "medium",
         "keyPermissions": [
           "Criar, modificar e excluir trilhas do CloudTrail",
@@ -2922,8 +3008,8 @@
         ]
       },
       "ibmCloud": {
-        "role": "Activity Tracker — Administrator",
-        "slug": "activity-tracker-administrator",
+        "role": "Administrator (Activity Tracker)",
+        "slug": "platform-administrator",
         "risk": "medium",
         "keyPermissions": [
           "Gerenciar instâncias do IBM Cloud Activity Tracker",
@@ -2933,7 +3019,492 @@
         "mitigations": [
           "Restringir a times de segurança/compliance com necessidade comprovada",
           "Configurar arquivamento de longo prazo para atender requisitos regulatórios"
-        ]
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Administrator sobre Activity Tracker. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias."
+      }
+    }
+  },
+  {
+    "id": "security-operations",
+    "function": "security-operations",
+    "tier": 1,
+    "name": "Security Operations / Threat Response",
+    "description": "Investiga alertas, triagem de incidentes e resposta a ameaças. Diferente do Security Administrator, que define a política: aqui o trabalho é operar o que já foi definido — ler sinal, correlacionar e agir sobre o incidente.",
+    "clouds": {
+      "entraId": {
+        "role": "Security Operator",
+        "risk": "high",
+        "keyPermissions": [
+          "microsoft.directory/identityProtection/allProperties/update — remediar usuários de risco no Identity Protection",
+          "microsoft.directory/signInReports/allProperties/read — ler relatórios completos de entrada",
+          "microsoft.office365.securityComplianceCenter/allEntities/allTasks — operar o Microsoft 365 Defender",
+          "microsoft.directory/auditLogs/allProperties/read — ler logs de auditoria do diretório",
+          "microsoft.directory/riskyUsers/allProperties/update — descartar risco e forçar redefinição de senha"
+        ],
+        "mitigations": [
+          "Ativar a role por PIM com justificativa e janela de no máximo 8 horas",
+          "Separar quem investiga de quem define política — Security Operator não deve acumular Security Administrator",
+          "Alertar sobre descarte de risco em massa: dispensar risco é a ação que apaga o sinal de comprometimento",
+          "Exigir MFA resistente a phishing para a ativação, já que o alvo natural do atacante é o time que o detectaria",
+          "Revisar trimestralmente quem tem a role contra a escala real do SOC"
+        ],
+        "slug": "security-operator"
+      },
+      "azureRbac": {
+        "role": "Security Reader",
+        "risk": "medium",
+        "keyPermissions": [
+          "Microsoft.Security/*/read — ler alertas, avaliações e recomendações do Defender for Cloud",
+          "Microsoft.Security/iotSecuritySolutions/analyticsModels/read — ler modelos analíticos de IoT",
+          "Microsoft.OperationalInsights/workspaces/*/read — consultar workspaces do Log Analytics",
+          "Microsoft.Insights/alertRules/read — ler regras de alerta configuradas",
+          "Microsoft.Support/*  — abrir caso de suporte durante um incidente"
+        ],
+        "mitigations": [
+          "Combinar com Log Analytics Reader no workspace do Sentinel — Security Reader sozinho não lê a tabela de eventos",
+          "Preferir escopo de subscription ao de management group: leitura de alerta em toda a organização raramente é necessária",
+          "Auditar exportações de alerta, que carregam nome de recurso e caminho de ataque",
+          "Revisar a atribuição quando o time de resposta muda de fornecedor",
+          "Registrar que responder a incidente (isolar recurso, aplicar correção) exige Security Admin — esta role só lê"
+        ],
+        "notes": "O Azure RBAC não tem role dedicada de resposta a incidente. Security Reader lê a postura; qualquer ação corretiva no Defender for Cloud exige Security Admin, que é a linha Security Administrator desta tabela.",
+        "slug": "security-reader"
+      },
+      "aws": {
+        "role": "SecurityAudit",
+        "risk": "medium",
+        "keyPermissions": [
+          "guardduty:Get* / guardduty:List* — ler achados do GuardDuty",
+          "securityhub:Get* / securityhub:Describe* — ler achados agregados do Security Hub",
+          "cloudtrail:LookupEvents — pesquisar eventos de API durante a investigação",
+          "config:Describe* — ler regras e histórico de conformidade do AWS Config",
+          "iam:GenerateCredentialReport — gerar o relatório de credenciais da conta"
+        ],
+        "mitigations": [
+          "Atribuir na conta de segurança do Organizations, não em cada conta de workload",
+          "Combinar com uma policy de resposta escrita à parte: SecurityAudit é estritamente leitura",
+          "Monitorar iam:GenerateCredentialReport e GetCredentialReport — o relatório expõe idade de chave e uso de MFA de toda a conta",
+          "Exigir MFA e origem de rede confiável na trust policy da role assumida",
+          "Revisar o diff da policy a cada versão nova: a AWS amplia SecurityAudit sem aviso"
+        ],
+        "slug": "securityaudit"
+      },
+      "gcp": {
+        "role": "roles/securitycenter.adminViewer",
+        "risk": "medium",
+        "keyPermissions": [
+          "securitycenter.findings.list — listar achados do Security Command Center",
+          "securitycenter.assets.list — inventariar recursos monitorados pelo SCC",
+          "securitycenter.sources.list — ler as fontes de detecção configuradas",
+          "securitycenter.findings.setState — marcar achado como ativo ou inativo",
+          "logging.logEntries.list — consultar Cloud Logging durante a investigação"
+        ],
+        "mitigations": [
+          "Atribuir na organização, não no projeto — achado de SCC só faz sentido com visão completa",
+          "Alertar sobre securitycenter.findings.setState: marcar achado como inativo é a ação que silencia a detecção",
+          "Combinar com roles/logging.privateLogViewer só quando a investigação exigir Data Access logs",
+          "Revisar quem tem a role sempre que o contrato do SOC terceirizado mudar",
+          "Registrar que remediar exige role de administração do recurso afetado — esta role não corrige nada"
+        ],
+        "slug": "securitycenter-adminviewer"
+      },
+      "ibmCloud": {
+        "role": "Reader (Security and Compliance Center)",
+        "risk": "medium",
+        "keyPermissions": [
+          "Ler resultados de varredura e avaliações de conformidade do SCC",
+          "Consultar o histórico de atestações e evidências coletadas",
+          "Visualizar perfis e controles atribuídos à conta",
+          "Acompanhar o painel de postura sem alterar configuração",
+          "Exportar relatórios de conformidade para auditoria externa"
+        ],
+        "mitigations": [
+          "Separar de Administrator (Security and Compliance Center): quem lê o resultado não deveria alterar o perfil que o gera",
+          "Auditar exportações de relatório — carregam inventário e falhas de controle da conta inteira",
+          "Atribuir via access group por função, não por usuário",
+          "Revisar a atribuição quando o escopo de conformidade regulatória mudar",
+          "Registrar que a IBM não publica a lista de ações por role: o alcance real depende do serviço"
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Reader sobre Security and Compliance Center. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "service-reader"
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "medium",
+        "keyPermissions": [
+          "Acessar o painel de segurança com métricas de spam, phishing e compartilhamento externo",
+          "Usar a ferramenta de investigação para pesquisar mensagens, arquivos e dispositivos",
+          "Executar ações em massa sobre mensagens identificadas na investigação",
+          "Ler o painel de integridade de segurança da organização",
+          "Consultar regras de atividade e seus disparos"
+        ],
+        "mitigations": [
+          "Restringir a ferramenta de investigação: ela lê conteúdo de mensagem de qualquer usuário do domínio",
+          "Monitorar ações em massa — excluir mensagens em lote é irreversível",
+          "Separar do Super Admin: o painel de segurança não exige controle total do domínio",
+          "Exigir chave de segurança para admins com este privilégio",
+          "Revisar o log de auditoria do Admin console para toda investigação executada"
+        ],
+        "notes": "O Workspace não tem role de admin para operação de segurança. O privilégio é Security Center (painel + ferramenta de investigação), anexado a uma custom role. A ferramenta de investigação lê conteúdo de mensagem de qualquer usuário do domínio."
+      }
+    }
+  },
+  {
+    "id": "firewall-admin",
+    "function": "firewall-admin",
+    "tier": 2,
+    "name": "Firewall / WAF Administrator",
+    "description": "Controle sobre as regras que decidem qual tráfego entra: firewall de rede, grupos de segurança e WAF na borda da aplicação. Uma regra permissiva a mais expõe o workload inteiro sem tocar em nenhuma identidade.",
+    "clouds": {
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "O Entra ID não tem plano de rede — não existe regra de firewall a administrar",
+          "O controle de acesso por rede no Entra é feito por named locations em Conditional Access",
+          "Filtragem de tráfego de aplicação corporativa fica no Global Secure Access",
+          "Regras de IP confiável são configuração de política, não de firewall",
+          "Segmentação de rede é responsabilidade do Azure RBAC"
+        ],
+        "mitigations": [
+          "Usar named locations em Conditional Access para restringir origem de autenticação",
+          "Combinar com Network Contributor no Azure RBAC para a camada de rede propriamente dita"
+        ],
+        "notes": "O Entra ID é diretório, não rede. O equivalente de intenção — restringir acesso por origem — é a named location em Conditional Access, que é a linha Conditional Access Administrator desta tabela."
+      },
+      "azureRbac": {
+        "role": "Classic Network Contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.ClassicNetwork/* — gerenciar redes virtuais clássicas e suas regras",
+          "Microsoft.ClassicNetwork/networkSecurityGroups/* — criar e alterar NSGs clássicos",
+          "Microsoft.ClassicNetwork/reservedIps/* — reservar e liberar IPs públicos",
+          "Microsoft.ClassicNetwork/gatewayPolicies/* — configurar políticas de gateway",
+          "Microsoft.Support/* — abrir caso de suporte"
+        ],
+        "mitigations": [
+          "Preferir Network Contributor no modelo Resource Manager — o modelo clássico está em fim de vida",
+          "Exigir revisão de par para qualquer regra com origem 0.0.0.0/0",
+          "Habilitar NSG flow logs e alertar sobre regra de entrada nova em porta administrativa",
+          "Usar Azure Policy para negar regra permissiva em vez de confiar em revisão manual",
+          "Restringir o escopo ao resource group da rede, nunca à subscription"
+        ],
+        "notes": "O Azure RBAC não publica role dedicada de firewall. O Azure Firewall e o WAF do Application Gateway são administrados por Network Contributor, que é a linha Network Administrator desta tabela; Classic Network Contributor cobre o modelo clássico.",
+        "slug": "classic-network-contributor"
+      },
+      "aws": {
+        "role": "AWSWAFFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "wafv2:CreateWebACL — criar Web ACLs e associá-las a distribuições e balanceadores",
+          "wafv2:UpdateWebACL — alterar regras de bloqueio, contagem e rate limiting",
+          "wafv2:DeleteWebACL — remover a Web ACL, deixando a aplicação sem WAF",
+          "wafv2:PutLoggingConfiguration — configurar ou desligar o log de requisições bloqueadas",
+          "wafv2:UpdateIPSet — alterar listas de IP permitidas e bloqueadas"
+        ],
+        "mitigations": [
+          "Versionar as regras em IaC e bloquear alteração direta no console via SCP",
+          "Alertar sobre DeleteWebACL e PutLoggingConfiguration — remover WAF ou desligar seu log costuma preceder o ataque",
+          "Combinar com AWSNetworkFirewallFullAccess só quando a mesma pessoa também opera o firewall de VPC",
+          "Manter regra de rate limiting como baseline obrigatório, validado por AWS Config",
+          "Revisar mensalmente as IPSets: allowlist esquecida é porta permanente"
+        ],
+        "slug": "awswaffullaccess"
+      },
+      "gcp": {
+        "role": "roles/compute.securityAdmin",
+        "risk": "high",
+        "keyPermissions": [
+          "compute.firewalls.create — criar regras de firewall na VPC",
+          "compute.firewalls.update — alterar origem, porta e prioridade de regra existente",
+          "compute.firewalls.delete — remover regra, incluindo as de negação explícita",
+          "compute.securityPolicies.update — alterar políticas do Cloud Armor (WAF)",
+          "compute.sslCertificates.create — instalar certificados TLS nos balanceadores"
+        ],
+        "mitigations": [
+          "Aplicar a constraint de organização que exige firewall com log habilitado",
+          "Alertar sobre regra com sourceRanges 0.0.0.0/0 em porta 22, 3389 ou 5432",
+          "Usar hierarchical firewall policies na organização para que o projeto não consiga afrouxar o mínimo",
+          "Revisar prioridade de regra: uma regra de allow com prioridade menor anula a de deny",
+          "Separar de roles/compute.networkAdmin quando o time de segurança não opera roteamento"
+        ],
+        "slug": "compute-securityadmin"
+      },
+      "ibmCloud": {
+        "role": "Editor (VPC Infrastructure Services)",
+        "risk": "high",
+        "keyPermissions": [
+          "Criar e alterar security groups e suas regras de entrada e saída",
+          "Configurar network ACLs nas sub-redes da VPC",
+          "Associar e desassociar IPs flutuantes de instâncias",
+          "Gerenciar regras de balanceador de carga e seus listeners",
+          "Configurar gateways públicos e rotas da VPC"
+        ],
+        "mitigations": [
+          "Separar a edição de regra do provisionamento de instância, que também cabe em Editor",
+          "Exigir revisão para qualquer regra com origem 0.0.0.0/0",
+          "Habilitar VPC flow logs e reter por no mínimo 90 dias",
+          "Atribuir por access group com escopo de resource group, não na conta inteira",
+          "Registrar que a infraestrutura clássica tem modelo separado, por permissão individual, não por role"
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Editor sobre VPC Infrastructure Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-editor"
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "O Google Workspace não expõe rede a administrar",
+          "Controle de origem é feito por Context-Aware Access, não por firewall",
+          "Restrição de IP para APIs é configuração do Cloud Identity",
+          "Não há regra de porta ou protocolo no Admin console",
+          "Segurança de rede do Workspace é responsabilidade do Google"
+        ],
+        "mitigations": [
+          "Usar Context-Aware Access para condicionar acesso a origem e postura do dispositivo",
+          "Restringir apps de terceiros por allowlist de OAuth client"
+        ],
+        "notes": "O Workspace é SaaS: não há plano de rede administrável pelo cliente. O equivalente de intenção é o Context-Aware Access."
+      }
+    }
+  },
+  {
+    "id": "disaster-recovery-admin",
+    "function": "disaster-recovery-admin",
+    "tier": 2,
+    "name": "Disaster Recovery / Replication Administrator",
+    "description": "Replicação contínua e failover entre regiões. Vizinho de Backup & Recovery e distinto dele: backup guarda cópia para restaurar depois; DR mantém réplica quente para assumir agora. Quem controla o failover pode redirecionar produção inteira.",
+    "clouds": {
+      "entraId": {
+        "role": "Entra Backup Reader",
+        "risk": "low",
+        "keyPermissions": [
+          "microsoft.backup/allEntities/allProperties/read — ler configuração e status do Microsoft 365 Backup",
+          "Consultar políticas de proteção aplicadas a caixas de correio e sites",
+          "Acompanhar o histórico de execução de backup do M365",
+          "Verificar cobertura de proteção sem poder alterá-la",
+          "Sem permissão de restauração — leitura apenas"
+        ],
+        "mitigations": [
+          "Registrar o escopo real: esta role cobre Microsoft 365 Backup, não DR de infraestrutura",
+          "Usar Azure RBAC Site Recovery Contributor para replicação de workload"
+        ],
+        "notes": "O Entra ID não faz DR de infraestrutura. Entra Backup Reader é o equivalente mais próximo e é somente-leitura sobre o Microsoft 365 Backup. Replicação de workload é Azure RBAC.",
+        "slug": "entra-backup-reader"
+      },
+      "azureRbac": {
+        "role": "Site Recovery Contributor",
+        "risk": "high",
+        "keyPermissions": [
+          "Microsoft.RecoveryServices/vaults/replicationFabrics/* — configurar fabrics de replicação",
+          "Microsoft.RecoveryServices/vaults/replicationPolicies/* — definir RPO e retenção de pontos de recuperação",
+          "Microsoft.RecoveryServices/vaults/replicationProtectedItems/* — proteger e failover de itens",
+          "Microsoft.Network/* — criar a rede da região secundária para o failover",
+          "Microsoft.Compute/virtualMachines/* — recriar VMs no destino"
+        ],
+        "mitigations": [
+          "Exigir aprovação fora da ferramenta para failover não planejado — a ação redireciona produção",
+          "Testar failover em rede isolada trimestralmente, com relatório de RTO e RPO medidos",
+          "Alertar sobre alteração de política de replicação: aumentar RPO degrada a proteção sem erro visível",
+          "Separar de Backup Contributor quando os times de DR e backup forem distintos",
+          "Restringir o escopo ao cofre do Recovery Services, não à subscription"
+        ],
+        "slug": "site-recovery-contributor"
+      },
+      "aws": {
+        "role": "AWSElasticDisasterRecoveryConsoleFullAccess",
+        "risk": "high",
+        "keyPermissions": [
+          "drs:StartRecovery — iniciar recuperação de instâncias na região de destino",
+          "drs:StartFailbackLaunch — executar o failback para a origem",
+          "drs:UpdateReplicationConfiguration — alterar janela e banda de replicação",
+          "drs:DisconnectSourceServer — desconectar servidor de origem, interrompendo a replicação",
+          "ec2:RunInstances — lançar as instâncias de recuperação"
+        ],
+        "mitigations": [
+          "Alertar sobre DisconnectSourceServer — desconectar a origem para a proteção de forma silenciosa",
+          "Restringir drs:StartRecovery por condição de tag no servidor de origem",
+          "Executar drill de recuperação trimestral com métrica de RTO registrada",
+          "Manter a conta de DR separada da conta de produção no Organizations",
+          "Monitorar o lag de replicação como alerta operacional, não como painel consultado ocasionalmente"
+        ],
+        "slug": "awselasticdisasterrecoveryconsolefullaccess"
+      },
+      "gcp": {
+        "role": "roles/backupdr.backupUser",
+        "risk": "high",
+        "keyPermissions": [
+          "backupdr.backupPlanAssociations.create — associar recurso a um plano de proteção",
+          "backupdr.backups.restore — restaurar recurso a partir de um backup",
+          "backupdr.backupVaults.get — ler configuração do cofre de backup",
+          "backupdr.managementServers.get — consultar o servidor de gerenciamento",
+          "compute.instances.create — criar a instância de destino da restauração"
+        ],
+        "mitigations": [
+          "Separar de roles/backupdr.admin: restaurar e administrar o cofre não precisam ser a mesma pessoa",
+          "Restaurar sempre em projeto de destino distinto do de produção durante o teste",
+          "Habilitar imutabilidade do cofre para que a restauração não conviva com exclusão de backup",
+          "Auditar backupdr.backups.restore — a restauração recria dado num contexto de IAM possivelmente diferente do original",
+          "Medir RTO em drill trimestral, não em estimativa"
+        ],
+        "slug": "backupdr-backupuser"
+      },
+      "ibmCloud": {
+        "role": "Operator (VPC Infrastructure Services)",
+        "risk": "high",
+        "keyPermissions": [
+          "Operar snapshots e réplicas de volume entre zonas",
+          "Executar failover de volume replicado para a zona secundária",
+          "Configurar cross-region replication de buckets do Object Storage",
+          "Gerenciar imagens personalizadas usadas na recriação de instâncias",
+          "Acompanhar status de replicação sem alterar a topologia da VPC"
+        ],
+        "mitigations": [
+          "Separar quem executa failover de quem define a política de replicação",
+          "Testar failover entre zonas trimestralmente com RTO registrado",
+          "Manter réplica em região distinta, não apenas em zona distinta",
+          "Auditar mudanças de configuração de replicação via Activity Tracker",
+          "Registrar que a IBM não publica a lista de ações por role: o alcance real depende do serviço"
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Operator sobre VPC Infrastructure Services. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-operator"
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "O Workspace é SaaS — não há replicação de infraestrutura a administrar",
+          "A continuidade dos dados é responsabilidade do Google",
+          "Retenção e recuperação de conteúdo ficam no Google Vault",
+          "Restaurar usuário excluído é privilégio do Super Admin, em janela de 20 dias",
+          "Não existe conceito de failover regional exposto ao cliente"
+        ],
+        "mitigations": [
+          "Usar Google Vault para retenção de conteúdo com valor legal",
+          "Documentar a janela de 20 dias para restauração de usuário excluído"
+        ],
+        "notes": "Não há DR administrável pelo cliente no Workspace. O que existe é retenção via Google Vault e a janela de restauração de usuário excluído."
+      }
+    }
+  },
+  {
+    "id": "billing-reader",
+    "function": "billing-reader",
+    "tier": 1,
+    "name": "Billing / Invoice Reader",
+    "description": "Leitura de faturas, encargos e uso, sem poder alterar forma de pagamento, contrato ou propriedade da conta. É a função que mais gente pede e a que mais costuma vir com privilégio a mais anexado.",
+    "clouds": {
+      "entraId": {
+        "role": "N/A",
+        "risk": "low",
+        "keyPermissions": [
+          "O Entra ID não tem role de leitura de billing",
+          "Billing Administrator concede leitura e escrita juntas",
+          "Global Reader lê configuração do tenant, não faturas",
+          "Dados de fatura do Azure ficam no Azure RBAC, não no diretório",
+          "Cobrança de licença M365 fica no centro de administração, sob Billing Administrator"
+        ],
+        "mitigations": [
+          "Usar Azure RBAC Billing Reader no escopo de billing account para leitura pura",
+          "Evitar conceder Billing Administrator a quem só precisa consultar fatura"
+        ],
+        "notes": "O Entra ID não separa leitura de escrita em billing: só existe Billing Administrator, que é a linha Billing Administrator desta tabela. Para leitura pura, o escopo correto é o Azure RBAC."
+      },
+      "azureRbac": {
+        "role": "Billing Reader",
+        "risk": "low",
+        "keyPermissions": [
+          "Microsoft.Billing/billingAccounts/read — ler a conta de faturamento",
+          "Microsoft.Billing/billingAccounts/invoices/read — ler faturas emitidas",
+          "Microsoft.Consumption/*/read — ler uso e encargos detalhados",
+          "Microsoft.CostManagement/*/read — ler análises de custo e orçamentos",
+          "Microsoft.Support/* — abrir caso de suporte sobre cobrança"
+        ],
+        "mitigations": [
+          "Atribuir no escopo de billing account, não na subscription — o dado de fatura mora acima dela",
+          "Registrar que fatura revela inventário: nome de serviço, região e volume de uso",
+          "Auditar exportação de dados de custo para storage externo",
+          "Separar de Cost Management Contributor, que altera orçamento e alerta",
+          "Revisar a lista de leitores a cada renovação de contrato"
+        ],
+        "slug": "billing-reader"
+      },
+      "aws": {
+        "role": "AWSBillingReadOnlyAccess",
+        "risk": "low",
+        "keyPermissions": [
+          "aws-portal:ViewBilling — ver o console de billing",
+          "aws-portal:ViewUsage — ver relatórios de uso",
+          "ce:Get* — consultar o Cost Explorer",
+          "budgets:ViewBudget — ler orçamentos configurados",
+          "invoicing:GetInvoicePDF — baixar a fatura em PDF"
+        ],
+        "mitigations": [
+          "Habilitar o acesso de IAM ao billing na conta de gerenciamento — sem isso a policy não tem efeito",
+          "Atribuir na conta de gerenciamento do Organizations, onde o dado consolidado mora",
+          "Monitorar downloads de fatura: o PDF traz inventário de serviço e região",
+          "Separar da policy Billing (job function), que permite alterar forma de pagamento",
+          "Revisar quando o time financeiro trocar de fornecedor de FinOps"
+        ],
+        "slug": "awsbillingreadonlyaccess"
+      },
+      "gcp": {
+        "role": "roles/billing.viewer",
+        "risk": "low",
+        "keyPermissions": [
+          "billing.accounts.get — ler a conta de faturamento",
+          "billing.accounts.getUsageExportSpec — ler a configuração de exportação de uso",
+          "billing.budgets.get — ler orçamentos definidos",
+          "billing.resourceAssociations.list — listar projetos ligados à conta",
+          "commerceoffercatalog.* .get — consultar catálogo de preços aplicável"
+        ],
+        "mitigations": [
+          "Atribuir na billing account, não na organização — são hierarquias distintas no GCP",
+          "Separar de roles/billing.admin, que pode desvincular projeto e derrubar produção",
+          "Auditar quem lê a exportação de uso no BigQuery, que é mais detalhada que a fatura",
+          "Revisar a lista sempre que um projeto mudar de conta de faturamento",
+          "Registrar que listar projetos vinculados equivale a inventariar a organização"
+        ],
+        "slug": "billing-viewer"
+      },
+      "ibmCloud": {
+        "role": "Viewer (Billing)",
+        "risk": "low",
+        "keyPermissions": [
+          "Visualizar faturas e o resumo de uso da conta",
+          "Consultar o histórico de cobrança por serviço e por região",
+          "Ler orçamentos e alertas de gasto configurados",
+          "Acompanhar créditos e assinaturas ativas",
+          "Sem permissão para alterar forma de pagamento ou plano"
+        ],
+        "mitigations": [
+          "Separar de Editor (Billing), que altera orçamento e alerta de gasto",
+          "Atribuir por access group ligado ao time financeiro",
+          "Auditar exportação de dados de uso, que detalha inventário por serviço",
+          "Revisar a atribuição a cada renovação de contrato",
+          "Registrar que a IBM não publica a lista de ações por role: o alcance real depende do serviço"
+        ],
+        "notes": "A IBM tem 7 roles e nenhuma é específica de serviço: o que varia é o serviço sobre o qual a role é atribuída. Aqui é a role de Viewer sobre Billing. A IBM não publica a lista de ações por role — cada serviço mapeia as próprias.",
+        "slug": "platform-viewer"
+      },
+      "googleWorkspace": {
+        "role": "N/A",
+        "risk": "medium",
+        "keyPermissions": [
+          "Acessar a seção de billing do Admin console",
+          "Ver faturas e histórico de cobrança do domínio",
+          "Gerenciar assinaturas e contagem de licenças",
+          "Alterar plano de pagamento da assinatura",
+          "Adicionar e remover licenças de serviços"
+        ],
+        "mitigations": [
+          "Registrar que o Workspace não separa leitura de escrita: este privilégio também altera assinatura",
+          "Restringir a um número mínimo de administradores e revisar mensalmente",
+          "Alertar sobre alteração de contagem de licença, que muda o custo recorrente",
+          "Separar do Super Admin — billing não exige controle total do domínio",
+          "Exigir chave de segurança para admins com este privilégio"
+        ],
+        "notes": "O Workspace não tem role de admin para billing, nem privilégio somente-leitura. O privilégio é Billing Management, anexado a uma custom role, e ele já permite alterar assinatura e contagem de licença — não existe leitura pura aqui."
       }
     }
   }

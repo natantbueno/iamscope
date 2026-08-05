@@ -12,7 +12,11 @@
 // coluna, cabeçalho fixo, copiar por linha, exportar e contador "X de Y".
 
 import { useState, useMemo } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { Search, Copy, CheckCheck, X } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import type { TranslationKey } from '@/i18n/dictionary'
+import { usePagination } from '@/hooks/usePagination'
 import ExportButton from './ExportButton'
 
 export interface PermissionRow {
@@ -45,14 +49,17 @@ interface PermissionsTableProps {
   /** Nome base do arquivo exportado. */
   filename: string
   /** Rótulo do que está sendo listado, ex.: 'actions', 'permissions'. */
-  noun?: string
-  searchPlaceholder?: string
+  /** Chave do dicionário (ex.: 'noun.permissions') — acompanha o idioma. */
+  noun?: TranslationKey
+  /** Também chave do dicionário — o placeholder é texto de tela como qualquer outro. */
+  searchPlaceholder?: TranslationKey
 }
 
 export default function PermissionsTable({
   rows, columns, filterKey, colors = {}, accent, filename,
-  noun = 'permissões', searchPlaceholder = 'Filtrar...',
+  noun = 'noun.permissions', searchPlaceholder = 'ph.filterGeneric',
 }: PermissionsTableProps) {
+  const t = useT()
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<string>('all')
   const [copied, setCopied] = useState<string | null>(null)
@@ -84,24 +91,27 @@ export default function PermissionsTable({
     setTimeout(() => setCopied(null), 1500)
   }
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
+
+
   return (
     <div>
       {/* Controles */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <div className="relative flex-1 min-w-[220px]">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-subtle" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={searchPlaceholder}
-            aria-label={searchPlaceholder}
-            className="w-full text-[12px] pl-8 pr-8 py-1.5 border border-[#dde3ec] dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1"
+            placeholder={t(searchPlaceholder)}
+            aria-label={t(searchPlaceholder)}
+            className="w-full text-tiny pl-8 pr-8 py-1.5 border border-surface-border dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1"
             style={{ ['--tw-ring-color' as string]: accent }}
           />
           {search && (
-            <button onClick={() => setSearch('')} aria-label="Limpar busca"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <button onClick={() => setSearch('')} aria-label={t('action.clearSearch')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-gray-600 dark:hover:text-gray-300">
               <X size={13} />
             </button>
           )}
@@ -110,10 +120,10 @@ export default function PermissionsTable({
         {filterOptions.length > 1 && (
           <>
             <button onClick={() => setActiveFilter('all')}
-              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+              className={`text-3xs px-2.5 py-1 rounded-full border transition-colors ${
                 activeFilter === 'all'
                   ? 'font-medium text-white border-transparent'
-                  : 'text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  : 'text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
               style={activeFilter === 'all' ? { background: accent, borderColor: accent } : {}}>
               Todas ({rows.length})
@@ -123,8 +133,8 @@ export default function PermissionsTable({
               const c = colors[value] ?? accent
               return (
                 <button key={value} onClick={() => setActiveFilter(active ? 'all' : value)}
-                  className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
-                    active ? 'font-medium' : 'text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  className={`text-3xs px-2.5 py-1 rounded-full border transition-colors ${
+                    active ? 'font-medium' : 'text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                   style={active ? { background: c + '20', color: c, borderColor: c + '80' } : {}}>
                   {value} ({n})
@@ -138,14 +148,14 @@ export default function PermissionsTable({
       </div>
 
       {/* Tabela */}
-      <div className="border border-[#dde3ec] dark:border-gray-800 rounded-lg overflow-hidden">
+      <div className="border border-surface-border dark:border-gray-800 rounded-lg overflow-hidden">
         <div className="max-h-[520px] overflow-y-auto">
-          <table className="w-full text-[12px] border-collapse">
+          <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
+              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
                 {columns.map((c) => (
                   <th key={c.key}
-                    className={`text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2 ${c.width ?? ''}`}>
+                    className={`text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2 ${c.width ?? ''}`}>
                     {c.label}
                   </th>
                 ))}
@@ -155,12 +165,12 @@ export default function PermissionsTable({
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-gray-400 text-[13px]">
+                  <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-fg-subtle text-body">
                     Nenhum resultado para “{search}”.
                   </td>
                 </tr>
               ) : (
-                filtered.map((row, i) => (
+                paginated.map((row, i) => (
                   <tr key={row.permission + i}
                     className="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 group">
                     {columns.map((c, ci) => {
@@ -170,7 +180,7 @@ export default function PermissionsTable({
                         const col = colors[v] ?? accent
                         return (
                           <td key={c.key} className="px-3 py-2 align-top">
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
+                            <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
                               style={{ color: col, borderColor: col + '50', background: col + '15' }}>
                               {v}
                             </span>
@@ -180,8 +190,8 @@ export default function PermissionsTable({
                       return (
                         <td key={c.key} className="px-3 py-2 align-top">
                           <span
-                            className={`${c.mono || isFirst ? 'font-mono text-[11px] break-all' : 'text-[11px]'} ${
-                              isFirst ? 'font-medium' : 'text-gray-500 dark:text-gray-400'
+                            className={`${c.mono || isFirst ? 'font-mono text-3xs break-all' : 'text-3xs'} ${
+                              isFirst ? 'font-medium' : 'text-fg-muted'
                             } leading-snug`}
                             style={isFirst ? { color: accent } : undefined}
                           >
@@ -191,8 +201,8 @@ export default function PermissionsTable({
                       )
                     })}
                     <td className="px-2 py-2 align-top">
-                      <button onClick={() => copy(row.permission)} title="Copiar"
-                        className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
+                      <button onClick={() => copy(row.permission)} title={t('action.copy')}
+                        className="opacity-0 group-hover:opacity-100 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
                         {copied === row.permission
                           ? <CheckCheck size={11} className="text-green-600 opacity-100" />
                           : <Copy size={11} />}
@@ -206,9 +216,11 @@ export default function PermissionsTable({
         </div>
       </div>
 
-      <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
-        {filtered.length} de {rows.length} {noun}
-      </p>
+      <Pagination
+        total={filtered.length} page={page} pageSize={pageSize}
+        onPageChange={setPage} onPageSizeChange={setPageSize}
+        accent={accent} noun={noun}
+      />
     </div>
   )
 }

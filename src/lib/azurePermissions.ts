@@ -10,6 +10,7 @@
 // /azure-rbac/permissions e /azure-rbac/permissions/[slug].
 
 import { AZURE_ROLES, AzureRbacRole } from '@/data/azureRbac'
+import { lookupActionDoc } from './azureActionDocs'
 
 export interface AzurePermIndexFile {
   slugs: string[]
@@ -73,7 +74,14 @@ export function buildAzurePermissionCatalog(
   const out: AzurePermissionEntry[] = []
   const slugSeen = new Map<string, number>()
 
-  for (const action of Object.keys(idx.index)) {
+  // .sort() NÃO é cosmético: 57 actions colidem no slug (a mesma operação
+  // aparece com caixas diferentes nas definições de role — Microsoft.insights/
+  // logs/read, Microsoft.Insights/Logs/Read...). O sufixo de desambiguação é
+  // atribuído por ordem de iteração, e generateStaticParams em
+  // app/azure-rbac/permissions/[slug]/page.tsx itera ORDENADO. Sem o mesmo
+  // critério aqui, a página gerada no build e a resolvida no cliente podem
+  // apontar para actions diferentes sob a mesma URL.
+  for (const action of Object.keys(idx.index).sort()) {
     const roles: AzureRbacRole[] = []
     for (const i of idx.index[action]) {
       const s = idx.slugs[i]
@@ -91,7 +99,9 @@ export function buildAzurePermissionCatalog(
     out.push({
       action, slug, provider, resource, verb,
       isWildcard: action.includes('*'),
-      description: descriptions[action],
+      // Busca tolerante a caixa: a doc da Microsoft e as definições de role
+      // divergem em maiúsculas para a mesma action (ver azureActionDocs.ts).
+      description: lookupActionDoc(descriptions, action),
       roles: roles.sort((a, b) => a.name.localeCompare(b.name)),
     })
   }

@@ -4,12 +4,12 @@ import EvaluateClient from './EvaluateClient'
 
 export const metadata: Metadata = {
   title: 'Role Evaluator',
-  description: 'Avalie o risco de qualquer role multi-cloud colando o JSON — 100% client-side, sem chamadas externas.',
+  description: 'Paste the JSON of any multi-cloud role and get a risk analysis — fully client-side, no external calls.',
 }
 
 export default function EvaluatePage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <EvaluateClient />
     </Suspense>
   )

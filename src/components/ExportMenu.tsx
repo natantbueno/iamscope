@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Download, FileJson, FileSpreadsheet, FileText, ChevronDown } from 'lucide-react'
-import { EntraRole } from '@/data/roles'
-import { RoleActionEntry } from '@/lib/roleActions'
-import { API_PERMISSIONS } from '@/data/apiPermissions'
-import { AzureRbacRole } from '@/data/azureRbac'
+import type { EntraRole } from '@/data/roles'
+import type { RoleActionEntry } from '@/lib/roleActions'
+import type { ApiPermission } from '@/data/apiPermissions'
+import type { AzureRbacRole } from '@/data/azureRbac'
+import { useT } from '@/i18n/LanguageProvider'
 import {
   exportCSV, exportExcel, exportJSON,
   exportPermissionsCSV, exportPermissionsJSON,
@@ -14,10 +15,8 @@ import {
   exportAzureRbacCSV, exportAzureRbacJSON, exportAzureRbacMatchedPermsCSV,
 } from '@/lib/export'
 
-type ApiPermission = typeof API_PERMISSIONS[number]
-
 type Props =
-  | { mode?: 'roles';       roles?: EntraRole[];            label?: string }
+  | { mode?: 'roles';       roles: EntraRole[];             label?: string }
   | { mode: 'roleActions';  roleActions: RoleActionEntry[]; label?: string }
   | { mode: 'apiPerms';     apiPerms: ApiPermission[];      label?: string }
   | { mode: 'azureRbac';   azureRoles: AzureRbacRole[];    label?: string
@@ -25,6 +24,7 @@ type Props =
       matchedPerms?: Map<string, string[]> | null }
 
 export default function ExportMenu(props: Props) {
+  const t = useT()
   const { label = 'Exportar' } = props
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -45,7 +45,7 @@ export default function ExportMenu(props: Props) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center gap-1.5 text-tiny px-3 py-1.5 rounded-md border border-surface-border dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <Download size={13} />
         {label}
@@ -53,12 +53,12 @@ export default function ExportMenu(props: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-60 bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-700 rounded-lg shadow-lg z-50 py-1.5">
+        <div className="absolute right-0 mt-1 w-60 bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-700 rounded-lg shadow-lg z-50 py-1.5">
           {mode === 'roles' && (() => {
-            const roles = (props as { roles?: EntraRole[] }).roles
+            const roles = (props as { roles: EntraRole[] }).roles
             return (
               <>
-                <MenuLabel>Lista de roles</MenuLabel>
+                <MenuLabel>{t('exp.rolesList')}</MenuLabel>
                 <MenuItem icon={<FileSpreadsheet size={14} className="text-green-600" />} onClick={() => run(() => exportExcel(roles))}>
                   Excel (.xls)
                 </MenuItem>
@@ -69,7 +69,7 @@ export default function ExportMenu(props: Props) {
                   JSON
                 </MenuItem>
                 <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
-                <MenuLabel>Permissões expandidas</MenuLabel>
+                <MenuLabel>{t('exp.expandedPerms')}</MenuLabel>
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportPermissionsCSV(roles))}>
                   CSV (uma linha por ação)
                 </MenuItem>
@@ -126,7 +126,7 @@ export default function ExportMenu(props: Props) {
                 {matchedPerms && matchedPerms.size > 0 && (
                   <>
                     <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
-                    <MenuLabel>Busca por permissão</MenuLabel>
+                    <MenuLabel>{t('exp.permSearch')}</MenuLabel>
                     <MenuItem icon={<FileText size={14} className="text-blue-600" />}
                       onClick={() => run(() => exportAzureRbacMatchedPermsCSV(azureRoles, matchedPerms))}>
                       CSV (uma linha por permissão)
@@ -144,7 +144,7 @@ export default function ExportMenu(props: Props) {
 
 function MenuLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-1">
+    <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-1">
       {children}
     </p>
   )
@@ -154,7 +154,7 @@ function MenuItem({ icon, children, onClick }: { icon: React.ReactNode; children
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+      className="w-full flex items-center gap-2.5 px-3 py-1.5 text-body text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
     >
       {icon}
       {children}

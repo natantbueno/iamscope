@@ -4,12 +4,12 @@ import SodClient from './SodClient'
 
 export const metadata: Metadata = {
   title: 'SoD Analyzer',
-  description: 'Segregation of Duties para Entra ID e Azure RBAC — catálogo de regras, matriz de conflito e avaliação de usuário, 100% client-side.',
+  description: 'Segregation of duties for Entra ID and Azure RBAC — rule catalogue, conflict matrix and user evaluation, fully client-side.',
 }
 
 export default function SodPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <SodClient />
     </Suspense>
   )

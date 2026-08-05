@@ -4058,32 +4058,4 @@ export const CATEGORY_META: Record<
   Other: { label: 'Other', textColor: '#444441', bgColor: '#f1f0f0', darkText: '#b4b2a9', darkBg: '#2a2a28' },
 }
 
-export const EAM_META: Record<
-  EamTier,
-  { label: string; short: string; description: string; textColor: string; bgColor: string; darkText: string; darkBg: string; order: number }
-> = {
-  ControlPlane: {
-    label: 'Control Plane',
-    short: 'Tier 0',
-    description: 'Controle total do tenant. Comprometimento leva a takeover completo. Isole de planos inferiores.',
-    textColor: '#9a2020', bgColor: '#fde8e8', darkText: '#f09595', darkBg: '#3a1414', order: 0,
-  },
-  ManagementPlane: {
-    label: 'Management Plane',
-    short: 'Tier 1',
-    description: 'Funcoes de gestao de TI enterprise-wide. Alto impacto, mas sem controle total do tenant.',
-    textColor: '#7a4a00', bgColor: '#fef3e2', darkText: '#ef9f27', darkBg: '#3a2a0a', order: 1,
-  },
-  UserAccess: {
-    label: 'User Access',
-    short: 'Tier 2',
-    description: 'Acesso de usuario e leitura basica. Menor impacto de seguranca.',
-    textColor: '#1a5c28', bgColor: '#e6f5e8', darkText: '#97c459', darkBg: '#1a2e10', order: 3,
-  },
-  Unclassified: {
-    label: 'Nao classificada',
-    short: '-',
-    description: 'Sem classificacao de tier definida.',
-    textColor: '#444441', bgColor: '#f1f0f0', darkText: '#b4b2a9', darkBg: '#2a2a28', order: 4,
-  },
-}
+export { EAM_META } from './tierMeta'

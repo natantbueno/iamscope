@@ -161,7 +161,7 @@ async function buildIndex(): Promise<AdvisorRole[]> {
       key: `azureRbac:${r.slug}`,
       platform: 'azureRbac',
       platformLabel: 'Azure RBAC',
-      platformColor: '#008ad7',
+      platformColor: '#5c2d91',
       name: r.name,
       description: r.description,
       tier: r.tier,
@@ -196,14 +196,16 @@ async function buildIndex(): Promise<AdvisorRole[]> {
       key: `ibm:${r.slug}`,
       platform: 'ibmCloud',
       platformLabel: 'IBM Cloud',
-      platformColor: '#0f62fe',
+      platformColor: '#08bdba',
       name: r.name,
       description: r.description,
       tier: meta?.label ?? r.tier,
       tierColor: meta?.color ?? '#6b7280',
       href: `/ibm-cloud/roles/${r.slug}`,
       isPrivileged: r.isPrivileged,
-      corpus: [r.name, r.description, r.category, ...(r.privileges ?? [])].join(' '),
+      // `privileges` saiu do IbmRole na recoleta de 03/08; `actions` vem vazio
+      // de propósito (a IBM mapeia ação por serviço, não por role).
+      corpus: [r.name, r.description, r.category, ...(r.actions ?? [])].join(' '),
     })
   }
 

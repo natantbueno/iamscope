@@ -1,9 +1,12 @@
 'use client'
 
 import { useMemo, useCallback, useState } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChevronDown, ChevronUp, X, Search } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import {
   SOD_RULES, SoDCategory, SoDSeverity, SoDFramework, SoDCloud,
   SOD_CATEGORY_META, SOD_SEVERITY_META, SOD_FRAMEWORK_META, SOD_CLOUD_META, SOD_SEVERITY_ORDER,
@@ -20,6 +23,7 @@ const ALL_CLOUDS: SoDCloud[] = ['entra-id', 'azure-rbac', 'both']
 type SortKey = 'severity' | 'category'
 
 export default function SoDRulesCatalog() {
+  const t = useT()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
@@ -94,26 +98,29 @@ export default function SoDRulesCatalog() {
     })
   }
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
+
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Filtros */}
-      <div className="px-4 py-3 border-b border-[#dde3ec] dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-3">
+      <div className="px-4 py-3 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Filtros</span>
+          <span className="text-3xs font-semibold text-fg-muted uppercase tracking-wider">Filtros</span>
           {hasFilters && (
-            <button onClick={resetFilters} className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-500 transition-colors">
+            <button onClick={resetFilters} className="flex items-center gap-1 text-3xs text-fg-subtle hover:text-red-500 transition-colors">
               <X size={12} /> Limpar
             </button>
           )}
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] text-gray-400 w-16 shrink-0">Cloud</span>
+          <span className="text-3xs text-fg-subtle w-16 shrink-0">Cloud</span>
           {ALL_CLOUDS.map((c) => (
             <button key={c} onClick={() => update('cloud', cloud === c ? '' : c)}
-              className={`text-[11px] px-2.5 py-1 rounded-full border font-medium transition-colors ${
-                cloud === c ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5]'
-                             : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+              className={`text-3xs px-2.5 py-1 rounded-full border font-medium transition-colors ${
+                cloud === c ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing'
+                             : 'text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
               {SOD_CLOUD_META[c].label}
             </button>
@@ -121,13 +128,13 @@ export default function SoDRulesCatalog() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] text-gray-400 w-16 shrink-0">Severidade</span>
+          <span className="text-3xs text-fg-subtle w-16 shrink-0">{t('table.severity')}</span>
           {ALL_SEVERITIES.map((s) => {
             const active = severities.includes(s)
             const meta = SOD_SEVERITY_META[s]
             return (
               <button key={s} onClick={() => toggleSeverity(s)}
-                className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold transition-colors ${active ? 'text-white border-transparent' : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                className={`text-3xs px-2.5 py-1 rounded-full border font-semibold transition-colors ${active ? 'text-white border-transparent' : 'text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                 style={active ? { background: meta.color, borderColor: meta.color } : {}}>
                 {meta.label}
               </button>
@@ -136,29 +143,29 @@ export default function SoDRulesCatalog() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] text-gray-400 w-16 shrink-0">Categoria</span>
+          <span className="text-3xs text-fg-subtle w-16 shrink-0">{t('table.category')}</span>
           <select value={category ?? ''} onChange={(e) => update('cat', e.target.value)}
-            className="text-[12px] px-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
-            <option value="">Todas as categorias</option>
+            className="text-tiny px-2 py-1 rounded border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
+            <option value="">{t('filter.allCategories')}</option>
             {ALL_CATEGORIES.map((c) => (
               <option key={c} value={c}>{SOD_CATEGORY_META[c].label}</option>
             ))}
           </select>
           <select value={framework ?? ''} onChange={(e) => update('fw', e.target.value)}
-            className="text-[12px] px-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
-            <option value="">Todos os frameworks</option>
+            className="text-tiny px-2 py-1 rounded border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
+            <option value="">{t('filter.allFrameworks')}</option>
             {ALL_FRAMEWORKS.map((f) => (
               <option key={f} value={f}>{SOD_FRAMEWORK_META[f].label}</option>
             ))}
           </select>
           <div className="relative flex-1 min-w-[160px]">
-            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input type="text" value={q} onChange={(e) => update('q', e.target.value)} placeholder="Buscar por nome ou role..."
-              className="w-full text-[12px] pl-7 pr-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500" />
+            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-subtle" />
+            <input type="text" value={q} onChange={(e) => update('q', e.target.value)} placeholder={t('ph.searchRuleOrRole')}
+              className="w-full text-tiny pl-7 pr-2 py-1 rounded border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500" />
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[11px] text-gray-400 dark:text-gray-500">Exibindo {filtered.length} de {SOD_RULES.length} regras</p>
+          <p className="text-3xs text-fg-muted">Exibindo {filtered.length} de {SOD_RULES.length} regras</p>
           <ExportButton
             filename="sod-rules"
             data={filtered.map((r) => ({
@@ -173,30 +180,30 @@ export default function SoDRulesCatalog() {
       {/* Tabela */}
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400 dark:text-gray-500 text-[13px]">
-            <span>Nenhuma regra encontrada com os filtros selecionados.</span>
+          <div className="flex flex-col items-center justify-center h-48 gap-2 text-fg-muted text-body">
+            <span>{t('sod.noRulesMatch')}</span>
             {hasFilters && (
               <button onClick={resetFilters}
-                className="flex items-center gap-1 text-[12px] text-[#0078d4] dark:text-[#85b7eb] hover:underline">
+                className="flex items-center gap-1 text-tiny text-brand-strong dark:text-brand-onDark hover:underline">
                 <X size={12} /> Limpar filtros
               </button>
             )}
           </div>
         ) : (
-          <table className="w-full text-[13px] border-collapse">
-            <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
+          <table className="w-full text-body border-collapse">
+            <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
               <tr>
-                <Th sortDir={sortKey === 'severity' ? sortDir : undefined} onClick={() => toggleSort('severity')}>Severidade</Th>
+                <Th sortDir={sortKey === 'severity' ? sortDir : undefined} onClick={() => toggleSort('severity')}>{t('table.severity')}</Th>
                 <Th>Regra</Th>
                 <Th>Role A</Th>
                 <Th>Role B</Th>
-                <Th sortDir={sortKey === 'category' ? sortDir : undefined} onClick={() => toggleSort('category')}>Categoria</Th>
+                <Th sortDir={sortKey === 'category' ? sortDir : undefined} onClick={() => toggleSort('category')}>{t('table.category')}</Th>
                 <Th>Frameworks</Th>
                 <th className="w-8" />
               </tr>
             </thead>
             <tbody>
-              {filtered.map((rule) => {
+              {paginated.map((rule) => {
                 const isOpen = expanded.has(rule.id)
                 return (
                   <>
@@ -206,22 +213,22 @@ export default function SoDRulesCatalog() {
                       <td className="px-4 py-2.5 align-top"><SoDSeverityBadge severity={rule.severity} /></td>
                       <td className="px-4 py-2.5 align-top">
                         <Link href={`/sod/rules/${rule.id}`} onClick={(e) => e.stopPropagation()}
-                          className="font-medium text-[#0078d4] dark:text-[#85b7eb] hover:underline">
+                          className="font-medium text-brand-strong dark:text-brand-onDark hover:underline">
                           {rule.name}
                         </Link>
                       </td>
                       <td className="px-4 py-2.5 align-top text-gray-600 dark:text-gray-300">{rule.roleA.name}</td>
                       <td className="px-4 py-2.5 align-top text-gray-600 dark:text-gray-300">{rule.roleB.name}</td>
-                      <td className="px-4 py-2.5 align-top text-gray-500 dark:text-gray-400">{SOD_CATEGORY_META[rule.category].label}</td>
+                      <td className="px-4 py-2.5 align-top text-fg-muted">{SOD_CATEGORY_META[rule.category].label}</td>
                       <td className="px-4 py-2.5 align-top">
                         <div className="flex flex-wrap gap-1">
                           {rule.frameworks.slice(0, 3).map((f) => (
-                            <span key={f} className="text-[9px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">{f}</span>
+                            <span key={f} className="text-micro px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-fg-muted">{f}</span>
                           ))}
                         </div>
                       </td>
                       <td className="px-2 py-2.5 align-top text-right">
-                        {isOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-300 dark:text-gray-600" />}
+                        {isOpen ? <ChevronUp size={14} className="text-fg-subtle" /> : <ChevronDown size={14} className="text-fg-muted dark:text-gray-600" />}
                       </td>
                     </tr>
                     {isOpen && (
@@ -229,7 +236,7 @@ export default function SoDRulesCatalog() {
                         <td colSpan={7} className="px-4 pb-4 pt-0 bg-gray-50/60 dark:bg-gray-900/40 border-b border-gray-100 dark:border-gray-800">
                           <div className="pt-3">
                             <SoDRuleDetailCard rule={rule} compact />
-                            <Link href={`/sod/rules/${rule.id}`} className="inline-block mt-3 text-[12px] text-[#0078d4] dark:text-[#85b7eb] hover:underline">
+                            <Link href={`/sod/rules/${rule.id}`} className="inline-block mt-3 text-tiny text-brand-strong dark:text-brand-onDark hover:underline">
                               Ver página completa da regra →
                             </Link>
                           </div>
@@ -243,6 +250,11 @@ export default function SoDRulesCatalog() {
           </table>
         )}
       </div>
+        <Pagination
+          total={filtered.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#dc2626" noun="noun.rules"
+        />
     </div>
   )
 }
@@ -251,12 +263,12 @@ function Th({ children, onClick, sortDir }: { children: React.ReactNode; onClick
   return (
     <th
       onClick={onClick}
-      className={`text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2.5 ${onClick ? 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200' : ''}`}
+      className={`text-left text-3xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 ${onClick ? 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200' : ''}`}
     >
       <span className="inline-flex items-center gap-1">
         {children}
         {onClick && (
-          <span className="text-[9px]">
+          <span className="text-micro">
             {sortDir === 'asc' ? <ChevronUp size={10} /> : sortDir === 'desc' ? <ChevronDown size={10} /> : <ChevronDown size={10} className="opacity-30" />}
           </span>
         )}

@@ -1,9 +1,14 @@
 'use client'
 
+import { themedText } from '@/lib/readableColor'
+import ClassificationBadge from '@/components/ClassificationBadge'
 import { Suspense, useState, useMemo, useEffect } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight, ShieldAlert } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GcpCategory } from '@/data/gcp'
 import { useColumnResize } from '@/hooks/useColumnResize'
@@ -21,6 +26,7 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 function GcpRolesContent() {
+  const t = useT()
   const params = useSearchParams()
   const [query, setQuery]               = useState('')
   const [activeTier, setActiveTier]     = useState<GcpTier | 'all' | 'privileged'>('all')
@@ -49,6 +55,9 @@ function GcpRolesContent() {
     })
   }, [activeTier, activeCategory, query])
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
+
+
   return (
     <AppShell
       headerTitle="GCP IAM Roles"
@@ -62,51 +71,52 @@ function GcpRolesContent() {
 
         {/* Search chip */}
         {query && (
-          <div className="px-6 py-2 bg-[#4285f4]/10 border-b border-[#4285f4]/30 flex items-center gap-2 shrink-0">
-            <span className="text-[12px] text-[#4285f4]">Busca: <strong>"{query}"</strong></span>
-            <button onClick={() => setQuery('')} className="text-[11px] text-[#4285f4] hover:underline ml-1">× limpar</button>
-            <span className="ml-auto text-[11px] text-gray-400">{filtered.length} resultado(s)</span>
+          <div className="px-6 py-2 bg-csp-gcp/10 border-b border-csp-gcp/30 flex items-center gap-2 shrink-0">
+            <span className="text-tiny text-csp-gcp-onLight dark:text-csp-gcp-onDark">Busca: <strong>"{query}"</strong></span>
+            <button onClick={() => setQuery('')} className="text-3xs text-csp-gcp-onLight dark:text-csp-gcp-onDark hover:underline ml-1">{t('action.clearInline')}</button>
+            <span className="ml-auto text-3xs text-fg-subtle">{filtered.length} resultado(s)</span>
           </div>
         )}
 
         {/* Search input */}
-        <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 shrink-0">
+        <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 shrink-0">
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Buscar por nome, descrição ou roleId..."
-            className="w-full max-w-md text-[13px] px-3 py-1.5 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:border-[#4285f4] transition-colors"
+            placeholder={t('ph.searchRoleFields')}
+            className="w-full max-w-md text-body px-3 py-1.5 rounded-lg border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:border-csp-gcp transition-colors"
           />
         </div>
 
         {/* Tier filter bar */}
-        <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 flex items-center gap-2 flex-wrap shrink-0">
+        <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap shrink-0">
+          <ClassificationBadge size="sm" className="mr-1" />
           {activeCategory && (
             <button onClick={() => setActiveCat(null)}
-              className="inline-flex items-center gap-1 text-[12px] px-3 py-1 rounded-full border font-medium"
+              className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border font-medium"
               style={{ background: (CAT_COLORS[activeCategory] || '#4285f4') + '18', color: CAT_COLORS[activeCategory] || '#4285f4', borderColor: (CAT_COLORS[activeCategory] || '#4285f4') + '60' }}>
               {activeCategory} ×
             </button>
           )}
           {(['all', ...TIERS, 'privileged'] as const).map(t => (
             <button key={t} onClick={() => setActiveTier(t)}
-              className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
+              className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
                 activeTier === t
-                  ? 'bg-[#4285f4]/10 dark:bg-[#4285f4]/20 text-[#4285f4] border-[#4285f4]/40 font-medium'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'bg-csp-gcp/10 dark:bg-csp-gcp/20 text-csp-gcp-onLight dark:text-csp-gcp-onDark border-csp-gcp/40 font-medium'
+                  : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
               {t === 'all' ? 'Todas' : t === 'privileged' ? 'Privilegiadas' : GCP_TIER_META[t].label}
             </button>
           ))}
-          <span className="ml-auto text-[12px] text-gray-400 dark:text-gray-500">{filtered.length} roles</span>
+          <span className="ml-auto text-tiny text-fg-muted">{filtered.length} roles</span>
         </div>
 
         {/* Category chips */}
-        <div className="px-6 py-2 border-b border-[#dde3ec] dark:border-gray-800 flex items-center gap-1.5 flex-wrap shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
+        <div className="px-6 py-2 border-b border-surface-border dark:border-gray-800 flex items-center gap-1.5 flex-wrap shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCat(activeCategory === cat ? null : cat)}
-              className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors ${
-                activeCategory === cat ? 'font-medium' : 'bg-transparent text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
+              className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${
+                activeCategory === cat ? 'font-medium' : 'bg-transparent text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
               style={activeCategory === cat ? { background: (CAT_COLORS[cat] || '#4285f4') + '18', color: CAT_COLORS[cat] || '#4285f4', borderColor: (CAT_COLORS[cat] || '#4285f4') + '60' } : {}}>
               {cat}
@@ -116,7 +126,7 @@ function GcpRolesContent() {
 
         {/* Table */}
         <div className="flex-1 overflow-y-auto">
-          <table className="w-full text-[13px] border-collapse" style={{ tableLayout: 'fixed' }}>
+          <table className="w-full text-body border-collapse" style={{ tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: widths[0] }} />
               <col style={{ width: widths[1] }} />
@@ -127,18 +137,18 @@ function GcpRolesContent() {
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
+              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
                 <RszTh idx={0} onMD={onMouseDown}>Role</RszTh>
-                <RszTh idx={1} onMD={onMouseDown}>Descrição</RszTh>
+                <RszTh idx={1} onMD={onMouseDown}>{t('table.description')}</RszTh>
                 <RszTh idx={2} onMD={onMouseDown}>Tier</RszTh>
-                <RszTh idx={3} onMD={onMouseDown}>Categoria</RszTh>
+                <RszTh idx={3} onMD={onMouseDown}>{t('table.category')}</RszTh>
                 <RszTh idx={4} onMD={onMouseDown}>Role ID</RszTh>
                 <RszTh idx={5} onMD={onMouseDown}>Priv.</RszTh>
                 <th className="w-8 overflow-hidden" />
               </tr>
             </thead>
             <tbody>
-              {filtered.map(role => {
+              {paginated.map(role => {
                 const tier = GCP_TIER_META[role.tier]
                 const catColor = CAT_COLORS[role.category] || '#4285f4'
                 return (
@@ -146,40 +156,40 @@ function GcpRolesContent() {
                     <td className="px-4 py-3 align-top overflow-hidden">
                       <Link href={`/gcp/roles/${role.slug}`} className="block">
                         <div className="flex items-center gap-2 min-w-0">
-                          <div className="font-medium text-[#4285f4] text-[13px] group-hover:underline truncate">{role.name}</div>
+                          <div className="font-medium text-csp-gcp-onLight dark:text-csp-gcp-onDark text-body group-hover:underline truncate">{role.name}</div>
                           {role.deprecated && <DeprecatedBadge compact />}
                         </div>
                       </Link>
                     </td>
                     <td className="px-4 py-3 align-top overflow-hidden">
-                      <p className="text-gray-500 dark:text-gray-400 text-[12px] leading-relaxed line-clamp-2">{role.description}</p>
+                      <p className="text-fg-muted text-tiny leading-relaxed line-clamp-2">{role.description}</p>
                     </td>
                     <td className="px-4 py-3 align-top">
-                      <span className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full font-medium"
-                        style={{ background: tier.bg, color: tier.color }}>
+                      <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium themed-color"
+                        style={{ background: tier.bg, ...themedText(tier.color, tier.bg) }}>
                         {tier.label}
                       </span>
                     </td>
                     <td className="px-4 py-3 align-top">
                       <button onClick={() => setActiveCat(activeCategory === role.category ? null : role.category)}>
-                        <span className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full font-medium"
-                          style={{ background: catColor + '18', color: catColor }}>
+                        <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium themed-color"
+                          style={{ background: catColor + '18', ...themedText(catColor, catColor + '18') }}>
                           {role.category}
                         </span>
                       </button>
                     </td>
                     <td className="px-4 py-3 align-top overflow-hidden">
-                      <span className="text-[11px] font-mono text-gray-400 dark:text-gray-500 truncate block">{role.roleId}</span>
+                      <span className="text-3xs font-mono text-fg-muted truncate block">{role.roleId}</span>
                     </td>
                     <td className="px-4 py-3 align-top">
                       {role.isPrivileged ? (
                         <ShieldAlert size={13} className="text-red-500" />
                       ) : (
-                        <span className="text-[12px] text-gray-300 dark:text-gray-600">—</span>
+                        <span className="text-tiny text-fg-muted dark:text-gray-600">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3 align-top">
-                      <Link href={`/gcp/roles/${role.slug}`} className="text-gray-300 dark:text-gray-600 group-hover:text-[#4285f4] transition-colors">
+                      <Link href={`/gcp/roles/${role.slug}`} className="text-fg-muted dark:text-gray-600 group-hover:text-csp-gcp transition-colors">
                         <ChevronRight size={16} />
                       </Link>
                     </td>
@@ -189,6 +199,11 @@ function GcpRolesContent() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          total={filtered.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#4285f4" noun="noun.roles"
+        />
       </div>
     </AppShell>
   )
@@ -196,7 +211,7 @@ function GcpRolesContent() {
 
 export default function GcpRolesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <GcpRolesContent />
     </Suspense>
   )
@@ -204,7 +219,7 @@ export default function GcpRolesPage() {
 
 function RszTh({ idx, onMD, children }: { idx: number; onMD: (i: number) => (e: React.MouseEvent) => void; children?: React.ReactNode }) {
   return (
-    <th className="relative text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 overflow-hidden select-none">
+    <th className="relative text-left text-3xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 overflow-hidden select-none">
       {children}
       <div onMouseDown={onMD(idx)} onClick={(e) => e.stopPropagation()}
         className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />

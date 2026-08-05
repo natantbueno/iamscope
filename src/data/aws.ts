@@ -56,13 +56,7 @@ export interface AwsTierMeta {
   description: string
 }
 
-export const AWS_TIER_META: Record<AwsTier, AwsTierMeta> = {
-  FullAccess:  { label: 'Full Access',  color: '#dc2626', bg: '#dc262618', description: 'Unrestricted access to a service or the entire account — treat as privileged' },
-  PowerUser:   { label: 'Power User',   color: '#ea580c', bg: '#ea580c18', description: 'Broad service access without IAM management capabilities' },
-  ReadOnly:    { label: 'Read Only',    color: '#16a34a', bg: '#16a34a18', description: 'List and describe resources only — no write or delete actions' },
-  Operator:    { label: 'Operator',     color: '#0891b2', bg: '#0891b218', description: 'Operational tasks: start/stop, deploy, patch — limited create/delete' },
-  Specialized: { label: 'Specialized',  color: '#7c3aed', bg: '#7c3aed18', description: 'Narrow-purpose policies for specific use cases or service integrations' },
-}
+export { AWS_TIER_META } from './tierMeta'
 
 export const AWS_CATEGORIES: AwsCategory[] = [
   'IAM','Compute','Storage','Database','Networking','Security','DevOps',

@@ -54,15 +54,7 @@ export interface GcpTierMeta {
   label: string; color: string; bg: string; description: string
 }
 
-export const GCP_TIER_META: Record<GcpTier, GcpTierMeta> = {
-  ProjectOwner: { label: 'Project Owner', color: '#dc2626', bg: '#dc262618', description: 'Full control over the project and all resources' },
-  Admin:        { label: 'Admin',         color: '#ea580c', bg: '#ea580c18', description: 'Administrative control over a service, may include IAM' },
-  Editor:       { label: 'Editor',        color: '#ca8a04', bg: '#ca8a0418', description: 'Read and write access to all resources in a service' },
-  Operator:     { label: 'Operator',      color: '#0891b2', bg: '#0891b218', description: 'Operational access to manage and run workloads' },
-  Developer:    { label: 'Developer',     color: '#7c3aed', bg: '#7c3aed18', description: 'Deploy and manage code and workloads' },
-  Viewer:       { label: 'Viewer',        color: '#16a34a', bg: '#16a34a18', description: 'Read-only access to resources' },
-  Specialized:  { label: 'Specialized',   color: '#6b7280', bg: '#6b728018', description: 'Narrow-scope role for a specific action or use case' },
-}
+export { GCP_TIER_META } from './tierMeta'
 
 export const GCP_ROLES: GcpRole[] = [
   { slug: 'accessapproval-admin', name: 'Access Approval Admin', roleId: 'roles/accessapproval.admin', description: 'Admin role for Access Approval', tier: 'Admin', category: 'Management', isPrivileged: false, scope: 'project', permissionCount: 11 },
@@ -112,7 +104,7 @@ export const GCP_ROLES: GcpRole[] = [
   { slug: 'aiplatform-featurestoredatawriter', name: 'Agent Platform Feature Store Data Writer', roleId: 'roles/aiplatform.featurestoreDataWriter', description: 'This role provides permissions to read and write Feature data.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'resource', permissionCount: 26, lowestResources: ['Entity type'] },
   { slug: 'aiplatform-featurestoreinstancecreator', name: 'Agent Platform Feature Store Instance Creator', roleId: 'roles/aiplatform.featurestoreInstanceCreator', description: 'Administrator of Featurestore resources, but not the child resources under Featurestores.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'resource', permissionCount: 5, lowestResources: ['Featurestore'] },
   { slug: 'aiplatform-featurestoreresourceviewer', name: 'Agent Platform Feature Store Resource Viewer', roleId: 'roles/aiplatform.featurestoreResourceViewer', description: 'Viewer of all resources in Agent Platform Feature Store but cannot make changes.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'resource', permissionCount: 21, lowestResources: ['Entity type'] },
-  { slug: 'aiplatform-featurestoreuser', name: 'Agent Platform Feature Store User Beta', roleId: 'roles/aiplatform.featurestoreUser', description: 'Deprecated. Use featurestoreAdmin instead.', tier: 'Admin', category: 'AI', isPrivileged: true, scope: 'project', permissionCount: 33, stage: 'Beta' },
+  { slug: 'aiplatform-featurestoreuser', name: 'Agent Platform Feature Store User Beta', roleId: 'roles/aiplatform.featurestoreUser', description: 'Deprecated. Use featurestoreAdmin instead.', tier: 'Admin', category: 'AI', isPrivileged: true, scope: 'project', permissionCount: 33, stage: 'Beta', deprecated: true },
   { slug: 'aiplatform-memoryeditor', name: 'Agent Platform Memory Bank Editor Role', roleId: 'roles/aiplatform.memoryEditor', description: 'Grants edit access to Agent Platform Memory Bank.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'project', permissionCount: 5 },
   { slug: 'aiplatform-memoryuser', name: 'Agent Platform Memory Bank User Role', roleId: 'roles/aiplatform.memoryUser', description: 'Grants full user access to Agent Platform Memory Bank.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'project', permissionCount: 10 },
   { slug: 'aiplatform-memoryviewer', name: 'Agent Platform Memory Bank Viewer Role', roleId: 'roles/aiplatform.memoryViewer', description: 'Grants viewer access to Agent Platform Memory Bank.', tier: 'Specialized', category: 'AI', isPrivileged: false, scope: 'project', permissionCount: 5 },
@@ -2450,4 +2442,5 @@ export const GCP_ROLES: GcpRole[] = [
 
 export const GCP_PERMISSION_COUNT = 13590
 export const GCP_SERVICE_COUNT = 314
+
 export const GCP_CATEGORIES: GcpCategory[] = ['IAM', 'Compute', 'Storage', 'BigQuery', 'Kubernetes', 'Database', 'Networking', 'Security', 'DevOps', 'Serverless', 'AI', 'Analytics', 'Observability', 'Billing', 'Management']

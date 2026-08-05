@@ -1,3 +1,5 @@
+import { CLOUD_COLORS } from '@/lib/cloudColors'
+
 export type CloudId     = 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'ibmCloud' | 'googleWorkspace'
 export type RiskLevel   = 'critical' | 'high' | 'medium' | 'low'
 export type TierLevel   = 0 | 1 | 2
@@ -39,13 +41,21 @@ export interface Equivalence {
   clouds: Partial<Record<CloudId, CloudEntry>>
 }
 
+/**
+ * Cores IDÊNTICAS às do menu superior (src/components/CloudNav.tsx).
+ *
+ * Estavam divergindo — Azure aqui era #008ad7 contra #5c2d91 no menu, GCP
+ * #4285f4 contra #0f9d58, IBM #0f62fe contra #08bdba. Numa página cujo trabalho
+ * é comparar clouds lado a lado, a mesma cloud aparecia de uma cor no menu e de
+ * outra na tabela, o que fazia a página parecer desalinhada do resto do site.
+ */
 export const CLOUD_META: Record<CloudId, { label: string; shortLabel: string; color: string }> = {
-  entraId:         { label: 'Entra ID',        shortLabel: 'Entra',  color: '#0078d4' },
-  azureRbac:       { label: 'Azure RBAC',      shortLabel: 'Azure',  color: '#008ad7' },
-  aws:             { label: 'AWS IAM',          shortLabel: 'AWS',    color: '#ff9900' },
-  gcp:             { label: 'GCP IAM',          shortLabel: 'GCP',    color: '#4285f4' },
-  ibmCloud:        { label: 'IBM Cloud',        shortLabel: 'IBM',    color: '#0f62fe' },
-  googleWorkspace: { label: 'Google Workspace', shortLabel: 'GWS',    color: '#34a853' },
+  entraId:         { label: 'Entra ID',        shortLabel: 'Entra',  color: CLOUD_COLORS.entraId.mark },
+  azureRbac:       { label: 'Azure RBAC',      shortLabel: 'Azure',  color: CLOUD_COLORS.azureRbac.mark },
+  aws:             { label: 'AWS IAM',          shortLabel: 'AWS',    color: CLOUD_COLORS.aws.mark },
+  gcp:             { label: 'GCP IAM',          shortLabel: 'GCP',    color: CLOUD_COLORS.gcp.mark },
+  ibmCloud:        { label: 'IBM Cloud',        shortLabel: 'IBM',    color: CLOUD_COLORS.ibmCloud.mark },
+  googleWorkspace: { label: 'Google Workspace', shortLabel: 'GWS',    color: CLOUD_COLORS.googleWorkspace.mark },
 }
 
 export const CLOUD_ORDER: CloudId[] = ['entraId', 'azureRbac', 'aws', 'gcp', 'ibmCloud', 'googleWorkspace']

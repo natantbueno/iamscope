@@ -118,15 +118,44 @@ function parseRows(md) {
   const total = Object.keys(store).length
   console.log(`\nStore: ${before} -> ${total} (+${added} novas, ${updated} atualizadas, ${empty} sem descrição)`)
 
-  // Cobertura contra as actions realmente usadas pelas roles do site
+  // ── Cobertura ─────────────────────────────────────────────────────────────
+  //
+  // Duas correções em relação à primeira versão deste relatório, que reportava
+  // 60,4% e escondia o quadro real:
+  //
+  // 1. WILDCARDS NÃO CONTAM. `Microsoft.Foo/*` é padrão de correspondência, não
+  //    operação — nunca aparece nas tabelas da Microsoft. São 750 das 2.697
+  //    actions; incluí-las no denominador cria uma lacuna impossível de fechar.
+  //
+  // 2. COMPARAÇÃO TOLERANTE A CAIXA. Os identificadores são case-insensitive no
+  //    ARM e a documentação diverge das definições de role
+  //    (`Microsoft.Insights/Logs/Read` vs `Microsoft.insights/logs/read`).
+  //    Comparando exato, 225 actions com descrição apareciam como faltantes.
+  //    O site faz a mesma normalização — ver src/lib/azureActionDocs.ts.
   try {
     const idx = JSON.parse(fs.readFileSync(INDEX, 'utf8'))
     const used = Object.keys(idx.index)
-    const have = used.filter((a) => store[a])
-    const pct = (have.length / used.length * 100).toFixed(1)
-    console.log(`Cobertura das actions usadas pelas roles: ${have.length}/${used.length} (${pct}%)`)
 
-    const missing = used.filter((a) => !store[a])
+    const porCaixa = new Map()
+    for (const k of Object.keys(store)) porCaixa.set(k.toLowerCase(), true)
+    const temDesc = (a) => !!store[a] || porCaixa.has(a.toLowerCase())
+
+    const wildcards = used.filter((a) => a.includes('*'))
+    const concretas = used.filter((a) => !a.includes('*'))
+    const have = concretas.filter(temDesc)
+    const pct = (have.length / concretas.length * 100).toFixed(1)
+
+    console.log(`\nActions no catálogo do site: ${used.length}`)
+    console.log(`  wildcards (sem descrição possível): ${wildcards.length}`)
+    console.log(`  concretas                         : ${concretas.length}`)
+    console.log(`Cobertura sobre as concretas: ${have.length}/${concretas.length} (${pct}%)`)
+
+    const exato = concretas.filter((a) => !!store[a]).length
+    if (exato < have.length) {
+      console.log(`  (${have.length - exato} só casam ignorando maiúsculas)`)
+    }
+
+    const missing = concretas.filter((a) => !temDesc(a))
     if (missing.length) {
       const byProvider = {}
       for (const a of missing) {
@@ -134,10 +163,10 @@ function parseRows(md) {
         byProvider[p] = (byProvider[p] || 0) + 1
       }
       const top = Object.entries(byProvider).sort((x, y) => y[1] - x[1]).slice(0, 12)
-      console.log('\nAinda sem descrição, por provider:')
+      console.log(`\n${missing.length} action(s) concreta(s) ainda sem descrição, por provider:`)
       for (const [p, n] of top) console.log(`  ${String(n).padStart(5)}  ${p}`)
-      console.log('\nObs.: wildcards (ex.: Microsoft.Foo/*) e actions de provider não documentado')
-      console.log('não aparecem nessas tabelas — é esperado que sobre um resto.')
+      console.log('\nO resto é provider fora das tabelas de permissões da Microsoft')
+      console.log('(clássicos, preview e alguns serviços de dados).')
     }
   } catch { /* índice ausente, ignora */ }
 

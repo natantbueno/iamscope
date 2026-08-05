@@ -44,7 +44,7 @@ function CompareContent() {
       headerSub={`${filtered.length} equivalências · ${visibleClouds.length} clouds visíveis`}
       headerActions={
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+          <div className="hidden lg:flex items-center gap-1.5 text-3xs text-fg-muted">
             <GitCompare size={14} />
             <span>Tier 0 = Control Plane · Tier 1 = Management · Tier 2 = Data/Workload</span>
           </div>
@@ -80,7 +80,7 @@ function CompareContent() {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <CompareContent />
     </Suspense>
   )

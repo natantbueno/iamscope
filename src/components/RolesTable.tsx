@@ -1,8 +1,12 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import ClassificationBadge from './ClassificationBadge'
+import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { AlertTriangle, ChevronRight, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import { EntraRole, RoleCategory, EamTier } from '@/data/roles'
 import CategoryBadge from './CategoryBadge'
 import EamTierBadge from './EamTierBadge'
@@ -34,6 +38,7 @@ const TIER_ORDER: Record<EamTier, number> = {
 }
 
 export default function RolesTable({ roles, activeTier, activeCategory, onTierChange, onCategoryChange }: RolesTableProps) {
+  const t = useT()
   const [sortCol, setSortCol] = useState<SortCol>('tier')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
 
@@ -56,44 +61,48 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
     })
   }, [roles, sortCol, sortDir])
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(sorted)
+
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 flex items-center gap-2 flex-wrap">
+      <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap">
         {/* Categoria ativa como chip removível */}
         {activeCategory && (
           <button
             onClick={() => onCategoryChange(null)}
-            className="inline-flex items-center gap-1 text-[12px] px-3 py-1 rounded-full border bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium">
+            className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium">
             {activeCategory}
             <X size={11} className="opacity-70" />
           </button>
         )}
 
         {activeCategory && (
-          <span className="text-gray-300 dark:text-gray-700 text-[12px]">·</span>
+          <span className="text-fg-muted dark:text-gray-700 text-tiny">·</span>
         )}
 
         {/* Filtros de tier */}
+        <ClassificationBadge source="entraops" size="sm" className="mr-1" />
         {TIER_FILTERS.map((f) => (
           <button key={f.value} onClick={() => onTierChange(f.value)}
-            className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
+            className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
               activeTier === f.value
-                ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
+                : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
             {f.label}
           </button>
         ))}
-        <span className="ml-auto text-[12px] text-gray-400 dark:text-gray-500">{roles.length} roles</span>
+        <span className="ml-auto text-tiny text-fg-muted">{roles.length} roles</span>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {roles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-gray-400 dark:text-gray-500">
-            <p className="text-[14px]">Nenhuma role encontrada.</p>
+          <div className="flex flex-col items-center justify-center h-48 text-fg-muted">
+            <p className="text-note">{t('empty.roles')}</p>
           </div>
         ) : (
-          <table className="w-full text-[13px] border-collapse" style={{ tableLayout: 'fixed' }}>
+          <table className="w-full text-body border-collapse" style={{ tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: widths[0] }} />
               <col style={{ width: widths[1] }} />
@@ -104,39 +113,39 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
+              <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
                 <RszTh col="name"      active={sortCol} dir={sortDir} onSort={toggleSort} idx={0} onMD={onMouseDown}>Role</RszTh>
-                <th className="relative text-left text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 overflow-hidden select-none">
+                <th className="relative text-left text-3xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 overflow-hidden select-none">
                   Descrição
                   <div onMouseDown={onMouseDown(1)} onClick={(e) => e.stopPropagation()}
                     className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10"
                   />
                 </th>
-                <RszTh col="count"     active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>Ações</RszTh>
+                <RszTh col="count"     active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>{t('table.actions')}</RszTh>
                 <RszTh col="tier"      active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>EAM Tier</RszTh>
-                <RszTh col="category"  active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown}>Categoria</RszTh>
+                <RszTh col="category"  active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown}>{t('table.category')}</RszTh>
                 <RszTh col="privileged" active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown}>Priv.</RszTh>
                 <th className="w-8 overflow-hidden"></th>
               </tr>
             </thead>
             <tbody>
-              {sorted.map((role) => (
+              {paginated.map((role) => (
                 <tr key={role.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                   <td className="px-4 py-3 align-top overflow-hidden">
                     <Link href={`/entraid/roles/${role.slug}`} className="block">
-                      <div className="font-medium text-[#0078d4] dark:text-[#85b7eb] text-[13px] group-hover:underline truncate">{role.name}</div>
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 truncate">{role.id}</div>
+                      <div className="font-medium text-brand-strong dark:text-brand-onDark text-body group-hover:underline truncate">{role.name}</div>
+                      <div className="text-2xs text-fg-muted font-mono mt-0.5 truncate">{role.id}</div>
                     </Link>
                   </td>
                   <td className="px-4 py-3 align-top overflow-hidden">
-                    <p className="text-gray-500 dark:text-gray-400 text-[12px] leading-relaxed line-clamp-2">{role.description}</p>
+                    <p className="text-fg-muted text-tiny leading-relaxed line-clamp-2">{role.description}</p>
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <span className="text-[12px] text-gray-500 dark:text-gray-400 font-medium">{role.permissionCount}</span>
+                    <span className="text-tiny text-fg-muted font-medium">{role.permissionCount}</span>
                   </td>
                   <td className="px-4 py-3 align-top"><EamTierBadge tier={role.eamTier} /></td>
                   <td className="px-4 py-3 align-top">
-                    <button onClick={() => onCategoryChange(role.category)} aria-label={`Filtrar por categoria ${role.category}`} className="text-left rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4]">
+                    <button onClick={() => onCategoryChange(role.category)} aria-label={`Filtrar por categoria ${role.category}`} className="text-left rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand">
                       <CategoryBadge category={role.category} />
                     </button>
                   </td>
@@ -144,11 +153,11 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
                     {role.isPrivileged ? (
                       <AlertTriangle size={13} className="text-red-500" />
                     ) : (
-                      <span className="text-[12px] text-gray-300 dark:text-gray-600">—</span>
+                      <span className="text-tiny text-fg-muted dark:text-gray-600">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <Link href={`/entraid/roles/${role.slug}`} className="text-gray-300 dark:text-gray-600 group-hover:text-[#0078d4] dark:group-hover:text-[#85b7eb] transition-colors">
+                    <Link href={`/entraid/roles/${role.slug}`} className="text-fg-muted dark:text-gray-600 group-hover:text-brand-strong dark:group-hover:text-brand-onDark transition-colors">
                       <ChevronRight size={16} />
                     </Link>
                   </td>
@@ -158,6 +167,11 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
           </table>
         )}
       </div>
+        <Pagination
+          total={sorted.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#0078d4" noun="noun.roles"
+        />
     </div>
   )
 }
@@ -170,11 +184,11 @@ function RszTh({ col, active, dir, onSort, idx, onMD, children }: {
   return (
     <th
       aria-sort={active === col ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-      className="relative text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden">
+      className="relative text-left text-3xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden">
       <button
         type="button"
         onClick={() => onSort(col)}
-        className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] rounded-sm"
+        className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         {children}
         {active === col

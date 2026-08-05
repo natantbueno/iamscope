@@ -6,6 +6,7 @@ import { X } from 'lucide-react'
 import { CloudId, CLOUD_META, CLOUD_ORDER } from '@/data/compare/types'
 import tiersData from '@/data/compare/tiers.json'
 import functionsData from '@/data/compare/functions.json'
+import { useT } from '@/i18n/LanguageProvider'
 
 interface CompareFiltersProps {
   selectedTiers: number[]
@@ -15,6 +16,7 @@ interface CompareFiltersProps {
 }
 
 export default function CompareFilters({ selectedTiers, visibleClouds, selectedFunction, sortBy }: CompareFiltersProps) {
+  const t = useT()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -49,12 +51,12 @@ export default function CompareFilters({ selectedTiers, visibleClouds, selectedF
   const TIER_COLORS: Record<number, string> = { 0: '#ef4444', 1: '#f97316', 2: '#eab308' }
 
   return (
-    <div className="px-4 py-3 border-b border-[#dde3ec] dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-3">
+    <div className="px-4 py-3 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Filtros</span>
+        <span className="text-3xs font-semibold text-fg-muted uppercase tracking-wider">Filtros</span>
         {hasFilters && (
           <button onClick={reset}
-            className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-500 transition-colors">
+            className="flex items-center gap-1 text-3xs text-fg-subtle hover:text-red-500 transition-colors">
             <X size={12} /> Limpar
           </button>
         )}
@@ -62,12 +64,12 @@ export default function CompareFilters({ selectedTiers, visibleClouds, selectedF
 
       {/* Tier filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[11px] text-gray-400 w-12 shrink-0">Tier</span>
+        <span className="text-3xs text-fg-subtle w-12 shrink-0">Tier</span>
         {tiersData.map(t => {
           const active = selectedTiers.includes(t.level)
           return (
             <button key={t.id} onClick={() => toggleTier(t.level)}
-              className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold transition-colors ${active ? 'text-white border-transparent' : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+              className={`text-3xs px-2.5 py-1 rounded-full border font-semibold transition-colors ${active ? 'text-white border-transparent' : 'text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
               style={active ? { background: TIER_COLORS[t.level], borderColor: TIER_COLORS[t.level] } : {}}>
               {t.shortName} · {t.label}
             </button>
@@ -77,12 +79,12 @@ export default function CompareFilters({ selectedTiers, visibleClouds, selectedF
 
       {/* Function filter */}
       <div className="flex items-center gap-2">
-        <span className="text-[11px] text-gray-400 w-12 shrink-0">Função</span>
+        <span className="text-3xs text-fg-subtle w-12 shrink-0">{t('table.function')}</span>
         <select
           value={selectedFunction}
           onChange={e => update('fn', e.target.value === 'all' ? '' : e.target.value)}
-          className="text-[12px] px-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
-          <option value="all">Todas as funções</option>
+          className="text-tiny px-2 py-1 rounded border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
+          <option value="all">{t('filter.allFunctions')}</option>
           {functionsData.map(fn => (
             <option key={fn.id} value={fn.id}>{fn.name}</option>
           ))}
@@ -90,21 +92,21 @@ export default function CompareFilters({ selectedTiers, visibleClouds, selectedF
         <select
           value={sortBy}
           onChange={e => update('sort', e.target.value === 'tier' ? '' : e.target.value)}
-          className="text-[12px] px-2 py-1 rounded border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
+          className="text-tiny px-2 py-1 rounded border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500">
           <option value="tier">Ordenar: Tier</option>
-          <option value="function">Ordenar: Função</option>
+          <option value="function">{t('filter.sortByFunction')}</option>
         </select>
       </div>
 
       {/* Cloud toggles */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[11px] text-gray-400 w-12 shrink-0">Clouds</span>
+        <span className="text-3xs text-fg-subtle w-12 shrink-0">Clouds</span>
         {CLOUD_ORDER.map(cloud => {
           const meta   = CLOUD_META[cloud]
           const active = visibleClouds.includes(cloud)
           return (
             <button key={cloud} onClick={() => toggleCloud(cloud)}
-              className={`text-[11px] px-2 py-0.5 rounded-full border font-medium transition-colors ${active ? 'text-white border-transparent' : 'text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 line-through opacity-50'}`}
+              className={`text-3xs px-2 py-0.5 rounded-full border font-medium transition-colors ${active ? 'text-white border-transparent' : 'text-fg-subtle border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 line-through opacity-50'}`}
               style={active ? { background: meta.color, borderColor: meta.color } : {}}>
               {meta.shortLabel}
             </button>

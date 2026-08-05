@@ -1,89 +1,145 @@
-# iamscope.cloud — Referência Multi-Cloud de IAM — Entra ID, Azure RBAC, AWS, GCP, Google Workspace, OCI e IBM Cloud
+# iamscope.cloud — Referência Multi-Cloud de IAM
 
-Site de referência estático para roles, permissões, políticas e API permissions de sete plataformas de IAM, com classificação por tier de privilégio em cada uma. Inspirado no [azure.permissions.cloud](https://azure.permissions.cloud), [AzAdvertizer](https://www.azadvertizer.net) e nas classificações do [EntraOps / AzurePrivilegedIAM](https://github.com/Cloud-Architekt/AzurePrivilegedIAM).
+Site de referência estático para roles, permissões, policies e API permissions de **seis plataformas de IAM** — Entra ID, Azure RBAC, AWS, GCP, Google Workspace e IBM Cloud — com classificação por tier de privilégio em cada uma.
 
-## Funcionalidades
+Inspirado no [azure.permissions.cloud](https://azure.permissions.cloud), no [AzAdvertizer](https://www.azadvertizer.net) e nas classificações do [EntraOps / AzurePrivilegedIAM](https://github.com/Cloud-Architekt/AzurePrivilegedIAM).
 
-- 📋 **144 roles built-in** do Microsoft Entra ID (dataset oficial do EntraOps), classificadas pelo **Enterprise Access Model (EAM)**: Control Plane, Management Plane, Workload Plane, User Access
-- ☁️ **926 built-in roles** do Azure RBAC, com tiers próprios (FullControl, AccessManagement, Contributor, DataPlane, Reader, Specialized)
-- 🟠 **1526+ Managed Policies** da AWS (IAM), incluindo comparação SCP vs. Identity Policies e Permission Boundaries
-- 🔵 **232 predefined roles** do GCP (IAM), com catálogo de permissões `iam.*`/`security.*`
-- 🟢 **44 roles e privileges** do Google Workspace, incluindo API Permissions delegadas
-- 🔷 **157 roles** do IBM Cloud, com Access Groups & Trusted Profiles e Permission Boundaries equivalentes
-- 🔴 **126 policies** da OCI (Oracle Cloud Infrastructure), com catálogo de verbs
-- 🛡️ **SoD Analyzer** (`/sod`) — 96 regras de Segregation of Duties cobrindo Entra ID, Azure RBAC e combinações cross-cloud, com catálogo filtrável, matriz de conflito e avaliação de lista de roles, 100% client-side
-- 🔀 **Multi-Cloud Compare** (`/compare`) — equivalência de roles entre as 7 plataformas, por tier e por função
-- 🧭 **Role Evaluator** (`/evaluate`) — detecta a cloud de uma role colada e mostra o resultado da classificação
-- 📄 **Página individual para cada role/policy** com descrição completa, permissões/actions relacionadas e roles/policies equivalentes
-- 📥 **Exportação** em CSV, Excel (.xls) e JSON — lista de roles ou permissões expandidas
-- 🌙 **Modo escuro** com toggle e persistência
-- 🔍 Busca por nome, descrição, ID/slug ou permissão em cada plataforma
-- 🏷️ Filtros por tier, categoria e nível de privilégio — **refletidos na URL** (compartilháveis)
-- 🔗 Dashboard com números clicáveis que levam às listas filtradas
-- ⚠️ Identificação de roles privilegiadas
-- 🔐 Página de **PIM** (Privileged Identity Management) e de **comparação de Tiers** entre clouds
+> **Princípio do projeto:** nome, descrição, action e permission vêm sempre do texto oficial publicado pelo provedor, em inglês. Nada é reescrito. O que é nosso — tier e categoria — aparece rotulado como classificação editorial. Ver [`docs/ADR-001-idioma-dos-dados.md`](docs/ADR-001-idioma-dos-dados.md).
+
+## Os dados
+
+| Plataforma | Roles / Policies | Actions / Permissions | Outros |
+|---|---:|---:|---|
+| **Entra ID** | 144 roles built-in | 670 role actions | 854 API permissions (Microsoft Graph) |
+| **Azure RBAC** | 504 roles built-in | 2.697 actions | — |
+| **AWS IAM** | 1.553 managed policies | 16.117 actions | 448 serviços |
+| **GCP IAM** | 2.381 predefined roles | 13.590 permissions | 314 serviços |
+| **Google Workspace** | 14 prebuilt roles | 120 privilégios do Admin console | 60 OAuth scopes |
+| **IBM Cloud** | 7 roles do IAM (4 platform + 3 service) | — (a IBM não publica ação por role) | 71 permissões clássicas em 6 categorias · 2 access primitives |
+
+Além disso: **96 regras de Segregation of Duties** e **29 equivalências** de função entre as seis clouds.
+
+As contagens vivem em `src/data/counts.ts`, gerado por `scripts/build-counts.js` — não edite à mão. A Sidebar e o AppShell leem dali em vez dos datasets, senão os 2,5 MB de `src/data/*.ts` entrariam no chunk compartilhado de todas as páginas.
+
+## Ferramentas
+
+Além das listas de referência, o site tem sete ferramentas:
+
+- 🛡️ **SoD Analyzer** (`/sod`) — 96 regras de Segregation of Duties cobrindo Entra ID, Azure RBAC e combinações cross-cloud, com catálogo filtrável, matriz de conflito e avaliação de uma lista de roles colada. 100% client-side.
+- 📊 **Assessment do Tenant** (`/assessment`) — script PowerShell **somente leitura** que o usuário baixa e roda no próprio tenant. Lê as atribuições reais de Entra ID e Azure RBAC, cruza com este catálogo e gera Excel, CSV e um dashboard HTML local com três abas (Visão geral, Entra ID, Azure RBAC). Nenhum dado sai da máquina de quem roda.
+- 🔍 **Permission Scope** (`/permission-scope`) — busca uma permission ou action nas seis clouds ao mesmo tempo e mostra quais roles a concedem.
+- 🔀 **Multi-Cloud Compare** (`/compare`) — equivalência de função entre as seis plataformas, navegável por tier e por função.
+- 🧭 **Role Evaluator** (`/evaluate`) — detecta a cloud de uma role colada e mostra o resultado da classificação.
+- ✨ **Role Advisor** (`/advisor`) — sugere a role de menor privilégio para uma intenção descrita.
+- 🔐 **Tier 0 Comparison** (`/tier-comparison`) — o que é Tier 0 em cada cloud, lado a lado.
+
+### Scripts para rodar no seu ambiente
+
+Ficam em `public/tools/`, servidos como download estático:
+
+| Script | O que faz |
+|---|---|
+| `Invoke-IAMScopeAssessment.ps1` | Assessment completo: inventário, tier, achados, SoD e score de risco. Absorve a análise de SoD. |
+| `Invoke-IAMScopeSoDAnalysis.ps1` | Só a análise de segregação de funções, para quem quer o recorte menor. |
+
+Ambos são **somente leitura** — autenticam com escopos `*.Read.*` e não criam, alteram nem removem nada. Requerem `Microsoft.Graph.Authentication` e `Microsoft.Graph.Identity.Governance`; para a parte de Azure RBAC, também `Az.Accounts` e `Az.Resources`. Sem estes últimos o script roda só o Entra ID e **declara isso no relatório**, na linha *Cobertura Azure RBAC*.
+
+O catálogo que os scripts consomem (`public/iamscope-catalog.json`) é gerado por `scripts/build-assessment-catalog.js` a partir dos mesmos datasets do site — não há segunda cópia dos dados dentro do `.ps1`, que sairia de sincronia na primeira atualização.
+
+## Outras funcionalidades
+
+- 🌍 **Dois idiomas** (pt/en) com seletor de bandeiras. A **interface** é traduzida; os **dados oficiais permanecem em inglês** — decisão documentada na [ADR-001](docs/ADR-001-idioma-dos-dados.md), porque a tradução automática da Microsoft chega a traduzir identificadores de action (`*/read` → `*/leitura`), o que quebraria a utilidade da referência.
+- 📄 Página individual para cada role, policy, permission e action, com o texto oficial, as permissões relacionadas e os equivalentes em outras clouds.
+- 📥 Exportação em CSV, Excel (.xls) e JSON — lista corrente ou permissões expandidas.
+- 📑 Paginação em todas as tabelas (20 por padrão; 25/50/100/tudo).
+- 🔍 Busca global abaixo do menu superior, com estado na URL (`?q=`) — o link é compartilhável.
+- 🏷️ Filtros por tier, categoria e privilégio, também refletidos na URL.
+- ⚠️ Marcação de roles privilegiadas e de roles/policies **descontinuadas** pelo provedor.
+- 🌙 Tema escuro.
 
 ## Rotas
 
+### Entra ID
 | Rota | Descrição |
 |------|-----------|
-| `/` | Dashboard com estatísticas clicáveis |
-| `/roles` | Lista de roles do Entra ID (aceita `?tier=`, `?category=`, `?filter=privileged`, `?q=`) |
-| `/roles/[slug]` | Página de detalhe de uma role do Entra ID |
-| `/role-actions` | Lista de role actions do Entra ID, filtráveis por tier |
-| `/api-permissions` | Lista de API permissions do Microsoft Graph (aceita `?tier=`, `?q=`) |
-| `/azure-rbac` | Dashboard do Azure RBAC |
-| `/azure-rbac/roles` | Lista de roles built-in do Azure RBAC |
-| `/azure-rbac/roles/[slug]` | Página de detalhe de uma role do Azure RBAC |
-| `/azure-rbac/reference` | Referência rápida do Azure RBAC |
-| `/aws` | Dashboard do AWS IAM |
-| `/aws/policies` | Lista de Managed Policies da AWS |
-| `/aws/policies/[slug]` | Página de detalhe de uma Managed Policy |
-| `/aws/actions` | Lista de actions do AWS IAM |
-| `/aws/reference` | Referência rápida do AWS IAM |
+| `/entraid` | Dashboard |
+| `/entraid/roles` · `/entraid/roles/[slug]` | Roles built-in (aceita `?tier=`, `?category=`, `?filter=privileged`, `?q=`) |
+| `/entraid/role-actions` | Role actions, filtráveis por tier |
+| `/entraid/api-permissions` | API permissions do Microsoft Graph |
+| `/entraid/pim` | Privileged Identity Management |
+| `/entraid/reference` | Referência rápida — abre com o índice de navegação da cloud |
+
+### Azure RBAC
+| Rota | Descrição |
+|------|-----------|
+| `/azure-rbac` | Dashboard |
+| `/azure-rbac/roles` · `/azure-rbac/roles/[slug]` | Roles built-in |
+| `/azure-rbac/permissions` · `/azure-rbac/permissions/[slug]` | Catálogo de actions |
+| `/azure-rbac/reference` | Referência rápida |
+
+### AWS IAM
+| Rota | Descrição |
+|------|-----------|
+| `/aws` | Dashboard |
+| `/aws/policies` · `/aws/policies/[slug]` | Managed policies, com o JSON oficial do documento |
+| `/aws/actions` | Catálogo de actions |
 | `/aws/scp-vs-identity-policies` | Comparação SCP vs. Identity Policies |
-| `/gcp` | Dashboard do GCP IAM |
-| `/gcp/roles` | Lista de predefined roles do GCP |
-| `/gcp/roles/[slug]` | Página de detalhe de uma role do GCP |
-| `/gcp/permissions` | Catálogo de permissões `iam.*`/`security.*` |
-| `/gcp/reference` | Referência rápida do GCP |
-| `/google-workspace` | Dashboard do Google Workspace |
-| `/google-workspace/roles` | Lista de roles do Google Workspace |
-| `/google-workspace/roles/[slug]` | Página de detalhe de uma role do Google Workspace |
-| `/google-workspace/privileges` | Lista de privileges do Google Workspace |
-| `/google-workspace/api-permissions` | API Permissions delegadas |
-| `/google-workspace/reference` | Referência rápida do Google Workspace |
-| `/ibm-cloud` | Dashboard do IBM Cloud |
-| `/ibm-cloud/roles` | Lista de roles do IBM Cloud |
-| `/ibm-cloud/roles/[slug]` | Página de detalhe de uma role do IBM Cloud |
+| `/aws/reference` | Referência rápida |
+
+### GCP IAM
+| Rota | Descrição |
+|------|-----------|
+| `/gcp` | Dashboard |
+| `/gcp/roles` · `/gcp/roles/[slug]` | Predefined roles |
+| `/gcp/permissions` | Catálogo de permissions |
+| `/gcp/reference` | Referência rápida |
+
+### Google Workspace
+| Rota | Descrição |
+|------|-----------|
+| `/google-workspace` | Dashboard |
+| `/google-workspace/roles` · `/google-workspace/roles/[slug]` | Admin roles |
+| `/google-workspace/privileges` | Privileges |
+| `/google-workspace/api-permissions` | API permissions delegadas |
+| `/google-workspace/reference` | Referência rápida |
+
+### IBM Cloud
+| Rota | Descrição |
+|------|-----------|
+| `/ibm-cloud` | Dashboard |
+| `/ibm-cloud/roles` · `/ibm-cloud/roles/[slug]` | Roles |
+| `/ibm-cloud/classic` | Infraestrutura clássica — as 71 permissões, em 6 categorias; não roles |
 | `/ibm-cloud/access-groups` | Access Groups & Trusted Profiles |
-| `/ibm-cloud/actions` | Lista de actions do IBM Cloud |
-| `/ibm-cloud/reference` | Referência rápida do IBM Cloud |
-| `/oci` | Dashboard da OCI |
-| `/oci/policies` | Lista de policies da OCI |
-| `/oci/policies/[slug]` | Página de detalhe de uma policy da OCI |
-| `/oci/verbs` | Catálogo de verbs da OCI |
-| `/oci/reference` | Referência rápida da OCI |
-| `/compare` | Multi-Cloud Compare — equivalência de roles entre as 7 clouds |
-| `/compare/[tier]` | Equivalência filtrada por tier |
-| `/compare/[tier]/[function]` | Equivalência filtrada por tier e função |
-| `/sod` | SoD Analyzer — catálogo, matriz e avaliação de usuário |
-| `/sod/rules` | Alias para a aba de catálogo do SoD Analyzer |
-| `/sod/rules/[id]` | Página de detalhe de uma regra SoD |
-| `/evaluate` | Role Evaluator — detecção automática de cloud |
-| `/pim` | Privileged Identity Management |
-| `/reference` | Referência geral consolidada |
-| `/tier-comparison` | Comparação de Tiers entre clouds |
+| `/ibm-cloud/reference` | Referência rápida |
+
+### Ferramentas e geral
+| Rota | Descrição |
+|------|-----------|
+| `/` | Home com as seis clouds |
+| `/sod` · `/sod/rules` · `/sod/rules/[id]` | SoD Analyzer |
+| `/assessment` | Assessment do tenant (download do script) |
+| `/search` | Busca global — todas as roles e policies das 6 clouds |
+| `/permission-scope` | Busca de permission cross-cloud |
+| `/compare` · `/compare/[tier]` · `/compare/[tier]/[function]` | Multi-Cloud Compare |
+| `/evaluate` | Role Evaluator |
 | `/advisor` | Role Advisor |
-| `/info` | Sobre o projeto |
+| `/tier-comparison` | Comparação de Tier 0 |
+| `/reference` | Referência geral consolidada |
+| `/info` | Sobre o projeto, fontes e changelog |
+
+### Rotas antigas (redirect)
+
+As rotas do Entra ID viviam na raiz até 07/2026. Os caminhos antigos continuam existindo como stub de redirect permanente, para não quebrar links já compartilhados: `/roles`, `/roles/[slug]`, `/role-actions`, `/api-permissions` e `/pim` apontam para o equivalente em `/entraid/*`.
+
+Com `output: 'export'` não há redirect de servidor — o `redirect()` em Server Component gera HTML estático com meta refresh.
 
 ## Como rodar localmente
 
 ### Pré-requisitos
 
-- Node.js 18.18+ ou 20+ instalado ([nodejs.org](https://nodejs.org)) — instale a versão **LTS**. O Next.js 15 exige Node 18.18 no mínimo.
+Node.js 18.18+ ou 20+ ([nodejs.org](https://nodejs.org)) — instale a versão **LTS**. O Next.js 15 exige Node 18.18 no mínimo.
 
-> **Nota de segurança:** o projeto usa Next.js 15.5.9, versão estável com os patches de RSC de dezembro/2025. Se o `npm audit` sugerir `npm audit fix --force`, **não rode** — isso forçaria o salto para o Next 16 (breaking change desnecessário aqui). As vulnerabilidades reportadas afetam apps em produção expostos na internet, não o uso local em `localhost`.
+> **Nota de segurança:** o projeto usa Next.js 15.5.9, versão estável com os patches de RSC de dezembro/2025. Se o `npm audit` sugerir `npm audit fix --force`, **não rode** — isso forçaria o salto para o Next 16, um breaking change desnecessário aqui. As vulnerabilidades reportadas afetam apps em produção expostos na internet, não o uso local em `localhost`.
 
 ### ⚠️ Erro comum no Windows (PowerShell)
 
@@ -93,127 +149,147 @@ Se aparecer `npm.ps1 não pode ser carregado porque a execução de scripts foi 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-Isso libera scripts só para a sessão atual. Alternativamente, use o **Prompt de Comando (cmd)** em vez do PowerShell, que não tem essa restrição.
+Isso libera scripts só para a sessão atual. Alternativamente, use o **Prompt de Comando (cmd)**, que não tem essa restrição.
 
 ### Instalação
 
 ```bash
-cd entra-permissions
 npm install
 npm run dev
 ```
 
-Acesse: **http://localhost:3000**
+Acesse **http://localhost:3000**.
 
 ## Estrutura do projeto
 
 ```
-entra-permissions/
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx              # Layout raiz + ThemeProvider
-│   │   ├── page.tsx                # Dashboard principal
-│   │   ├── globals.css             # Estilos globais + Tailwind
-│   │   ├── roles/, role-actions/, api-permissions/   # Entra ID
-│   │   ├── azure-rbac/             # Azure RBAC
-│   │   ├── aws/                    # AWS IAM
-│   │   ├── gcp/                    # GCP IAM
-│   │   ├── google-workspace/       # Google Workspace
-│   │   ├── ibm-cloud/              # IBM Cloud
-│   │   ├── oci/                    # OCI
-│   │   ├── compare/                # Multi-Cloud Compare
-│   │   ├── sod/                    # SoD Analyzer
-│   │   ├── evaluate/, pim/, reference/, tier-comparison/, advisor/, info/
-│   ├── components/                 # ~34 componentes (Sidebar, Dashboard, tabelas
-│   │                                # e clients por cloud, SoD*, Compare*, etc.)
-│   ├── lib/                        # Lógica client-side (sod.ts, roles.ts, roleActions.ts...)
+│   │   ├── layout.tsx                # Layout raiz + LanguageProvider
+│   │   ├── (home)/                   # Home com as 6 clouds
+│   │   ├── entraid/                  # Entra ID
+│   │   ├── azure-rbac/               # Azure RBAC
+│   │   ├── aws/  gcp/  google-workspace/  ibm-cloud/
+│   │   ├── sod/  assessment/  permission-scope/  compare/
+│   │   └── evaluate/  advisor/  tier-comparison/  info/
+│   ├── components/                   # Sidebar, AppShell, GlobalSearch, Pagination,
+│   │                                 # PermissionsTable, ExportMenu, tabelas por cloud
+│   ├── hooks/                        # usePagination, useColumnResize
+│   ├── i18n/                         # LanguageProvider + dicionário (232 chaves)
+│   ├── lib/                          # Lógica client-side (sod.ts, evaluate.ts...)
 │   └── data/
-│       ├── roles.ts                 # Entra ID — roles + metadados EAM
-│       ├── apiPermissions.ts        # Entra ID — API permissions
-│       ├── azureRbac.ts             # Azure RBAC — roles built-in
-│       ├── aws.ts                   # AWS — Managed Policies
-│       ├── gcp.ts                   # GCP — predefined roles + permissions
-│       ├── googleWorkspace.ts       # Google Workspace — roles + privileges
-│       ├── ibmCloud.ts / ibmAccessPrimitives.ts  # IBM Cloud
-│       ├── oci.ts                   # OCI — policies + verbs
-│       ├── compare/                 # Dataset de equivalência multi-cloud
-│       ├── sod/                     # Dataset de regras SoD
-│       └── syncMeta.ts              # Data/versão de sincronização por plataforma
-├── package.json
-├── tailwind.config.js               # darkMode: 'class', tokens brand/csp/surface
-├── tsconfig.json
-└── next.config.js                   # output: 'export' (site estático)
+│       ├── counts.ts                 # AUTO-GERADO — só contagens
+│       ├── tierMeta.ts               # TIER_META das 6 clouds, isolado do dataset
+│       ├── roles.ts / apiPermissions.ts        # Entra ID
+│       ├── azureRbac.ts / aws.ts / gcp.ts      # Azure, AWS, GCP
+│       ├── googleWorkspace.ts / ibmCloud.ts    # GWS, IBM
+│       ├── compare/  sod/            # Equivalências e regras de SoD
+│       └── syncMeta.ts               # Quando cada dataset foi sincronizado
+├── public/
+│   ├── tools/                        # Scripts PowerShell para download
+│   ├── iamscope-catalog.json         # Catálogo consumido pelos scripts
+│   └── *-perms/  *-perms-index.json  # Permissões fora do bundle, buscadas sob demanda
+├── scripts/                          # Coletores e ferramentas de build
+└── docs/                             # ADRs e design system
 ```
 
-## Sobre os modelos de tier por cloud
+### Por que as permissões ficam em `public/`
 
-Cada plataforma tem seu próprio modelo de classificação de privilégio, todos mapeados para uma lógica comum de "quanto mais próximo do Tier 0, maior o risco de takeover do ambiente":
+Os conjuntos de permissions (Azure, GCP, AWS) são grandes demais para o bundle JavaScript. Ficam como JSON em `public/`, com um índice separado, e são buscados por `fetch` só quando a página de detalhe precisa. Sem isso, o First Load JS passava de 400 kB.
+
+## Coleta de dados
+
+Todos os datasets vêm de fontes oficiais. Os coletores ficam em `scripts/`:
+
+| Script | Fonte oficial |
+|---|---|
+| `fetch-azure-roles-official.js` | [MicrosoftDocs/azure-docs — built-in-roles](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles) |
+| `fetch-azure-action-descriptions.js` | [Azure resource provider operations](https://learn.microsoft.com/en-us/azure/role-based-access-control/resource-provider-operations) |
+| `fetch-aws-policies-official.js` | [AWS Managed Policy Reference](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html) |
+| `fetch-gcp-roles-from-docs.js` | [Google Cloud IAM roles & permissions](https://docs.cloud.google.com/iam/docs/roles-permissions) |
+| `convert-roles.py` · `convert-api-permissions.py` | [EntraOps / AzurePrivilegedIAM](https://github.com/Cloud-Architekt/AzurePrivilegedIAM) |
+| `fetch-gws-roles.js` | [Prebuilt administrator roles](https://support.google.com/a/answer/2405986) + [Administrator privilege definitions](https://knowledge.workspace.google.com/admin/users/administrator-privilege-definitions) |
+| `fetch-ibm-roles.js` | [IBM Cloud IAM roles](https://cloud.ibm.com/docs/iam?topic=iam-userroles) + [Managing classic infrastructure access](https://cloud.ibm.com/docs/iam?topic=iam-mngclassicinfra) |
+
+Ferramentas de apoio:
+
+| Script | O que faz |
+|---|---|
+| `build-counts.js` | Regenera `src/data/counts.ts`. **Rode depois de qualquer coleta.** |
+| `build-azure-perms-index.js` | Índice invertido action → roles do Azure |
+| `build-assessment-catalog.js` | Gera `public/iamscope-catalog.json` para os scripts PowerShell |
+| `build-sod-rules-json.js` | Exporta as 96 regras de SoD para consumo externo |
+| `build-search-index.js` | Gera `public/search-index.json`, o índice da busca global |
+| `check-syntax.cjs` | Sintaxe e redeclaração — o parser sozinho deixa passar |
+| `check-imports.js` | Símbolo do projeto usado sem import. O `tsc` pega, mas leva minutos por causa dos datasets; este roda em segundos |
+| `check-static-export.js` | Regras do `output: 'export'` que só falham na fase "Collecting page data" do build |
+| `check-sidebar-focus.js` | Qual item da sidebar acende em cada rota — erro que compila e renderiza, só destaca o item errado |
+| `check-stale-numbers.js` | Contagem obsoleta na tela, label de `syncMeta` fora de sincronia e ferramenta que existe na sidebar mas não no `/info` |
+| `check-site-index.js` | Índice de navegação das Reference: rota inexistente, listagem esquecida, contagem literal errada |
+| `typecheck.cjs` | Verificação de tipos completa |
+| `check-i18n-scope.js` | Garante que todo `t()` está no escopo de um hook — erro que só aparece no build |
+| `find-untranslated.js` | Lista strings fixas ainda não traduzidas |
+
+### Fluxo de atualização
+
+```bash
+node scripts/fetch-gcp-roles-from-docs.js --write-ts   # (ou outro coletor)
+node scripts/build-counts.js                            # sempre depois
+node scripts/build-azure-perms-index.js                 # se mexeu no Azure
+node scripts/build-assessment-catalog.js                # se mexeu em roles ou SoD
+node scripts/build-search-index.js                      # sempre que roles mudarem
+node scripts/check-imports.js                           # segundos; pega import faltando
+node scripts/check-static-export.js                      # regras do output: export
+node scripts/check-sidebar-focus.js                      # destaque da sidebar por rota
+node scripts/check-stale-numbers.js                      # números e conteúdo desatualizados
+node scripts/check-site-index.js                         # índice das páginas de Reference
+npm run build
+```
+
+Todo coletor aceita `--dry-run`: imprime o que encontrou sem escrever nada. Use antes de sobrescrever um dataset.
+
+## Modelos de tier por cloud
+
+Cada plataforma tem seu próprio vocabulário de privilégio. Todos são mapeados para a mesma lógica: *quanto mais próximo do Tier 0, maior o risco de takeover do ambiente*.
 
 | Cloud | Modelo | Tier mais crítico |
 |-------|--------|--------------------|
 | Entra ID | Enterprise Access Model (EAM) | Control Plane |
-| Azure RBAC | Tiers internos do projeto | FullControl / AccessManagement |
-| AWS | IAM Managed Policies | Policies com `iam:*`/`*:*` |
-| GCP | Predefined Roles | Roles `iam.*`/`security.*` de owner |
+| Azure RBAC | Tiers do projeto | FullControl / AccessManagement |
+| AWS | Managed Policies | Policies com `iam:*` / `*:*` |
+| GCP | Predefined Roles | Owner e roles `iam.*` / `resourcemanager.*` |
 | Google Workspace | Admin Roles | Super Admin |
-| IBM Cloud | Platform/Service Roles | Administrator |
-| OCI | Policies | Policies com verb `manage` em `tenancy` |
+| IBM Cloud | Platform / Service Roles | Administrator |
 
-A classificação do Entra ID segue o modelo do [EntraOps](https://github.com/Cloud-Architekt/EntraOps) de Thomas Naunheim. Para um cenário de produção, recomenda-se sincronizar com os arquivos `Classification_AadResources.json` e `Classification_AppRoles.json` do repositório AzurePrivilegedIAM.
+A classificação do Entra ID segue o modelo do [EntraOps](https://github.com/Cloud-Architekt/EntraOps), de Thomas Naunheim.
 
-## Como adicionar/atualizar dados
+**Tier e categoria são classificação editorial do IAM Scope**, derivada das permissões oficiais de cada role — não são classificação do provedor. O site diz isso onde a informação aparece, e os relatórios gerados pelos scripts repetem o aviso.
 
-Os datasets do Entra ID são **gerados automaticamente** a partir dos arquivos de classificação do EntraOps / AzurePrivilegedIAM, usando os scripts em `scripts/`. Os demais datasets (Azure RBAC, AWS, GCP, Google Workspace, IBM Cloud, OCI, SoD) são mantidos manualmente em `src/data/`, com scripts auxiliares de conversão quando aplicável (ex.: `scripts/` para AWS Managed Policies).
-
-### Regenerar as roles do Entra ID (144 roles)
-
-```bash
-python3 scripts/convert-roles.py \
-  /caminho/AzurePrivilegedIAM/Classification/Classification_EntraIdDirectoryRoles.json \
-  src/data/roles.ts
-```
-
-### Regenerar as API permissions do Entra ID (692 permissões)
-
-```bash
-python3 scripts/convert-api-permissions.py \
-  /caminho/AzurePrivilegedIAM/Classification/Classification_MsGraphAppRoles.json \
-  src/data/apiPermissions.ts
-```
-
-Para atualizar quando a Microsoft adicionar roles novas: baixe a versão mais recente do repositório [AzurePrivilegedIAM](https://github.com/Cloud-Architekt/AzurePrivilegedIAM), rode os scripts acima, e os arquivos `roles.ts` e `apiPermissions.ts` são reescritos com os dados frescos — incluindo a classificação EAM oficial de cada role action.
-
-### Edição manual
-
-Também é possível editar os arquivos em `src/data/` diretamente, mas mudanças em `roles.ts`/`apiPermissions.ts` serão sobrescritas na próxima execução dos scripts do Entra ID.
-
-## Sincronizar com Microsoft Graph
-
-```powershell
-Connect-MgGraph -Scopes "RoleManagement.Read.Directory"
-
-# Roles
-Get-MgRoleManagementDirectoryRoleDefinition |
-  Select-Object DisplayName, Id, Description, IsBuiltIn, IsPrivileged |
-  Export-Csv roles.csv -NoTypeInformation
-
-# Catálogo de permissões para custom roles
-Get-MgRoleManagementDirectoryResourceAction
-```
-
-## Build para produção e deploy
+## Build e deploy
 
 ```bash
 npm run build
-npm start
 ```
 
-O build gera um site 100% estático (`output: 'export'`) com aproximadamente **3311 páginas** (dashboard, listas e páginas de detalhe individuais de cada role/policy/permission das 7 clouds, mais o catálogo de regras do SoD Analyzer). Funciona no **Vercel** (recomendado), Netlify ou qualquer host com Node.js. Para Vercel: push para GitHub → importe em vercel.com → deploy automático.
+Gera um site 100% estático (`output: 'export'`) com cerca de **7.800 páginas** — dashboards, listas e uma página de detalhe para cada role, policy, permission e action das seis clouds, mais o catálogo de regras do SoD.
 
-## Créditos / fontes
+Funciona no **Vercel** (recomendado), Netlify ou qualquer host estático. Para Vercel: push para o GitHub → importe em vercel.com → deploy automático.
+
+### Restrições de arquitetura
+
+Quem for mexer no código precisa saber:
+
+- `output: 'export'` — **sem** rotas de API, sem middleware, sem ISR. Toda página dinâmica precisa de `generateStaticParams`.
+- `'use client'` é incompatível com `export const metadata` e `generateStaticParams`. Componentes que precisam dos dois se dividem em `page.tsx` (servidor, com metadata) + `XClient.tsx` (cliente) — padrão usado em `/sod` e `/assessment`.
+- Nada que a Sidebar ou o AppShell importem pode puxar um dataset: eles envolvem todas as páginas e o import iria para o chunk compartilhado. Daí existirem `counts.ts` e `tierMeta.ts`.
+- O tema é permanentemente escuro; só as variantes `dark:` são renderizadas.
+
+## Créditos e fontes
 
 - [azure.permissions.cloud](https://azure.permissions.cloud) (Ian McKay) — inspiração de UX
 - [AzAdvertizer](https://www.azadvertizer.net) (Julian Hayward) — referência de roles e API permissions
 - [AzurePrivilegedIAM / EntraOps](https://github.com/Cloud-Architekt/AzurePrivilegedIAM) (Thomas Naunheim) — classificação EAM
-- [Microsoft Learn](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference) — dados oficiais do Entra ID e Azure RBAC
-- Documentação oficial da AWS, Google Cloud, Google Workspace, IBM Cloud e Oracle Cloud Infrastructure — dados dos demais datasets
+- [Microsoft Learn](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference) — Entra ID e Azure RBAC
+- Documentação oficial da [AWS](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html), [Google Cloud](https://docs.cloud.google.com/iam/docs/roles-permissions), Google Workspace e IBM Cloud — demais datasets
+
+A data da última sincronização de cada dataset fica em `src/data/syncMeta.ts` e é exibida na interface.

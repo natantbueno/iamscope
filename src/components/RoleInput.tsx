@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useRef } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { Sparkles, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { detectCloud, EvaluateCloud, EVALUATE_CLOUDS } from '@/lib/evaluate'
 import { CLOUD_META } from '@/data/compare/types'
@@ -118,6 +119,7 @@ interface RoleInputProps {
 export default function RoleInput({
   value, onChange, manualCloud, onManualCloudChange, onEvaluate, onClear, parseError, cloudNotDetected,
 }: RoleInputProps) {
+  const t = useT()
   const { theme } = useTheme()
   const isDark = theme === 'dark'
   const preRef = useRef<HTMLPreElement>(null)
@@ -145,14 +147,14 @@ export default function RoleInput({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 block">
+        <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-1.5 block">
           Cole o JSON do role/policy
         </label>
         <div className="relative rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 overflow-hidden">
           <pre
             ref={preRef}
             aria-hidden="true"
-            className="absolute inset-0 m-0 p-3 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-words overflow-auto pointer-events-none"
+            className="absolute inset-0 m-0 p-3 font-mono text-tiny leading-relaxed whitespace-pre-wrap break-words overflow-auto pointer-events-none"
             style={{ color: 'transparent' }}
           >
             {value ? <HighlightedJson text={value} isDark={isDark} /> : null}
@@ -165,7 +167,7 @@ export default function RoleInput({
             spellCheck={false}
             placeholder={EXAMPLES[exampleCloud]}
             rows={16}
-            className="relative w-full font-mono text-[12px] leading-relaxed p-3 bg-transparent resize-y focus:outline-none"
+            className="relative w-full font-mono text-tiny leading-relaxed p-3 bg-transparent resize-y focus:outline-none"
             style={{ color: value ? 'transparent' : undefined, caretColor: isDark ? '#e5e7eb' : '#1f2937' }}
           />
         </div>
@@ -173,7 +175,7 @@ export default function RoleInput({
 
       {/* Feedback de detecção ao vivo */}
       {value.trim() && (
-        <div className={`flex items-start gap-2 text-[12px] px-3 py-2 rounded-lg ${
+        <div className={`flex items-start gap-2 text-tiny px-3 py-2 rounded-lg ${
           liveDetection?.cloud
             ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
             : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400'
@@ -183,7 +185,7 @@ export default function RoleInput({
             {liveDetection?.cloud ? (
               <>{CLOUD_META[liveDetection.cloud].label} detectado ✓ <span className="opacity-70">— {liveDetection.reason}</span></>
             ) : (
-              'Cloud não detectada automaticamente ainda — cole um JSON válido ou selecione manualmente abaixo.'
+              t('eval.cloudNotDetected')
             )}
           </span>
         </div>
@@ -192,15 +194,15 @@ export default function RoleInput({
       {/* Seleção manual de cloud */}
       {showManualPicker && (
         <div>
-          <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 block">
+          <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-1.5 block">
             Selecionar cloud manualmente
           </label>
           <select
             value={manualCloud ?? ''}
             onChange={(e) => onManualCloudChange((e.target.value || null) as EvaluateCloud | null)}
-            className="w-full text-[12px] px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-[#0078d4]"
+            className="w-full text-tiny px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-brand"
           >
-            <option value="">— selecione —</option>
+            <option value="">{t('empty.select')}</option>
             {EVALUATE_CLOUDS.map((c) => (
               <option key={c} value={c}>{CLOUD_META[c].label}</option>
             ))}
@@ -209,7 +211,7 @@ export default function RoleInput({
       )}
 
       {parseError && (
-        <div className="flex items-start gap-2 text-[12px] px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400">
+        <div className="flex items-start gap-2 text-tiny px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400">
           <AlertTriangle size={14} className="shrink-0 mt-0.5" />
           <span>{parseError}</span>
         </div>
@@ -219,13 +221,13 @@ export default function RoleInput({
         <button
           onClick={onEvaluate}
           disabled={!value.trim()}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0078d4] hover:bg-[#006cbe] disabled:opacity-40 disabled:cursor-not-allowed text-white text-[13px] font-medium transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand hover:bg-[#006cbe] disabled:opacity-40 disabled:cursor-not-allowed text-white text-body font-medium transition-colors"
         >
           <Sparkles size={14} /> Avaliar Role
         </button>
         <button
           onClick={onClear}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 text-[13px] font-medium transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted text-body font-medium transition-colors"
         >
           <Trash2 size={14} /> Limpar
         </button>

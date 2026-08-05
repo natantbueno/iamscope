@@ -1,5 +1,28 @@
-// Google Workspace — Admin Roles & OAuth Scopes
-// Tiers: SuperAdmin > DelegatedAdmin > ServiceAdmin > SpecializedAdmin > ReadOnly
+// Google Workspace — Admin Roles, Privilégios e OAuth Scopes
+//
+// AUTO-GERADO por scripts/fetch-gws-roles.js a partir de
+// scripts/gws-official-source.json. Não editar as roles e privilégios à mão.
+//
+// FONTES OFICIAIS
+//   Prebuilt administrator roles
+//     https://support.google.com/a/answer/2405986  (doc de 2026-07-22)
+//   Administrator privilege definitions
+//     https://knowledge.workspace.google.com/admin/users/administrator-privilege-definitions  (doc de 2026-07-23)
+//   Manage roles — Directory API
+//     https://developers.google.com/workspace/admin/directory/v1/guides/manage-roles  (doc de 2026-04-20)
+//
+// Extraído em 2026-08-03.
+//
+// COBERTURA DE apiPrivileges
+//   O Google só publica os nomes de privilégio da API (privilegeName) para duas
+//   roles: _SEED_ADMIN_ROLE (Super Admin, truncada na doc) e _GROUPS_ADMIN_ROLE
+//   (Groups Admin, completa). Para as outras 12 a lista só existe via
+//   privileges.list do Admin SDK, que exige OAuth no tenant.
+//   Por isso apiPrivileges vem vazio nelas — é lacuna declarada, não erro.
+//   A interface precisa dizer isso em vez de mostrar lista vazia.
+//
+// tier, category e isPrivileged são CLASSIFICAÇÃO EDITORIAL do IAM Scope,
+// derivadas das capacidades oficiais. Não são classificação do Google.
 
 export type GwsTier = 'SuperAdmin' | 'DelegatedAdmin' | 'ServiceAdmin' | 'SpecializedAdmin' | 'ReadOnly'
 export type GwsCategory = 'Identity' | 'Security' | 'Communication' | 'Productivity' | 'Device' | 'Storage' | 'Analytics' | 'Billing' | 'Infrastructure'
@@ -13,8 +36,24 @@ export interface GwsAdminRole {
   tier: GwsTier
   category: GwsCategory
   isPrivileged: boolean
+  /** Capacidades, no texto oficial do Google. */
   privileges: string[]
+  /** privilegeName do Admin SDK. Vazio quando o Google não publica. */
   apiPrivileges?: string[]
+  /** false = o Google publica só parte da lista, ou nenhuma. */
+  apiPrivilegesComplete?: boolean
+  /** Ressalva oficial de escopo, quando existe. */
+  scopeNote?: string
+}
+
+/** Privilégio do Admin console, como o Google o nomeia. */
+export interface GwsPrivilege {
+  slug: string
+  name: string
+  group: string
+  section: string
+  description: string
+  isChild: boolean
 }
 
 export interface GwsOAuthScope {
@@ -25,39 +64,290 @@ export interface GwsOAuthScope {
   sensitivity: GwsScopeSensitivity
 }
 
-// ── Tier Metadata ─────────────────────────────────────────────────────────────
+/** URLs das fontes, para a página de referência citar. */
+export const GWS_SOURCES = [
+  {
+    "id": "prebuilt-roles",
+    "url": "https://support.google.com/a/answer/2405986",
+    "canonical": "https://knowledge.workspace.google.com/admin/users/prebuilt-administrator-roles",
+    "title": "Prebuilt administrator roles",
+    "docLastUpdated": "2026-07-22"
+  },
+  {
+    "id": "privilege-definitions",
+    "url": "https://knowledge.workspace.google.com/admin/users/administrator-privilege-definitions",
+    "title": "Administrator privilege definitions",
+    "docLastUpdated": "2026-07-23"
+  },
+  {
+    "id": "admin-sdk-manage-roles",
+    "url": "https://developers.google.com/workspace/admin/directory/v1/guides/manage-roles",
+    "title": "Manage roles — Directory API",
+    "docLastUpdated": "2026-04-20",
+    "note": "Única fonte pública com nomes de privilégio da API (privilegeName) associados a roles pré-construídas."
+  }
+] as const
 
-export const GWS_TIER_META: Record<GwsTier, {
-  label: string; short: string; textColor: string; darkText: string; darkBg: string; description: string
-}> = {
-  SuperAdmin: {
-    label: 'Super Admin', short: 'SA',
-    textColor: '#dc2626', darkText: '#f87171', darkBg: '#3b1a1a',
-    description: 'Full organizational control. Can manage all users, settings, services and billing. Equivalent to a Global Administrator — highest risk role.',
-  },
-  DelegatedAdmin: {
-    label: 'Delegated Admin', short: 'DA',
-    textColor: '#ea580c', darkText: '#fb923c', darkBg: '#2a1510',
-    description: 'Broad administrative permissions delegated from Super Admin. Can manage users, groups, or services across the whole organization.',
-  },
-  ServiceAdmin: {
-    label: 'Service Admin', short: 'SvcA',
-    textColor: '#ca8a04', darkText: '#fbbf24', darkBg: '#1f1600',
-    description: 'Administrative access scoped to a specific Google Workspace service such as Gmail, Drive, Calendar, or Chrome.',
-  },
-  SpecializedAdmin: {
-    label: 'Specialized Admin', short: 'SpA',
-    textColor: '#7c3aed', darkText: '#a78bfa', darkBg: '#1e1040',
-    description: 'Specialized administrative functions with a limited but potentially sensitive scope, such as reseller management or data protection.',
-  },
-  ReadOnly: {
-    label: 'Read Only', short: 'RO',
-    textColor: '#16a34a', darkText: '#4ade80', darkBg: '#0a2010',
-    description: 'View-only access to specific reports, audit logs, or organizational data. Cannot modify any settings.',
-  },
-}
+export const GWS_EXTRACTED_AT = '2026-08-03'
 
-// ── Scope Sensitivity Metadata ────────────────────────────────────────────────
+export { GWS_TIER_META } from './tierMeta'
+
+export const GWS_ROLES: GwsAdminRole[] = [
+  {
+    slug: 'super-admin',
+    name: 'Super Admin',
+    description: 'Has access to all features in the Google Admin console and Admin API and can manage every aspect of your organization\'s account. Super admins also have full access to all users\' calendars and event details.',
+    tier: 'SuperAdmin', category: 'Identity', isPrivileged: true,
+    privileges: ['Create and assign administrator roles', 'Manage other admins, including changing passwords', 'Transfer ownership of files during the user deletion process', 'Accept the Terms of Service for a product', 'Invite unmanaged user accounts to become Google Workspace managed user accounts', 'Restore deleted users', 'Turn Multi-party approval settings on or off', 'Allow users to turn on 2-Step Verification', 'Install Google Workspace Marketplace apps', 'Manage Google Calendar resource access-level controls', 'Use the data migration service', 'Grant domain-wide delegation and manage API client access', 'Set up Google as a SAML identity provider and add or modify SAML apps'],
+    apiPrivileges: ['SUPER_ADMIN', 'ROOT_APP_ADMIN', 'ADMIN_APIS_ALL'],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'groups-admin',
+    name: 'Groups Admin',
+    description: 'Has full control over Google Groups\' tasks in your Admin console. This administrator can perform the following tasks both from the Admin console and using the Admin API.',
+    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: false,
+    privileges: ['View user profiles and your organizational structure', 'Create new groups in the Admin console', 'Manage members of groups created in the Admin console', 'Manage group access settings', 'Delete groups using the Admin console', 'View organizational units', 'Add a security label to a group'],
+    apiPrivileges: ['CHANGE_USER_GROUP_MEMBERSHIP', 'USERS_RETRIEVE', 'GROUPS_ALL', 'ADMIN_DASHBOARD', 'ORGANIZATION_UNITS_RETRIEVE'],
+    apiPrivilegesComplete: true,
+  },
+  {
+    slug: 'groups-reader',
+    name: 'Groups Reader',
+    description: 'Can read Groups information, but can\'t change or update it.',
+    tier: 'ReadOnly', category: 'Identity', isPrivileged: false,
+    privileges: ['Read Groups information', 'Privileges can be scoped to all groups, only security groups, or only non-security groups'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'groups-editor',
+    name: 'Groups Editor',
+    description: 'Has the permissions of a Groups admin, except for the privilege required to add or remove a security label on a groups resource.',
+    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: false,
+    privileges: ['All Groups Admin permissions except adding or removing a security label', 'Privileges can be scoped to all groups, only security groups, or only non-security groups', 'Can be granted locked groups privileges, for all groups or only locked groups'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'user-management-admin',
+    name: 'User Management Admin',
+    description: 'Can perform all actions on users who aren\'t administrators. This administrator can perform the following tasks both from the Admin console and using the Admin API.',
+    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: true,
+    privileges: ['View user profiles and your organizational structure', 'View organizational units', 'Create and delete user accounts', 'Rename users and change passwords', 'Manage a user\'s individual security settings', 'Perform other user management tasks'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+    scopeNote: 'Applies only to users who aren\'t administrators. Can be limited to specific organizational units.',
+  },
+  {
+    slug: 'help-desk-admin',
+    name: 'Help Desk Admin',
+    description: 'Can reset passwords for users who aren\'t administrators, both in the Admin console and using the Admin API.',
+    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: true,
+    privileges: ['Reset passwords for users who aren\'t administrators', 'View user profiles and your organizational structure', 'View organizational units'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+    scopeNote: 'Can be limited to specific organizational units.',
+  },
+  {
+    slug: 'services-admin',
+    name: 'Services Admin',
+    description: 'Can manage certain service settings and devices in the Admin console, including Google Calendar, Drive, and Docs.',
+    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
+    privileges: ['Turn services on or off', 'Change service settings and permissions', 'Create, edit, and delete Calendar resources', 'Manage Chrome and mobile devices listed in the Admin console', 'Manage settings for Google Takeout', 'Manage Google AppSheet settings, including governance policies and team management', 'Manage classification labels and default classification rules', 'View organizational units', 'Use the alert center (full access)'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+    scopeNote: 'Some products and services, such as Google Vault and Google Cloud Print, can\'t be managed by the Services Admin role.',
+  },
+  {
+    slug: 'multi-party-approval-admin',
+    name: 'Multi-party approval Admin',
+    description: 'Can manage multi-party approval requests for other admins to complete sensitive actions, such as turning 2-Step Verification (2SV) on or off.',
+    tier: 'SpecializedAdmin', category: 'Security', isPrivileged: true,
+    privileges: ['Review requests to perform sensitive actions', 'Approve or deny requests'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+    scopeNote: 'Available to customers with a Google Workspace edition that supports Multi-party approval.',
+  },
+  {
+    slug: 'mobile-admin',
+    name: 'Mobile Admin',
+    description: 'Can manage mobile devices and endpoints using Google endpoint management.',
+    tier: 'ServiceAdmin', category: 'Device', isPrivileged: false,
+    privileges: ['Provision and approve devices', 'Manage apps', 'Block or wipe devices and accounts', 'Set device policies', 'See groups and users in the domain'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+    scopeNote: 'Available only to customers who signed up for Google Workspace after February 2018.',
+  },
+  {
+    slug: 'storage-admin',
+    name: 'Storage Admin',
+    description: 'Can use the Storage settings in the Admin console. This role also grants full access to Reports and Drive settings.',
+    tier: 'ServiceAdmin', category: 'Storage', isPrivileged: false,
+    privileges: ['View their organization\'s storage use', 'View the users and shared drives that use the most storage', 'Set storage limits', 'Open the Accounts report, the directory of users, and the list of shared drives'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'google-voice-admin',
+    name: 'Google Voice Admin',
+    description: 'Can manage all Google Voice settings and provisioning.',
+    tier: 'SpecializedAdmin', category: 'Communication', isPrivileged: false,
+    privileges: ['Add locations', 'Assign numbers to users', 'Port numbers', 'Change service addresses', 'Set up desk phones', 'Set up an auto attendant', 'Manage user licenses'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'directory-sync-admin',
+    name: 'Directory Sync Admin',
+    description: 'Can manage the sync process using Directory Sync.',
+    tier: 'SpecializedAdmin', category: 'Identity', isPrivileged: false,
+    privileges: ['Set up and run a sync using Directory Sync', 'Update sync settings'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'reseller-admin',
+    name: 'Reseller Admin',
+    description: 'Assigned to a Google Workspace authorized reseller or distributor. Reseller admins can access all of the features and permissions included with the Manage Reseller Tools privilege.',
+    tier: 'SpecializedAdmin', category: 'Billing', isPrivileged: false,
+    privileges: ['Place orders for Google Workspace and other services that use the Admin console', 'Add, view, edit, and transfer resold customers', 'Access settings in the Partner Sales Console to view and edit support information', 'View billing invoices and change payment methods', 'Access and manage a customer\'s Admin console, Google Workspace Admin SDK, and support cases', 'Manage Google Groups of resold customers using the Groups web UI'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+  {
+    slug: 'indirect-reseller-admin',
+    name: 'Indirect Reseller Admin',
+    description: 'Assigned to a reseller working with a Google Workspace authorized distributor.',
+    tier: 'SpecializedAdmin', category: 'Billing', isPrivileged: false,
+    privileges: ['Add, view, edit, and transfer resold customers'],
+    apiPrivileges: [],
+    apiPrivilegesComplete: false,
+  },
+]
+
+export const GWS_PRIVILEGES: GwsPrivilege[] = [
+  { slug: 'admin-settings-billing-management', name: 'Billing Management', group: 'Billing Management', section: 'Admin settings', description: 'Admins with this privilege can perform billing tasks, such as setting up a billing account or changing a payment method. This privilege works only in the Admin console.', isChild: false },
+  { slug: 'admin-settings-data-transfer', name: 'Data Transfer', group: 'Data Transfer', section: 'Admin settings', description: 'Super admins or Services admins with this privilege can transfer ownership of users\' Google Drive files using the Admin console. This privilege\'s actions can\'t be limited to specific organizational units.', isChild: false },
+  { slug: 'admin-settings-domains', name: 'Domains', group: 'Domains', section: 'Admin settings', description: 'Manage domains, domain aliases and organization-level settings.', isChild: false },
+  { slug: 'admin-settings-domains-domain-settings', name: 'Domains > Domain Settings', group: 'Domains', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-domains-domain-management', name: 'Domains > Domain Management', group: 'Domains', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-domains-domain-allowlist-management', name: 'Domains > Domain Allowlist Management', group: 'Domains', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-domains-domain-allowlist-read', name: 'Domains > Domain Allowlist Read', group: 'Domains', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-groups', name: 'Groups', group: 'Groups', section: 'Admin settings', description: 'Admins with the Groups privilege have full control over groups created in your Admin console. These actions can\'t be limited to specific organizational units.', isChild: false },
+  { slug: 'admin-settings-groups-manage-locked-label-on-groups-resources', name: 'Groups > Manage locked label on groups resources', group: 'Groups', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-groups-add-a-security-label-to-a-group', name: 'Groups > Add a security label to a group', group: 'Groups', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-inbound-scim-directory-sync', name: 'Inbound SCIM Directory Sync', group: 'Inbound SCIM Directory Sync', section: 'Admin settings', description: 'Manage Inbound SCIM connections and authentication mechanisms.', isChild: false },
+  { slug: 'admin-settings-inbound-scim-directory-sync-inbound-scim-directory-sync-settings-management', name: 'Inbound SCIM Directory Sync > Inbound SCIM Directory Sync Settings Management', group: 'Inbound SCIM Directory Sync', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-inbound-scim-directory-sync-inbound-scim-directory-sync-settings-read', name: 'Inbound SCIM Directory Sync > Inbound SCIM Directory Sync Settings Read', group: 'Inbound SCIM Directory Sync', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-license-management', name: 'License Management', group: 'License Management', section: 'Admin settings', description: 'Super admins and admins with this privilege can assign and manage Google Workspace licenses for the organization, an organizational unit, a group of users, or an individual user.', isChild: false },
+  { slug: 'admin-settings-organizational-units', name: 'Organizational Units', group: 'Organizational Units', section: 'Admin settings', description: 'Admins with this privilege can manage your account\'s organizational structure from the Users page in their Admin console. The Create, Update, or Delete privileges automatically grant the Read privilege.', isChild: false },
+  { slug: 'admin-settings-organizational-units-read', name: 'Organizational Units > Read', group: 'Organizational Units', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-organizational-units-create', name: 'Organizational Units > Create', group: 'Organizational Units', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-organizational-units-update', name: 'Organizational Units > Update', group: 'Organizational Units', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-organizational-units-delete', name: 'Organizational Units > Delete', group: 'Organizational Units', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-reports', name: 'Reports', group: 'Reports', section: 'Admin settings', description: 'Admins have access to usage reports and audit logs. These actions can\'t be limited to specific organizational units.', isChild: false },
+  { slug: 'admin-settings-schema-management', name: 'Schema Management', group: 'Schema Management', section: 'Admin settings', description: 'Super admins or services admins with this privilege can create schemas to define custom fields for their domain, such as user projects, locations, or hire dates.', isChild: false },
+  { slug: 'admin-settings-security', name: 'Security', group: 'Security', section: 'Admin settings', description: 'Manage security settings for individual users and organization-wide authentication.', isChild: false },
+  { slug: 'admin-settings-security-user-security-management', name: 'Security > User Security Management', group: 'Security', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-security-security-settings', name: 'Security > Security Settings', group: 'Security', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-support', name: 'Support', group: 'Support', section: 'Admin settings', description: 'Admins with the Support privilege can use phone, chat, and email options to contact Google Workspace support. They can also file cases in the Google Cloud Support Portal.', isChild: false },
+  { slug: 'admin-settings-users', name: 'Users', group: 'Users', section: 'Admin settings', description: 'Admins with the Users privilege can perform actions on users. Only super admins can change another admin\'s settings. The Create privilege automatically grants Read and Update privileges.', isChild: false },
+  { slug: 'admin-settings-users-create', name: 'Users > Create', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-read', name: 'Users > Read', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-update', name: 'Users > Update', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-move-users', name: 'Users > Move users', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-suspend-users', name: 'Users > Suspend users', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-rename-users', name: 'Users > Rename users', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-reset-password', name: 'Users > Reset password', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-force-password-change', name: 'Users > Force password change', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-add-remove-aliases', name: 'Users > Add/remove aliases', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'admin-settings-users-delete', name: 'Users > Delete', group: 'Users', section: 'Admin settings', description: '', isChild: true },
+  { slug: 'services-service-settings', name: 'Service Settings', group: 'Service Settings', section: 'Services', description: 'Admins with the Service Settings privilege can turn services on or off and change service settings. Does not automatically grant privileges to some services, for example data regions, Data Security, Google Vault, and Security Center.', isChild: false },
+  { slug: 'services-alert-center', name: 'Alert Center', group: 'Alert Center', section: 'Services', description: 'Access to the alert center. This privilege is automatically selected with the Service Settings privilege.', isChild: false },
+  { slug: 'services-appsheet', name: 'AppSheet', group: 'AppSheet', section: 'Services', description: 'Admins with this privilege can manage Google AppSheet settings, including governance policies and team management.', isChild: false },
+  { slug: 'services-calendar', name: 'Calendar', group: 'Calendar', section: 'Services', description: 'Admins with the Calendar privilege can create, edit, and delete resources, but they can\'t limit the actions to specific organizational units.', isChild: false },
+  { slug: 'services-calendar-all-settings', name: 'Calendar > All Settings', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-buildings-and-resources', name: 'Calendar > Buildings and Resources', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-manage-resources', name: 'Calendar > Manage Resources', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-view-resources', name: 'Calendar > View Resources', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-room-insights', name: 'Calendar > Room Insights', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-view-settings', name: 'Calendar > View Settings', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-calendar-manage-calendars', name: 'Calendar > Manage Calendars', group: 'Calendar', section: 'Services', description: '', isChild: true },
+  { slug: 'services-chrome-management', name: 'Chrome Management', group: 'Chrome Management', section: 'Services', description: 'Admins can manage your organization\'s Chrome devices and policies, including user settings, device settings, and Chrome and Managed Google Play apps and extensions on Chrome devices. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-classroom', name: 'Classroom', group: 'Classroom', section: 'Services', description: 'Admins with the Classroom privilege can turn this service on or off for users, set teacher permissions and guardian access, and control how users access their Classroom data.', isChild: false },
+  { slug: 'services-classroom-manage-classes', name: 'Classroom > Manage Classes', group: 'Classroom', section: 'Services', description: '', isChild: true },
+  { slug: 'services-classroom-view-analytics-data-for-users-and-their-classes', name: 'Classroom > View analytics data for users and their classes', group: 'Classroom', section: 'Services', description: '', isChild: true },
+  { slug: 'services-cloud-search', name: 'Cloud Search', group: 'Cloud Search', section: 'Services', description: 'Grant user access to Google Cloud Search, turn the service on or off, view usage reports and manage settings for third-party repositories.', isChild: false },
+  { slug: 'services-contacts', name: 'Contacts', group: 'Contacts', section: 'Services', description: 'Admins with the Contacts privilege can view, create, or delete contact delegates for a given user using the Contact Delegation API.', isChild: false },
+  { slug: 'services-contacts-delegates-read', name: 'Contacts > Delegates Read', group: 'Contacts', section: 'Services', description: '', isChild: true },
+  { slug: 'services-contacts-delegates-write', name: 'Contacts > Delegates Write', group: 'Contacts', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-classification', name: 'Data classification', group: 'Data classification', section: 'Services', description: 'Admins with the Manage Classification Labels privilege can create labels for Drive files and Gmail messages, and view all labels. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-data-classification-manage-classification-labels', name: 'Data classification > Manage Classification Labels', group: 'Data classification', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-loss-prevention-dlp', name: 'Data loss prevention (DLP)', group: 'Data loss prevention (DLP)', section: 'Services', description: 'View and manage DLP rules. Only the View DLP rule privilege is automatically selected with the Service Settings privilege.', isChild: false },
+  { slug: 'services-data-loss-prevention-dlp-view-dlp-rule', name: 'Data loss prevention (DLP) > View DLP rule', group: 'Data loss prevention (DLP)', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-loss-prevention-dlp-manage-dlp-rule', name: 'Data loss prevention (DLP) > Manage DLP rule', group: 'Data loss prevention (DLP)', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-regions', name: 'Data regions', group: 'Data regions', section: 'Services', description: 'Choose a geographic location for data covered by a data region policy, and follow the progress as data moves between regions. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-data-regions-data-regions-settings', name: 'Data regions > Data Regions Settings', group: 'Data regions', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-regions-data-regions-reporting', name: 'Data regions > Data Regions Reporting', group: 'Data regions', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-security', name: 'Data Security', group: 'Data Security', section: 'Services', description: 'Admins with this privilege can manage the organization\'s context-aware access policies. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-data-security-access-level-management', name: 'Data Security > Access level management', group: 'Data Security', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-security-rule-management', name: 'Data Security > Rule management', group: 'Data Security', section: 'Services', description: '', isChild: true },
+  { slug: 'services-data-studio', name: 'Data Studio', group: 'Data Studio', section: 'Services', description: 'Admins with this privilege can manage Data Studio settings, including viewing, sharing, and customizing dashboards and reports.', isChild: false },
+  { slug: 'services-directory-settings', name: 'Directory settings', group: 'Directory settings', section: 'Services', description: 'Admins can manage settings and control Directory profile changes to let users make changes to their profile, including their name, photo, gender, and birthday.', isChild: false },
+  { slug: 'services-directory-sync', name: 'Directory Sync', group: 'Directory Sync', section: 'Services', description: 'Add, update and manage Directory Sync settings. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-directory-sync-manage-directory-sync-settings', name: 'Directory Sync > Manage Directory Sync Settings', group: 'Directory Sync', section: 'Services', description: '', isChild: true },
+  { slug: 'services-directory-sync-read-directory-sync-settings', name: 'Directory Sync > Read Directory Sync Settings', group: 'Directory Sync', section: 'Services', description: '', isChild: true },
+  { slug: 'services-drive-and-docs', name: 'Drive and Docs', group: 'Drive and Docs', section: 'Services', description: 'Google Drive and Docs management rights, including settings, templates and shared drive moves.', isChild: false },
+  { slug: 'services-drive-and-docs-settings', name: 'Drive and Docs > Settings', group: 'Drive and Docs', section: 'Services', description: '', isChild: true },
+  { slug: 'services-drive-and-docs-docs-templates', name: 'Drive and Docs > Docs Templates', group: 'Drive and Docs', section: 'Services', description: '', isChild: true },
+  { slug: 'services-drive-and-docs-move-any-file-or-folder-into-shared-drives', name: 'Drive and Docs > Move any file or folder into shared drives', group: 'Drive and Docs', section: 'Services', description: '', isChild: true },
+  { slug: 'services-drive-and-docs-manage-labels', name: 'Drive and Docs > Manage labels', group: 'Drive and Docs', section: 'Services', description: '', isChild: true },
+  { slug: 'services-drive-and-docs-view-details-of-google-sites', name: 'Drive and Docs > View details of Google Sites', group: 'Drive and Docs', section: 'Services', description: '', isChild: true },
+  { slug: 'services-gemini', name: 'Gemini', group: 'Gemini', section: 'Services', description: 'Control who uses the Gemini app in your organization, and turn the Gemini app on or off.', isChild: false },
+  { slug: 'services-gmail', name: 'Gmail', group: 'Gmail', section: 'Services', description: 'Gmail management rights. Only the Settings privilege is automatically selected with the Service Settings privilege.', isChild: false },
+  { slug: 'services-gmail-settings', name: 'Gmail > Settings', group: 'Gmail', section: 'Services', description: '', isChild: true },
+  { slug: 'services-gmail-email-log-search', name: 'Gmail > Email Log Search', group: 'Gmail', section: 'Services', description: '', isChild: true },
+  { slug: 'services-gmail-access-admin-quarantine', name: 'Gmail > Access Admin Quarantine', group: 'Gmail', section: 'Services', description: '', isChild: true },
+  { slug: 'services-gmail-access-restricted-quarantines', name: 'Gmail > Access restricted quarantines', group: 'Gmail', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-chat', name: 'Google Chat', group: 'Google Chat', section: 'Services', description: 'Chat management rights. Only the Settings privilege is automatically selected with the Service Settings privilege.', isChild: false },
+  { slug: 'services-google-chat-settings', name: 'Google Chat > Settings', group: 'Google Chat', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-chat-manage-chat-and-spaces-conversation', name: 'Google Chat > Manage Chat and Spaces conversation', group: 'Google Chat', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-chat-moderate-chat-content-report', name: 'Google Chat > Moderate Chat content report', group: 'Google Chat', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-cloud-print', name: 'Google Cloud Print', group: 'Google Cloud Print', section: 'Services', description: 'Admins with this privilege can set up and manage Google Cloud Print services for their organization. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-google-meet', name: 'Google Meet', group: 'Google Meet', section: 'Services', description: 'Manage settings and access the quality dashboard for Google Meet.', isChild: false },
+  { slug: 'services-google-meet-hardware', name: 'Google Meet hardware', group: 'Google Meet hardware', section: 'Services', description: 'View and manage Google Meet hardware devices. Not available unless your account has at least one Google Meet hardware license or enrolled device.', isChild: false },
+  { slug: 'services-google-meet-hardware-manage-google-meet-hardware-and-calendars', name: 'Google Meet hardware > Manage Google Meet hardware and calendars', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-manage-google-meet-hardware', name: 'Google Meet hardware > Manage Google Meet hardware', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-manage-devices', name: 'Google Meet hardware > Manage devices', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-view-devices', name: 'Google Meet hardware > View devices', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-manage-organizational-unit-settings', name: 'Google Meet hardware > Manage organizational unit settings', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-view-organizational-unit-settings', name: 'Google Meet hardware > View organizational unit settings', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-perform-actions', name: 'Google Meet hardware > Perform actions', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-perform-device-commands', name: 'Google Meet hardware > Perform device commands', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-manage-device-meetings', name: 'Google Meet hardware > Manage device meetings', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-deprovision-google-meet-hardware', name: 'Google Meet hardware > Deprovision Google Meet hardware', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-manage-calendar-assignment', name: 'Google Meet hardware > Manage calendar assignment', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-meet-hardware-enroll-google-meet-hardware', name: 'Google Meet hardware > Enroll Google Meet hardware', group: 'Google Meet hardware', section: 'Services', description: '', isChild: true },
+  { slug: 'services-google-vault', name: 'Google Vault', group: 'Google Vault', section: 'Services', description: 'Admins can view all matters and manage matters, holds, searches, exports, retention policies, and audits. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-google-workspace-marketplace', name: 'Google Workspace Marketplace', group: 'Google Workspace Marketplace', section: 'Services', description: 'Admins with this privilege can control which third-party or internal apps users can install from the Marketplace.', isChild: false },
+  { slug: 'services-groups-for-business', name: 'Groups for Business', group: 'Groups for Business', section: 'Services', description: 'Read and modify settings for Groups for Business, including who can create groups and external visibility.', isChild: false },
+  { slug: 'services-managed-google-play', name: 'Managed Google Play', group: 'Managed Google Play', section: 'Services', description: 'Distribute Android apps internally, upload private apps to the Google Play store, and use Android app packages hosted outside of Google Play. Also listed as Google Managed Play. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-manage-on-off-settings', name: 'Manage On/Off Settings', group: 'Manage On/Off Settings', section: 'Services', description: 'Admins with the Manage On/Off Settings privilege can turn services on or off.', isChild: false },
+  { slug: 'services-mobile-device-management', name: 'Mobile Device Management', group: 'Mobile Device Management', section: 'Services', description: 'Full control over devices listed in your Admin console: manage settings and policies, approve, block, delete and wipe devices, and publish mobile apps.', isChild: false },
+  { slug: 'services-password-vault', name: 'Password Vault', group: 'Password Vault', section: 'Services', description: 'Admins with this privilege can set up and manage password vaulted apps. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-pinpoint', name: 'Pinpoint', group: 'Pinpoint', section: 'Services', description: 'Turn Pinpoint on or off for users, and set whether users can copy files from Google Drive to Pinpoint.', isChild: false },
+  { slug: 'services-secure-ldap', name: 'Secure LDAP', group: 'Secure LDAP', section: 'Services', description: 'Manage the Secure LDAP service and add or delete LDAP clients. Available only for administrators with Super Admin privileges. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-security-center', name: 'Security Center', group: 'Security Center', section: 'Services', description: 'Access to advanced security information and analytics, including the security dashboard, the security health page, and the investigation tool. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-shared-device-settings', name: 'Shared device settings', group: 'Shared device settings', section: 'Services', description: 'Manage all common device configurations, including VPN, Wi-Fi, and Ethernet networks for mobile, Chrome, and Chromebox for meetings devices. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-sites', name: 'Sites', group: 'Sites', section: 'Services', description: 'Read and modify settings for Sites, such as whether users can create and edit sites, and whether sites can be shared outside your organization.', isChild: false },
+  { slug: 'services-storage', name: 'Storage', group: 'Storage', section: 'Services', description: 'Open the Storage page in the Admin console and set storage limits. Viewing storage data requires additional privileges.', isChild: false },
+  { slug: 'services-trust-rules', name: 'Trust Rules', group: 'Trust Rules', section: 'Services', description: 'Trust rules rights for managing Drive sharing.', isChild: false },
+  { slug: 'services-trust-rules-view-trust-rules', name: 'Trust Rules > View Trust Rules', group: 'Trust Rules', section: 'Services', description: '', isChild: true },
+  { slug: 'services-trust-rules-manage-trust-rules', name: 'Trust Rules > Manage Trust Rules', group: 'Trust Rules', section: 'Services', description: '', isChild: true },
+  { slug: 'services-work-insights', name: 'Work Insights', group: 'Work Insights', section: 'Services', description: 'Access data on the Work Insights dashboard. Data is available only for teams that have Work Insights turned on. NOT automatically selected with Service Settings.', isChild: false },
+  { slug: 'services-youtube', name: 'YouTube', group: 'YouTube', section: 'Services', description: 'Restrict the YouTube videos that are viewable within your organization and set different YouTube access levels for different organizational units.', isChild: false },
+]
 
 export const GWS_SCOPE_META: Record<GwsScopeSensitivity, {
   label: string; textColor: string; darkText: string; darkBg: string; description: string
@@ -75,337 +365,6 @@ export const GWS_SCOPE_META: Record<GwsScopeSensitivity, {
     description: 'Lower risk. Basic data access. Generally available without additional Google review.',
   },
 }
-
-// ── Admin Roles ───────────────────────────────────────────────────────────────
-
-export const GWS_ROLES: GwsAdminRole[] = [
-  {
-    slug: 'super-admin',
-    name: 'Super Admin',
-    description: 'Full administrative access to all Google Workspace services, settings, users, billing and security for the entire organization.',
-    tier: 'SuperAdmin', category: 'Identity', isPrivileged: true,
-    privileges: ['All Admin Console privileges', 'Manage users and admins', 'Manage all services', 'View all reports', 'Manage billing', 'Manage security settings', 'Access all data'],
-    apiPrivileges: ['SUPER_ADMIN', 'USERS_RETRIEVE', 'USERS_CREATE', 'USERS_UPDATE', 'USERS_DELETE', 'GROUPS_RETRIEVE', 'GROUPS_CREATE', 'GROUPS_UPDATE', 'GROUPS_DELETE', 'ADMIN_AUDIT_LOG_READ', 'SECURITY_SETTINGS_UPDATE', 'BILLING_MANAGE'],
-  },
-  {
-    slug: 'groups-admin',
-    name: 'Groups Admin',
-    description: 'Create, manage, and delete groups and group memberships across the organization. Can configure group settings and moderation.',
-    tier: 'DelegatedAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Create and manage groups', 'Manage group members', 'Configure group settings', 'Manage group moderation', 'View groups directory'],
-    apiPrivileges: ['GROUPS_RETRIEVE', 'GROUPS_CREATE', 'GROUPS_UPDATE', 'GROUPS_DELETE', 'GROUPS_MEMBER_ADD', 'GROUPS_MEMBER_REMOVE', 'GROUPS_SETTINGS_UPDATE', 'GROUPS_MEMBER_RETRIEVE'],
-  },
-  {
-    slug: 'user-management-admin',
-    name: 'User Management Admin',
-    description: 'Create, edit, and delete user accounts. Manage user profiles, aliases, and organizational unit membership. Cannot manage Super Admins.',
-    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: true,
-    privileges: ['Create and manage users', 'Reset user passwords', 'Manage user aliases', 'Move users between OUs', 'Suspend and restore users', 'Manage user licenses'],
-    apiPrivileges: ['USERS_RETRIEVE', 'USERS_CREATE', 'USERS_UPDATE', 'USERS_DELETE', 'USERS_ALIAS_CREATE', 'USERS_ALIAS_DELETE', 'USERS_MOVE_OU', 'USERS_SUSPEND', 'USERS_PASSWORD_RESET', 'USERS_LICENSE_MANAGE'],
-  },
-  {
-    slug: 'help-desk-admin',
-    name: 'Help Desk Admin',
-    description: 'Provide frontline IT support. Can reset passwords, view user info, unlock accounts, and manage devices for non-admin users.',
-    tier: 'ServiceAdmin', category: 'Identity', isPrivileged: false,
-    privileges: ['Reset passwords (non-admins)', 'View user information', 'Unlock user accounts', 'Manage user devices', 'View user security info'],
-    apiPrivileges: ['USERS_RETRIEVE', 'USERS_PASSWORD_RESET', 'USERS_SECURITY_RETRIEVE', 'DEVICES_RETRIEVE', 'USERS_UNLOCK', 'USERS_SUSPEND'],
-  },
-  {
-    slug: 'services-admin',
-    name: 'Services Admin',
-    description: 'Enable, disable, and configure Google Workspace services and marketplace applications for the organization.',
-    tier: 'DelegatedAdmin', category: 'Infrastructure', isPrivileged: false,
-    privileges: ['Enable and disable services', 'Configure service settings', 'Manage Marketplace apps', 'Manage service access per OU', 'Configure data regions'],
-    apiPrivileges: ['SERVICES_ENABLE', 'SERVICES_DISABLE', 'SERVICES_SETTINGS_UPDATE', 'MARKETPLACE_APPS_MANAGE', 'OU_SERVICES_CONFIGURE', 'DATA_REGIONS_CONFIGURE'],
-  },
-  {
-    slug: 'mobile-admin',
-    name: 'Mobile Admin',
-    description: 'Manage mobile and endpoint devices enrolled in the organization. Apply policies, remotely wipe devices, and view device inventory.',
-    tier: 'ServiceAdmin', category: 'Device', isPrivileged: false,
-    privileges: ['Manage mobile devices', 'Apply device policies', 'Remote wipe devices', 'View device inventory', 'Approve and block devices', 'Manage endpoint compliance'],
-    apiPrivileges: ['DEVICES_RETRIEVE', 'DEVICES_UPDATE', 'DEVICES_DELETE', 'DEVICES_WIPE', 'DEVICES_APPROVE', 'DEVICES_BLOCK', 'DEVICES_POLICY_UPDATE', 'DEVICES_COMPLIANCE_MANAGE'],
-  },
-  {
-    slug: 'google-voice-admin',
-    name: 'Google Voice Admin',
-    description: 'Manage Google Voice licenses, phone numbers, call routing, auto attendants, and ring groups for the organization.',
-    tier: 'ServiceAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Assign Voice licenses', 'Manage phone numbers', 'Configure call routing', 'Set up auto attendants', 'Manage ring groups', 'View call logs'],
-    apiPrivileges: ['VOICE_LICENSE_ASSIGN', 'VOICE_NUMBER_MANAGE', 'VOICE_ROUTING_CONFIGURE', 'VOICE_AUTO_ATTENDANT_MANAGE', 'VOICE_RING_GROUP_MANAGE', 'VOICE_CALL_LOG_READ'],
-  },
-  {
-    slug: 'storage-admin',
-    name: 'Storage Admin',
-    description: 'Monitor and manage organizational storage quotas across Google Drive, Gmail, and Google Photos.',
-    tier: 'ServiceAdmin', category: 'Storage', isPrivileged: false,
-    privileges: ['View storage usage', 'Manage storage pools', 'Configure storage policies', 'Set per-user quotas', 'View storage reports'],
-    apiPrivileges: ['STORAGE_USAGE_READ', 'STORAGE_POOL_MANAGE', 'STORAGE_POLICY_UPDATE', 'STORAGE_QUOTA_SET', 'STORAGE_REPORT_READ'],
-  },
-  {
-    slug: 'directory-sync-admin',
-    name: 'Directory Sync Admin',
-    description: 'Configure and manage Google Cloud Directory Sync (GCDS) to synchronize users and groups from an on-premises LDAP or Active Directory.',
-    tier: 'SpecializedAdmin', category: 'Infrastructure', isPrivileged: false,
-    privileges: ['Configure GCDS settings', 'Manage sync rules', 'View sync logs', 'Manage directory connectors'],
-    apiPrivileges: ['DIRECTORY_SYNC_CONFIGURE', 'DIRECTORY_SYNC_RULES_MANAGE', 'DIRECTORY_SYNC_LOG_READ', 'DIRECTORY_CONNECTOR_MANAGE'],
-  },
-  {
-    slug: 'reports-admin',
-    name: 'Reports Admin',
-    description: 'View audit and activity reports for all users and services. Read-only access to usage dashboards and security reports.',
-    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false,
-    privileges: ['View audit logs', 'View usage reports', 'Access security dashboard', 'View alert center', 'Export report data'],
-    apiPrivileges: ['ADMIN_AUDIT_LOG_READ', 'USAGE_REPORT_READ', 'SECURITY_DASHBOARD_READ', 'ALERT_CENTER_READ', 'REPORT_EXPORT'],
-  },
-  {
-    slug: 'billing-admin',
-    name: 'Billing Admin',
-    description: 'Manage subscriptions, payment methods, and billing accounts. Can add or remove licenses and view invoices.',
-    tier: 'DelegatedAdmin', category: 'Billing', isPrivileged: true,
-    privileges: ['Manage subscriptions', 'Update payment methods', 'View invoices', 'Add and remove licenses', 'Manage billing accounts', 'Set up budget alerts'],
-    apiPrivileges: ['BILLING_MANAGE', 'BILLING_SUBSCRIPTION_UPDATE', 'BILLING_PAYMENT_UPDATE', 'BILLING_INVOICE_READ', 'BILLING_LICENSE_ADD', 'BILLING_LICENSE_REMOVE', 'BILLING_BUDGET_ALERT_SET'],
-  },
-  {
-    slug: 'reseller-admin',
-    name: 'Reseller Admin',
-    description: 'Manage customer accounts on behalf of a Google Workspace reseller or partner. Used in multi-tenant reseller scenarios.',
-    tier: 'SpecializedAdmin', category: 'Infrastructure', isPrivileged: true,
-    privileges: ['Manage customer accounts', 'Provision customer domains', 'Manage customer subscriptions', 'View customer reports'],
-    apiPrivileges: ['RESELLER_CUSTOMER_MANAGE', 'RESELLER_DOMAIN_PROVISION', 'RESELLER_SUBSCRIPTION_MANAGE', 'RESELLER_REPORT_READ'],
-  },
-  {
-    slug: 'chrome-management-admin',
-    name: 'Chrome Management Admin',
-    description: 'Manage Chrome browser, ChromeOS devices, policies, extensions, and apps via the Admin Console.',
-    tier: 'ServiceAdmin', category: 'Device', isPrivileged: false,
-    privileges: ['Manage ChromeOS devices', 'Set Chrome browser policies', 'Manage Chrome extensions', 'Configure app deployment', 'View device telemetry', 'Manage kiosk apps'],
-    apiPrivileges: ['CHROME_DEVICE_MANAGE', 'CHROME_POLICY_UPDATE', 'CHROME_EXTENSION_MANAGE', 'CHROME_APP_DEPLOY', 'CHROME_TELEMETRY_READ', 'CHROME_KIOSK_MANAGE'],
-  },
-  {
-    slug: 'security-admin',
-    name: 'Security Admin',
-    description: 'Manage security settings including 2-step verification enforcement, OAuth app trust, data loss prevention, and security alerts.',
-    tier: 'DelegatedAdmin', category: 'Security', isPrivileged: true,
-    privileges: ['Manage 2SV policies', 'Configure DLP rules', 'Manage OAuth app trust', 'View security dashboard', 'Manage security alerts', 'Configure context-aware access', 'Manage security keys'],
-    apiPrivileges: ['SECURITY_2SV_MANAGE', 'SECURITY_DLP_CONFIGURE', 'SECURITY_OAUTH_TRUST_MANAGE', 'SECURITY_DASHBOARD_READ', 'SECURITY_ALERT_MANAGE', 'SECURITY_CONTEXT_ACCESS_CONFIGURE', 'SECURITY_KEY_MANAGE'],
-  },
-  {
-    slug: 'calendar-admin',
-    name: 'Calendar Admin',
-    description: 'Manage Calendar resources (rooms, equipment), sharing settings, and calendar interoperability for the organization.',
-    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
-    privileges: ['Manage calendar resources', 'Configure sharing settings', 'Manage calendar delegation', 'Set up calendar interop', 'View calendar logs'],
-    apiPrivileges: ['CALENDAR_RESOURCE_MANAGE', 'CALENDAR_SHARING_CONFIGURE', 'CALENDAR_DELEGATION_MANAGE', 'CALENDAR_INTEROP_CONFIGURE', 'CALENDAR_LOG_READ'],
-  },
-  {
-    slug: 'drive-docs-admin',
-    name: 'Drive and Docs Admin',
-    description: 'Manage Google Drive settings, shared drives, document sharing policies, and audit Drive activity across the organization.',
-    tier: 'ServiceAdmin', category: 'Storage', isPrivileged: false,
-    privileges: ['Manage shared drives', 'Configure Drive policies', 'Set sharing settings', 'Manage Drive labels', 'View Drive audit logs', 'Transfer file ownership'],
-  },
-  {
-    slug: 'gmail-admin',
-    name: 'Gmail Admin',
-    description: 'Manage Gmail settings including routing, compliance, spam filtering, email authentication (SPF/DKIM/DMARC), and mail delegation.',
-    tier: 'ServiceAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Configure mail routing', 'Manage compliance filters', 'Set spam policies', 'Configure email auth', 'Manage mail delegation', 'View mail logs', 'Set up Send As'],
-  },
-  {
-    slug: 'meet-hardware-admin',
-    name: 'Google Meet Hardware Admin',
-    description: 'Manage Google Meet hardware devices (Series One, Chromebox for Meetings), room accounts, and video conferencing settings.',
-    tier: 'ServiceAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Manage Meet hardware', 'Configure room accounts', 'Set hardware policies', 'View hardware diagnostics', 'Manage firmware updates'],
-  },
-  {
-    slug: 'analytics-admin',
-    name: 'Analytics Admin',
-    description: 'Manage Google Analytics accounts and properties linked to the organization. Configure data collection and reporting.',
-    tier: 'ServiceAdmin', category: 'Analytics', isPrivileged: false,
-    privileges: ['Manage Analytics accounts', 'Configure data streams', 'Set data retention', 'Manage user permissions', 'View all reports'],
-  },
-  {
-    slug: 'chat-admin',
-    name: 'Google Chat Admin',
-    description: 'Manage Google Chat settings, spaces, bots, and policies including external Chat access and message retention rules.',
-    tier: 'ServiceAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Manage Chat settings', 'Configure space policies', 'Manage Chat apps', 'Set retention rules', 'Control external access', 'View Chat audit logs'],
-  },
-  {
-    slug: 'classroom-admin',
-    name: 'Google Classroom Admin',
-    description: 'Manage Google Classroom settings for education environments. Control class creation, guardian access, and roster sync.',
-    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
-    privileges: ['Manage Classroom settings', 'Configure guardian access', 'Manage class creation', 'Set up roster sync', 'View Classroom reports'],
-  },
-  {
-    slug: 'tenant-admin',
-    name: 'Tenant Admin',
-    description: 'Manage top-level organizational settings including domain management, organizational units, and company profile.',
-    tier: 'DelegatedAdmin', category: 'Identity', isPrivileged: true,
-    privileges: ['Manage domains', 'Manage organizational units', 'Configure company profile', 'Manage admin roles', 'View all admin settings'],
-  },
-  {
-    slug: 'organization-admin',
-    name: 'Organization Admin',
-    description: 'Manage the organizational structure including departments, cost centers, and hierarchical unit settings.',
-    tier: 'SpecializedAdmin', category: 'Identity', isPrivileged: false,
-    privileges: ['Manage organizational units', 'Configure OU policies', 'Move users between OUs', 'Set OU-level settings'],
-  },
-  {
-    slug: 'data-protection-officer',
-    name: 'Data Protection Officer',
-    description: 'Access and manage data governance settings, data processing agreements, and privacy controls for GDPR and other compliance frameworks.',
-    tier: 'SpecializedAdmin', category: 'Security', isPrivileged: false,
-    privileges: ['View data processing agreements', 'Configure privacy settings', 'Manage data export', 'View audit logs', 'Configure retention policies'],
-  },
-  {
-    slug: 'support-admin',
-    name: 'Support Admin',
-    description: 'Contact Google Workspace support on behalf of the organization. View case history but cannot change any settings.',
-    tier: 'ReadOnly', category: 'Identity', isPrivileged: false,
-    privileges: ['Contact Google support', 'View support cases', 'View known issues'],
-  },
-  {
-    slug: 'vault-admin',
-    name: 'Google Vault Admin',
-    description: 'Manage Google Vault for eDiscovery. Create retention policies, manage legal holds, search and export organizational data.',
-    tier: 'DelegatedAdmin', category: 'Security', isPrivileged: true,
-    privileges: ['Create retention policies', 'Manage legal holds', 'Search all user data', 'Export data for litigation', 'Manage Vault matters'],
-  },
-  {
-    slug: 'endpoint-management-admin',
-    name: 'Endpoint Management Admin',
-    description: 'Manage all endpoint devices including Android, iOS, Windows, macOS, and Linux enrolled in Endpoint Management.',
-    tier: 'ServiceAdmin', category: 'Device', isPrivileged: false,
-    privileges: ['Manage all device types', 'Apply device policies', 'Wipe and block devices', 'Manage device inventory', 'Configure compliance rules', 'View device reports'],
-  },
-  {
-    slug: 'marketplace-admin',
-    name: 'Workspace Marketplace Admin',
-    description: 'Control which third-party apps users can install from the Google Workspace Marketplace. Manage app allowlists and blocklists.',
-    tier: 'ServiceAdmin', category: 'Infrastructure', isPrivileged: false,
-    privileges: ['Manage app allowlist', 'Block Marketplace apps', 'Configure app permissions', 'View installed apps', 'Deploy apps to OUs'],
-  },
-  {
-    slug: 'cloud-search-admin',
-    name: 'Cloud Search Admin',
-    description: 'Configure and manage Google Cloud Search, the enterprise search solution that unifies search across Google Workspace and third-party sources.',
-    tier: 'ServiceAdmin', category: 'Infrastructure', isPrivileged: false,
-    privileges: ['Configure search sources', 'Manage data sources', 'Set search quality settings', 'View search analytics', 'Manage connectors'],
-  },
-  {
-    slug: 'context-aware-access-admin',
-    name: 'Context-Aware Access Admin',
-    description: 'Create and manage context-aware access levels that restrict access to Google Workspace based on device posture, network, or geographic location.',
-    tier: 'DelegatedAdmin', category: 'Security', isPrivileged: true,
-    privileges: ['Create access levels', 'Assign access policies', 'Configure device requirements', 'Manage IP allowlists', 'Set geo-restrictions'],
-  },
-  {
-    slug: 'alert-center-admin',
-    name: 'Alert Center Admin',
-    description: 'View and manage security alerts from Google Workspace services. Configure alert rules and notification channels for security events.',
-    tier: 'ServiceAdmin', category: 'Security', isPrivileged: false,
-    privileges: ['View all alerts', 'Manage alert rules', 'Configure notifications', 'Mark alerts as resolved', 'Export alert data'],
-  },
-  {
-    slug: 'meet-admin',
-    name: 'Google Meet Admin',
-    description: 'Manage Google Meet video conferencing settings, streaming policies, recording storage, and meeting safety features.',
-    tier: 'ServiceAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Configure Meet settings', 'Manage recording policies', 'Set streaming limits', 'Configure safety features', 'View Meet usage reports', 'Manage live streaming'],
-  },
-  {
-    slug: 'work-insights-admin',
-    name: 'Work Insights Admin',
-    description: 'Access Work Insights dashboards showing collaboration patterns, tool adoption, and workforce productivity trends across the organization.',
-    tier: 'ReadOnly', category: 'Analytics', isPrivileged: false,
-    privileges: ['View work insights dashboards', 'Access collaboration metrics', 'View tool adoption data', 'Export insights reports'],
-  },
-  {
-    slug: 'jamboard-admin',
-    name: 'Jamboard Admin',
-    description: 'Manage Jamboard hardware devices, firmware updates, and Jamboard sessions within the organization.',
-    tier: 'ServiceAdmin', category: 'Device', isPrivileged: false,
-    privileges: ['Manage Jamboard devices', 'Configure device settings', 'Manage firmware updates', 'View device inventory', 'Control Jam session policies'],
-  },
-  {
-    slug: 'appsheet-admin',
-    name: 'AppSheet Admin',
-    description: 'Manage AppSheet no-code/low-code applications deployed within the organization. Configure governance policies for app creation and sharing.',
-    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
-    privileges: ['Manage AppSheet apps', 'Configure governance policies', 'Manage user access', 'View app usage', 'Control data connections'],
-  },
-  {
-    slug: 'dlp-admin',
-    name: 'Data Loss Prevention Admin',
-    description: 'Create and manage DLP (Data Loss Prevention) rules for Gmail, Drive, and Chat to prevent unauthorized sharing of sensitive data.',
-    tier: 'DelegatedAdmin', category: 'Security', isPrivileged: true,
-    privileges: ['Create DLP rules', 'Manage content detectors', 'Configure rule actions', 'View DLP audit logs', 'Manage DLP reports'],
-  },
-  {
-    slug: 'looker-studio-admin',
-    name: 'Looker Studio Admin',
-    description: 'Manage Looker Studio (formerly Data Studio) settings, including organization-wide report policies, connector access, and data governance.',
-    tier: 'ServiceAdmin', category: 'Analytics', isPrivileged: false,
-    privileges: ['Manage Looker Studio settings', 'Configure connector access', 'Set sharing policies', 'View usage reports'],
-  },
-  {
-    slug: 'sites-admin',
-    name: 'Google Sites Admin',
-    description: 'Manage Google Sites settings including creation permissions, sharing policies, and content governance for the organization.',
-    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
-    privileges: ['Manage Sites settings', 'Configure sharing policies', 'Control creation permissions', 'View Sites activity'],
-  },
-  {
-    slug: 'guardian-admin',
-    name: 'Guardian Admin',
-    description: 'Manage guardian email notifications for student accounts in Google Workspace for Education. Control guardian invitations and account linking.',
-    tier: 'SpecializedAdmin', category: 'Identity', isPrivileged: false,
-    privileges: ['Manage guardian invitations', 'Link guardian accounts', 'Send guardian notifications', 'View guardian summaries'],
-  },
-  {
-    slug: 'keep-admin',
-    name: 'Google Keep Admin',
-    description: 'Manage Google Keep note-taking settings for the organization, including sharing policies and access controls.',
-    tier: 'ServiceAdmin', category: 'Productivity', isPrivileged: false,
-    privileges: ['Manage Keep settings', 'Configure sharing policies', 'Set access controls', 'View Keep usage'],
-  },
-  // ── ETAPA 4 — Adições confirmadas via knowledge.workspace.google.com/admin/users/prebuilt-administrator-roles (fetch oficial, 2026) ──
-  {
-    slug: 'multi-party-approval-admin',
-    name: 'Multi-party Approval Admin',
-    description: 'Revisa e aprova ou nega solicitações de outros administradores para realizar ações sensíveis (ex.: ativar/desativar verificação em duas etapas) que exigem aprovação multi-party. Disponível apenas em edições Google Workspace com suporte a Multi-party approval.',
-    tier: 'SpecializedAdmin', category: 'Security', isPrivileged: false,
-    privileges: ['Revisar solicitações de ações sensíveis de outros admins', 'Aprovar ou negar solicitações pendentes', 'Não executa a ação sensível diretamente, apenas aprova/nega'],
-  },
-  {
-    slug: 'groups-reader',
-    name: 'Groups Reader',
-    description: 'Acesso somente leitura às informações de Google Groups no Admin console e via Admin API — não pode alterar ou atualizar grupos.',
-    tier: 'ReadOnly', category: 'Communication', isPrivileged: false,
-    privileges: ['Visualizar informações de grupos', 'Visualizar estrutura organizacional', 'Não pode criar, editar ou excluir grupos'],
-  },
-  {
-    slug: 'groups-editor',
-    name: 'Groups Editor',
-    description: 'Possui as permissões de um Groups Admin no Admin console e via Admin API, exceto o privilégio de adicionar ou remover um security label em um recurso de grupo.',
-    tier: 'DelegatedAdmin', category: 'Communication', isPrivileged: false,
-    privileges: ['Criar, gerenciar e excluir grupos', 'Gerenciar membros e configurações de acesso', 'Não pode adicionar/remover security label de um grupo'],
-  },
-  {
-    slug: 'indirect-reseller-admin',
-    name: 'Indirect Reseller Admin',
-    description: 'Atribuído a um reseller que trabalha com um distribuidor autorizado Google Workspace (em vez de diretamente com a Google). Pode adicionar, visualizar, editar e transferir clientes revendidos.',
-    tier: 'SpecializedAdmin', category: 'Infrastructure', isPrivileged: true,
-    privileges: ['Adicionar, visualizar, editar e transferir clientes revendidos', 'Atribuído a resellers que operam via distribuidor autorizado (não diretamente com a Google)'],
-  },
-]
-
-// ── OAuth Scopes ──────────────────────────────────────────────────────────────
 
 export const GWS_SCOPES: GwsOAuthScope[] = [
   // Gmail

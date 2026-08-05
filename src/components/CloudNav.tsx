@@ -2,19 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { CLOUD_COLORS, type CloudId } from '@/lib/cloudColors'
 
-// Source of truth for CSP colors — mirrors PLATFORMS in Sidebar.tsx
-const CLOUDS = [
-  { id: 'home',            label: 'Home',          href: '/',                        color: '#0078d4' },
-  { id: 'entraId',         label: 'Entra ID',      href: '/entraid',                 color: '#0078d4' },
-  { id: 'azureRbac',       label: 'Azure RBAC',     href: '/azure-rbac',       color: '#5c2d91' },
-  { id: 'aws',             label: 'AWS IAM',         href: '/aws',              color: '#ff9900' },
-  { id: 'gcp',             label: 'GCP IAM',         href: '/gcp',              color: '#0f9d58' },
-  { id: 'googleWorkspace', label: 'G. Workspace',    href: '/google-workspace', color: '#34a853' },
-  { id: 'ibmCloud',        label: 'IBM Cloud',       href: '/ibm-cloud',        color: '#08bdba' },
-] as const
-
-type CloudId = (typeof CLOUDS)[number]['id']
+// A cor de cada cloud vem de src/lib/cloudColors.ts — este arquivo já não
+// declara hex nenhum. Antes mantinha uma segunda lista que divergia dos tokens
+// `csp-*` do Tailwind (GCP verde aqui, azul no card da home; IBM teal aqui,
+// azul no card), e as duas verdes adjacentes — GCP #0f9d58 e G. Workspace
+// #34a853 — eram praticamente indistinguíveis no menu.
+const CLOUDS: { id: CloudId; label: string; href: string }[] = [
+  { id: 'home',            label: 'Home',         href: '/' },
+  { id: 'entraId',         label: 'Entra ID',     href: '/entraid' },
+  { id: 'azureRbac',       label: 'Azure RBAC',   href: '/azure-rbac' },
+  { id: 'aws',             label: 'AWS IAM',      href: '/aws' },
+  { id: 'gcp',             label: 'GCP IAM',      href: '/gcp' },
+  { id: 'googleWorkspace', label: 'G. Workspace', href: '/google-workspace' },
+  { id: 'ibmCloud',        label: 'IBM Cloud',    href: '/ibm-cloud' },
+]
 
 /** Derives active platform from pathname — same logic as AppShell.tsx */
 function getActivePlatform(pathname: string): CloudId | null {
@@ -44,18 +47,31 @@ export default function CloudNav() {
   return (
     <nav
       aria-label="Cloud providers"
-      className="bg-white dark:bg-gray-900 border-b border-[#dde3ec] dark:border-gray-800 overflow-x-auto shrink-0"
+      className="bg-surface border-b border-line overflow-x-auto shrink-0"
     >
       <div className="flex items-stretch px-2 min-w-max">
         {CLOUDS.map((cloud) => {
           const isActive = active === cloud.id
+          const color = CLOUD_COLORS[cloud.id]
           return (
             <Link
               key={cloud.id}
               href={cloud.href}
               aria-current={isActive ? 'page' : undefined}
-              style={{ '--cloud-color': cloud.color } as React.CSSProperties}
-              className="cloud-nav-item px-4 py-3 text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-b-[3px] border-transparent text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0078d4]"
+              style={
+                {
+                  // O texto do item ativo troca de variante conforme o tema: a
+                  // cor de marca nunca serve nos dois (Azure RBAC dá 1.89:1 no
+                  // escuro, Entra dá 2.1:1 no claro). Quem escolhe entre as duas
+                  // é o seletor `.dark` em globals.css.
+                  '--cloud-on-light': color.onLight,
+                  '--cloud-on-dark': color.onDark,
+                  // O sublinhado é decorativo e fica sobre o fundo, não sobre
+                  // texto — pode usar a cor de marca cheia nos dois temas.
+                  '--cloud-mark': color.mark,
+                } as React.CSSProperties
+              }
+              className="cloud-nav-item px-4 py-3 text-body font-semibold uppercase tracking-wider whitespace-nowrap border-b-[3px] border-transparent text-fg-muted"
             >
               {cloud.label}
             </Link>

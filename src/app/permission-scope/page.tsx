@@ -13,6 +13,8 @@
 //    porque suas permissões vivem fora do bundle (926 arquivos JSON).
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-react'
@@ -20,7 +22,6 @@ import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, Chevrons
 import AppShell from '@/components/AppShell'
 import ExportButton from '@/components/ExportButton'
 import { CloudId, CLOUD_META, CLOUD_ORDER, getCloudUrl } from '@/data/compare/types'
-import { AZURE_ROLES } from '@/data/azureRbac'
 import {
   ScopeMatch, ScopeRoleRef, CLOUD_TERMS,
   searchLocalPermissions, countLocalMatches, getLocalIndexStats,
@@ -32,6 +33,8 @@ interface AzurePermIndex { slugs: string[]; index: Record<string, number[]> }
 const PER_CLOUD_LIMIT = 40
 
 function PermissionScopeContent() {
+  const t = useT()
+  const fmt = useNumberFormat()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -61,15 +64,29 @@ function PermissionScopeContent() {
 
   // Índice do Azure RBAC — carregado só quando o usuário busca de fato.
   const [azureIndex, setAzureIndex] = useState<AzurePermIndex | null>(null)
+  const [azureBySlug, setAzureBySlug] = useState<Map<string, { name: string; isPrivileged: boolean }>>(new Map())
   const [azureLoading, setAzureLoading] = useState(false)
   const [azureError, setAzureError] = useState(false)
 
   useEffect(() => {
     if (!query.trim() || azureIndex || azureLoading) return
     setAzureLoading(true)
-    fetch('/azure-perms-index.json')
-      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() })
-      .then((d: AzurePermIndex) => { setAzureIndex(d); setAzureError(false) })
+    // O catálogo de roles do Azure (azureRbac.ts, 180 kB) vem junto com o
+    // índice, por import dinâmico: ele só serve para traduzir slug -> nome, e
+    // isso só faz sentido quando o índice chega. Importado no topo, entrava no
+    // First Load de quem talvez nunca buscasse nada.
+    Promise.all([
+      fetch('/azure-perms-index.json')
+        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<AzurePermIndex> }),
+      import('@/data/azureRbac'),
+    ])
+      .then(([d, { AZURE_ROLES }]) => {
+        const m = new Map<string, { name: string; isPrivileged: boolean }>()
+        for (const r of AZURE_ROLES) m.set(r.slug, { name: r.name, isPrivileged: r.isPrivileged })
+        setAzureBySlug(m)
+        setAzureIndex(d)
+        setAzureError(false)
+      })
       .catch(() => setAzureError(true))
       .finally(() => setAzureLoading(false))
   }, [query, azureIndex, azureLoading])
@@ -101,12 +118,6 @@ function PermissionScopeContent() {
     return () => clearTimeout(t)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
-
-  const azureBySlug = useMemo(() => {
-    const m = new Map<string, { name: string; isPrivileged: boolean }>()
-    for (const r of AZURE_ROLES) m.set(r.slug, { name: r.name, isPrivileged: r.isPrivileged })
-    return m
-  }, [])
 
   // Matches do Azure, no mesmo formato das demais clouds.
   const azureMatches = useMemo<ScopeMatch[]>(() => {
@@ -229,7 +240,7 @@ function PermissionScopeContent() {
   return (
     <AppShell
       headerTitle="Permission Scope"
-      headerSub="Descubra quais roles concedem uma permissão — em qualquer cloud"
+      headerSub={t('perm.scopeLead')}
       headerActions={
         exportRows.length > 0
           ? <ExportButton filename="permission-scope" title="Permission Scope" data={exportRows} />
@@ -242,37 +253,37 @@ function PermissionScopeContent() {
           {/* Busca */}
           <section>
             <div className="flex items-center gap-2 mb-2">
-              <ScanSearch size={18} className="text-[#85b7eb]" />
-              <h1 className="text-[18px] font-semibold text-gray-800 dark:text-gray-100">
+              <ScanSearch size={18} className="text-brand-onDark" />
+              <h1 className="text-sub font-semibold text-gray-800 dark:text-gray-100">
                 Busca reversa de permissão
               </h1>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-teal-500 bg-teal-900/60 px-1.5 py-0.5 rounded">
+              <span className="text-micro font-bold uppercase tracking-wider text-teal-800 dark:text-teal-400 bg-teal-100 dark:bg-teal-900/60 px-1.5 py-0.5 rounded">
                 Beta
               </span>
             </div>
-            <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+            <p className="text-body text-fg-muted leading-relaxed mb-4">
               Cole uma permissão de qualquer plataforma e veja todas as roles e policies que a
-              concedem. Aceita busca parcial — <code className="font-mono text-[12px]">listKeys</code> encontra
-              tanto <code className="font-mono text-[12px]">Microsoft.Storage/storageAccounts/listKeys/action</code> quanto
+              concedem. Aceita busca parcial — <code className="font-mono text-tiny">listKeys</code> encontra
+              tanto <code className="font-mono text-tiny">Microsoft.Storage/storageAccounts/listKeys/action</code> quanto
               equivalentes em outras clouds.
             </p>
 
             <div className="relative">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 autoFocus
                 placeholder="ex.: listKeys · s3:GetObject · compute.instances.delete · microsoft.directory/users/create"
-                aria-label="Buscar permissão em todas as clouds"
-                className="w-full text-[13px] pl-9 pr-9 py-2.5 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#0078d4] transition-colors"
+                aria-label={t('aria.searchPermAllClouds')}
+                className="w-full text-body pl-9 pr-9 py-2.5 rounded-lg border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-brand transition-colors"
               />
               {query && (
                 <button
                   onClick={() => setQuery('')}
-                  aria-label="Limpar busca"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  aria-label={t('action.clearSearch')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <X size={15} />
                 </button>
@@ -289,8 +300,8 @@ function PermissionScopeContent() {
                   <button
                     key={c}
                     onClick={() => toggleCloud(c)}
-                    className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors font-medium ${
-                      active ? 'text-white border-transparent' : 'text-gray-400 border-gray-300 dark:border-gray-700 hover:border-gray-500'
+                    className={`text-3xs px-2.5 py-1 rounded-full border transition-colors font-medium ${
+                      active ? 'text-white border-transparent' : 'text-fg-subtle border-gray-300 dark:border-gray-700 hover:border-gray-500'
                     }`}
                     style={active ? { background: meta.color, borderColor: meta.color } : {}}
                   >
@@ -302,26 +313,26 @@ function PermissionScopeContent() {
             </div>
 
             {/* Estado */}
-            <div className="mt-3 text-[12px]">
+            <div className="mt-3 text-tiny">
               {!hasQuery && (
-                <span className="text-gray-500 dark:text-gray-400">
+                <span className="text-fg-muted">
                   {indexedTotal !== null
-                    ? `${indexedTotal.toLocaleString('pt-BR')} permissões indexadas em 6 clouds`
-                    : 'Indexando permissões…'} · Azure RBAC carrega sob demanda
+                    ? `${fmt(indexedTotal)} ${t('perm.indexedIn')}`
+                    : t('state.indexingPerms')} · {t('perm.azureOnDemand')}
                 </span>
               )}
               {hasQuery && azureLoading && (
-                <span className="text-gray-500 dark:text-gray-400">Carregando índice do Azure RBAC…</span>
+                <span className="text-fg-muted">{t('state.loadingAzureIndex')}</span>
               )}
               {hasQuery && azureError && (
                 <span className="text-red-500">
-                  Falha ao carregar o índice do Azure RBAC — resultados das demais clouds seguem válidos.
+                  {t('perm.azureIndexFailed')}
                 </span>
               )}
               {hasQuery && !azureLoading && !azureError && (
                 <span className="text-gray-600 dark:text-gray-300">
-                  <strong>{totalPermsFound.toLocaleString('pt-BR')}</strong> permissão(ões) correspondente(s) ·{' '}
-                  <strong>{totalRolesFound.toLocaleString('pt-BR')}</strong> concessão(ões) de role
+                  <strong>{fmt(totalPermsFound)}</strong> {t('perm.matchedPerms')} ·{' '}
+                  <strong>{fmt(totalRolesFound)}</strong> {t('perm.roleGrants')}
                 </span>
               )}
             </div>
@@ -329,10 +340,10 @@ function PermissionScopeContent() {
 
           {/* Resultados */}
           {hasQuery && grouped.size === 0 && !azureLoading && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500">
+            <div className="flex flex-col items-center justify-center py-16 text-fg-muted">
               <Search size={28} className="mb-2 opacity-40" />
-              <p className="text-[13px]">Nenhuma permissão encontrada para “{query}”.</p>
-              <p className="text-[12px] mt-1">Tente um trecho menor — a busca é por substring.</p>
+              <p className="text-body">Nenhuma permissão encontrada para “{query}”.</p>
+              <p className="text-tiny mt-1">{t('perm.scopeTryShorter')}</p>
             </div>
           )}
 
@@ -341,13 +352,13 @@ function PermissionScopeContent() {
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={expandAll}
-                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center gap-1.5 text-3xs px-2.5 py-1 rounded-md border border-surface-border dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <ChevronsDown size={12} /> Expandir tudo
               </button>
               <button
                 onClick={collapseAll}
-                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center gap-1.5 text-3xs px-2.5 py-1 rounded-md border border-surface-border dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <ChevronsUp size={12} /> Recolher tudo
               </button>
@@ -373,10 +384,10 @@ function PermissionScopeContent() {
                     ? <ChevronDown size={14} style={{ color: meta.color }} className="shrink-0" />
                     : <ChevronRight size={14} style={{ color: meta.color }} className="shrink-0" />}
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: meta.color }} />
-                  <h2 className="text-[13px] font-semibold" style={{ color: meta.color }}>{meta.label}</h2>
-                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                    {total.toLocaleString('pt-BR')} {terms.permission.toLowerCase()}(s)
-                    {total > matches.length && ` · exibindo ${matches.length}`}
+                  <h2 className="text-body font-semibold" style={{ color: meta.color }}>{meta.label}</h2>
+                  <span className="text-3xs text-fg-muted">
+                    {fmt(total)} {terms.permission.toLowerCase()}(s)
+                    {total > matches.length && ` · ${t('perm.showing')} ${matches.length}`}
                   </span>
                 </button>
 
@@ -394,12 +405,12 @@ function PermissionScopeContent() {
                             className="w-full px-4 py-2.5 flex items-start gap-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                           >
                             {open
-                              ? <ChevronDown size={13} className="text-gray-400 shrink-0 mt-0.5" />
-                              : <ChevronRight size={13} className="text-gray-400 shrink-0 mt-0.5" />}
-                            <code className="flex-1 text-[12px] font-mono break-all" style={{ color: meta.color }}>
+                              ? <ChevronDown size={13} className="text-fg-subtle shrink-0 mt-0.5" />
+                              : <ChevronRight size={13} className="text-fg-subtle shrink-0 mt-0.5" />}
+                            <code className="flex-1 text-tiny font-mono break-all" style={{ color: meta.color }}>
                               {m.permission}
                             </code>
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500 whitespace-nowrap shrink-0 mt-0.5">
+                            <span className="text-2xs text-fg-muted whitespace-nowrap shrink-0 mt-0.5">
                               {m.roles.length} {terms.principal}
                             </span>
                           </button>
@@ -407,14 +418,14 @@ function PermissionScopeContent() {
                           {/* Roles em tabela */}
                           {open && (
                             <div className="px-4 pb-3">
-                              <div className="border border-[#dde3ec] dark:border-gray-800 rounded-lg overflow-hidden">
-                                <table className="w-full text-[12px] border-collapse">
+                              <div className="border border-surface-border dark:border-gray-800 rounded-lg overflow-hidden">
+                                <table className="w-full text-tiny border-collapse">
                                   <thead>
-                                    <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
-                                      <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2">
+                                    <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
+                                      <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2">
                                         {terms.principal === 'policies' ? 'Policy' : 'Role'}
                                       </th>
-                                      <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2 w-32">
+                                      <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2 w-32">
                                         Privilegiada
                                       </th>
                                       <th className="w-10" />
@@ -426,22 +437,22 @@ function PermissionScopeContent() {
                                         className="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 group">
                                         <td className="px-3 py-2">
                                           <Link href={getCloudUrl(cloud, r.slug)}
-                                            className="text-[12px] font-medium hover:underline"
+                                            className="text-tiny font-medium hover:underline"
                                             style={{ color: meta.color }}>
                                             {r.name}
                                           </Link>
                                         </td>
                                         <td className="px-3 py-2">
                                           {r.isPrivileged
-                                            ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40">
+                                            ? <span className="inline-flex items-center gap-1 text-2xs font-semibold px-2 py-0.5 rounded-full border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40">
                                                 <ShieldAlert size={10} /> Sim
                                               </span>
-                                            : <span className="text-[11px] text-gray-400 dark:text-gray-600">—</span>}
+                                            : <span className="text-3xs text-fg-subtle dark:text-gray-600">—</span>}
                                         </td>
                                         <td className="px-2 py-2 text-right">
                                           <Link href={getCloudUrl(cloud, r.slug)}
                                             aria-label={`Abrir ${r.name}`}
-                                            className="text-gray-300 dark:text-gray-600 hover:opacity-80 transition-opacity inline-block">
+                                            className="text-fg-muted dark:text-gray-600 hover:opacity-80 transition-opacity inline-block">
                                             <ChevronRight size={14} />
                                           </Link>
                                         </td>
@@ -470,7 +481,7 @@ function PermissionScopeContent() {
 
 export default function PermissionScopePage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <PermissionScopeContent />
     </Suspense>
   )

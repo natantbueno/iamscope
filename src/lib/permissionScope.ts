@@ -4,9 +4,12 @@
 // (ou policies) a concedem?" — em qualquer uma das 6 plataformas do catálogo.
 //
 // Reaproveita os índices que já existem no site (getRoleActions, getAwsActions,
-// getGcpPermissions, getIbmActions), que já invertem a relação
-// role -> permissão e são cacheados em memória. Google Workspace não tinha um
-// helper equivalente, então é montado aqui a partir de privileges/apiPrivileges.
+// getGcpPermissions), que já invertem a relação role -> permissão e são
+// cacheados em memória. Google Workspace não tinha um helper equivalente, então
+// é montado aqui a partir de privileges/apiPrivileges.
+//
+// NENHUM dataset entra por import estático: todos chegam por `await import()`
+// dentro de ensureLocalPermissionIndex(). Ver o bloco de Entra/GWS abaixo.
 //
 // Azure RBAC é o único caso que NÃO entra aqui: as permissões dele vivem em 926
 // arquivos JSON separados (public/azure-perms/*.json), fora do bundle. A página
@@ -14,11 +17,8 @@
 // mescla o resultado com o que esta lib devolve.
 
 import { CloudId } from '@/data/compare/types'
-import { getRoleActions } from './roleActions'
 import { getAwsActions, getAwsActionsSync } from './awsActions'
 import { getGcpPermissions, getGcpPermissionsSync } from './gcpPermissions'
-import { getIbmActions } from './ibmActions'
-import { GWS_ROLES } from '@/data/googleWorkspace'
 
 export interface ScopeRoleRef {
   name: string
@@ -43,16 +43,29 @@ export const CLOUD_TERMS: Record<CloudId, { permission: string; principal: strin
   googleWorkspace: { permission: 'Privilege',     principal: 'roles' },
 }
 
-// ── Google Workspace ────────────────────────────────────────────────────────
-// Não existe helper pronto: as roles carregam `privileges` (privilégios do
-// Admin console) e `apiPrivileges` (nomes usados pela Admin SDK). Os dois são
-// tratados como permissões pesquisáveis, deduplicados por nome.
+// ── Entra ID e Google Workspace, sob demanda ────────────────────────────────
+//
+// POR QUE ESTES DOIS TAMBÉM SAÍRAM DO IMPORT ESTÁTICO
+//   AWS e GCP já vinham de índice em public/. Entra e GWS continuavam entrando
+//   pelo topo do módulo: `getRoleActions` arrasta src/data/roles.ts (392 kB) e
+//   `GWS_ROLES` arrasta googleWorkspace.ts (54 kB). Como esta lib é importada
+//   pela página /permission-scope, os dois caíam no First Load JS da rota
+//   inteira — ~416 kB para uma busca que o usuário talvez nem faça.
+//
+//   Agora chegam por `await import()` dentro de ensureLocalPermissionIndex(),
+//   que a página já chamava antes da primeira busca. Mesmo desenho de AWS e
+//   GCP: um cache em memória e um acessor síncrono que devolve null enquanto
+//   não chegou — nunca uma lista vazia, que a busca leria como "sem resultado".
 
 interface GwsPermEntry { permission: string; roles: ScopeRoleRef[] }
 let _gwsCache: GwsPermEntry[] | null = null
 
-function getGwsPermissions(): GwsPermEntry[] {
-  if (_gwsCache) return _gwsCache
+/** null = ainda não carregado. Diferente de [], que significaria "não achou". */
+function getGwsPermissionsSync(): GwsPermEntry[] | null { return _gwsCache }
+
+async function loadGwsPermissions(): Promise<void> {
+  if (_gwsCache) return
+  const { GWS_ROLES } = await import('@/data/googleWorkspace')
   const map = new Map<string, GwsPermEntry>()
   for (const role of GWS_ROLES) {
     const all = [...(role.privileges ?? []), ...(role.apiPrivileges ?? [])]
@@ -65,7 +78,17 @@ function getGwsPermissions(): GwsPermEntry[] {
     }
   }
   _gwsCache = [...map.values()]
-  return _gwsCache
+}
+
+interface EntraPermEntry { action: string; usedByRoles: ScopeRoleRef[] }
+let _entraCache: EntraPermEntry[] | null = null
+
+function getEntraActionsSync(): EntraPermEntry[] | null { return _entraCache }
+
+async function loadEntraActions(): Promise<void> {
+  if (_entraCache) return
+  const { getRoleActions } = await import('./roleActions')
+  _entraCache = getRoleActions()
 }
 
 // ── Índice unificado (tudo menos Azure RBAC) ────────────────────────────────
@@ -81,7 +104,7 @@ export function getLocalPermissionIndex(): ScopeMatch[] {
 
   const out: ScopeMatch[] = []
 
-  for (const e of getRoleActions()) {
+  for (const e of getEntraActionsSync() ?? []) {
     out.push({ cloud: 'entraId', permission: e.action, roles: e.usedByRoles })
   }
   for (const e of getAwsActionsSync() ?? []) {
@@ -93,10 +116,10 @@ export function getLocalPermissionIndex(): ScopeMatch[] {
   for (const e of getGcpPermissionsSync() ?? []) {
     out.push({ cloud: 'gcp', permission: e.permission, roles: e.usedByRoles })
   }
-  for (const e of getIbmActions()) {
-    out.push({ cloud: 'ibmCloud', permission: e.action, roles: e.usedByRoles })
-  }
-  for (const e of getGwsPermissions()) {
+  // IBM Cloud fora: a busca reversa precisa de permission com identificador, e
+  // a IBM não publica isso — as ações são mapeadas por cada serviço, não pelo
+  // catálogo de roles. O que existia aqui vinha de 557 actions inventadas.
+  for (const e of getGwsPermissionsSync() ?? []) {
     out.push({ cloud: 'googleWorkspace', permission: e.permission, roles: e.roles })
   }
 
@@ -115,6 +138,8 @@ export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
   const pending: Promise<unknown>[] = []
   if (getGcpPermissionsSync() === null) pending.push(getGcpPermissions())
   if (getAwsActionsSync() === null) pending.push(getAwsActions())
+  if (getEntraActionsSync() === null) pending.push(loadEntraActions())
+  if (getGwsPermissionsSync() === null) pending.push(loadGwsPermissions())
 
   if (pending.length) {
     // allSettled: se o índice de uma cloud falhar, as outras continuam valendo

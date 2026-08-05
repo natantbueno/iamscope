@@ -2,26 +2,42 @@
 
 import { useState } from 'react'
 import {
-  Search, LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
+  LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
   ChevronDown, Shield, ChevronRight, ChevronLeft,
   Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Sparkles,
-  GitCompare, Timer, ShieldAlert, ScanSearch,
+  GitCompare, Timer, ShieldAlert, ScanSearch, Gauge, Server,
 } from 'lucide-react'
-import { RoleCategory, EAM_META, EamTier } from '@/data/roles'
-import { AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
-import { GWS_TIER_META, GWS_ROLES, GWS_SCOPES, GwsTier } from '@/data/googleWorkspace'
-import { IBM_TIER_META, IBM_ROLES, IbmTier } from '@/data/ibmCloud'
-import { GCP_TIER_META, GCP_ROLES, GCP_PERMISSION_COUNT, GcpTier, GcpCategory } from '@/data/gcp'
-import { AWS_TIER_META, AWS_POLICIES, AWS_ACTION_COUNT, AwsTier, AwsCategory } from '@/data/aws'
-import { IBM_ACCESS_PRIMITIVES } from '@/data/ibmAccessPrimitives'
-import { getIbmActions } from '@/lib/ibmActions'
+import type { RoleCategory, EamTier } from '@/data/roles'
+import { CLOUD_COLORS } from '@/lib/cloudColors'
+// Contagens vêm de counts.ts, não dos datasets: a Sidebar envolve TODAS as
+// páginas, então importar os arrays jogaria 2,5 MB no chunk compartilhado.
+import {
+  GWS_ROLES_COUNT, GWS_SCOPES_COUNT, GWS_PRIVILEGES_COUNT,
+  IBM_ROLES_COUNT, IBM_ACCESS_PRIMITIVES_COUNT, IBM_CLASSIC_PERMISSIONS_COUNT,
+  GCP_ROLES_COUNT, GCP_PERMISSIONS_COUNT,
+  AWS_POLICIES_COUNT, AWS_ACTIONS_COUNT,
+} from '@/data/counts'
+import type { AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
+import type { GwsTier } from '@/data/googleWorkspace'
+import type { IbmTier } from '@/data/ibmCloud'
+import type { GcpTier, GcpCategory } from '@/data/gcp'
+import type { AwsTier, AwsCategory } from '@/data/aws'
+// TIER_META vem do módulo próprio: importá-los dos arquivos de dados traria
+// os datasets inteiros para o chunk compartilhado (ver src/data/tierMeta.ts).
+import {
+  EAM_META, AZURE_TIER_META, GWS_TIER_META, IBM_TIER_META, GCP_TIER_META, AWS_TIER_META,
+} from '@/data/tierMeta'
 import EntraScopeIcon from './EntraScopeIcon'
-import SidebarSearch from './SidebarSearch'
 import { useRouter } from 'next/navigation'
+import { useT } from '@/i18n/LanguageProvider'
 
 export type Platform = 'home' | 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'googleWorkspace' | 'ibmCloud'
-export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info' | 'actions' | 'pim'
+// 'scp' e 'accessGroups' existem porque essas páginas tinham item na sidebar
+// SEM prop `active`: além de nunca acenderem, deixavam "IAM Policies" / "IAM
+// Roles" destacado enquanto a pessoa estava nelas — o mesmo defeito relatado
+// em /aws/actions, só que em outro lugar.
+export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info' | 'actions' | 'pim' | 'scp' | 'accessGroups' | 'classic'
 
 interface SidebarProps {
   platform: Platform
@@ -76,15 +92,8 @@ const AZURE_CATEGORIES: { label: string; cat: AzureRbacCategory; icon: React.Rea
 ]
 
 const GWS_TIERS: GwsTier[] = ['SuperAdmin', 'DelegatedAdmin', 'ServiceAdmin', 'SpecializedAdmin', 'ReadOnly']
-const GWS_ROLES_COUNT = GWS_ROLES.length
-const GWS_SCOPES_COUNT = GWS_SCOPES.length
-// Privilégios de API únicos entre todas as admin roles — mesma lógica de dedupe da página /google-workspace/privileges.
-const GWS_PRIVILEGES_COUNT = new Set(GWS_ROLES.flatMap((r) => r.apiPrivileges ?? [])).size
 
 const IBM_TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
-const IBM_ROLES_COUNT = IBM_ROLES.length
-const IBM_ACTIONS_COUNT = getIbmActions().length
-const IBM_ACCESS_PRIMITIVES_COUNT = IBM_ACCESS_PRIMITIVES.length
 
 const GCP_TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 const GCP_CATEGORIES: { label: string; cat: GcpCategory; icon: React.ReactNode }[] = [
@@ -104,10 +113,6 @@ const GCP_CATEGORIES: { label: string; cat: GcpCategory; icon: React.ReactNode }
   { label: 'Billing',      cat: 'Billing',       icon: <Layers size={14} /> },
   { label: 'Management',   cat: 'Management',    icon: <Globe size={14} /> },
 ]
-const GCP_ROLES_COUNT = GCP_ROLES.length
-// Constante gerada em src/data/gcp.ts: mostrar o número não deve baixar o
-// índice de 13,6 mil permissões.
-const GCP_PERMISSIONS_COUNT = GCP_PERMISSION_COUNT
 
 const AWS_TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
@@ -127,26 +132,26 @@ const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
   { label: 'Billing',      cat: 'Billing',      icon: <Layers size={14} /> },
   { label: 'IoT',          cat: 'IoT',          icon: <Globe size={14} /> },
 ]
-const AWS_POLICIES_COUNT = AWS_POLICIES.length
-// Constante gerada em src/data/aws.ts: mostrar o número não deve baixar o
-// índice de 16 mil actions.
-const AWS_ACTIONS_COUNT = AWS_ACTION_COUNT
 
 
 // Links das 6 clouds — mesmas cores do CloudNav.tsx — usados na sidebar da Home.
 const CLOUD_LINKS: { label: string; href: string; color: string }[] = [
-  { label: 'Entra ID',        href: '/entraid',          color: '#0078d4' },
-  { label: 'Azure RBAC',      href: '/azure-rbac',       color: '#5c2d91' },
-  { label: 'AWS IAM',         href: '/aws',              color: '#ff9900' },
-  { label: 'GCP IAM',         href: '/gcp',              color: '#0f9d58' },
-  { label: 'Google Workspace',href: '/google-workspace', color: '#34a853' },
-  { label: 'IBM Cloud',       href: '/ibm-cloud',        color: '#08bdba' },
+  // Cores vindas de src/lib/cloudColors.ts (fonte unica). Aqui a cor pinta o
+  // FUNDO de um ponto de 8px, nao texto: o token certo e' `mark`, a cor de marca
+  // cheia. Usar `onDark` deixava o ponto quase invisivel no tema claro.
+  { label: 'Entra ID',        href: '/entraid',          color: CLOUD_COLORS.entraId.mark },
+  { label: 'Azure RBAC',      href: '/azure-rbac',       color: CLOUD_COLORS.azureRbac.mark },
+  { label: 'AWS IAM',         href: '/aws',              color: CLOUD_COLORS.aws.mark },
+  { label: 'GCP IAM',         href: '/gcp',              color: CLOUD_COLORS.gcp.mark },
+  { label: 'Google Workspace',href: '/google-workspace', color: CLOUD_COLORS.googleWorkspace.mark },
+  { label: 'IBM Cloud',       href: '/ibm-cloud',        color: CLOUD_COLORS.ibmCloud.mark },
 ]
 
 export default function Sidebar({
   platform, view, searchBasePath, totalRoles, totalApiPerms, totalRoleActions, totalAzureRoles = 0, totalIbmRoles = IBM_ROLES_COUNT,
   onViewChange, onCategoryFilter,
 }: SidebarProps) {
+  const t = useT()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [tierOpen, setTierOpen] = useState(true)
@@ -158,126 +163,153 @@ export default function Sidebar({
   const [awsTierOpen, setAwsTierOpen] = useState(true)
   const [awsCatOpen, setAwsCatOpen] = useState(true)
   const [catOpen, setCatOpen] = useState(true)
+  // Ferramentas abrem por padrão: são o diferencial do site e ficariam
+  // escondidas atrás de um clique se começassem fechadas.
+  const [toolsOpen, setToolsOpen] = useState(true)
 
   return (
-    <aside className={`${collapsed ? 'w-16' : 'w-60'} shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col h-screen sticky top-0 transition-[width] duration-200`}>
+    <aside className={`${collapsed ? 'w-16' : 'w-60'} shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0 transition-[width] duration-200`}>
 
-      {/* Logo + Search */}
-      <div className="p-4 border-b border-gray-800">
+      {/* Logo */}
+      <div className="p-4 border-b border-line">
         <div className={`flex items-center mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <button onClick={() => router.push('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <EntraScopeIcon size={24} />
-            {!collapsed && <span className="text-[13px] font-semibold text-gray-100">IAM Scope</span>}
+            {!collapsed && <span className="text-body font-semibold text-fg">IAM Scope</span>}
           </button>
           {!collapsed && (
             <button
               onClick={() => router.push('/info')}
               className={`p-1.5 rounded-md transition-colors ${
                 view === 'info'
-                  ? 'text-[#85b7eb] bg-[#0c2a47]'
-                  : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800'
+                  ? 'text-brand-onDark bg-brand-activeBg'
+                  : 'text-fg-muted hover:text-fg hover:bg-surface-alt'
               }`}
-              title="Sobre o IAM Scope"
+              title={t('sidebar.about')}
             >
               <Info size={15} />
             </button>
           )}
         </div>
-        {!collapsed && <SidebarSearch basePath={searchBasePath} />}
         <button
           onClick={() => setCollapsed((c) => !c)}
           title={collapsed ? 'Expandir menu' : 'Encolher menu'}
-          className={`mt-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-gray-500 hover:text-gray-200 hover:bg-gray-800 transition-colors ${collapsed ? 'w-full' : 'w-full'}`}
+          className={`mt-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-fg-muted hover:text-fg hover:bg-surface-alt transition-colors ${collapsed ? 'w-full' : 'w-full'}`}
         >
-          {collapsed ? <ChevronRight size={14} /> : <><ChevronLeft size={14} /><span className="text-[11px]">Encolher</span></>}
+          {collapsed ? <ChevronRight size={14} /> : <><ChevronLeft size={14} /><span className="text-3xs">Encolher</span></>}
         </button>
       </div>
 
-      {/* Global tools — Advisor + Compare */}
-      <div className={`px-3 py-2 border-b border-gray-800 shrink-0 flex flex-col gap-1.5 ${collapsed ? 'items-center' : ''}`}>
+      {/* Ferramentas globais — recolhíveis */}
+      <div className={`px-3 py-2 border-b border-line shrink-0 flex flex-col gap-1.5 ${collapsed ? 'items-center' : ''}`}>
+        {/*
+          Com a sidebar encolhida a lista vira uma coluna de ícones e não há
+          onde pôr o cabeçalho — nesse modo as ferramentas ficam sempre
+          visíveis, porque são a única navegação que sobra.
+        */}
+        {!collapsed && (
+          <SectionToggle label={t('sidebar.tools')} open={toolsOpen} onToggle={() => setToolsOpen((o) => !o)} />
+        )}
+        {(collapsed || toolsOpen) && (
+        <>
         <button
           onClick={() => router.push('/advisor')}
           title="Role Advisor"
-          className={`flex items-center gap-2 rounded-lg bg-violet-950/60 hover:bg-violet-900/60 border border-violet-800/50 hover:border-violet-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-violet-50 dark:bg-violet-950/60 hover:bg-violet-100 dark:hover:bg-violet-900/60 border border-violet-200 dark:border-violet-800/50 hover:border-violet-300 dark:hover:border-violet-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <Sparkles size={14} className="text-violet-400 shrink-0" />
           {!collapsed && (
             <>
-              <span className="flex-1 text-[12px] font-medium text-violet-300 group-hover:text-violet-200">Role Advisor</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-violet-500 bg-violet-900/60 px-1.5 py-0.5 rounded">Beta</span>
+              <span className="flex-1 text-tiny font-medium text-violet-700 dark:text-violet-300 group-hover:text-violet-800 dark:group-hover:text-violet-200">Role Advisor</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>
         <button
           onClick={() => router.push('/compare')}
           title="Multi-Cloud Compare"
-          className={`flex items-center gap-2 rounded-lg bg-blue-950/60 hover:bg-blue-900/60 border border-blue-800/50 hover:border-blue-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <GitCompare size={14} className="text-blue-400 shrink-0" />
           {!collapsed && (
             <>
-              <span className="flex-1 text-[12px] font-medium text-blue-300 group-hover:text-blue-200">Multi-Cloud Compare</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-blue-500 bg-blue-900/60 px-1.5 py-0.5 rounded">Beta</span>
+              <span className="flex-1 text-tiny font-medium text-blue-700 dark:text-blue-300 group-hover:text-blue-800 dark:group-hover:text-blue-200">Multi-Cloud Compare</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-blue-800 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>
         <button
           onClick={() => router.push('/evaluate')}
           title="Role Evaluator"
-          className={`flex items-center gap-2 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/50 hover:border-emerald-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-300 dark:hover:border-emerald-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
           {!collapsed && (
             <>
-              <span className="flex-1 text-[12px] font-medium text-emerald-300 group-hover:text-emerald-200">Role Evaluator</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-900/60 px-1.5 py-0.5 rounded">Beta</span>
+              <span className="flex-1 text-tiny font-medium text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-800 dark:group-hover:text-emerald-200">Role Evaluator</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>
         <button
           onClick={() => router.push('/sod')}
           title="SoD Analyzer"
-          className={`flex items-center gap-2 rounded-lg bg-amber-950/60 hover:bg-amber-900/60 border border-amber-800/50 hover:border-amber-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/50 hover:border-amber-300 dark:hover:border-amber-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <ShieldAlert size={14} className="text-amber-400 shrink-0" />
           {!collapsed && (
             <>
-              <span className="flex-1 text-[12px] font-medium text-amber-300 group-hover:text-amber-200">SoD Analyzer</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 bg-amber-900/60 px-1.5 py-0.5 rounded">Beta</span>
+              <span className="flex-1 text-tiny font-medium text-amber-700 dark:text-amber-300 group-hover:text-amber-800 dark:group-hover:text-amber-200">SoD Analyzer</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded">Beta</span>
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => router.push('/assessment')}
+          title="Assessment do Tenant"
+          className={`flex items-center gap-2 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/60 border border-sky-200 dark:border-sky-800/50 hover:border-sky-300 dark:hover:border-sky-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+        >
+          <Gauge size={14} className="text-sky-400 shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="flex-1 text-tiny font-medium text-sky-700 dark:text-sky-300 group-hover:text-sky-800 dark:group-hover:text-sky-200">Assessment</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-sky-800 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>
         <button
           onClick={() => router.push('/permission-scope')}
           title="Permission Scope"
-          className={`flex items-center gap-2 rounded-lg bg-teal-950/60 hover:bg-teal-900/60 border border-teal-800/50 hover:border-teal-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-800/50 hover:border-teal-300 dark:hover:border-teal-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <ScanSearch size={14} className="text-teal-400 shrink-0" />
           {!collapsed && (
             <>
-              <span className="flex-1 text-[12px] font-medium text-teal-300 group-hover:text-teal-200">Permission Scope</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-teal-500 bg-teal-900/60 px-1.5 py-0.5 rounded">Beta</span>
+              <span className="flex-1 text-tiny font-medium text-teal-700 dark:text-teal-300 group-hover:text-teal-800 dark:group-hover:text-teal-200">Permission Scope</span>
+              <span className="text-micro font-bold uppercase tracking-wider text-teal-800 dark:text-teal-400 bg-teal-100 dark:bg-teal-900/60 px-1.5 py-0.5 rounded">Beta</span>
             </>
           )}
         </button>
         <button
           onClick={() => router.push('/tier-comparison')}
           title="Tier 0 Comparison"
-          className={`flex items-center gap-2 rounded-lg bg-red-950/60 hover:bg-red-900/60 border border-red-800/50 hover:border-red-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
+          className={`flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
         >
           <ShieldCheck size={14} className="text-red-400 shrink-0" />
-          {!collapsed && <span className="flex-1 text-[12px] font-medium text-red-300 group-hover:text-red-200">Tier 0 Comparison</span>}
+          {!collapsed && <span className="flex-1 text-tiny font-medium text-red-700 dark:text-red-300 group-hover:text-red-800 dark:group-hover:text-red-200">Tier 0 Comparison</span>}
         </button>
+        </>
+        )}
       </div>
 
       {/* Nav — Home */}
       {!collapsed && platform === 'home' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Clouds</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Clouds</p>
             {CLOUD_LINKS.map((cloud) => (
               <button key={cloud.href} onClick={() => router.push(cloud.href)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-body text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cloud.color }} />
                 <span className="flex-1">{cloud.label}</span>
               </button>
@@ -285,7 +317,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — Entra ID</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — Entra ID</p>
             <ExtLink icon={<Layers size={15} />}        label="Enterprise Access Model"
               href="https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model" />
             <ExtLink icon={<BookOpen size={15} />}      label="Microsoft Docs"
@@ -295,7 +327,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — Azure RBAC</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — Azure RBAC</p>
             <ExtLink icon={<BookOpen size={15} />} label="Azure RBAC Docs"
               href="https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles" />
             <ExtLink icon={<Layers size={15} />}   label="Role Definitions"
@@ -303,7 +335,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — AWS IAM</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — AWS IAM</p>
             <ExtLink icon={<BookOpen size={15} />}      label="AWS Managed Policies"
               href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/about-managed-policy-reference.html" />
             <ExtLink icon={<Layers size={15} />}        label="IAM Best Practices"
@@ -313,7 +345,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — GCP IAM</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — GCP IAM</p>
             <ExtLink icon={<BookOpen size={15} />} label="GCP IAM Docs"
               href="https://cloud.google.com/iam/docs/understanding-roles" />
             <ExtLink icon={<Layers size={15} />}   label="Predefined Roles"
@@ -323,7 +355,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — Google Workspace</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — Google Workspace</p>
             <ExtLink icon={<BookOpen size={15} />} label="Admin SDK Docs"
               href="https://developers.google.com/workspace/admin/roles" />
             <ExtLink icon={<Layers size={15} />}   label="OAuth 2.0 Scopes"
@@ -332,13 +364,13 @@ export default function Sidebar({
 
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência — IBM Cloud</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')} — IBM Cloud</p>
             <ExtLink icon={<BookOpen size={15} />} label="IBM Cloud IAM Docs"
-              href="https://cloud.ibm.com/docs/account?topic=account-userroles" />
+              href="https://cloud.ibm.com/docs/iam?topic=iam-userroles" />
             <ExtLink icon={<Layers size={15} />}   label="Account Management"
               href="https://cloud.ibm.com/docs/account?topic=account-account-services" />
             <ExtLink icon={<Database size={15} />} label="Classic Infra Perms"
-              href="https://cloud.ibm.com/docs/account?topic=account-mngclassicinfra" />
+              href="https://cloud.ibm.com/docs/iam?topic=iam-mngclassicinfra" />
           </div>
         </nav>
       )}
@@ -347,7 +379,7 @@ export default function Sidebar({
       {!collapsed && platform === 'entraId' && (
         <nav className="flex-1 overflow-y-auto p-2">
           <div className="mb-4">
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'}      onClick={() => onViewChange('dashboard')} />
             <NavItem icon={<ShieldCheck size={15} />}    label="Built-in Roles"  active={view === 'roles'}          badge={String(totalRoles)}       onClick={() => onViewChange('roles')} />
             <NavItem icon={<ListTree size={15} />}       label="Role Actions"    active={view === 'roleActions'}    badge={String(totalRoleActions)} onClick={() => onViewChange('roleActions')} />
@@ -361,7 +393,7 @@ export default function Sidebar({
               const m = EAM_META[tier]
               return (
                 <button key={tier} onClick={() => { onViewChange('roles'); router.push(`/entraid/roles?tier=${tier}`) }}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -369,14 +401,14 @@ export default function Sidebar({
             })}
           </div>
           <div className="mb-4">
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Categorias</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('sidebar.categories')}</p>
             {ENTRA_CATEGORIES.map((item) => (
               <NavItem key={item.cat} icon={item.icon} label={item.label}
                 onClick={() => { onViewChange('roles'); onCategoryFilter(item.cat) }} />
             ))}
           </div>
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<Layers size={15} />}        label="Enterprise Access Model"
               href="https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model" />
             <ExtLink icon={<BookOpen size={15} />}      label="Microsoft Docs"
@@ -391,10 +423,10 @@ export default function Sidebar({
       {!collapsed && platform === 'azureRbac' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/azure-rbac')} />
             <NavItem icon={<Shield size={15} />}          label="Built-in Roles" active={view === 'roles'}     badge={String(totalAzureRoles)} onClick={() => router.push('/azure-rbac/roles')} />
-            <NavItem icon={<KeyRound size={15} />}        label="Permissões"     active={view === 'apiPermissions'} badge={String(AZURE_ACTIONS_COUNT)} onClick={() => router.push('/azure-rbac/permissions')} />
+            <NavItem icon={<KeyRound size={15} />}        label={t('nav.permissions')}     active={view === 'apiPermissions'} badge={String(AZURE_ACTIONS_COUNT)} onClick={() => router.push('/azure-rbac/permissions')} />
             <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="2" onClick={() => router.push('/azure-rbac/reference')} />
           </div>
 
@@ -404,7 +436,7 @@ export default function Sidebar({
               const m = AZURE_TIER_META[tier]
               return (
                 <button key={tier} onClick={() => router.push(`/azure-rbac/roles?tier=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -413,18 +445,18 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Categorias" open={catOpen} onToggle={() => setCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={catOpen} onToggle={() => setCatOpen((o) => !o)} />
             {catOpen && AZURE_CATEGORIES.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/azure-rbac/roles?category=${cat}`)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-                <span className="text-[#85b7eb] shrink-0">{icon}</span>
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
+                <span className="text-brand-onDark shrink-0">{icon}</span>
                 <span className="flex-1">{label}</span>
               </button>
             ))}
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<BookOpen size={15} />} label="Azure RBAC Docs"
               href="https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles" />
             <ExtLink icon={<Layers size={15} />}   label="Role Definitions"
@@ -438,7 +470,7 @@ export default function Sidebar({
       {!collapsed && platform === 'googleWorkspace' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'}      onClick={() => router.push('/google-workspace')} />
             <NavItem icon={<ShieldCheck size={15} />}    label="Admin Roles"     active={view === 'roles'}          badge={String(GWS_ROLES_COUNT)} onClick={() => router.push('/google-workspace/roles')} />
             <NavItem icon={<KeyRound size={15} />}       label="OAuth Scopes"     active={view === 'apiPermissions'} badge={String(GWS_SCOPES_COUNT)} onClick={() => router.push('/google-workspace/api-permissions')} />
@@ -452,7 +484,7 @@ export default function Sidebar({
               const m = GWS_TIER_META[tier]
               return (
                 <button key={tier} onClick={() => router.push(`/google-workspace/roles?tier=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -461,7 +493,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<BookOpen size={15} />} label="Admin SDK Docs"
               href="https://developers.google.com/workspace/admin/roles" />
             <ExtLink icon={<Layers size={15} />}   label="OAuth 2.0 Scopes"
@@ -474,7 +506,7 @@ export default function Sidebar({
       {!collapsed && platform === 'gcp' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/gcp')} />
             <NavItem icon={<ShieldCheck size={15} />}     label="IAM Roles"       active={view === 'roles'}     badge={String(GCP_ROLES_COUNT)} onClick={() => router.push('/gcp/roles')} />
             <NavItem icon={<ListTree size={15} />}        label="IAM Permissions" active={view === 'actions'}   badge={String(GCP_PERMISSIONS_COUNT)} onClick={() => router.push('/gcp/permissions')} />
@@ -487,7 +519,7 @@ export default function Sidebar({
               const m = GCP_TIER_META[tier]
               return (
                 <button key={tier} onClick={() => router.push(`/gcp/roles?filter=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -496,18 +528,18 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Categorias" open={gcpCatOpen} onToggle={() => setGcpCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={gcpCatOpen} onToggle={() => setGcpCatOpen((o) => !o)} />
             {gcpCatOpen && GCP_CATEGORIES.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/gcp/roles?category=${cat}`)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-                <span className="text-[#4285f4] shrink-0">{icon}</span>
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
+                <span className="text-csp-gcp-onLight dark:text-csp-gcp-onDark shrink-0">{icon}</span>
                 <span className="flex-1">{label}</span>
               </button>
             ))}
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<BookOpen size={15} />} label="GCP IAM Docs"
               href="https://cloud.google.com/iam/docs/understanding-roles" />
             <ExtLink icon={<Layers size={15} />}   label="Predefined Roles"
@@ -523,12 +555,12 @@ export default function Sidebar({
       {!collapsed && platform === 'aws' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/aws')} />
             <NavItem icon={<ShieldCheck size={15} />}     label="IAM Policies"   active={view === 'roles'}     badge={String(AWS_POLICIES_COUNT)} onClick={() => router.push('/aws/policies')} />
             <NavItem icon={<ListTree size={15} />}        label="IAM Actions"    active={view === 'actions'}   badge={String(AWS_ACTIONS_COUNT)} onClick={() => router.push('/aws/actions')} />
             <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="3" onClick={() => router.push('/aws/reference')} />
-            <NavItem icon={<GitCompare size={15} />}      label="SCP vs Policies" onClick={() => router.push('/aws/scp-vs-identity-policies')} />
+            <NavItem icon={<GitCompare size={15} />}      label="SCP vs Policies" active={view === 'scp'} onClick={() => router.push('/aws/scp-vs-identity-policies')} />
           </div>
 
           <div>
@@ -537,7 +569,7 @@ export default function Sidebar({
               const m = AWS_TIER_META[tier]
               return (
                 <button key={tier} onClick={() => router.push(`/aws/policies?filter=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -546,18 +578,18 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Categorias" open={awsCatOpen} onToggle={() => setAwsCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={awsCatOpen} onToggle={() => setAwsCatOpen((o) => !o)} />
             {awsCatOpen && AWS_CATS.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/aws/policies?category=${cat}`)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-                <span className="text-[#ff9900] shrink-0">{icon}</span>
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
+                <span className="text-csp-aws-onLight dark:text-csp-aws-onDark shrink-0">{icon}</span>
                 <span className="flex-1">{label}</span>
               </button>
             ))}
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<BookOpen size={15} />}      label="AWS Managed Policies"
               href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/about-managed-policy-reference.html" />
             <ExtLink icon={<Layers size={15} />}        label="IAM Best Practices"
@@ -574,32 +606,29 @@ export default function Sidebar({
       {!collapsed && platform === 'ibmCloud' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Geral</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/ibm-cloud')} />
             <NavItem icon={<ShieldCheck size={15} />}     label="IAM Roles"      active={view === 'roles'}     badge={String(totalIbmRoles)} onClick={() => router.push('/ibm-cloud/roles')} />
-            <NavItem icon={<ListTree size={15} />}        label="IAM Actions"    active={view === 'actions'}   badge={String(IBM_ACTIONS_COUNT)} onClick={() => router.push('/ibm-cloud/actions')} />
+            {/*
+              Substituiu "IAM Actions" em 03/08. Aquela página listava 557
+              actions que não existiam, e não há como recoletá-las: a IBM não
+              publica action por role. O que existe de verdade e não estava em
+              lugar nenhum é o modelo da infraestrutura clássica.
+            */}
+            {/* O badge conta PERMISSÃO, não role: o clássico não tem role. É a
+                única entrada do menu cujo número não é de role — e é de propósito. */}
+            <NavItem icon={<Server size={15} />}          label="Classic Infrastructure" active={view === 'classic'} badge={String(IBM_CLASSIC_PERMISSIONS_COUNT)} onClick={() => router.push('/ibm-cloud/classic')} />
             <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="3" onClick={() => router.push('/ibm-cloud/reference')} />
-            <NavItem icon={<Users size={15} />}           label="Access Groups & Trusted Profiles" badge={String(IBM_ACCESS_PRIMITIVES_COUNT)} onClick={() => router.push('/ibm-cloud/access-groups')} />
+            <NavItem icon={<Users size={15} />}           label="Access Groups & Trusted Profiles" active={view === 'accessGroups'} badge={String(IBM_ACCESS_PRIMITIVES_COUNT)} onClick={() => router.push('/ibm-cloud/access-groups')} />
           </div>
 
-          <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Modelos de Acesso</p>
-            <button onClick={() => router.push('/ibm-cloud/roles?model=iam')}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
-              <span className="flex-1">IAM</span>
-            </button>
-            <button onClick={() => router.push('/ibm-cloud/roles?model=classic')}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-stone-400" />
-              <span className="flex-1">Classic Infrastructure</span>
-            </button>
-            <button onClick={() => router.push('/ibm-cloud/roles?model=cloud-foundry')}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-emerald-500" />
-              <span className="flex-1">Cloud Foundry</span>
-            </button>
-          </div>
+          {/*
+            O filtro por modelo de acesso saiu em 03/08. Ele oferecia IAM,
+            Classic Infrastructure e Cloud Foundry como se as três fossem
+            recortes das mesmas roles — mas a IBM só tem roles no IAM. As
+            "roles" clássicas e de Cloud Foundry do dataset antigo não existiam,
+            e o clássico agora tem página própria, com o modelo correto.
+          */}
 
           <div>
             <SectionToggle label="Access Tier" open={ibmTierOpen} onToggle={() => setIbmTierOpen((o) => !o)} />
@@ -607,7 +636,7 @@ export default function Sidebar({
               const m = IBM_TIER_META[tier]
               return (
                 <button key={tier} onClick={() => router.push(`/ibm-cloud/roles?filter=${tier}`)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-gray-400 hover:bg-gray-800 hover:text-gray-100 transition-colors text-left">
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
@@ -616,34 +645,34 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-1">Referência</p>
+            <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">{t('nav.reference')}</p>
             <ExtLink icon={<BookOpen size={15} />} label="IBM Cloud IAM Docs"
-              href="https://cloud.ibm.com/docs/account?topic=account-userroles" />
+              href="https://cloud.ibm.com/docs/iam?topic=iam-userroles" />
             <ExtLink icon={<Layers size={15} />}   label="Account Management"
               href="https://cloud.ibm.com/docs/account?topic=account-account-services" />
             <ExtLink icon={<Database size={15} />} label="Classic Infra Perms"
-              href="https://cloud.ibm.com/docs/account?topic=account-mngclassicinfra" />
+              href="https://cloud.ibm.com/docs/iam?topic=iam-mngclassicinfra" />
           </div>
         </nav>
       )}
 
       {/* Footer */}
       {!collapsed && (
-      <div className="p-4 border-t border-gray-800">
-        <p className="text-[11px] text-gray-500 leading-relaxed">
+      <div className="p-4 border-t border-line">
+        <p className="text-3xs text-fg-muted leading-relaxed">
           {platform === 'home'
-            ? <><span>Referência multi-cloud de IAM</span><br /><span>6 plataformas em um só lugar</span></>
+            ? <><span>{t('sidebar.multiCloudRef')}</span><br /><span>{t('sidebar.sixPlatforms')}</span></>
             : platform === 'entraId'
             ? <><span>Tiering: Enterprise Access Model</span><br /><span>Fontes: Microsoft Learn, EntraOps</span></>
             : platform === 'googleWorkspace'
-            ? <><span>Admin Tier: classificação própria</span><br /><span>Fontes: Google Workspace Admin SDK</span></>
+            ? <><span>Admin Tier: {t('sidebar.ownClassification')}</span><br /><span>Fontes: Google Workspace Admin SDK</span></>
             : platform === 'ibmCloud'
-            ? <><span>Access Tier: classificação própria</span><br /><span>Fontes: IBM Cloud Docs</span></>
+            ? <><span>Access Tier: {t('sidebar.ownClassification')}</span><br /><span>Fontes: IBM Cloud Docs</span></>
             : platform === 'gcp'
-            ? <><span>Role Tier: classificação própria</span><br /><span>Fontes: Google Cloud IAM Docs</span></>
+            ? <><span>Role Tier: {t('sidebar.ownClassification')}</span><br /><span>Fontes: Google Cloud IAM Docs</span></>
             : platform === 'aws'
-            ? <><span>Access Tier: classificação própria</span><br /><span>Fontes: AWS Documentation</span></>
-            : <><span>Fontes: Microsoft Learn, Azure Docs</span><br /><span>Risk Tier: classificação própria</span></>
+            ? <><span>Access Tier: {t('sidebar.ownClassification')}</span><br /><span>Fontes: AWS Documentation</span></>
+            : <><span>Fontes: Microsoft Learn, Azure Docs</span><br /><span>Risk Tier: {t('sidebar.ownClassification')}</span></>
           }
         </p>
       </div>
@@ -655,8 +684,8 @@ export default function Sidebar({
 function SectionToggle({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
   return (
     <button onClick={onToggle} className="w-full flex items-center justify-between px-2 mb-1">
-      <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
-      {open ? <ChevronDown size={11} className="text-gray-500" /> : <ChevronRight size={11} className="text-gray-500" />}
+      <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider">{label}</p>
+      {open ? <ChevronDown size={11} className="text-fg-muted" /> : <ChevronRight size={11} className="text-fg-muted" />}
     </button>
   )
 }
@@ -666,15 +695,15 @@ function NavItem({ icon, label, active, badge, onClick }: {
 }) {
   return (
     <button onClick={onClick}
-      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-colors text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] ${
+      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-body transition-colors text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
         active
-          ? 'bg-[#0c2a47] text-[#85b7eb] font-medium'
-          : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'
+          ? 'bg-brand-activeBg text-brand-onDark font-medium'
+          : 'text-fg-subtle hover:bg-surface-alt hover:text-fg'
       }`}>
       {icon}
       <span className="flex-1">{label}</span>
       {badge && (
-        <span className="text-[10px] bg-gray-800 border border-gray-700 text-gray-500 px-1.5 py-0.5 rounded-full">
+        <span className="text-2xs bg-surface-alt border border-line-strong text-fg-muted px-1.5 py-0.5 rounded-full">
           {badge}
         </span>
       )}
@@ -685,7 +714,7 @@ function NavItem({ icon, label, active, badge, onClick }: {
 function ExtLink({ icon, label, href }: { icon: React.ReactNode; label: string; href: string }) {
   return (
     <a href={href} target="_blank" rel="noreferrer"
-      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-colors text-left text-gray-400 hover:bg-gray-800 hover:text-gray-100">
+      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-body transition-colors text-left text-fg-subtle hover:bg-surface-alt hover:text-fg">
       {icon}
       <span className="flex-1">{label}</span>
     </a>

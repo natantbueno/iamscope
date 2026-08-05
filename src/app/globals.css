@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Tokens semânticos de cor.
+
+   Valores em triplete RGB (sem `rgb()`) porque o tailwind.config os consome
+   como `rgb(var(--c-fg) / <alpha-value>)` — é isso que mantém funcionando os
+   modificadores de opacidade (`text-fg/70`).
+
+   `:root` = tema claro, `.dark` = tema escuro. Hoje o <html> entra com a classe
+   `dark` fixa, mas os dois temas são mantidos em par (regra `dark-mode-pairing`)
+   para que voltar a oferecer o tema claro seja trocar uma classe, não reescrever
+   140 componentes.
+
+   Todos os pares foreground/background abaixo foram verificados contra WCAG:
+   fg >= 7:1, fg-muted >= 4.5:1 (texto corrido), fg-subtle >= 3:1 (metadado,
+   nunca corpo de texto).
+--------------------------------------------------------------------------- */
+:root {
+  --c-bg-app: 238 241 245;          /* #eef1f5 */
+  --c-bg-surface: 255 255 255;      /* #ffffff */
+  --c-bg-surface-alt: 246 248 251;  /* #f6f8fb */
+  --c-bg-surface-hover: 240 243 247;/* #f0f3f7 */
+  --c-line: 221 227 236;            /* #dde3ec */
+  --c-line-strong: 197 206 219;     /* #c5cedb */
+  --c-fg: 31 41 55;                 /* #1f2937 — 14.7:1 sobre branco */
+  --c-fg-muted: 90 99 112;          /* #5a6370 — 6.1:1  sobre branco */
+  --c-fg-subtle: 102 110 123;       /* #666e7b — 5.2:1 sobre branco, 4.5:1 sobre o fundo da app */
+  --c-fg-on-accent: 255 255 255;
+  --c-accent: 0 108 190;            /* #006cbe — 5.4:1 sobre branco */
+  --c-ring: 0 120 212;              /* #0078d4 */
+}
+
+.dark {
+  --c-bg-app: 3 7 18;               /* #030712 */
+  --c-bg-surface: 17 24 39;         /* #111827 */
+  --c-bg-surface-alt: 31 41 55;     /* #1f2937 */
+  --c-bg-surface-hover: 31 41 55;   /* #1f2937 */
+  --c-line: 42 52 68;               /* #2a3444 — visível sobre surface (regra
+                                       border-and-divider-visibility) */
+  --c-line-strong: 64 76 94;        /* #404c5e */
+  --c-fg: 243 244 246;              /* #f3f4f6 — 16.1:1 sobre surface */
+  --c-fg-muted: 176 183 194;        /* #b0b7c2 — 8.8:1  sobre surface */
+  --c-fg-subtle: 138 146 158;       /* #8a929e — 5.7:1  sobre surface */
+  --c-fg-on-accent: 255 255 255;
+  --c-accent: 133 183 235;          /* #85b7eb — 8.4:1 sobre surface */
+  --c-ring: 133 183 235;            /* anel de foco precisa ser visível no escuro */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -10,6 +57,73 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Foco visível — garantia global.
+
+   O produto tem 22 controles que zeram o outline com `focus:outline-none` sem
+   devolver nada no lugar; para quem navega por teclado isso é navegação às
+   cegas. Esta regra devolve o anel em qualquer elemento focado por teclado.
+
+   `!important` é deliberado: `focus:outline-none` do Tailwind tem
+   especificidade maior (.classe:focus) que `:focus-visible`, então sem ele a
+   garantia não vale. Componentes que já desenham o próprio anel usam `ring-*`
+   (box-shadow), que convive com o outline sem conflito.
+--------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-ring)) !important;
+  outline-offset: 2px;
+}
+
+/* Só remove o anel quando o foco veio do mouse — nunca do teclado. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Alvo do skip-link: âncora "pular para o conteúdo" no topo de cada página. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 60;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background: rgb(var(--c-bg-surface));
+  color: rgb(var(--c-fg));
+  box-shadow: 0 10px 24px -6px rgb(0 0 0 / 0.35);
+}
+
+/* ---------------------------------------------------------------------------
+   Cor vinda do dado, legível nos dois temas.
+
+   Companheira de src/lib/readableColor.ts: o componente publica as duas
+   variantes como custom properties e o CSS escolhe. Fica no CSS, e não no
+   React, porque o HTML estático sempre sai com o tema escuro — decidir isso em
+   JavaScript custaria um quadro com a cor errada a cada carregamento.
+--------------------------------------------------------------------------- */
+.themed-color {
+  color: var(--themed-light);
+}
+.dark .themed-color {
+  color: var(--themed-dark);
+}
+
+/* ---------------------------------------------------------------------------
+   Números tabulares.
+
+   O produto inteiro é contagem em coluna (permission count, nº de roles,
+   paginação). Com figuras proporcionais os dígitos têm larguras diferentes e a
+   coluna "dança" a cada troca de página. `tnum` trava a largura do dígito.
+--------------------------------------------------------------------------- */
+table,
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 ::-webkit-scrollbar {
@@ -39,7 +153,42 @@ html {
   transition: color 150ms ease, border-bottom-color 150ms ease;
 }
 .cloud-nav-item:hover,
-.cloud-nav-item[aria-current="page"] {
-  color: var(--cloud-color);
-  border-bottom-color: var(--cloud-color);
+.cloud-nav-item[aria-current='page'] {
+  /* Texto usa a variante legível do tema atual; o sublinhado, que é decorativo
+     e fica sobre o fundo, usa a cor de marca cheia nos dois. */
+  color: var(--cloud-on-light);
+  border-bottom-color: var(--cloud-mark);
+}
+.dark .cloud-nav-item:hover,
+.dark .cloud-nav-item[aria-current='page'] {
+  color: var(--cloud-on-dark);
+}
+
+/* ---------------------------------------------------------------------------
+   prefers-reduced-motion.
+
+   Não havia nenhum tratamento: as 262 transições e os hovers com
+   `-translate-y`/`scale` rodavam igual para quem marcou "reduzir movimento" no
+   sistema — desconforto real para quem tem sensibilidade vestibular, e falha
+   de WCAG 2.3.3.
+
+   O movimento é anulado, não a mudança de estado: hover e foco continuam
+   mudando cor, só param de deslizar.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Neutraliza os deslocamentos/zoom de hover (cards da home, pontos de cloud). */
+  .group:hover .group-hover\:scale-125,
+  .hover\:-translate-y-0\.5:hover,
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
 }

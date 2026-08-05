@@ -1,3 +1,7 @@
+'use client'
+
+import { useT } from '@/i18n/LanguageProvider'
+
 /**
  * Marcador de item descontinuado, compartilhado por AWS e GCP.
  *
@@ -11,27 +15,28 @@
  * nas fontes que usamos).
  */
 export default function DeprecatedBadge({ compact = false }: { compact?: boolean }) {
+  const t = useT()
   if (compact) {
     return (
       <span
-        title="O provedor indica que este item está descontinuado"
-        className="shrink-0 text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded
+        title={t('label.deprecatedShort')}
+        className="shrink-0 text-micro font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded
                    bg-amber-100 text-amber-700 border border-amber-300
                    dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900"
       >
-        Descontinuada
+        {t('filter.deprecated')}
       </span>
     )
   }
 
   return (
     <span
-      className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider
+      className="inline-flex items-center gap-1 text-2xs font-semibold uppercase tracking-wider
                  px-2 py-0.5 rounded-full
                  bg-amber-100 text-amber-700 border border-amber-300
                  dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900"
     >
-      Descontinuada
+      {t('filter.deprecated')}
     </span>
   )
 }

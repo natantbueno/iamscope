@@ -7,10 +7,12 @@ import AppShell from '@/components/AppShell'
 import RoleInput from '@/components/RoleInput'
 import EvaluationResult from '@/components/EvaluationResult'
 import { evaluateRole, getResultForSlug, EvaluateCloud, EvaluationResultData, EVALUATE_CLOUDS } from '@/lib/evaluate'
+import { useT } from '@/i18n/LanguageProvider'
 
 type Status = 'empty' | 'loading' | 'result' | 'error'
 
 export default function EvaluateClient() {
+  const t = useT()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -27,11 +29,16 @@ export default function EvaluateClient() {
     const cloudParam = searchParams.get('cloud')
     const role = searchParams.get('role')
     if (cloudParam && role && (EVALUATE_CLOUDS as string[]).includes(cloudParam)) {
-      const r = getResultForSlug(cloudParam as EvaluateCloud, role)
-      if (r) {
+      // getResultForSlug virou assíncrono: os 6 catálogos agora chegam por
+      // import dinâmico, fora do bundle inicial da rota. `alive` evita setState
+      // depois de desmontar se o usuário sair antes do chunk chegar.
+      let alive = true
+      getResultForSlug(cloudParam as EvaluateCloud, role).then((r) => {
+        if (!alive || !r) return
         setResult(r)
         setStatus('result')
-      }
+      })
+      return () => { alive = false }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -39,9 +46,10 @@ export default function EvaluateClient() {
   const runEvaluation = useCallback(() => {
     setParseError(null)
     setStatus('loading')
-    // Transição de 300ms para dar feedback visual, mesmo o processamento sendo síncrono.
-    setTimeout(() => {
-      const outcome = evaluateRole(rawInput, manualCloud)
+    // Transição de 300ms para dar feedback visual. O processamento em si é
+    // local; o await é só o chunk do catálogo, que chega uma vez e fica em cache.
+    setTimeout(async () => {
+      const outcome = await evaluateRole(rawInput, manualCloud)
       if (!outcome.ok) {
         if (outcome.code === 'cloud_not_detected') {
           setCloudNotDetected(true)
@@ -77,9 +85,9 @@ export default function EvaluateClient() {
   return (
     <AppShell
       headerTitle="Role Evaluator"
-      headerSub="Cole o JSON de um role/policy e receba uma análise instantânea"
+      headerSub="{t('eval.headerSub')}"
       headerActions={
-        <div className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+        <div className="flex items-center gap-1.5 text-3xs text-fg-muted">
           <ShieldCheck size={14} />
           <span>100% client-side — zero chamadas externas</span>
         </div>
@@ -105,12 +113,12 @@ export default function EvaluateClient() {
           <div className="lg:col-span-3">
             {status === 'empty' && !result && <EmptyState />}
             {status === 'loading' && (
-              <div className="flex items-center justify-center h-64 text-gray-400 dark:text-gray-500 text-[13px]">
+              <div className="flex items-center justify-center h-64 text-fg-muted text-body">
                 Avaliando role...
               </div>
             )}
             {status === 'error' && !result && (
-              <div className="flex items-center justify-center h-64 text-gray-400 dark:text-gray-500 text-[13px] text-center px-6">
+              <div className="flex items-center justify-center h-64 text-fg-muted text-body text-center px-6">
                 Corrija o JSON colado à esquerda e tente novamente.
               </div>
             )}
@@ -123,11 +131,12 @@ export default function EvaluateClient() {
 }
 
 function EmptyState() {
+  const t = useT()
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center px-6 py-16 border border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
-      <ShieldCheck size={32} className="text-gray-300 dark:text-gray-700 mb-3" />
-      <p className="text-[14px] font-medium text-gray-600 dark:text-gray-300 mb-1">Cole o JSON de um role para começar</p>
-      <p className="text-[12px] text-gray-400 dark:text-gray-500 max-w-sm">
+      <ShieldCheck size={32} className="text-fg-muted dark:text-gray-700 mb-3" />
+      <p className="text-note font-medium text-gray-600 dark:text-gray-300 mb-1">{t('eval.pasteToStart')}</p>
+      <p className="text-tiny text-fg-muted max-w-sm">
         Funciona com o JSON exportado de qualquer uma das 6 clouds catalogadas: Entra ID, Azure RBAC, AWS IAM, GCP IAM,
         Google Workspace e IBM Cloud IAM. A cloud é detectada automaticamente pela estrutura do JSON.
       </p>

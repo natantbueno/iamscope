@@ -25,31 +25,12 @@
 const fs = require('fs')
 const path = require('path')
 const Module = require('module')
+const { loadTs } = require('./lib/load-ts')
 
 const ROOT = path.join(__dirname, '..')
 const OUT = path.join(ROOT, 'public', 'sod-rules.json')
 const DRY = process.argv.includes('--dry-run')
 
-let transform
-try {
-  ({ transform } = require(path.join(ROOT, 'node_modules', 'sucrase')))
-} catch {
-  console.error('sucrase não encontrado em node_modules. Rode `npm install` primeiro.')
-  process.exitCode = 1
-  return
-}
-
-/** Carrega um módulo .ts transpilando na hora, resolvendo o alias @/ */
-function loadTs(relPath) {
-  const abs = path.join(ROOT, relPath)
-  const src = fs.readFileSync(abs, 'utf8')
-  const { code } = transform(src, { transforms: ['typescript', 'imports'], filePath: abs })
-  const m = new Module(abs, null)
-  m.filename = abs
-  m.paths = Module._nodeModulePaths(path.dirname(abs))
-  m._compile(code, abs)
-  return m.exports
-}
 
 const { SOD_RULES, SOD_CATEGORY_META, SOD_SEVERITY_META } = loadTs('src/data/sod/rules.ts')
 const { ROLES } = loadTs('src/data/roles.ts')

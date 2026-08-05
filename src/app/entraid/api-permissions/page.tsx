@@ -1,5 +1,6 @@
 'use client'
 
+import { useT } from '@/i18n/LanguageProvider'
 import { Suspense, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
@@ -18,6 +19,7 @@ const GLOBAL_STATS = {
 }
 
 function ApiContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
   const tier = searchParams.get('tier') ?? 'all'
@@ -25,7 +27,7 @@ function ApiContent() {
   return (
     <AppShell
       headerTitle="API Permissions"
-      headerSub="Microsoft Graph API permissions com classificação EAM"
+      headerSub={t('entra.apiPermsSub')}
       headerActions={<ExportMenu mode="apiPerms" apiPerms={API_PERMISSIONS} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
@@ -45,7 +47,7 @@ function ApiContent() {
 
 export default function ApiPermissionsPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <ApiContent />
     </Suspense>
   )

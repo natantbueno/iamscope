@@ -1,6 +1,8 @@
 'use client'
 
+import { themedText } from '@/lib/readableColor'
 import AppShell from '@/components/AppShell'
+import { useT } from '@/i18n/LanguageProvider'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier } from '@/data/azureRbac'
 import Link from 'next/link'
 import {
@@ -27,6 +29,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 }
 
 export default function AzureRbacDashboard() {
+  const t = useT()
   const total       = AZURE_ROLES.length
   const privileged  = AZURE_ROLES.filter((r) => r.isPrivileged).length
   const categories  = [...new Set(AZURE_ROLES.map((r) => r.category))]
@@ -54,28 +57,28 @@ export default function AzureRbacDashboard() {
             { label: 'Categorias',     value: categories.length, href: '/azure-rbac/roles',                 color: '#6b7280' },
           ].map((s) => (
             <Link key={s.label} href={s.href}
-              className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-[#0078d4]/40 dark:hover:border-[#0078d4]/30 transition-colors group">
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-brand/40 dark:hover:border-brand/30 transition-colors group">
+              <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </p>
-              <p className="text-[28px] font-bold leading-none" style={{ color: s.color }}>{s.value}</p>
+              <p className="text-display font-bold leading-none themed-color" style={themedText(s.color, undefined, 3)}>{s.value}</p>
             </Link>
           ))}
         </div>
 
         {/* ── Two-column: Risk Tier breakdown + Roles Privilegiadas ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Distribuição por Risk Tier</h2>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.riskTierDist')}</h2>
             <div className="space-y-3">
               {byTier.map(({ tier, count, meta }) => (
                 <Link key={tier} href={`/azure-rbac/roles?tier=${tier}`} className="block group">
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ background: meta.darkText }} />
-                      <span className="text-[12px] text-gray-600 dark:text-gray-400 group-hover:underline">{meta.label}</span>
+                      <span className="text-tiny text-fg-muted group-hover:underline">{meta.label}</span>
                     </div>
-                    <span className="text-[12px] font-semibold" style={{ color: meta.darkText }}>{count}</span>
+                    <span className="text-tiny font-semibold" style={{ color: meta.darkText }}>{count}</span>
                   </div>
                   <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
                     <div className="h-1 rounded-full transition-all"
@@ -86,8 +89,8 @@ export default function AzureRbacDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
               <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
             </h2>
             <div className="space-y-1 max-h-56 overflow-y-auto">
@@ -96,8 +99,8 @@ export default function AzureRbacDashboard() {
                 return (
                   <Link key={role.slug} href={`/azure-rbac/roles/${role.slug}`}
                     className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group">
-                    <span className="text-[11px] text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 truncate mr-2">{role.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
+                    <span className="text-3xs text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 truncate mr-2">{role.name}</span>
+                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
                       {meta.short}
                     </span>
                   </Link>
@@ -108,18 +111,18 @@ export default function AzureRbacDashboard() {
         </div>
 
         {/* ── Categories grid ── */}
-        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
-          <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 mb-3">Por Categoria</h2>
+        <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm">
+          <h2 className="text-body font-semibold text-gray-800 dark:text-gray-100 mb-3">{t('section.byCategory')}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
             {categories.sort().map((cat) => {
               const count = AZURE_ROLES.filter((r) => r.category === cat).length
               return (
                 <Link key={cat} href={`/azure-rbac/roles?category=${cat}`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-[#f7f9fc] dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] hover:border-[#9dc3e8] dark:hover:border-[#185fa5] transition-colors">
-                  <span className="text-[#0078d4] dark:text-[#85b7eb] shrink-0">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-brand-soft dark:hover:bg-brand-activeBg hover:border-brand-mid dark:hover:border-brand-activeRing transition-colors">
+                  <span className="text-brand-strong dark:text-brand-onDark shrink-0">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
-                    <p className="text-[10px] text-gray-400">{count} roles</p>
+                    <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
+                    <p className="text-2xs text-fg-subtle">{count} roles</p>
                   </div>
                 </Link>
               )
@@ -128,12 +131,12 @@ export default function AzureRbacDashboard() {
         </div>
 
         {/* ── Info bar ── */}
-        <div className="rounded-xl border border-[#0078d4]/30 bg-[#0078d4]/5 dark:bg-[#0078d4]/10 px-5 py-4 flex items-start gap-3">
-          <Info size={15} className="text-[#0078d4] dark:text-[#85b7eb] mt-0.5 shrink-0" />
-          <p className="text-[12px] text-[#0078d4] dark:text-[#85b7eb] leading-relaxed">
+        <div className="rounded-xl border border-brand/30 bg-brand/5 dark:bg-brand/10 px-5 py-4 flex items-start gap-3">
+          <Info size={15} className="text-brand-strong dark:text-brand-onDark mt-0.5 shrink-0" />
+          <p className="text-tiny text-brand-strong dark:text-brand-onDark leading-relaxed">
             <strong>Assignable Scopes</strong> — roles são atribuídas em escopos específicos: Management Group, Subscription, Resource Group ou Resource individual.
             O escopo efetivo de cada role está visível na página de detalhes. Use{' '}
-            <code className="font-mono text-[11px] bg-[#0078d4]/10 dark:bg-[#0078d4]/20 px-1 rounded">az role assignment list --all</code>{' '}
+            <code className="font-mono text-3xs bg-brand/10 dark:bg-brand/20 px-1 rounded">az role assignment list --all</code>{' '}
             para listar atribuições ativas no seu tenant.
           </p>
         </div>

@@ -1,0 +1,306 @@
+{
+  "_comment": [
+    "Extração VERBATIM da documentação oficial do Google Workspace.",
+    "Camada bruta: só texto do provedor, sem classificação nossa. A tradução para",
+    "src/data/googleWorkspace.ts (tier, categoria, isPrivileged) é feita por",
+    "scripts/fetch-gws-roles.js e é editorial — fica separada de propósito.",
+    "",
+    "POR QUE ESTE ARQUIVO EXISTE",
+    "As páginas do Help Center são renderizadas no cliente e a estrutura HTML muda",
+    "sem aviso. Congelar a extração aqui, com data e URL, torna o dado auditável:",
+    "dá para comparar esta cópia com a página viva e ver exatamente o que mudou.",
+    "Mesmo padrão de scripts/aws-policies-raw.json.",
+    "",
+    "HISTÓRICO",
+    "Substituiu um dataset anterior de 44 roles e 84 privilégios que NÃO existiam",
+    "na documentação do Google — 30 roles e 79 nomes de privilégio eram inventados.",
+    "Ver ROADMAP.md."
+  ],
+  "sources": [
+    {
+      "id": "prebuilt-roles",
+      "url": "https://support.google.com/a/answer/2405986",
+      "canonical": "https://knowledge.workspace.google.com/admin/users/prebuilt-administrator-roles",
+      "title": "Prebuilt administrator roles",
+      "docLastUpdated": "2026-07-22"
+    },
+    {
+      "id": "privilege-definitions",
+      "url": "https://knowledge.workspace.google.com/admin/users/administrator-privilege-definitions",
+      "title": "Administrator privilege definitions",
+      "docLastUpdated": "2026-07-23"
+    },
+    {
+      "id": "admin-sdk-manage-roles",
+      "url": "https://developers.google.com/workspace/admin/directory/v1/guides/manage-roles",
+      "title": "Manage roles — Directory API",
+      "docLastUpdated": "2026-04-20",
+      "note": "Única fonte pública com nomes de privilégio da API (privilegeName) associados a roles pré-construídas."
+    }
+  ],
+  "extractedAt": "2026-08-03",
+  "roles": [
+    {
+      "name": "Super Admin",
+      "description": "Has access to all features in the Google Admin console and Admin API and can manage every aspect of your organization's account. Super admins also have full access to all users' calendars and event details.",
+      "capabilities": [
+        "Create and assign administrator roles",
+        "Manage other admins, including changing passwords",
+        "Transfer ownership of files during the user deletion process",
+        "Accept the Terms of Service for a product",
+        "Invite unmanaged user accounts to become Google Workspace managed user accounts",
+        "Restore deleted users",
+        "Turn Multi-party approval settings on or off",
+        "Allow users to turn on 2-Step Verification",
+        "Install Google Workspace Marketplace apps",
+        "Manage Google Calendar resource access-level controls",
+        "Use the data migration service",
+        "Grant domain-wide delegation and manage API client access",
+        "Set up Google as a SAML identity provider and add or modify SAML apps"
+      ],
+      "apiPrivileges": ["SUPER_ADMIN", "ROOT_APP_ADMIN", "ADMIN_APIS_ALL"],
+      "apiPrivilegesComplete": false,
+      "apiPrivilegesNote": "A doc do Admin SDK mostra o _SEED_ADMIN_ROLE truncado ('...'). Estes três são os únicos publicados; a lista real é maior.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Groups Admin",
+      "description": "Has full control over Google Groups' tasks in your Admin console. This administrator can perform the following tasks both from the Admin console and using the Admin API.",
+      "capabilities": [
+        "View user profiles and your organizational structure",
+        "Create new groups in the Admin console",
+        "Manage members of groups created in the Admin console",
+        "Manage group access settings",
+        "Delete groups using the Admin console",
+        "View organizational units",
+        "Add a security label to a group"
+      ],
+      "apiPrivileges": [
+        "CHANGE_USER_GROUP_MEMBERSHIP",
+        "USERS_RETRIEVE",
+        "GROUPS_ALL",
+        "ADMIN_DASHBOARD",
+        "ORGANIZATION_UNITS_RETRIEVE"
+      ],
+      "apiPrivilegesComplete": true,
+      "apiPrivilegesNote": "Lista completa publicada como _GROUPS_ADMIN_ROLE na doc do Admin SDK.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Groups Reader",
+      "description": "Can read Groups information, but can't change or update it.",
+      "capabilities": [
+        "Read Groups information",
+        "Privileges can be scoped to all groups, only security groups, or only non-security groups"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Groups Editor",
+      "description": "Has the permissions of a Groups admin, except for the privilege required to add or remove a security label on a groups resource.",
+      "capabilities": [
+        "All Groups Admin permissions except adding or removing a security label",
+        "Privileges can be scoped to all groups, only security groups, or only non-security groups",
+        "Can be granted locked groups privileges, for all groups or only locked groups"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "User Management Admin",
+      "description": "Can perform all actions on users who aren't administrators. This administrator can perform the following tasks both from the Admin console and using the Admin API.",
+      "capabilities": [
+        "View user profiles and your organizational structure",
+        "View organizational units",
+        "Create and delete user accounts",
+        "Rename users and change passwords",
+        "Manage a user's individual security settings",
+        "Perform other user management tasks"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "scopeNote": "Applies only to users who aren't administrators. Can be limited to specific organizational units.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Help Desk Admin",
+      "description": "Can reset passwords for users who aren't administrators, both in the Admin console and using the Admin API.",
+      "capabilities": [
+        "Reset passwords for users who aren't administrators",
+        "View user profiles and your organizational structure",
+        "View organizational units"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "scopeNote": "Can be limited to specific organizational units.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Services Admin",
+      "description": "Can manage certain service settings and devices in the Admin console, including Google Calendar, Drive, and Docs.",
+      "capabilities": [
+        "Turn services on or off",
+        "Change service settings and permissions",
+        "Create, edit, and delete Calendar resources",
+        "Manage Chrome and mobile devices listed in the Admin console",
+        "Manage settings for Google Takeout",
+        "Manage Google AppSheet settings, including governance policies and team management",
+        "Manage classification labels and default classification rules",
+        "View organizational units",
+        "Use the alert center (full access)"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "scopeNote": "Some products and services, such as Google Vault and Google Cloud Print, can't be managed by the Services Admin role.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Multi-party approval Admin",
+      "description": "Can manage multi-party approval requests for other admins to complete sensitive actions, such as turning 2-Step Verification (2SV) on or off.",
+      "capabilities": [
+        "Review requests to perform sensitive actions",
+        "Approve or deny requests"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "scopeNote": "Available to customers with a Google Workspace edition that supports Multi-party approval.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Mobile Admin",
+      "description": "Can manage mobile devices and endpoints using Google endpoint management.",
+      "capabilities": [
+        "Provision and approve devices",
+        "Manage apps",
+        "Block or wipe devices and accounts",
+        "Set device policies",
+        "See groups and users in the domain"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "scopeNote": "Available only to customers who signed up for Google Workspace after February 2018.",
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Storage Admin",
+      "description": "Can use the Storage settings in the Admin console. This role also grants full access to Reports and Drive settings.",
+      "capabilities": [
+        "View their organization's storage use",
+        "View the users and shared drives that use the most storage",
+        "Set storage limits",
+        "Open the Accounts report, the directory of users, and the list of shared drives"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Google Voice Admin",
+      "description": "Can manage all Google Voice settings and provisioning.",
+      "capabilities": [
+        "Add locations",
+        "Assign numbers to users",
+        "Port numbers",
+        "Change service addresses",
+        "Set up desk phones",
+        "Set up an auto attendant",
+        "Manage user licenses"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Directory Sync Admin",
+      "description": "Can manage the sync process using Directory Sync.",
+      "capabilities": [
+        "Set up and run a sync using Directory Sync",
+        "Update sync settings"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Reseller Admin",
+      "description": "Assigned to a Google Workspace authorized reseller or distributor. Reseller admins can access all of the features and permissions included with the Manage Reseller Tools privilege.",
+      "capabilities": [
+        "Place orders for Google Workspace and other services that use the Admin console",
+        "Add, view, edit, and transfer resold customers",
+        "Access settings in the Partner Sales Console to view and edit support information",
+        "View billing invoices and change payment methods",
+        "Access and manage a customer's Admin console, Google Workspace Admin SDK, and support cases",
+        "Manage Google Groups of resold customers using the Groups web UI"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    },
+    {
+      "name": "Indirect Reseller Admin",
+      "description": "Assigned to a reseller working with a Google Workspace authorized distributor.",
+      "capabilities": [
+        "Add, view, edit, and transfer resold customers"
+      ],
+      "apiPrivileges": [],
+      "apiPrivilegesComplete": false,
+      "sourceId": "prebuilt-roles"
+    }
+  ],
+  "privilegeGroups": [
+    { "section": "Admin settings", "name": "Billing Management", "description": "Admins with this privilege can perform billing tasks, such as setting up a billing account or changing a payment method. This privilege works only in the Admin console.", "children": [] },
+    { "section": "Admin settings", "name": "Data Transfer", "description": "Super admins or Services admins with this privilege can transfer ownership of users' Google Drive files using the Admin console. This privilege's actions can't be limited to specific organizational units.", "children": [] },
+    { "section": "Admin settings", "name": "Domains", "description": "Manage domains, domain aliases and organization-level settings.", "children": ["Domain Settings", "Domain Management", "Domain Allowlist Management", "Domain Allowlist Read"] },
+    { "section": "Admin settings", "name": "Groups", "description": "Admins with the Groups privilege have full control over groups created in your Admin console. These actions can't be limited to specific organizational units.", "children": ["Manage locked label on groups resources", "Add a security label to a group"] },
+    { "section": "Admin settings", "name": "Inbound SCIM Directory Sync", "description": "Manage Inbound SCIM connections and authentication mechanisms.", "children": ["Inbound SCIM Directory Sync Settings Management", "Inbound SCIM Directory Sync Settings Read"] },
+    { "section": "Admin settings", "name": "License Management", "description": "Super admins and admins with this privilege can assign and manage Google Workspace licenses for the organization, an organizational unit, a group of users, or an individual user.", "children": [] },
+    { "section": "Admin settings", "name": "Organizational Units", "description": "Admins with this privilege can manage your account's organizational structure from the Users page in their Admin console. The Create, Update, or Delete privileges automatically grant the Read privilege.", "children": ["Read", "Create", "Update", "Delete"] },
+    { "section": "Admin settings", "name": "Reports", "description": "Admins have access to usage reports and audit logs. These actions can't be limited to specific organizational units.", "children": [] },
+    { "section": "Admin settings", "name": "Schema Management", "description": "Super admins or services admins with this privilege can create schemas to define custom fields for their domain, such as user projects, locations, or hire dates.", "children": [] },
+    { "section": "Admin settings", "name": "Security", "description": "Manage security settings for individual users and organization-wide authentication.", "children": ["User Security Management", "Security Settings"] },
+    { "section": "Admin settings", "name": "Support", "description": "Admins with the Support privilege can use phone, chat, and email options to contact Google Workspace support. They can also file cases in the Google Cloud Support Portal.", "children": [] },
+    { "section": "Admin settings", "name": "Users", "description": "Admins with the Users privilege can perform actions on users. Only super admins can change another admin's settings. The Create privilege automatically grants Read and Update privileges.", "children": ["Create", "Read", "Update", "Move users", "Suspend users", "Rename users", "Reset password", "Force password change", "Add/remove aliases", "Delete"] },
+
+    { "section": "Services", "name": "Service Settings", "description": "Admins with the Service Settings privilege can turn services on or off and change service settings. Does not automatically grant privileges to some services, for example data regions, Data Security, Google Vault, and Security Center.", "children": [] },
+    { "section": "Services", "name": "Alert Center", "description": "Access to the alert center. This privilege is automatically selected with the Service Settings privilege.", "children": [] },
+    { "section": "Services", "name": "AppSheet", "description": "Admins with this privilege can manage Google AppSheet settings, including governance policies and team management.", "children": [] },
+    { "section": "Services", "name": "Calendar", "description": "Admins with the Calendar privilege can create, edit, and delete resources, but they can't limit the actions to specific organizational units.", "children": ["All Settings", "Buildings and Resources", "Manage Resources", "View Resources", "Room Insights", "View Settings", "Manage Calendars"] },
+    { "section": "Services", "name": "Chrome Management", "description": "Admins can manage your organization's Chrome devices and policies, including user settings, device settings, and Chrome and Managed Google Play apps and extensions on Chrome devices. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Classroom", "description": "Admins with the Classroom privilege can turn this service on or off for users, set teacher permissions and guardian access, and control how users access their Classroom data.", "children": ["Manage Classes", "View analytics data for users and their classes"] },
+    { "section": "Services", "name": "Cloud Search", "description": "Grant user access to Google Cloud Search, turn the service on or off, view usage reports and manage settings for third-party repositories.", "children": [] },
+    { "section": "Services", "name": "Contacts", "description": "Admins with the Contacts privilege can view, create, or delete contact delegates for a given user using the Contact Delegation API.", "children": ["Delegates Read", "Delegates Write"] },
+    { "section": "Services", "name": "Data classification", "description": "Admins with the Manage Classification Labels privilege can create labels for Drive files and Gmail messages, and view all labels. NOT automatically selected with Service Settings.", "children": ["Manage Classification Labels"] },
+    { "section": "Services", "name": "Data loss prevention (DLP)", "description": "View and manage DLP rules. Only the View DLP rule privilege is automatically selected with the Service Settings privilege.", "children": ["View DLP rule", "Manage DLP rule"] },
+    { "section": "Services", "name": "Data regions", "description": "Choose a geographic location for data covered by a data region policy, and follow the progress as data moves between regions. NOT automatically selected with Service Settings.", "children": ["Data Regions Settings", "Data Regions Reporting"] },
+    { "section": "Services", "name": "Data Security", "description": "Admins with this privilege can manage the organization's context-aware access policies. NOT automatically selected with Service Settings.", "children": ["Access level management", "Rule management"] },
+    { "section": "Services", "name": "Data Studio", "description": "Admins with this privilege can manage Data Studio settings, including viewing, sharing, and customizing dashboards and reports.", "children": [] },
+    { "section": "Services", "name": "Directory settings", "description": "Admins can manage settings and control Directory profile changes to let users make changes to their profile, including their name, photo, gender, and birthday.", "children": [] },
+    { "section": "Services", "name": "Directory Sync", "description": "Add, update and manage Directory Sync settings. NOT automatically selected with Service Settings.", "children": ["Manage Directory Sync Settings", "Read Directory Sync Settings"] },
+    { "section": "Services", "name": "Drive and Docs", "description": "Google Drive and Docs management rights, including settings, templates and shared drive moves.", "children": ["Settings", "Docs Templates", "Move any file or folder into shared drives", "Manage labels", "View details of Google Sites"] },
+    { "section": "Services", "name": "Gemini", "description": "Control who uses the Gemini app in your organization, and turn the Gemini app on or off.", "children": [] },
+    { "section": "Services", "name": "Gmail", "description": "Gmail management rights. Only the Settings privilege is automatically selected with the Service Settings privilege.", "children": ["Settings", "Email Log Search", "Access Admin Quarantine", "Access restricted quarantines"] },
+    { "section": "Services", "name": "Google Chat", "description": "Chat management rights. Only the Settings privilege is automatically selected with the Service Settings privilege.", "children": ["Settings", "Manage Chat and Spaces conversation", "Moderate Chat content report"] },
+    { "section": "Services", "name": "Google Cloud Print", "description": "Admins with this privilege can set up and manage Google Cloud Print services for their organization. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Google Meet", "description": "Manage settings and access the quality dashboard for Google Meet.", "children": [] },
+    { "section": "Services", "name": "Google Meet hardware", "description": "View and manage Google Meet hardware devices. Not available unless your account has at least one Google Meet hardware license or enrolled device.", "children": ["Manage Google Meet hardware and calendars", "Manage Google Meet hardware", "Manage devices", "View devices", "Manage organizational unit settings", "View organizational unit settings", "Perform actions", "Perform device commands", "Manage device meetings", "Deprovision Google Meet hardware", "Manage calendar assignment", "Enroll Google Meet hardware"] },
+    { "section": "Services", "name": "Google Vault", "description": "Admins can view all matters and manage matters, holds, searches, exports, retention policies, and audits. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Google Workspace Marketplace", "description": "Admins with this privilege can control which third-party or internal apps users can install from the Marketplace.", "children": [] },
+    { "section": "Services", "name": "Groups for Business", "description": "Read and modify settings for Groups for Business, including who can create groups and external visibility.", "children": [] },
+    { "section": "Services", "name": "Managed Google Play", "description": "Distribute Android apps internally, upload private apps to the Google Play store, and use Android app packages hosted outside of Google Play. Also listed as Google Managed Play. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Manage On/Off Settings", "description": "Admins with the Manage On/Off Settings privilege can turn services on or off.", "children": [] },
+    { "section": "Services", "name": "Mobile Device Management", "description": "Full control over devices listed in your Admin console: manage settings and policies, approve, block, delete and wipe devices, and publish mobile apps.", "children": [] },
+    { "section": "Services", "name": "Password Vault", "description": "Admins with this privilege can set up and manage password vaulted apps. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Pinpoint", "description": "Turn Pinpoint on or off for users, and set whether users can copy files from Google Drive to Pinpoint.", "children": [] },
+    { "section": "Services", "name": "Secure LDAP", "description": "Manage the Secure LDAP service and add or delete LDAP clients. Available only for administrators with Super Admin privileges. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Security Center", "description": "Access to advanced security information and analytics, including the security dashboard, the security health page, and the investigation tool. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Shared device settings", "description": "Manage all common device configurations, including VPN, Wi-Fi, and Ethernet networks for mobile, Chrome, and Chromebox for meetings devices. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "Sites", "description": "Read and modify settings for Sites, such as whether users can create and edit sites, and whether sites can be shared outside your organization.", "children": [] },
+    { "section": "Services", "name": "Storage", "description": "Open the Storage page in the Admin console and set storage limits. Viewing storage data requires additional privileges.", "children": [] },
+    { "section": "Services", "name": "Trust Rules", "description": "Trust rules rights for managing Drive sharing.", "children": ["View Trust Rules", "Manage Trust Rules"] },
+    { "section": "Services", "name": "Work Insights", "description": "Access data on the Work Insights dashboard. Data is available only for teams that have Work Insights turned on. NOT automatically selected with Service Settings.", "children": [] },
+    { "section": "Services", "name": "YouTube", "description": "Restrict the YouTube videos that are viewable within your organization and set different YouTube access levels for different organizational units.", "children": [] }
+  ]
+}

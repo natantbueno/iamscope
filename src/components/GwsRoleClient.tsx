@@ -1,21 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import RoleDetailHeader, { BackToList, roleDetailSub } from './RoleDetailHeader'
+import { CLOUD_META } from '@/data/compare/types'
+import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
-import { ArrowLeft, ShieldAlert, Hash, Tag, Layers, CheckSquare, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
+import { ShieldAlert, Hash, Tag, Layers, CheckSquare, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import { GWS_ROLES, GWS_TIER_META } from '@/data/googleWorkspace'
 import AppShell from '@/components/AppShell'
 import PermissionsTable from '@/components/PermissionsTable'
 
 export default function GwsRoleClient({ slug }: { slug: string }) {
+  const t = useT()
   const role = GWS_ROLES.find((r) => r.slug === slug)
 
   if (!role) {
     return (
-      <AppShell headerTitle="Role não encontrada" headerSub="Google Workspace">
+      <AppShell headerTitle={t('label.roleNotFound')} headerSub="Google Workspace">
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-400">Role não encontrada.{' '}
-            <Link href="/google-workspace/roles" className="text-[#4ade80] underline">Voltar</Link>
+          <p className="text-fg-subtle">{t('label.roleNotFoundDot')}{' '}
+            <Link href="/google-workspace/roles" className="text-success-fg underline">{t('action.back')}</Link>
           </p>
         </div>
       </AppShell>
@@ -51,56 +55,40 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
   return (
     <AppShell
       headerTitle={role.name}
-      headerSub={`Google Workspace · ${role.category} · ${meta.label}`}
-      headerBack={
-        <Link href="/google-workspace/roles"
-          className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
-          <ArrowLeft size={15} /> Voltar
-        </Link>
-      }
+      headerSub={roleDetailSub(CLOUD_META.googleWorkspace.label, role.category, meta.label)}
+      headerBack={<BackToList href="/google-workspace/roles" />}
     >
-      <div className="flex-1 overflow-y-auto bg-gray-950">
+      <div className="flex-1 overflow-y-auto bg-app">
       <div className="max-w-5xl px-6 py-6">
 
-        {/* Title */}
-        <div className="mb-5">
-          <div className="flex items-start gap-3 flex-wrap mb-2">
-            <h1 className="text-[24px] font-semibold text-gray-100">{role.name}</h1>
-            {role.isPrivileged && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-950 text-red-400 mt-1.5">
-                <ShieldAlert size={12} /> Privilegiada
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full border"
-              style={{ backgroundColor: meta.darkBg, color: meta.darkText, borderColor: meta.darkText + '40' }}>
-              {meta.label}
-            </span>
-            <span className="text-[12px] text-gray-500">{role.category}</span>
-          </div>
-        </div>
+        <RoleDetailHeader
+          name={role.name}
+          tier={{ label: meta.label, color: meta.textColor, bg: meta.textColor + '18',
+                  darkColor: meta.darkText, darkBg: meta.darkBg, description: meta.description }}
+          category={role.category}
+          isPrivileged={role.isPrivileged}
+        />
 
         {/* Stat cards */}
         <div className="grid grid-cols-3 gap-2.5 mb-3">
           <StatCard icon={<Layers size={13} />}      label="Admin Tier"   accent={meta.darkText}>
-            <span className="text-[18px] font-bold" style={{ color: meta.darkText }}>{meta.short}</span>
+            <span className="text-sub font-bold" style={{ color: meta.darkText }}>{meta.short}</span>
           </StatCard>
-          <StatCard icon={<Tag size={13} />}         label="Categoria"    accent="#93c5fd">
-            <span className="text-[16px] font-bold text-[#93c5fd]">{role.category}</span>
+          <StatCard icon={<Tag size={13} />}         label={t('table.category')}    accent="#93c5fd">
+            <span className="text-base font-bold text-[#93c5fd]">{role.category}</span>
           </StatCard>
-          <StatCard icon={<CheckSquare size={13} />} label="Privilégios"  accent="#4ade80">
-            <span className="text-[22px] font-bold text-[#4ade80]">{role.privileges.length}</span>
+          <StatCard icon={<CheckSquare size={13} />} label={t('label.privileges')}  accent="#4ade80">
+            <span className="text-stat font-bold text-success-fg">{role.privileges.length}</span>
           </StatCard>
         </div>
 
         {/* Quick facts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mb-6">
           <FactCard icon={<Hash size={14} />} label="Slug / ID">
-            <code className="font-mono text-[11px] text-gray-300 break-all">{role.slug}</code>
+            <code className="font-mono text-3xs text-fg-muted break-all">{role.slug}</code>
           </FactCard>
-          <FactCard icon={<Tag size={14} />} label="Categoria">
-            <span className="text-[13px] text-gray-200">{role.category}</span>
+          <FactCard icon={<Tag size={14} />} label={t('table.category')}>
+            <span className="text-body text-fg">{role.category}</span>
           </FactCard>
         </div>
 
@@ -109,46 +97,75 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
           style={{ background: meta.darkBg, borderColor: meta.darkText + '30' }}>
           <div className="flex items-center gap-1.5 mb-1.5">
             <Layers size={15} style={{ color: meta.darkText }} />
-            <span className="text-[13px] font-semibold" style={{ color: meta.darkText }}>
+            <span className="text-body font-semibold" style={{ color: meta.darkText }}>
               Admin Tier: {meta.label}
             </span>
           </div>
-          <p className="text-[12px] leading-relaxed" style={{ color: meta.darkText }}>
+          <p className="text-tiny leading-relaxed" style={{ color: meta.darkText }}>
             {meta.description}
           </p>
         </section>
 
         {/* Description */}
-        <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-          <h2 className="text-[14px] font-semibold text-gray-100 mb-2">Descrição</h2>
-          <p className="text-[13px] text-gray-300 leading-relaxed">{role.description}</p>
+        <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+          <h2 className="text-note font-semibold text-fg mb-2">{t('table.description')}</h2>
+          <p className="text-body text-fg-muted leading-relaxed">{role.description}</p>
         </section>
 
         {/* Privileges */}
-        <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-          <h2 className="text-[14px] font-semibold text-gray-100 mb-4">
-            Privilégios <span className="text-[12px] font-normal text-gray-500 ml-2">({role.privileges.length})</span>
+        <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+          <h2 className="text-note font-semibold text-fg mb-4">
+            {t('label.privileges')} <span className="text-tiny font-normal text-fg-muted ml-2">({role.privileges.length})</span>
           </h2>
           <div className="space-y-1.5">
             {role.privileges.map((priv) => (
-              <div key={priv} className="flex items-center gap-2.5 px-3 py-2 rounded bg-gray-800 border border-gray-700">
-                <CheckSquare size={12} className="text-[#4ade80] shrink-0" />
-                <span className="text-[12px] text-gray-200">{priv}</span>
+              <div key={priv} className="flex items-center gap-2.5 px-3 py-2 rounded bg-surface-alt border border-line-strong">
+                <CheckSquare size={12} className="text-success-fg shrink-0" />
+                <span className="text-tiny text-fg">{priv}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* API Privileges */}
+        {/*
+          API Privileges — lacuna declarada.
+
+          O Google publica os privilegeName de apenas duas roles pré-construídas
+          (_SEED_ADMIN_ROLE e _GROUPS_ADMIN_ROLE). Para as outras 12 a lista só
+          existe via privileges.list do Admin SDK, que exige OAuth no tenant.
+          Mostrar seção vazia sugeriria "esta role não tem privilégio de API",
+          o que é falso — por isso o aviso explícito.
+        */}
+        {(!role.apiPrivileges || role.apiPrivileges.length === 0) && (
+          <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+            <h2 className="text-note font-semibold text-fg mb-3 flex items-center gap-2">
+              <Code size={13} className="text-fg-subtle" />
+              API Privileges
+            </h2>
+            <p className="text-tiny text-fg-muted leading-relaxed">
+              O Google não publica os nomes de privilégio da API desta role. Eles só podem ser
+              obtidos com <code className="font-mono text-3xs">privileges.list</code> do Admin SDK,
+              autenticado no seu próprio tenant. Preferimos declarar a lacuna a preencher com
+              suposição.
+            </p>
+          </section>
+        )}
+
         {role.apiPrivileges && role.apiPrivileges.length > 0 && (
-          <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-            <h2 className="text-[14px] font-semibold text-gray-100 mb-3">
+          <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+            <h2 className="text-note font-semibold text-fg mb-3">
               <span className="flex items-center gap-2">
-                <Code size={13} className="text-[#4ade80]" />
+                <Code size={13} className="text-success-fg" />
                 API Privileges
-                <span className="text-[12px] font-normal text-gray-500">({role.apiPrivileges.length})</span>
+                <span className="text-tiny font-normal text-fg-muted">({role.apiPrivileges.length})</span>
               </span>
             </h2>
+            {role.apiPrivilegesComplete === false && (
+              <p className="text-3xs text-amber-600 dark:text-amber-400 mb-3">
+                Lista parcial: a documentação do Google mostra esta role truncada. Há mais
+                privilégios além dos exibidos.
+              </p>
+            )}
             <PermissionsTable
               rows={(role.apiPrivileges ?? []).map((priv) => {
                 const i = priv.indexOf('_')
@@ -160,47 +177,47 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
               })}
               columns={[
                 { key: 'permission', label: 'API Privilege' },
-                { key: 'area',       label: 'Área', badge: true, width: 'w-36' },
-                { key: 'operation',  label: 'Operação', width: 'w-48' },
+                { key: 'area',       label: t('table.area'), badge: true, width: 'w-36' },
+                { key: 'operation',  label: t('table.operation'), width: 'w-48' },
               ]}
               filterKey="area"
               accent="#4ade80"
               filename={`google-workspace-${role.slug}-privileges`}
-              noun="privileges"
-              searchPlaceholder="Filtrar privileges..."
+              noun="noun.privileges"
+              searchPlaceholder="ph.filterPrivileges"
             />
           </section>
         )}
 
         {/* Role Definition (JSON) */}
-        <section className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-          <h2 className="text-[14px] font-semibold text-gray-100 mb-3">
+        <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+          <h2 className="text-note font-semibold text-fg mb-3">
             Role Definition (JSON)
           </h2>
           <div className="relative">
             <button
               onClick={handleCopy}
               className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors z-10"
-              title="Copiar JSON"
+              title={t('action.copyJson')}
             >
-              {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-gray-400" />}
+              {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-fg-subtle" />}
             </button>
-            <pre className="bg-black dark:bg-black rounded-lg p-4 border border-gray-800 overflow-x-auto">
-              <code className="text-[11px] font-mono text-gray-300" dangerouslySetInnerHTML={{ __html: visibleJson
+            <pre className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
+              <code className="text-3xs font-mono text-fg-muted" dangerouslySetInnerHTML={{ __html: visibleJson
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/"([^"]+)":/g, '<span class="text-blue-400">"$1"</span>:')
                 .replace(/: "(.*?)"/g, ': <span class="text-green-400">"$1"</span>')
                 .replace(/: (true|false)/g, ': <span class="text-yellow-400">$1</span>')
-                .replace(/[\{\}\[\]]/g, '<span class="text-gray-400">$&</span>')
+                .replace(/[\{\}\[\]]/g, '<span class="text-fg-subtle">$&</span>')
               }} />
             </pre>
             {jsonLines.length > 12 && (
               <button
                 onClick={() => setJsonExpanded(!jsonExpanded)}
-                className="mt-2 flex items-center gap-1 text-[11px] text-[#4ade80] hover:underline"
+                className="mt-2 flex items-center gap-1 text-3xs text-success-fg hover:underline"
               >
                 <ChevronDown size={12} className={jsonExpanded ? 'rotate-180 transition-transform' : 'transition-transform'} />
-                {jsonExpanded ? 'Mostrar menos' : `Mostrar tudo (${jsonLines.length} linhas)`}
+                {jsonExpanded ? t('action.showLess') : `${t('action.showAllLines')} (${jsonLines.length} ${t('noun.lines')})`}
               </button>
             )}
           </div>
@@ -208,7 +225,7 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
 
         {/* Docs link */}
         <a href="https://developers.google.com/workspace/admin/roles" target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-[13px] text-[#4ade80] hover:underline mb-8">
+          className="inline-flex items-center gap-2 text-body text-success-fg hover:underline mb-8">
           Ver documentação oficial no Google Workspace Admin SDK
         </a>
 
@@ -220,10 +237,10 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
 
 function FactCard({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-3.5">
-      <div className="flex items-center gap-1.5 text-gray-500 mb-1.5">
+    <div className="bg-surface border border-line rounded-lg p-3.5">
+      <div className="flex items-center gap-1.5 text-fg-muted mb-1.5">
         {icon}
-        <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
+        <span className="text-2xs font-semibold uppercase tracking-wider">{label}</span>
       </div>
       {children}
     </div>
@@ -232,10 +249,10 @@ function FactCard({ icon, label, children }: { icon: React.ReactNode; label: str
 
 function StatCard({ icon, label, accent, children }: { icon: React.ReactNode; label: string; accent: string; children: React.ReactNode }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-3.5">
+    <div className="bg-surface border border-line rounded-lg p-3.5">
       <div className="flex items-center gap-1.5 mb-1.5" style={{ color: accent }}>
         {icon}
-        <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
+        <span className="text-2xs font-semibold uppercase tracking-wider">{label}</span>
       </div>
       {children}
     </div>

@@ -1,13 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import RoleDetailHeader, { BackToList, roleDetailSub } from './RoleDetailHeader'
+import { CLOUD_META } from '@/data/compare/types'
+import { useT } from '@/i18n/LanguageProvider'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { CheckSquare, ShieldAlert, ArrowLeft, ChevronRight, Globe, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
+import { CheckSquare, ShieldAlert, ChevronRight, Globe, Copy, CheckCheck, Code, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META } from '@/data/gcp'
 import { getGcpRolePermissions } from '@/lib/gcpPermissions'
 import PermissionsTable from '@/components/PermissionsTable'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 const CAT_COLORS: Record<string, string> = {
   IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
@@ -18,6 +22,8 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 export default function GcpRoleClient({ slug }: { slug: string }) {
+  const t = useT()
+  const fmt = useNumberFormat()
   const role = GCP_ROLES.find(r => r.slug === slug)
   if (!role) return notFound()
 
@@ -67,83 +73,79 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
   return (
     <AppShell
       headerTitle={role.name}
-      headerSub="GCP IAM — detalhes da role"
-      headerBack={
-        <Link href="/gcp/roles" className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
-          <ArrowLeft size={15} /> Voltar
-        </Link>
-      }
+      headerSub={roleDetailSub(CLOUD_META.gcp.label, role.category, tier.label)}
+      headerBack={<BackToList href="/gcp/roles" />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-5xl space-y-5">
 
-          {/* Stat cards row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Tier</div>
-              <span className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full font-semibold"
-                style={{ background: tier.bg, color: tier.color }}>{tier.label}</span>
-            </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Categoria</div>
-              <span className="inline-flex items-center text-[11px] px-2 py-0.5 rounded-full font-semibold"
+          <RoleDetailHeader
+            name={role.name}
+            tier={{ label: tier.label, color: tier.color, bg: tier.bg, description: tier.description }}
+            categoryBadge={
+              <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-semibold"
                 style={{ background: catColor + '18', color: catColor }}>{role.category}</span>
+            }
+            isPrivileged={role.isPrivileged}
+          />
+
+          {/* Stat cards row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+              <div className="text-2xs text-fg-subtle uppercase tracking-wider mb-1.5">{t('table.scope')}</div>
+              <div className="text-tiny font-semibold text-gray-700 dark:text-gray-300 capitalize">{role.scope}</div>
             </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Escopo</div>
-              <div className="text-[12px] font-semibold text-gray-700 dark:text-gray-300 capitalize">{role.scope}</div>
-            </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">Permissões</div>
-              <div className="text-[12px] font-semibold text-[#4285f4]">
-                {role.permissionCount > 0 ? role.permissionCount.toLocaleString('pt-BR') : '—'}
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+              <div className="text-2xs text-fg-subtle uppercase tracking-wider mb-1.5">{t('table.permissions')}</div>
+              <div className="text-tiny font-semibold text-csp-gcp-onLight dark:text-csp-gcp-onDark">
+                {role.permissionCount > 0 ? fmt(role.permissionCount) : '—'}
               </div>
             </div>
           </div>
 
           {/* Role ID */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl px-5 py-3 flex items-center justify-between">
-            <span className="text-[11px] text-gray-400 uppercase tracking-wider">Role ID</span>
-            <code className="text-[12px] font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{role.roleId}</code>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl px-5 py-3 flex items-center justify-between">
+            <span className="text-3xs text-fg-subtle uppercase tracking-wider">Role ID</span>
+            <code className="text-tiny font-mono text-fg-muted bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">{role.roleId}</code>
           </div>
 
           {/* Privileged warning */}
           {role.isPrivileged && (
             <div className="flex items-start gap-3 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3">
               <ShieldAlert size={14} className="text-red-500 mt-0.5 shrink-0" />
-              <p className="text-[12px] text-red-600 dark:text-red-400 leading-relaxed">
+              <p className="text-tiny text-red-600 dark:text-red-400 leading-relaxed">
                 Esta é uma role <strong>privilegiada</strong> — concede capacidades de controle elevado. Aplique o princípio do menor privilégio e monitore atribuições via Cloud Audit Logs.
               </p>
             </div>
           )}
 
           {/* Tier description */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: tier.color }} />
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">{tier.label}</h2>
+              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300">{tier.label}</h2>
             </div>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed">{tier.description}</p>
+            <p className="text-tiny text-fg-muted leading-relaxed">{tier.description}</p>
           </div>
 
           {/* Description */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-2">Descrição</h2>
-            <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">{role.description}</p>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('table.description')}</h2>
+            <p className="text-body text-fg-muted leading-relaxed">{role.description}</p>
           </div>
 
           {/* Lowest-level resources — dado oficial do Google */}
           {role.lowestResources && role.lowestResources.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Recursos de menor nível onde esta role pode ser concedida
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                {t('perm.gcpLowestRes')}
               </h2>
-              <p className="text-[11px] text-gray-400 mb-3">Lowest-level resources — documentação do Google</p>
+              <p className="text-3xs text-fg-subtle mb-3">Lowest-level resources — {t('perm.docGoogle')}</p>
               <div className="space-y-2">
                 {role.lowestResources.map((res, i) => (
                   <div key={i} className="flex items-start gap-2.5">
                     <CheckSquare size={13} className="mt-0.5 shrink-0" style={{ color: tier.color }} />
-                    <span className="text-[12px] text-gray-600 dark:text-gray-400">{res}</span>
+                    <span className="text-tiny text-fg-muted">{res}</span>
                   </div>
                 ))}
               </div>
@@ -153,7 +155,7 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
           {role.deprecated && (
             <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
               <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
-              <p className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
+              <p className="text-tiny text-amber-700 dark:text-amber-400 leading-relaxed">
                 A descrição oficial do Google indica que esta role está{' '}
                 <strong>descontinuada</strong>. Veja o texto acima para a alternativa recomendada.
               </p>
@@ -164,9 +166,9 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
           {role.permissionsNote && (
             <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
               <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
-              <div className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
+              <div className="text-tiny text-amber-700 dark:text-amber-400 leading-relaxed">
                 <p>{role.permissionsNote}</p>
-                <code className="mt-2 inline-block font-mono text-[11px] bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded">
+                <code className="mt-2 inline-block font-mono text-3xs bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded">
                   gcloud iam roles describe {role.roleId}
                 </code>
               </div>
@@ -175,21 +177,21 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
 
           {/* Permissions — carregadas de public/gcp-perms/<slug>.json */}
           {role.permissionCount > 0 && (
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 <span className="flex items-center gap-2">
                   <Code size={13} style={{ color: tier.color }} />
                   Permissions
-                  <span className="text-[11px] font-normal text-gray-400">({role.permissionCount.toLocaleString('pt-BR')})</span>
+                  <span className="text-3xs font-normal text-fg-subtle">({fmt(role.permissionCount)})</span>
                 </span>
               </h2>
               {permsError && (
-                <p className="text-[12px] text-red-500">
-                  Não foi possível carregar as permissões desta role.
+                <p className="text-tiny text-red-500">
+                  {t('perm.roleLoadFailed')}
                 </p>
               )}
               {!permsError && permissions === null && (
-                <p className="text-[12px] text-gray-400">Carregando permissões…</p>
+                <p className="text-tiny text-fg-subtle">{t('state.loadingPerms')}</p>
               )}
               {!permsError && permissions !== null && (
               <PermissionsTable
@@ -204,49 +206,49 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
                 })}
                 columns={[
                   { key: 'permission', label: 'Permission' },
-                  { key: 'service',    label: 'Serviço', mono: true, width: 'w-32' },
-                  { key: 'resource',   label: 'Recurso', mono: true, width: 'w-40' },
-                  { key: 'verb',       label: 'Verbo',   badge: true, width: 'w-28' },
+                  { key: 'service',    label: t('table.service'),  mono: true, width: 'w-32' },
+                  { key: 'resource',   label: t('table.resource'), mono: true, width: 'w-40' },
+                  { key: 'verb',       label: t('table.verb'),     badge: true, width: 'w-28' },
                 ]}
                 filterKey="verb"
                 accent="#4285f4"
                 filename={`gcp-${role.slug}-permissions`}
-                noun="permissions"
-                searchPlaceholder="Filtrar permissions..."
+                noun="noun.permissions"
+                searchPlaceholder="ph.filterPermissions"
               />
               )}
             </div>
           )}
 
           {/* Role Definition (JSON) */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Role Definition (JSON)
             </h2>
             <div className="relative">
               <button
                 onClick={handleCopy}
                 className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors z-10"
-                title="Copiar JSON"
+                title={t('action.copyJson')}
               >
-                {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-gray-400" />}
+                {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-fg-subtle" />}
               </button>
-              <pre className="bg-black dark:bg-black rounded-lg p-4 border border-gray-800 overflow-x-auto">
-                <code className="text-[11px] font-mono text-gray-300" dangerouslySetInnerHTML={{ __html: visibleJson
+              <pre className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
+                <code className="text-3xs font-mono text-fg-muted" dangerouslySetInnerHTML={{ __html: visibleJson
                   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                   .replace(/"([^"]+)":/g, '<span class="text-blue-400">"$1"</span>:')
                   .replace(/: "(.*?)"/g, ': <span class="text-green-400">"$1"</span>')
                   .replace(/: (true|false)/g, ': <span class="text-yellow-400">$1</span>')
-                  .replace(/[\{\}\[\]]/g, '<span class="text-gray-400">$&</span>')
+                  .replace(/[\{\}\[\]]/g, '<span class="text-fg-subtle">$&</span>')
                 }} />
               </pre>
               {jsonLines.length > 12 && (
                 <button
                   onClick={() => setJsonExpanded(!jsonExpanded)}
-                  className="mt-2 flex items-center gap-1 text-[11px] text-[#4285f4] hover:underline"
+                  className="mt-2 flex items-center gap-1 text-3xs text-csp-gcp-onLight dark:text-csp-gcp-onDark hover:underline"
                 >
                   <ChevronDown size={12} className={jsonExpanded ? 'rotate-180 transition-transform' : 'transition-transform'} />
-                  {jsonExpanded ? 'Mostrar menos' : `Mostrar tudo (${jsonLines.length} linhas)`}
+                  {jsonExpanded ? t('action.showLess') : `${t('action.showAllLines')} (${jsonLines.length} ${t('noun.lines')})`}
                 </button>
               )}
             </div>
@@ -254,20 +256,20 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
 
           {/* Related roles */}
           {related.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-              <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Roles relacionadas
-                <span className="ml-2 text-[11px] font-normal text-gray-400">{role.category}</span>
+                <span className="ml-2 text-3xs font-normal text-fg-subtle">{role.category}</span>
               </h2>
               <div className="space-y-1.5">
                 {related.map(r => (
                   <Link key={r.slug} href={`/gcp/roles/${r.slug}`}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg border border-transparent hover:border-[#4285f4]/30 hover:bg-[#4285f4]/5 transition-all group">
+                    className="flex items-center justify-between px-3 py-2 rounded-lg border border-transparent hover:border-csp-gcp/30 hover:bg-csp-gcp/5 transition-all group">
                     <div>
-                      <div className="text-[12px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-[#4285f4] transition-colors">{r.name}</div>
-                      <div className="text-[11px] text-gray-400 truncate max-w-xs">{r.description}</div>
+                      <div className="text-tiny font-medium text-gray-700 dark:text-gray-300 group-hover:text-csp-gcp transition-colors">{r.name}</div>
+                      <div className="text-3xs text-fg-subtle truncate max-w-xs">{r.description}</div>
                     </div>
-                    <ChevronRight size={14} className="text-gray-300 dark:text-gray-600 group-hover:text-[#4285f4] shrink-0 ml-2 transition-colors" />
+                    <ChevronRight size={14} className="text-fg-muted dark:text-gray-600 group-hover:text-csp-gcp shrink-0 ml-2 transition-colors" />
                   </Link>
                 ))}
               </div>
@@ -279,7 +281,7 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
             <a
               href={`https://cloud.google.com/iam/docs/understanding-roles#${role.roleId.replace('roles/', '').replace(/\./g, '_')}`}
               target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-[#4285f4] transition-colors">
+              className="inline-flex items-center gap-1.5 text-tiny text-fg-subtle hover:text-csp-gcp transition-colors">
               <Globe size={12} /> Docs GCP
             </a>
           </div>

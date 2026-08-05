@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { ChevronDown, ChevronUp, ChevronsUpDown, Copy, CheckCheck, AlertTriangle } from 'lucide-react'
-import { RoleActionEntry } from '@/lib/roleActions'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
+import type { RoleActionEntry } from '@/lib/roleActions'
 import { EamTier, EAM_META } from '@/data/roles'
 import EamTierBadge from './EamTierBadge'
 import { deriveRoleActionDescription } from '@/lib/descriptions'
@@ -26,7 +29,6 @@ const TIER_ORDER: Record<EamTier, number> = {
   Unclassified: 3,
 }
 
-const PAGE_SIZE = 100
 
 interface Props {
   actions: RoleActionEntry[]
@@ -37,6 +39,7 @@ interface Props {
 }
 
 export default function RoleActionsTable({ actions, namespaces, verbs, categories, search }: Props) {
+  const t = useT()
   const [tier, setTier] = useState<'all' | EamTier>('all')
   const [namespace, setNamespace] = useState('all')
   const [verb, setVerb] = useState('all')
@@ -46,7 +49,6 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [expandedAction, setExpandedAction] = useState<string | null>(null)
   const [copiedAction, setCopiedAction] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
 
   const toggleSort = useCallback((col: SortCol) => {
     if (sortCol === col) {
@@ -90,8 +92,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
     })
   }, [filtered, sortCol, sortDir])
 
-  const visible = sorted.slice(0, page * PAGE_SIZE)
-  const hasMore = visible.length < sorted.length
+  const { paginated: visible, page, setPage, pageSize, setPageSize } = usePagination(sorted)
 
   const resetFilters = () => {
     setTier('all'); setNamespace('all'); setVerb('all')
@@ -103,15 +104,15 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Filter bar */}
-      <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 space-y-2">
+      <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 space-y-2">
         {/* Tier chips */}
         <div className="flex items-center gap-2 flex-wrap">
           {TIER_FILTERS.map((f) => (
             <button key={f.value} onClick={() => { setTier(f.value); setPage(1) }}
-              className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
+              className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
                 tier === f.value
-                  ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
+                  : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
               {f.label}
             </button>
@@ -121,17 +122,17 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
           <label className="flex items-center gap-1.5 cursor-pointer ml-2">
             <input type="checkbox" checked={privilegedOnly} onChange={(e) => { setPrivilegedOnly(e.target.checked); setPage(1) }}
               className="w-3 h-3 accent-red-500" />
-            <span className="text-[12px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <span className="text-tiny text-fg-muted flex items-center gap-1">
               <AlertTriangle size={11} className="text-red-400" /> Só privilegiadas
             </span>
           </label>
 
-          <span className="ml-auto text-[12px] text-gray-400 dark:text-gray-500">
+          <span className="ml-auto text-tiny text-fg-muted">
             {filtered.length.toLocaleString()} actions
           </span>
 
           {hasActiveFilter && (
-            <button onClick={resetFilters} className="text-[11px] text-[#0078d4] dark:text-[#85b7eb] hover:underline">
+            <button onClick={resetFilters} className="text-3xs text-brand-strong dark:text-brand-onDark hover:underline">
               Limpar filtros
             </button>
           )}
@@ -143,7 +144,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
             options={[{ value: 'all', label: `Todos (${namespaces.length})` }, ...namespaces.map((n) => ({ value: n, label: n }))]} />
           <Select label="Verb" value={verb} onChange={(v) => { setVerb(v); setPage(1) }}
             options={[{ value: 'all', label: 'Todos' }, ...verbs.map((v) => ({ value: v, label: v }))]} />
-          <Select label="Categoria" value={category} onChange={(v) => { setCategory(v); setPage(1) }}
+          <Select label={t('table.category')} value={category} onChange={(v) => { setCategory(v); setPage(1) }}
             options={[{ value: 'all', label: 'Todas' }, ...categories.map((c) => ({ value: c, label: c }))]} />
         </div>
       </div>
@@ -151,14 +152,14 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
       {/* Table */}
       <div className="flex-1 overflow-y-auto">
         {sorted.length === 0 ? (
-          <div className="flex items-center justify-center h-48 text-gray-400 dark:text-gray-500 text-[14px]">
+          <div className="flex items-center justify-center h-48 text-fg-muted text-note">
             Nenhuma role action encontrada.
           </div>
         ) : (
           <>
-            <table className="w-full text-[12px] border-collapse">
+            <table className="w-full text-tiny border-collapse">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
+                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
                   <SortTh col="action" active={sortCol} dir={sortDir} onSort={toggleSort} className="min-w-[280px]">
                     Role Action
                   </SortTh>
@@ -177,10 +178,10 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                   <SortTh col="count" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-20 text-center">
                     # Roles
                   </SortTh>
-                  <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2.5 w-52">
+                  <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2.5 w-52">
                     Descrição
                   </th>
-                  <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2.5">
+                  <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2.5">
                     Usada por
                   </th>
                 </tr>
@@ -195,12 +196,12 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         {/* Action */}
                         <td className="px-3 py-2 align-middle">
                           <div className="flex items-center gap-1.5">
-                            <code className="font-mono text-[11px] text-gray-700 dark:text-gray-300 break-all">
+                            <code className="font-mono text-3xs text-gray-700 dark:text-gray-300 break-all">
                               {entry.action}
                             </code>
                             <button onClick={() => copyAction(entry.action)}
-                              className="opacity-0 group-hover:opacity-100 shrink-0 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity"
-                              title="Copiar">
+                              className="opacity-0 group-hover:opacity-100 shrink-0 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity"
+                              title={t('action.copy')}>
                               {copiedAction === entry.action
                                 ? <CheckCheck size={11} className="text-green-600 opacity-100" />
                                 : <Copy size={11} />}
@@ -209,7 +210,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         </td>
                         {/* Namespace */}
                         <td className="px-3 py-2 align-middle">
-                          <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">{entry.namespace}</span>
+                          <span className="text-3xs text-fg-muted font-mono">{entry.namespace}</span>
                         </td>
                         {/* Verb */}
                         <td className="px-3 py-2 align-middle">
@@ -217,7 +218,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         </td>
                         {/* Category */}
                         <td className="px-3 py-2 align-middle">
-                          <span className="text-[11px] text-gray-500 dark:text-gray-400">{entry.category}</span>
+                          <span className="text-3xs text-fg-muted">{entry.category}</span>
                         </td>
                         {/* EAM Tier */}
                         <td className="px-3 py-2 align-middle">
@@ -225,11 +226,11 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                         </td>
                         {/* Count */}
                         <td className="px-3 py-2 align-middle text-center">
-                          <span className="text-[12px] font-medium text-gray-600 dark:text-gray-300">{entry.usedByRoles.length}</span>
+                          <span className="text-tiny font-medium text-gray-600 dark:text-gray-300">{entry.usedByRoles.length}</span>
                         </td>
                         {/* Descrição */}
                         <td className="px-3 py-2 align-middle">
-                          <span className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">
+                          <span className="text-3xs text-fg-muted leading-snug">
                             {deriveRoleActionDescription(entry.namespace, entry.resource, entry.verb)}
                           </span>
                         </td>
@@ -238,14 +239,14 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                           <div className="flex items-center gap-1 flex-wrap max-w-xs">
                             {entry.usedByRoles.slice(0, isExpanded ? undefined : 2).map((r) => (
                               <Link key={r.slug} href={`/entraid/roles/${r.slug}`}
-                                className="inline-flex items-center gap-0.5 text-[10px] bg-gray-100 dark:bg-gray-800 hover:bg-[#e8f1fb] dark:hover:bg-[#0c2a47] text-gray-600 dark:text-gray-300 hover:text-[#0078d4] dark:hover:text-[#85b7eb] px-1.5 py-0.5 rounded border border-[#dde3ec] dark:border-gray-700 transition-colors">
+                                className="inline-flex items-center gap-0.5 text-2xs bg-gray-100 dark:bg-gray-800 hover:bg-brand-soft dark:hover:bg-brand-activeBg text-gray-600 dark:text-gray-300 hover:text-brand dark:hover:text-brand-onDark px-1.5 py-0.5 rounded border border-surface-border dark:border-gray-700 transition-colors">
                                 {r.isPrivileged && <AlertTriangle size={9} className="text-red-400 shrink-0" />}
                                 {r.name}
                               </Link>
                             ))}
                             {entry.usedByRoles.length > 2 && (
                               <button onClick={() => setExpandedAction(isExpanded ? null : entry.action)}
-                                className="text-[10px] text-[#0078d4] dark:text-[#85b7eb] hover:underline flex items-center gap-0.5">
+                                className="text-2xs text-brand-strong dark:text-brand-onDark hover:underline flex items-center gap-0.5">
                                 {isExpanded ? (
                                   <><ChevronUp size={10} /> menos</>
                                 ) : (
@@ -262,14 +263,11 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
               </tbody>
             </table>
 
-            {hasMore && (
-              <div className="flex justify-center py-4">
-                <button onClick={() => setPage((p) => p + 1)}
-                  className="text-[12px] px-4 py-1.5 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  Carregar mais ({sorted.length - visible.length} restantes)
-                </button>
-              </div>
-            )}
+            <Pagination
+              total={sorted.length} page={page} pageSize={pageSize}
+              onPageChange={setPage} onPageSizeChange={setPageSize}
+              accent="#0078d4" noun="noun.actions"
+            />
           </>
         )}
       </div>
@@ -287,9 +285,9 @@ function Select({ label, value, onChange, options }: {
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[11px] text-gray-400 dark:text-gray-500 shrink-0">{label}:</span>
+      <span className="text-3xs text-fg-muted shrink-0">{label}:</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="text-[11px] border border-[#dde3ec] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#0078d4] max-w-[180px]">
+        className="text-3xs border border-surface-border dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand max-w-[180px]">
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     </div>
@@ -304,7 +302,7 @@ function SortTh({ col, active, dir, onSort, children, className = '' }: {
   const isActive = active === col
   return (
     <th onClick={() => onSort(col)}
-      className={`text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 py-2.5 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none ${className}`}>
+      className={`text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2.5 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none ${className}`}>
       <span className="inline-flex items-center gap-1">
         {children}
         {isActive
@@ -331,7 +329,7 @@ const VERB_COLORS: Record<string, { bg: string; text: string; darkBg: string; da
 function VerbBadge({ verb }: { verb: string }) {
   const c = VERB_COLORS[verb] ?? { bg: '#f1f0f0', text: '#444', darkBg: '#2a2a28', darkText: '#b4b2a9' }
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-semibold"
+    <span className="inline-flex items-center px-2 py-0.5 rounded text-2xs font-mono font-semibold"
       style={{ backgroundColor: c.bg, color: c.text }}>
       {verb || '—'}
     </span>

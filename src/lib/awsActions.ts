@@ -1,4 +1,4 @@
-import { AWS_POLICIES, AwsTier } from '@/data/aws'
+import type { AwsTier } from '@/data/aws'
 
 /**
  * Índice de actions da AWS.
@@ -52,6 +52,10 @@ export async function getAwsActions(): Promise<AwsActionEntry[]> {
     if (!res.ok) throw new Error(`Falha ao carregar aws-actions-index.json (HTTP ${res.status})`)
     const data: AwsActionsIndex = await res.json()
 
+    // aws.ts tem 871 kB e só é preciso para resolver slug -> nome/tier da
+    // policy. Entra por import dinâmico: quem só monta o índice de actions não
+    // paga o dataset no First Load.
+    const { AWS_POLICIES } = await import('@/data/aws')
     const bySlug = new Map(AWS_POLICIES.map((p) => [p.slug, p]))
     const out: AwsActionEntry[] = []
 

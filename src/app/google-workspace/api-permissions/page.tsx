@@ -1,10 +1,13 @@
 'use client'
 
 import { Suspense, useState, useMemo, useEffect } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams, useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import { GWS_SCOPES, GWS_SCOPE_META, GwsService, GwsScopeSensitivity } from '@/data/googleWorkspace'
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 import ExportButton from '@/components/ExportButton'
@@ -33,6 +36,7 @@ const SERVICE_COLORS: Record<GwsService, { bg: string; text: string; border: str
 }
 
 function GwsScopesContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -84,6 +88,9 @@ function GwsScopesContent() {
     router.replace(`/google-workspace/api-permissions?${p.toString()}`, { scroll: false })
   }
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(sorted)
+
+
   return (
     <AppShell
       headerTitle="Google Workspace — OAuth Scopes"
@@ -100,38 +107,38 @@ function GwsScopesContent() {
           { label: 'Standard',   value: GWS_SCOPES.filter((s) => s.sensitivity === 'standard').length,   color: 'gray',   href: '/google-workspace/api-permissions?sensitivity=standard' },
         ]} />
 
-        <div className="px-4 pt-3 pb-2 border-b border-gray-800 bg-gray-900">
+        <div className="px-4 pt-3 pb-2 border-b border-line bg-surface">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             {SENSITIVITIES.map((sens) => {
               const m = GWS_SCOPE_META[sens]
               const active = activeSens === sens
               return (
                 <button key={sens} onClick={() => pushSens(active ? 'all' : sens)}
-                  className="text-[11px] px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap"
+                  className="text-3xs px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap"
                   style={active
                     ? { backgroundColor: m.textColor + '30', color: m.darkText, borderColor: m.textColor + '80' }
                     : { color: '#6b7280', borderColor: '#374151' }
                   }>{m.label}</button>
               )
             })}
-            <span className="text-[12px] text-gray-500 ml-auto">{sorted.length}</span>
+            <span className="text-tiny text-fg-muted ml-auto">{sorted.length}</span>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             <button onClick={() => pushSvc('all')}
-              className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
-                activeService === 'all' ? 'bg-[#34a853] text-white border-[#34a853]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
-              }`}>Todos</button>
+              className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
+                activeService === 'all' ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
+              }`}>{t('filter.all')}</button>
             {ALL_SERVICES.map((svc) => (
               <button key={svc} onClick={() => pushSvc(activeService === svc ? 'all' : svc)}
-                className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
-                  activeService === svc ? 'bg-[#34a853] text-white border-[#34a853]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
+                className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
+                  activeService === svc ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
                 }`}>{svc}</button>
             ))}
           </div>
         </div>
 
         <div className="flex-1 overflow-auto">
-          <table className="text-[12px] border-collapse w-full" style={{ tableLayout: 'fixed' }}>
+          <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: widths[0] }} />
               <col style={{ width: widths[1] }} />
@@ -140,39 +147,39 @@ function GwsScopesContent() {
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-800 border-b border-gray-700">
-                <RszTh col="name"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={0} onMD={onMouseDown}>Escopo</RszTh>
-                <th className="relative px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider overflow-hidden select-none">
+              <tr className="bg-surface-alt border-b border-line-strong">
+                <RszTh col="name"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={0} onMD={onMouseDown}>{t('table.scope')}</RszTh>
+                <th className="relative px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider overflow-hidden select-none">
                   Descrição
                   <div onMouseDown={onMouseDown(1)} onClick={(e) => e.stopPropagation()}
                     className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />
                 </th>
-                <RszTh col="service"     active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>Serviço</RszTh>
+                <RszTh col="service"     active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>{t('table.service')}</RszTh>
                 <RszTh col="sensitivity" active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Sensibilidade</RszTh>
                 <th className="px-4 py-2.5 w-6"></th>
               </tr>
             </thead>
             <tbody>
-              {sorted.map((scope) => {
+              {paginated.map((scope) => {
                 const sm = GWS_SCOPE_META[scope.sensitivity]
                 const sc = SERVICE_COLORS[scope.service]
                 return (
-                  <tr key={scope.scope} className="border-b border-gray-800 hover:bg-gray-800/60 transition-colors">
+                  <tr key={scope.scope} className="border-b border-line hover:bg-surface-alt/60 transition-colors">
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
-                      <p className="text-[12px] font-medium text-[#4ade80] truncate">{scope.name}</p>
-                      <code className="text-[10px] font-mono text-gray-500 truncate block">{scope.scope}</code>
+                      <p className="text-tiny font-medium text-success-fg truncate">{scope.name}</p>
+                      <code className="text-2xs font-mono text-fg-muted truncate block">{scope.scope}</code>
                     </td>
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
-                      <p className="text-[11px] text-gray-400 leading-snug line-clamp-2">{scope.description}</p>
+                      <p className="text-3xs text-fg-subtle leading-snug line-clamp-2">{scope.description}</p>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
                         style={{ backgroundColor: sc.bg, color: sc.text, borderColor: sc.border }}>
                         {scope.service}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
                         style={{ backgroundColor: sm.darkBg, color: sm.darkText, borderColor: sm.textColor + '40' }}>
                         {sm.label}
                       </span>
@@ -184,9 +191,15 @@ function GwsScopesContent() {
             </tbody>
           </table>
           {sorted.length === 0 && (
-            <div className="flex items-center justify-center h-48 text-gray-500 text-[14px]">Nenhum escopo encontrado.</div>
+            <div className="flex items-center justify-center h-48 text-fg-muted text-note">{t('empty.scopes')}</div>
           )}
         </div>
+
+        <Pagination
+          total={sorted.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#34a853" noun="noun.scopes"
+        />
       </div>
     </AppShell>
   )
@@ -194,7 +207,7 @@ function GwsScopesContent() {
 
 export default function GwsScopesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-500">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-muted">Carregando...</div>}>
       <GwsScopesContent />
     </Suspense>
   )
@@ -206,8 +219,8 @@ function RszTh({ col, active, dir, onSort, idx, onMD, children }: {
   children: React.ReactNode
 }) {
   return (
-    <th className="relative text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden">
-      <button onClick={() => onSort(col)} className="inline-flex items-center gap-1 hover:text-gray-300">
+    <th className="relative text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden">
+      <button onClick={() => onSort(col)} className="inline-flex items-center gap-1 hover:text-fg-muted">
         {children}
         {active === col ? (dir === 'asc' ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : <ChevronsUpDown size={11} className="opacity-30" />}
       </button>

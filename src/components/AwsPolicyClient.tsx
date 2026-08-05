@@ -1,12 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import RoleDetailHeader, { BackToList, roleDetailSub } from './RoleDetailHeader'
+import { CLOUD_META } from '@/data/compare/types'
+import { useT } from '@/i18n/LanguageProvider'
+import { Rich } from '@/i18n/Rich'
 import AppShell from '@/components/AppShell'
 import { AWS_POLICIES, AWS_TIER_META } from '@/data/aws'
 import { getAwsPolicyDoc, type AwsPolicyDoc } from '@/lib/awsActions'
 import Link from 'next/link'
-import { ArrowLeft, ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, ChevronUp, Code2 } from 'lucide-react'
+import { ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, ChevronUp, Code2 } from 'lucide-react'
 import PermissionsTable from '@/components/PermissionsTable'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 const CAT_COLORS: Record<string, string> = {
   IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', Database: '#7c3aed',
@@ -22,6 +27,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 export default function AwsPolicyClient({ slug }: { slug: string }) {
+  const t = useT()
   const policy = AWS_POLICIES.find(p => p.slug === slug)
 
   // Documento JSON oficial + actions vivem em public/aws-policy-docs/<slug>.json.
@@ -44,9 +50,9 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
   if (!policy) {
     return (
       <AppShell headerTitle="Not Found" headerSub="Policy not found">
-        <div className="flex flex-col items-center justify-center flex-1 text-gray-400">
-          <p className="text-[14px]">Policy <code className="font-mono">{slug}</code> not found.</p>
-          <Link href="/aws/policies" className="mt-3 text-[12px] text-[#ff9900] hover:underline">Back to Policies</Link>
+        <div className="flex flex-col items-center justify-center flex-1 text-fg-subtle">
+          <p className="text-note">Policy <code className="font-mono">{slug}</code> not found.</p>
+          <Link href="/aws/policies" className="mt-3 text-tiny text-csp-aws-onLight dark:text-csp-aws-onDark hover:underline">Back to Policies</Link>
         </div>
       </AppShell>
     )
@@ -69,33 +75,30 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
   return (
     <AppShell
       headerTitle={policy.name}
-      headerSub={policy.arn}
-      headerBack={
-        <Link href="/aws/policies" className="flex items-center gap-1.5 text-[12px] font-medium text-gray-300 hover:text-gray-100 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-md px-3 py-1.5 transition-colors">
-          <ArrowLeft size={15} /> Voltar
-        </Link>
-      }
+      headerSub={roleDetailSub(CLOUD_META.aws.label, policy.category, tier.label)}
+      headerBack={<BackToList href="/aws/policies" />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-5xl space-y-5">
 
+          <RoleDetailHeader
+            name={policy.name}
+            tier={{ label: tier.label, color: tier.color, bg: tier.bg, description: tier.description }}
+            categoryBadge={
+              <span className="text-tiny font-semibold" style={{ color: catColor }}>{policy.category}</span>
+            }
+            isPrivileged={policy.isPrivileged}
+          />
+
           {/* Stat cards */}
-          <div className="grid grid-cols-4 gap-3">
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Tier</p>
-              <span className="text-[13px] font-bold" style={{ color: tier.color }}>{tier.label}</span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+              <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-1">{t('table.type')}</p>
+              <span className="text-body font-bold" style={{ color: typeColor }}>{TYPE_LABELS[policy.type]}</span>
             </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Categoria</p>
-              <span className="text-[13px] font-bold" style={{ color: catColor }}>{policy.category}</span>
-            </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Tipo</p>
-              <span className="text-[13px] font-bold" style={{ color: typeColor }}>{TYPE_LABELS[policy.type]}</span>
-            </div>
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Escopo</p>
-              <span className="text-[13px] font-bold text-gray-700 dark:text-gray-300 capitalize">{policy.scope}</span>
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+              <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-1">{t('table.scope')}</p>
+              <span className="text-body font-bold text-gray-700 dark:text-gray-300 capitalize">{policy.scope}</span>
             </div>
           </div>
 
@@ -103,31 +106,31 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
           {policy.isPrivileged && (
             <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/40">
               <ShieldAlert size={14} className="text-red-500 shrink-0 mt-0.5" />
-              <p className="text-[12px] text-red-700 dark:text-red-400">
+              <p className="text-tiny text-red-700 dark:text-red-400">
                 <strong>Privilegiada.</strong> Esta policy concede acesso amplo ou crítico. Aplique com o princípio do menor privilégio.
               </p>
             </div>
           )}
 
           {/* ARN */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-2">Amazon Resource Name (ARN)</p>
-            <code className="text-[12px] font-mono text-[#ff9900] break-all">{policy.arn}</code>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+            <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-2">Amazon Resource Name (ARN)</p>
+            <code className="text-tiny font-mono text-csp-aws-onLight dark:text-csp-aws-onDark break-all">{policy.arn}</code>
           </div>
 
           {/* Description */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-2">Descrição</p>
-            <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed">{policy.description}</p>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+            <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-2">{t('table.description')}</p>
+            <p className="text-body text-gray-700 dark:text-gray-300 leading-relaxed">{policy.description}</p>
           </div>
 
           {/* Tier info */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: tier.color }} />
-              <p className="text-[12px] font-semibold" style={{ color: tier.color }}>{tier.label}</p>
+              <p className="text-tiny font-semibold" style={{ color: tier.color }}>{tier.label}</p>
             </div>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed">{tier.description}</p>
+            <p className="text-tiny text-fg-muted leading-relaxed">{tier.description}</p>
           </div>
 
           {/*
@@ -135,21 +138,21 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
             que listava policy.privileges — campo que era só um prefixo do
             array de actions, não um texto de capacidades.
           */}
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">
-              Detalhes da policy <span className="normal-case font-normal">— dados da AWS</span>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+            <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-3">
+              {t('label.policyDetails')} <span className="normal-case font-normal">{t('label.awsData')}</span>
             </p>
             <dl className="space-y-1.5">
               {([
-                ['Tipo', policy.officialType],
-                ['Criada em', policy.createdAt],
-                ['Última edição', policy.editedAt],
-                ['Versão', policy.version],
+                [t('table.type'), policy.officialType],
+                [t('table.createdAt'), policy.createdAt],
+                [t('table.lastEdit'), policy.editedAt],
+                [t('table.version'), policy.version],
               ] as const).filter(([, v]) => v).map(([k, v]) => (
                 <div key={k} className="flex items-start gap-2">
                   <CheckSquare size={13} className="shrink-0 mt-0.5" style={{ color: typeColor }} />
-                  <dt className="text-[12px] text-gray-400 w-28 shrink-0">{k}</dt>
-                  <dd className="text-[12px] text-gray-600 dark:text-gray-400">{v}</dd>
+                  <dt className="text-tiny text-fg-subtle w-28 shrink-0">{k}</dt>
+                  <dd className="text-tiny text-fg-muted">{v}</dd>
                 </div>
               ))}
             </dl>
@@ -158,9 +161,8 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
           {policy.deprecated && (
             <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
               <ShieldAlert size={14} className="text-amber-500 mt-0.5 shrink-0" />
-              <p className="text-[12px] text-amber-700 dark:text-amber-400 leading-relaxed">
-                A AWS indica que esta policy está em <strong>caminho de depreciação</strong>.
-                Veja a descrição acima para a orientação oficial.
+              <p className="text-tiny text-amber-700 dark:text-amber-400 leading-relaxed">
+                <Rich text={t('label.deprecatedNote')} />
               </p>
             </div>
           )}
@@ -175,15 +177,15 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
 
           {/* Related */}
           {related.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">Relacionadas em {policy.category}</p>
+            <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+              <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-3">Relacionadas em {policy.category}</p>
               <div className="space-y-1">
                 {related.map(r => (
                   <Link key={r.slug} href={`/aws/policies/${r.slug}`}
                     className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: catColor }} />
-                    <span className="flex-1 text-[12px] text-gray-700 dark:text-gray-300 group-hover:text-[#ff9900] transition-colors">{r.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: AWS_TIER_META[r.tier].bg, color: AWS_TIER_META[r.tier].color }}>{r.tier}</span>
+                    <span className="flex-1 text-tiny text-gray-700 dark:text-gray-300 group-hover:text-csp-aws transition-colors">{r.name}</span>
+                    <span className="text-2xs px-1.5 py-0.5 rounded-full" style={{ background: AWS_TIER_META[r.tier].bg, color: AWS_TIER_META[r.tier].color }}>{r.tier}</span>
                   </Link>
                 ))}
               </div>
@@ -195,14 +197,14 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
             {isRealManagedPolicyArn ? (
               <a href={`https://docs.aws.amazon.com/aws-managed-policy/latest/reference/${docsSlug}.html`}
                 target="_blank" rel="noreferrer"
-                className="flex items-center gap-1.5 text-[12px] text-[#ff9900] hover:underline">
+                className="flex items-center gap-1.5 text-tiny text-csp-aws-onLight dark:text-csp-aws-onDark hover:underline">
                 <ExternalLink size={12} />
                 AWS Docs
               </a>
             ) : illustrativeDocsUrl ? (
               <a href={illustrativeDocsUrl}
                 target="_blank" rel="noreferrer"
-                className="flex items-center gap-1.5 text-[12px] text-[#ff9900] hover:underline">
+                className="flex items-center gap-1.5 text-tiny text-csp-aws-onLight dark:text-csp-aws-onDark hover:underline">
                 <ExternalLink size={12} />
                 AWS Docs (conceito)
               </a>
@@ -219,12 +221,14 @@ function AwsActionsSection(
   { actions, slug, total, loading }:
   { actions: string[]; slug: string; total: number; loading: boolean },
 ) {
+  const t = useT()
+  const fmt = useNumberFormat()
   return (
-    <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-3">
-        IAM Actions ({total.toLocaleString('pt-BR')})
+    <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+      <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider mb-3">
+        IAM Actions ({fmt(total)})
       </p>
-      {loading && <p className="text-[12px] text-gray-400 mb-2">Carregando actions…</p>}
+      {loading && <p className="text-tiny text-fg-subtle mb-2">{t('state.loadingActions')}</p>}
       <PermissionsTable
         rows={actions.map((action) => {
           const i = action.indexOf(':')
@@ -232,21 +236,21 @@ function AwsActionsSection(
             permission: action,
             service: i === -1 ? action : action.substring(0, i),
             operation: i === -1 ? '' : action.substring(i + 1),
-            wildcard: action.includes('*') ? 'Wildcard' : 'Específica',
+            wildcard: action.includes('*') ? 'Wildcard' : t('label.specific'),
           }
         })}
         columns={[
           { key: 'permission', label: 'IAM Action' },
-          { key: 'service',    label: 'Serviço', mono: true, width: 'w-36' },
-          { key: 'operation',  label: 'Operação', mono: true },
-          { key: 'wildcard',   label: 'Escopo', badge: true, width: 'w-32' },
+          { key: 'service',    label: t('table.service'), mono: true, width: 'w-36' },
+          { key: 'operation',  label: t('table.operation'), mono: true },
+          { key: 'wildcard',   label: t('table.scope'), badge: true, width: 'w-32' },
         ]}
         filterKey="wildcard"
-        colors={{ Wildcard: '#fbbf24', 'Específica': '#34d399' }}
+        colors={{ Wildcard: '#fbbf24', [t('label.specific')]: '#34d399' }}
         accent="#ff9900"
         filename={`aws-${slug}-actions`}
-        noun="actions"
-        searchPlaceholder="Filtrar actions..."
+        noun="noun.actions"
+        searchPlaceholder="ph.filterActions"
       />
     </div>
   )
@@ -264,20 +268,21 @@ function AwsActionsSection(
 function AwsPolicyDocumentJson(
   { doc, error }: { doc: AwsPolicyDoc | null; error: boolean },
 ) {
+  const t = useT()
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-        <p className="text-[12px] text-red-500">Não foi possível carregar o documento JSON desta policy.</p>
+      <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+        <p className="text-tiny text-red-500">{t('state.jsonLoadFailed')}</p>
       </div>
     )
   }
   if (!doc) {
     return (
-      <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
-        <p className="text-[12px] text-gray-400">Carregando documento JSON…</p>
+      <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
+        <p className="text-tiny text-fg-subtle">{t('state.loadingJson')}</p>
       </div>
     )
   }
@@ -294,24 +299,24 @@ function AwsPolicyDocumentJson(
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-4">
+    <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider flex items-center gap-1.5">
+        <p className="text-2xs text-fg-subtle font-medium uppercase tracking-wider flex items-center gap-1.5">
           <Code2 size={13} />
           Policy Document (JSON)
         </p>
         <button
           onClick={copyJson}
-          className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-gray-200 transition-colors"
-          title="Copiar JSON"
+          className="flex items-center gap-1.5 text-3xs text-fg-subtle hover:text-fg transition-colors"
+          title={t('action.copyJson')}
         >
           {copied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
           {copied ? 'Copiado!' : 'Copiar'}
         </button>
       </div>
       <div className="relative">
-        <div className="bg-black dark:bg-black rounded-lg p-4 border border-gray-800 overflow-x-auto">
-          <pre className="text-[11px] font-mono leading-relaxed">
+        <div className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
+          <pre className="text-3xs font-mono leading-relaxed">
             {showLines.map((line, i) => (
               <AwsJsonLine key={i} line={line} />
             ))}
@@ -320,7 +325,7 @@ function AwsPolicyDocumentJson(
         {lines.length > PREVIEW_LINES && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mt-2 flex items-center gap-1 text-[12px] text-[#ff9900] hover:underline"
+            className="mt-2 flex items-center gap-1 text-tiny text-csp-aws-onLight dark:text-csp-aws-onDark hover:underline"
           >
             {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             {expanded ? 'Recolher' : `Mostrar tudo (${lines.length} linhas)`}
@@ -339,35 +344,35 @@ function AwsJsonLine({ line }: { line: string }) {
   while (remaining.length > 0) {
     const keyMatch = remaining.match(/^(\s*)"([^"]+)"(:)/)
     if (keyMatch) {
-      parts.push(<span key={key++} className="text-gray-400">{keyMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{keyMatch[1]}</span>)
       parts.push(<span key={key++} className="text-blue-400">&quot;{keyMatch[2]}&quot;</span>)
-      parts.push(<span key={key++} className="text-gray-400">{keyMatch[3]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{keyMatch[3]}</span>)
       remaining = remaining.slice(keyMatch[0].length)
       continue
     }
     const strMatch = remaining.match(/^(\s*)"([^"]*)"(.*)/)
     if (strMatch) {
-      parts.push(<span key={key++} className="text-gray-400">{strMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{strMatch[1]}</span>)
       parts.push(<span key={key++} className="text-green-400">&quot;{strMatch[2]}&quot;</span>)
-      parts.push(<span key={key++} className="text-gray-400">{strMatch[3]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{strMatch[3]}</span>)
       remaining = ''
       continue
     }
     const boolMatch = remaining.match(/^(\s*)(true|false|null|\d+)(,?)(.*)/)
     if (boolMatch) {
-      parts.push(<span key={key++} className="text-gray-400">{boolMatch[1]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{boolMatch[1]}</span>)
       parts.push(<span key={key++} className="text-yellow-400">{boolMatch[2]}</span>)
-      parts.push(<span key={key++} className="text-gray-400">{boolMatch[3]}{boolMatch[4]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{boolMatch[3]}{boolMatch[4]}</span>)
       remaining = ''
       continue
     }
     const bracketMatch = remaining.match(/^(\s*)([\[\]{},]+)(.*)/)
     if (bracketMatch) {
-      parts.push(<span key={key++} className="text-gray-400">{bracketMatch[1]}{bracketMatch[2]}{bracketMatch[3]}</span>)
+      parts.push(<span key={key++} className="text-fg-subtle">{bracketMatch[1]}{bracketMatch[2]}{bracketMatch[3]}</span>)
       remaining = ''
       continue
     }
-    parts.push(<span key={key++} className="text-gray-400">{remaining}</span>)
+    parts.push(<span key={key++} className="text-fg-subtle">{remaining}</span>)
     remaining = ''
   }
 

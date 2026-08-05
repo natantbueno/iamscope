@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { Copy, CheckCheck, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
 import { EamTier } from '@/data/roles'
 import EamTierBadge from './EamTierBadge'
@@ -46,9 +49,9 @@ const ACTION_COLORS: Record<string, { bg: string; text: string }> = {
   Create:      { bg: '#e8f1fb', text: '#0a4f8c' },
 }
 
-const PAGE_SIZE = 100
 
 export default function ApiPermissionsTable({ search, initialTier = 'all' }: { search: string; initialTier?: string }) {
+  const t = useT()
   const [tier, setTier] = useState<ApiFilter>(
     ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified'].includes(initialTier)
       ? (initialTier as ApiFilter) : 'all'
@@ -57,7 +60,6 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
   const [sortCol, setSortCol]   = useState<SortCol>('name')
   const [sortDir, setSortDir]   = useState<SortDir>('asc')
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [page, setPage]         = useState(1)
 
   const toggleSort = useCallback((col: SortCol) => {
     if (sortCol === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
@@ -73,7 +75,9 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
   const enriched = useMemo(() => API_PERMISSIONS.map((p) => ({
     ...p,
     ...parsePermName(p.name),
-    description: deriveApiPermDescription(p.name, p.type),
+    // Descrição oficial da Microsoft quando existe; a derivada do nome é só
+    // fallback para permission que a fonte não descreve.
+    description: p.description || deriveApiPermDescription(p.name, p.type),
   })), [])
 
   const filtered = useMemo(() => {
@@ -100,8 +104,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
     })
   }, [filtered, sortCol, sortDir])
 
-  const visible = sorted.slice(0, page * PAGE_SIZE)
-  const hasMore = visible.length < sorted.length
+  const { paginated: visible, page, setPage, pageSize, setPageSize } = usePagination(sorted)
 
   const copyId = (id: string) => {
     navigator.clipboard.writeText(id)
@@ -112,32 +115,32 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Filter bar */}
-      <div className="px-6 py-3 border-b border-[#dde3ec] dark:border-gray-800 flex items-center gap-2 flex-wrap">
+      <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap">
         {/* Type quick-filter */}
         {(['all', 'Application', 'Delegated'] as PermType[]).map((t) => (
           <button key={t} onClick={() => { setPermType(t); setPage(1) }}
-            className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
+            className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
               permType === t
                 ? t === 'Application'
                   ? 'bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium'
                   : t === 'Delegated'
                   ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-medium'
-                  : 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  : 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
+                : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
             {t === 'all' ? 'Todas' : t}
           </button>
         ))}
 
-        <span className="text-gray-200 dark:text-gray-700 mx-1">|</span>
+        <span className="text-fg dark:text-gray-700 mx-1">|</span>
 
         {/* Tier chips */}
         {TIER_FILTERS.slice(1).map((f) => (
           <button key={f.value} onClick={() => { setTier(tier === f.value ? 'all' : f.value); setPage(1) }}
-            className={`text-[12px] px-3 py-1 rounded-full border transition-colors ${
+            className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
               tier === f.value
-                ? 'bg-[#e8f1fb] dark:bg-[#0c2a47] text-[#0078d4] dark:text-[#85b7eb] border-[#9dc3e8] dark:border-[#185fa5] font-medium'
-                : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-[#dde3ec] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
+                : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
             {f.label}
           </button>
@@ -145,33 +148,33 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
 
         {/* Category dropdown */}
         <div className="flex items-center gap-1.5 ml-auto">
-          <span className="text-[11px] text-gray-400 dark:text-gray-500">Categoria:</span>
+          <span className="text-3xs text-fg-muted">Categoria:</span>
           <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }}
-            className="text-[11px] border border-[#dde3ec] dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#0078d4] max-w-[180px]">
+            className="text-3xs border border-surface-border dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand max-w-[180px]">
             <option value="all">Todas ({categories.length})</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <span className="text-[12px] text-gray-400 dark:text-gray-500 ml-2">{filtered.length.toLocaleString()} perm.</span>
+          <span className="text-tiny text-fg-muted ml-2">{filtered.length.toLocaleString()} perm.</span>
         </div>
       </div>
 
       {/* Table */}
       <div className="flex-1 overflow-y-auto">
         {sorted.length === 0 ? (
-          <div className="flex items-center justify-center h-48 text-gray-400 dark:text-gray-500 text-[14px]">
+          <div className="flex items-center justify-center h-48 text-fg-muted text-note">
             Nenhuma permissão encontrada.
           </div>
         ) : (
           <>
-            <table className="w-full text-[12px] border-collapse">
+            <table className="w-full text-tiny border-collapse">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-[#dde3ec] dark:border-gray-700">
-                  <SortTh col="name"     active={sortCol} dir={sortDir} onSort={toggleSort} className="min-w-[220px]">Permissão</SortTh>
-                  <SortTh col="action"   active={sortCol} dir={sortDir} onSort={toggleSort} className="w-28">Ação</SortTh>
-                  <SortTh col="scope"    active={sortCol} dir={sortDir} onSort={toggleSort} className="w-24">Escopo</SortTh>
-                  <SortTh col="category" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-36">Categoria</SortTh>
+                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-surface-border dark:border-gray-700">
+                  <SortTh col="name"     active={sortCol} dir={sortDir} onSort={toggleSort} className="min-w-[220px]">{t('table.permission')}</SortTh>
+                  <SortTh col="action"   active={sortCol} dir={sortDir} onSort={toggleSort} className="w-28">{t('table.action')}</SortTh>
+                  <SortTh col="scope"    active={sortCol} dir={sortDir} onSort={toggleSort} className="w-24">{t('table.scope')}</SortTh>
+                  <SortTh col="category" active={sortCol} dir={sortDir} onSort={toggleSort} className="w-36">{t('table.category')}</SortTh>
                   <SortTh col="tier"     active={sortCol} dir={sortDir} onSort={toggleSort} className="w-36">EAM Tier</SortTh>
-                  <th className="text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5">Descrição</th>
+                  <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5">{t('table.description')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,47 +183,44 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
                     {/* Nome + tipo inline + ID */}
                     <td className="px-4 py-2.5 align-middle">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <code className="font-mono text-[11px] text-[#0078d4] dark:text-[#85b7eb] font-medium break-all">{perm.name}</code>
+                        <code className="font-mono text-3xs text-brand-strong dark:text-brand-onDark font-medium break-all">{perm.name}</code>
                         <TypeBadge type={perm.type} />
                         <button onClick={() => copyId(perm.id)}
-                          className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 transition-opacity"
-                          title="Copiar ID">
+                          className="opacity-0 group-hover:opacity-100 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 transition-opacity"
+                          title={t('action.copyId')}>
                           {copiedId === perm.id ? <CheckCheck size={11} className="text-green-600 opacity-100" /> : <Copy size={11} />}
                         </button>
                       </div>
-                      <div className="text-[9px] text-gray-400 dark:text-gray-500 font-mono mt-0.5">{perm.id.substring(0, 8)}…</div>
+                      <div className="text-micro text-fg-muted font-mono mt-0.5">{perm.id.substring(0, 8)}…</div>
                     </td>
                     {/* Ação (verbo) */}
                     <td className="px-4 py-2.5 align-middle"><ActionBadge action={perm.action} /></td>
                     {/* Escopo */}
                     <td className="px-4 py-2.5 align-middle">
                       {perm.scope
-                        ? <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">{perm.scope}</span>
-                        : <span className="text-gray-300 dark:text-gray-600">—</span>}
+                        ? <span className="text-2xs font-mono text-fg-muted bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">{perm.scope}</span>
+                        : <span className="text-fg-muted dark:text-gray-600">—</span>}
                     </td>
                     {/* Categoria */}
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-[11px] text-gray-500 dark:text-gray-400">{perm.category || '—'}</span>
+                      <span className="text-3xs text-fg-muted">{perm.category || '—'}</span>
                     </td>
                     {/* EAM Tier */}
                     <td className="px-4 py-2.5 align-middle"><EamTierBadge tier={perm.eamTier} /></td>
                     {/* Descrição */}
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">{perm.description}</span>
+                      <span className="text-3xs text-fg-muted leading-snug">{perm.description}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            {hasMore && (
-              <div className="flex justify-center py-4">
-                <button onClick={() => setPage((p) => p + 1)}
-                  className="text-[12px] px-4 py-1.5 rounded-md border border-[#dde3ec] dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  Carregar mais ({sorted.length - visible.length} restantes)
-                </button>
-              </div>
-            )}
+            <Pagination
+              total={sorted.length} page={page} pageSize={pageSize}
+              onPageChange={setPage} onPageSizeChange={setPageSize}
+              accent="#0078d4" noun="noun.permissions"
+            />
           </>
         )}
       </div>
@@ -232,7 +232,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
 
 function TypeBadge({ type }: { type: 'Application' | 'Delegated' }) {
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold shrink-0 ${
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-micro font-semibold shrink-0 ${
       type === 'Application'
         ? 'bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800'
         : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
@@ -243,10 +243,10 @@ function TypeBadge({ type }: { type: 'Application' | 'Delegated' }) {
 }
 
 function ActionBadge({ action }: { action: string }) {
-  if (!action) return <span className="text-gray-300 dark:text-gray-600">—</span>
+  if (!action) return <span className="text-fg-muted dark:text-gray-600">—</span>
   const c = ACTION_COLORS[action] ?? { bg: '#f1f0f0', text: '#444' }
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold"
+    <span className="inline-flex items-center px-2 py-0.5 rounded text-2xs font-semibold"
       style={{ backgroundColor: c.bg, color: c.text }}>
       {action}
     </span>
@@ -261,7 +261,7 @@ function SortTh({ col, active, dir, onSort, children, className = '' }: {
   const isActive = active === col
   return (
     <th onClick={() => onSort(col)}
-      className={`text-left text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 py-2.5 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none ${className}`}>
+      className={`text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none ${className}`}>
       <span className="inline-flex items-center gap-1">
         {children}
         {isActive

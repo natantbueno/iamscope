@@ -148,5 +148,29 @@
     "name": "Audit Log Administrator",
     "tier": 2,
     "description": "Configura, gerencia ou consulta trilhas de auditoria imutáveis para investigações de segurança e compliance."
+  },
+  {
+    "id": "security-operations",
+    "name": "Security Operations / Threat Response",
+    "tier": 1,
+    "description": "Investiga alertas, faz triagem de incidentes e responde a ameaças, operando a política definida pelo Security Administrator."
+  },
+  {
+    "id": "firewall-admin",
+    "name": "Firewall / WAF Administrator",
+    "tier": 2,
+    "description": "Regras de firewall de rede, grupos de segurança e WAF de aplicação — o controle de qual tráfego entra."
+  },
+  {
+    "id": "disaster-recovery-admin",
+    "name": "Disaster Recovery / Replication Administrator",
+    "tier": 2,
+    "description": "Replicação contínua e failover entre regiões. Distinto de backup: mantém réplica quente para assumir produção."
+  },
+  {
+    "id": "billing-reader",
+    "name": "Billing / Invoice Reader",
+    "tier": 1,
+    "description": "Leitura de faturas, encargos e uso, sem alterar forma de pagamento, contrato ou propriedade da conta."
   }
 ]

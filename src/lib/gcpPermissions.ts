@@ -1,4 +1,4 @@
-import { GCP_ROLES, GcpTier } from '@/data/gcp'
+import type { GcpTier } from '@/data/gcp'
 
 /**
  * Índice de permissões do GCP.
@@ -61,6 +61,9 @@ export async function getGcpPermissions(): Promise<GcpPermEntry[]> {
     if (!res.ok) throw new Error(`Falha ao carregar gcp-perms-index.json (HTTP ${res.status})`)
     const data: GcpPermsIndex = await res.json()
 
+    // Mesmo motivo de awsActions: gcp.ts são 761 kB só para o mapa
+    // slug -> nome/tier da role.
+    const { GCP_ROLES } = await import('@/data/gcp')
     const bySlug = new Map(GCP_ROLES.map((r) => [r.slug, r]))
 
     const out: GcpPermEntry[] = []

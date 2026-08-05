@@ -1,17 +1,26 @@
 'use client'
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { getAwsActions, type AwsActionEntry } from '@/lib/awsActions'
-import { AWS_TIER_META, AwsTier } from '@/data/aws'
+// TIER_META vem de '@/data/tierMeta', não do módulo de dados. Os dois exportam
+// o mesmo objeto, mas importar pelo módulo de dados arrasta o dataset inteiro
+// para o bundle desta rota — que é justamente o que tierMeta.ts foi criado
+// para evitar. Ver o cabeçalho de src/data/tierMeta.ts.
+import { AWS_TIER_META } from '@/data/tierMeta'
+import type { AwsTier } from '@/data/aws'
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'Operator', 'Specialized', 'ReadOnly']
 
 function AwsActionsContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
@@ -37,8 +46,6 @@ function AwsActionsContent() {
   const [wildcardFilter, setWildcardFilter] = useState<'all' | 'wildcard' | 'specific'>('all')
   const [privOnly, setPrivOnly] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-  const PAGE_SIZE = 100
 
   const filtered = useMemo(() => actions.filter((a) => {
     if (tier    !== 'all' && a.tier    !== tier)    return false
@@ -50,7 +57,7 @@ function AwsActionsContent() {
     return true
   }), [actions, tier, service, wildcardFilter, privOnly, q])
 
-  const paginated = useMemo(() => filtered.slice(0, page * PAGE_SIZE), [filtered, page])
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
 
   const stats = useMemo(() => ({
     total:      actions.length,
@@ -72,32 +79,32 @@ function AwsActionsContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         {loadError && (
-          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-[12px] text-red-600 dark:text-red-400">
+          <div className="m-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-tiny text-red-600 dark:text-red-400">
             Não foi possível carregar o índice de actions da AWS
             (<code className="font-mono">/aws-actions-index.json</code>).
           </div>
         )}
         {loading && !loadError && (
-          <div className="m-4 text-[12px] text-gray-400">Carregando actions da AWS…</div>
+          <div className="m-4 text-tiny text-fg-subtle">{t('state.loadingAwsActions')}</div>
         )}
         <StatsBar stats={[
           { label: 'Total',       value: stats.total,      color: 'orange' },
           { label: 'Wildcards',   value: stats.wildcards,  color: 'red' },
-          { label: 'Específicas', value: stats.specific,   color: 'green' },
+          { label: t('label.specificPlural'), value: stats.specific,   color: 'green' },
           { label: 'Full Access', value: stats.fullAccess, color: 'red' },
           { label: 'Privilegiadas',value: stats.privileged,color: 'red' },
-          { label: 'Serviços',    value: stats.services,   color: 'gray' },
+          { label: t('label.services'),    value: stats.services,   color: 'gray' },
         ]} />
 
         {/* Filters */}
-        <div className="px-4 pt-3 pb-2 border-b border-gray-800 bg-gray-900 flex flex-col gap-2 shrink-0">
+        <div className="px-4 pt-3 pb-2 border-b border-line bg-surface flex flex-col gap-2 shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Tier:</span>
+            <span className="text-2xs text-fg-muted uppercase tracking-wider">Tier:</span>
             {(['all', ...TIERS] as const).map((t) => {
               const meta = t !== 'all' ? AWS_TIER_META[t] : null
               return (
                 <button key={t} onClick={() => { setTier(t); setPage(1) }}
-                  className="text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap"
+                  className="text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap"
                   style={tier === t && meta ? { backgroundColor: meta.color + '25', color: meta.color, borderColor: meta.color + '60' }
                     : tier === t ? { backgroundColor: '#ff990020', color: '#ff9900', borderColor: '#ff990060' }
                     : { color: '#6b7280', borderColor: '#374151' }}>
@@ -108,19 +115,19 @@ function AwsActionsContent() {
             <div className="ml-auto flex items-center gap-2">
               {(['all', 'wildcard', 'specific'] as const).map(w => (
                 <button key={w} onClick={() => { setWildcardFilter(w); setPage(1) }}
-                  className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors ${wildcardFilter === w ? 'bg-[#ff9900] text-black border-[#ff9900]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-                  {w === 'all' ? 'Todos' : w === 'wildcard' ? 'Wildcards (*)' : 'Específicas'}
+                  className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${wildcardFilter === w ? 'bg-csp-aws text-black border-csp-aws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'}`}>
+                  {w === 'all' ? t('filter.all') : w === 'wildcard' ? 'Wildcards (*)' : t('label.specificPlural')}
                 </button>
               ))}
-              <label className="flex items-center gap-1.5 text-[11px] text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-1.5 text-3xs text-fg-subtle cursor-pointer">
                 <input type="checkbox" checked={privOnly} onChange={e => { setPrivOnly(e.target.checked); setPage(1) }}
-                  className="accent-[#ff9900]" />
+                  className="accent-csp-aws" />
                 Priv only
               </label>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Serviço:</span>
+            <span className="text-2xs text-fg-muted uppercase tracking-wider">{t('label.serviceColon')}</span>
             <ServiceSelect
               services={services}
               actions={actions}
@@ -129,25 +136,25 @@ function AwsActionsContent() {
             />
             {service !== 'all' && (
               <button onClick={() => { setService('all'); setPage(1) }}
-                className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-300 transition-colors"
-                title="Limpar filtro de serviço">
+                className="flex items-center gap-1 text-3xs text-fg-muted hover:text-fg-muted transition-colors"
+                title={t('action.clearService')}>
                 <X size={12} /> limpar
               </button>
             )}
-            <span className="text-[10px] text-gray-500 ml-auto">{filtered.length} actions</span>
+            <span className="text-2xs text-fg-muted ml-auto">{filtered.length} actions</span>
           </div>
         </div>
 
         {/* Table */}
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-[12px] border-collapse">
+          <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-800 border-b border-gray-700">
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-6"></th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-32">Serviço</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-32">Tier</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-20">Policies</th>
+              <tr className="bg-surface-alt border-b border-line-strong">
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-6"></th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider">Action</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-32">{t('table.service')}</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-32">Tier</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-20">Policies</th>
               </tr>
             </thead>
             <tbody>
@@ -157,35 +164,35 @@ function AwsActionsContent() {
                 return (
                   <>
                     <tr key={a.action}
-                      className="border-b border-gray-800 hover:bg-gray-800/60 transition-colors cursor-pointer"
+                      className="border-b border-line hover:bg-surface-alt/60 transition-colors cursor-pointer"
                       onClick={() => setExpanded(isExp ? null : a.action)}>
                       <td className="px-4 py-2.5 align-middle text-gray-600">
                         {isExp ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                       </td>
                       <td className="px-4 py-2.5 align-middle">
-                        <code className={`text-[11px] font-mono ${a.isWildcard ? 'text-amber-400' : 'text-[#ff9900]'}`}>{a.action}</code>
-                        {a.isWildcard && <span className="ml-2 text-[9px] uppercase font-bold text-amber-400 bg-amber-900/30 border border-amber-800/50 px-1.5 py-0.5 rounded">wildcard</span>}
-                        {a.isUsedByPrivileged && <span className="ml-2 text-[9px] uppercase font-bold text-red-400 bg-red-900/30 border border-red-800/50 px-1.5 py-0.5 rounded">priv</span>}
+                        <code className={`text-3xs font-mono ${a.isWildcard ? 'text-amber-400' : 'text-csp-aws-onLight dark:text-csp-aws-onDark'}`}>{a.action}</code>
+                        {a.isWildcard && <span className="ml-2 text-micro uppercase font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 px-1.5 py-0.5 rounded">wildcard</span>}
+                        {a.isUsedByPrivileged && <span className="ml-2 text-micro uppercase font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 px-1.5 py-0.5 rounded">priv</span>}
                       </td>
                       <td className="px-4 py-2.5 align-middle">
-                        <code className="text-[11px] text-gray-400 font-mono">{a.service}</code>
+                        <code className="text-3xs text-fg-subtle font-mono">{a.service}</code>
                       </td>
                       <td className="px-4 py-2.5 align-middle">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full border font-medium"
+                        <span className="text-2xs px-2 py-0.5 rounded-full border font-medium"
                           style={{ color: meta.color, backgroundColor: meta.bg, borderColor: meta.color + '40' }}>
                           {meta.label}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 align-middle text-gray-500">{a.usedByPolicies.length}</td>
+                      <td className="px-4 py-2.5 align-middle text-fg-muted">{a.usedByPolicies.length}</td>
                     </tr>
                     {isExp && (
-                      <tr key={a.action + '-exp'} className="border-b border-gray-800 bg-gray-900/60">
+                      <tr key={a.action + '-exp'} className="border-b border-line bg-surface/60">
                         <td colSpan={5} className="px-8 py-2.5">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">Concedida pelas policies:</p>
+                          <p className="text-2xs text-fg-muted uppercase tracking-wider mb-1.5">Concedida pelas policies:</p>
                           <div className="flex flex-wrap gap-1.5">
                             {a.usedByPolicies.map((p) => (
                               <span key={p.slug}
-                                className={`text-[10px] px-2 py-0.5 rounded border ${p.isPrivileged ? 'text-red-400 bg-red-900/20 border-red-800/40' : 'text-gray-300 bg-gray-800 border-gray-700'}`}>
+                                className={`text-2xs px-2 py-0.5 rounded border ${p.isPrivileged ? 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-800/40' : 'text-fg-muted bg-surface-alt border-line-strong'}`}>
                                 {p.name}
                               </span>
                             ))}
@@ -199,17 +206,14 @@ function AwsActionsContent() {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="flex items-center justify-center h-48 text-gray-500 text-[14px]">Nenhuma action encontrada.</div>
-          )}
-          {paginated.length < filtered.length && (
-            <div className="flex justify-center py-4">
-              <button onClick={() => setPage(p => p + 1)}
-                className="text-[12px] px-4 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors">
-                Mostrar mais ({filtered.length - paginated.length} restantes)
-              </button>
-            </div>
+            <div className="flex items-center justify-center h-48 text-fg-muted text-note">{t('empty.actions')}</div>
           )}
         </div>
+      <Pagination
+        total={filtered.length} page={page} pageSize={pageSize}
+        onPageChange={setPage} onPageSizeChange={setPageSize}
+        accent="#ff9900" noun="noun.actions"
+      />
       </div>
     </AppShell>
   )
@@ -217,7 +221,7 @@ function AwsActionsContent() {
 
 export default function AwsActionsPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <AwsActionsContent />
     </Suspense>
   )
@@ -233,6 +237,9 @@ function ServiceSelect({ services, actions, value, onChange }: {
   value: string
   onChange: (s: string) => void
 }) {
+  // Subcomponente precisa do próprio hook — foi exatamente isto que o
+  // check-i18n-scope pegou aqui.
+  const t = useT()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const rootRef = useRef<HTMLDivElement>(null)
@@ -268,20 +275,20 @@ function ServiceSelect({ services, actions, value, onChange }: {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`flex items-center gap-1.5 text-[11px] pl-2.5 pr-2 py-1 rounded-md border transition-colors ${
+        className={`flex items-center gap-1.5 text-3xs pl-2.5 pr-2 py-1 rounded-md border transition-colors ${
           value !== 'all'
-            ? 'bg-[#ff990020] text-[#ff9900] border-[#ff990060]'
-            : 'text-gray-400 border-gray-700 hover:border-gray-500 hover:text-gray-300 bg-gray-800'
+            ? 'bg-[#ff990020] text-csp-aws-onLight dark:text-csp-aws-onDark border-[#ff990060]'
+            : 'text-fg-subtle border-line-strong hover:border-gray-500 hover:text-fg-muted bg-surface-alt'
         }`}
       >
-        {value === 'all' ? 'Todos os serviços' : <code className="font-mono">{value}</code>}
+        {value === 'all' ? t('filter.allServices') : <code className="font-mono">{value}</code>}
         <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-30 w-72 rounded-lg border border-gray-700 bg-gray-900 shadow-2xl overflow-hidden">
-          <div className="relative border-b border-gray-800">
-            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+        <div className="absolute left-0 top-full mt-1 z-30 w-72 rounded-lg border border-line-strong bg-surface shadow-2xl overflow-hidden">
+          <div className="relative border-b border-line">
+            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" />
             <input
               ref={inputRef}
               type="text"
@@ -292,17 +299,17 @@ function ServiceSelect({ services, actions, value, onChange }: {
                 if (e.key === 'Enter' && visible.length > 0) pick(visible[0])
               }}
               placeholder={`Buscar entre ${services.length} serviços...`}
-              className="w-full text-[11px] pl-7 pr-2.5 py-2 bg-transparent text-gray-100 placeholder-gray-500 outline-none"
+              className="w-full text-3xs pl-7 pr-2.5 py-2 bg-transparent text-fg placeholder-fg-subtle outline-none"
             />
           </div>
           <ul role="listbox" className="max-h-64 overflow-y-auto py-1">
             {!q && (
               <li>
                 <button onClick={() => pick('all')}
-                  className={`w-full flex items-center justify-between px-3 py-1.5 text-[11px] text-left transition-colors ${
-                    value === 'all' ? 'text-[#ff9900] bg-[#ff990010]' : 'text-gray-300 hover:bg-gray-800'
+                  className={`w-full flex items-center justify-between px-3 py-1.5 text-3xs text-left transition-colors ${
+                    value === 'all' ? 'text-csp-aws-onLight dark:text-csp-aws-onDark bg-[#ff990010]' : 'text-fg-muted hover:bg-surface-alt'
                   }`}>
-                  Todos os serviços
+                  {t('filter.allServices')}
                 </button>
               </li>
             )}
@@ -310,15 +317,15 @@ function ServiceSelect({ services, actions, value, onChange }: {
               <li key={s}>
                 <button onClick={() => pick(s)}
                   className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left transition-colors ${
-                    value === s ? 'bg-[#ff990015]' : 'hover:bg-gray-800'
+                    value === s ? 'bg-[#ff990015]' : 'hover:bg-surface-alt'
                   }`}>
-                  <code className={`text-[11px] font-mono ${value === s ? 'text-[#ff9900]' : 'text-gray-300'}`}>{s}</code>
-                  <span className="text-[10px] text-gray-500 tabular-nums">{counts.get(s) ?? 0}</span>
+                  <code className={`text-3xs font-mono ${value === s ? 'text-csp-aws-onLight dark:text-csp-aws-onDark' : 'text-fg-muted'}`}>{s}</code>
+                  <span className="text-2xs text-fg-muted tabular-nums">{counts.get(s) ?? 0}</span>
                 </button>
               </li>
             ))}
             {visible.length === 0 && (
-              <li className="px-3 py-2 text-[11px] text-gray-500">Nenhum serviço encontrado.</li>
+              <li className="px-3 py-2 text-3xs text-fg-muted">{t('empty.services')}</li>
             )}
           </ul>
         </div>

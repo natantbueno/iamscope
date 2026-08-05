@@ -1,191 +1,180 @@
 'use client'
 
 import { Suspense, useMemo, useState } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
-import { GWS_ROLES, GWS_TIER_META, GwsTier } from '@/data/googleWorkspace'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { GWS_PRIVILEGES, GWS_SOURCES } from '@/data/googleWorkspace'
+import { Info } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 
-// Derive unique admin API privileges from all roles
-interface GwsPrivEntry {
-  privilege: string
-  category: string
-  usedByRoles: { name: string; slug: string; isPrivileged: boolean; tier: GwsTier }[]
-}
+/**
+ * Catálogo de privilégios do Admin console do Google Workspace.
+ *
+ * ANTES ESTA PÁGINA ERA DERIVADA DAS ROLES
+ *   Ela juntava os `apiPrivileges` de cada role e apresentava o resultado como
+ *   catálogo. Aqueles nomes não vinham do Google — 79 dos 84 eram inventados.
+ *   Agora a página lê o catálogo oficial da página "Administrator privilege
+ *   definitions", que é a lista que o Admin console realmente mostra.
+ *
+ * O QUE NÃO DÁ PARA MOSTRAR
+ *   Quais roles concedem cada privilégio. O Google não publica esse mapa; ele
+ *   só existe via privileges.list do Admin SDK, que exige OAuth no tenant.
+ *   A página declara a lacuna em vez de preencher com suposição.
+ */
 
-function buildPrivileges(): GwsPrivEntry[] {
-  const map = new Map<string, GwsPrivEntry>()
-  for (const role of GWS_ROLES) {
-    if (!role.apiPrivileges) continue
-    for (const priv of role.apiPrivileges) {
-      if (!map.has(priv)) {
-        // derive category from prefix
-        const prefix = priv.split('_')[0]
-        const CATEGORY_MAP: Record<string, string> = {
-          SUPER: 'Identity', USERS: 'Identity', GROUPS: 'Identity',
-          DEVICES: 'Device', CHROME: 'Device',
-          SECURITY: 'Security', ADMIN: 'Audit',
-          BILLING: 'Billing', RESELLER: 'Billing',
-          SERVICES: 'Services', OU: 'Services', MARKETPLACE: 'Services', DATA: 'Services',
-          STORAGE: 'Storage', DRIVE: 'Storage',
-          DIRECTORY: 'Directory', CALENDAR: 'Calendar',
-          VOICE: 'Communication', REPORT: 'Analytics', USAGE: 'Analytics', ALERT: 'Analytics',
-        }
-        map.set(priv, { privilege: priv, category: CATEGORY_MAP[prefix] ?? 'Other', usedByRoles: [] })
-      }
-      const entry = map.get(priv)!
-      if (!entry.usedByRoles.some(r => r.slug === role.slug)) {
-        entry.usedByRoles.push({ name: role.name, slug: role.slug, isPrivileged: role.isPrivileged, tier: role.tier })
-      }
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => a.privilege.localeCompare(b.privilege))
-}
-
-const TIERS: GwsTier[] = ['SuperAdmin', 'DelegatedAdmin', 'ServiceAdmin', 'SpecializedAdmin', 'ReadOnly']
+const SECOES = ['Admin settings', 'Services'] as const
 
 function GwsPrivilegesContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
-  const privileges = useMemo(() => buildPrivileges(), [])
-  const categories = useMemo(() => [...new Set(privileges.map(p => p.category))].sort(), [privileges])
+  const [secao, setSecao] = useState<string>('all')
+  const [grupo, setGrupo] = useState<string>('all')
 
-  const [category, setCategory] = useState('all')
-  const [privOnly,  setPrivOnly] = useState(false)
-  const [expanded,  setExpanded] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-  const PAGE_SIZE = 100
+  const grupos = useMemo(
+    () => [...new Set(GWS_PRIVILEGES.filter((p) => secao === 'all' || p.section === secao).map((p) => p.group))].sort(),
+    [secao],
+  )
 
-  const filtered = useMemo(() => privileges.filter((p) => {
-    if (category !== 'all' && p.category !== category) return false
-    if (privOnly && !p.usedByRoles.some(r => r.isPrivileged)) return false
-    if (q && !p.privilege.toLowerCase().includes(q.toLowerCase())) return false
+  const filtered = useMemo(() => GWS_PRIVILEGES.filter((p) => {
+    if (secao !== 'all' && p.section !== secao) return false
+    if (grupo !== 'all' && p.group !== grupo) return false
+    if (q) {
+      const s = q.toLowerCase()
+      if (!p.name.toLowerCase().includes(s) && !p.description.toLowerCase().includes(s)) return false
+    }
     return true
-  }), [privileges, category, privOnly, q])
+  }), [secao, grupo, q])
 
-  const paginated = useMemo(() => filtered.slice(0, page * PAGE_SIZE), [filtered, page])
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtered)
 
   const stats = useMemo(() => ({
-    total:      privileges.length,
-    categories: categories.length,
-    superAdmin: privileges.filter(p => p.usedByRoles.some(r => r.tier === 'SuperAdmin')).length,
-    privileged: privileges.filter(p => p.usedByRoles.some(r => r.isPrivileged)).length,
-    roles:      GWS_ROLES.filter(r => r.apiPrivileges && r.apiPrivileges.length > 0).length,
-  }), [privileges, categories])
+    total:   GWS_PRIVILEGES.length,
+    grupos:  GWS_PRIVILEGES.filter((p) => !p.isChild).length,
+    filhos:  GWS_PRIVILEGES.filter((p) => p.isChild).length,
+    admin:   GWS_PRIVILEGES.filter((p) => p.section === 'Admin settings').length,
+    servicos: GWS_PRIVILEGES.filter((p) => p.section === 'Services').length,
+  }), [])
+
+  const fonte = GWS_SOURCES.find((s) => s.id === 'privilege-definitions')
 
   return (
     <AppShell
-      headerTitle="Google Workspace — Admin API Privileges"
-      headerSub={`${stats.total} privilégios únicos · ${stats.roles} roles com API privileges`}
+      headerTitle="Google Workspace — Admin Privileges"
+      headerSub={`${stats.total} privilégios oficiais · ${stats.grupos} grupos`}
       headerActions={<ExportButton filename="google-workspace-privileges" data={filtered.map((p) => ({
-        privilege: p.privilege, category: p.category, usedByRolesCount: p.usedByRoles.length,
+        privilege: p.name, section: p.section, group: p.group, description: p.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total',        value: stats.total,      color: 'green' },
-          { label: 'Super Admin',  value: stats.superAdmin, color: 'red' },
-          { label: 'Privilegiadas',value: stats.privileged, color: 'red' },
-          { label: 'Categorias',   value: stats.categories, color: 'gray' },
-          { label: 'Roles com API',value: stats.roles,      color: 'green' },
+          { label: 'Total',          value: stats.total,    color: 'green' },
+          { label: 'Grupos',         value: stats.grupos,   color: 'green' },
+          { label: 'Sub-privilégios',value: stats.filhos,   color: 'gray' },
+          { label: 'Admin settings', value: stats.admin,    color: 'gray' },
+          { label: 'Services',       value: stats.servicos, color: 'gray' },
         ]} />
 
-        {/* Filters */}
-        <div className="px-4 pt-3 pb-2 border-b border-gray-800 bg-gray-900 flex flex-col gap-2 shrink-0">
+        {/*
+          Aviso de lacuna, no topo e não no rodapé: sem ele o usuário procuraria
+          a coluna "quais roles concedem" e concluiria que o site está quebrado.
+        */}
+        <div className="mx-4 mt-3 flex items-start gap-2 rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-3 py-2">
+          <Info size={13} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-3xs text-amber-700 dark:text-amber-400 leading-relaxed">
+            Esta é a lista de privilégios que o Admin console apresenta, no texto oficial do Google.
+            O <strong>mapa de qual role concede qual privilégio não é publicado</strong> — só existe
+            via <code className="font-mono">privileges.list</code> do Admin SDK, que exige OAuth no
+            seu tenant. Por isso não há coluna de roles aqui.
+            {fonte && (
+              <>
+                {' '}
+                <a href={fonte.url} target="_blank" rel="noopener noreferrer" className="underline">
+                  Fonte oficial
+                </a>
+                {' '}(doc de {fonte.docLastUpdated}).
+              </>
+            )}
+          </p>
+        </div>
+
+        {/* Filtros */}
+        <div className="px-4 pt-3 pb-2 border-b border-line bg-surface flex flex-col gap-2 shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Categoria:</span>
-            <button onClick={() => { setCategory('all'); setPage(1) }}
-              className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors ${category === 'all' ? 'bg-[#34a853] text-white border-[#34a853]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
+            <span className="text-2xs text-fg-muted uppercase tracking-wider">Seção:</span>
+            <button onClick={() => { setSecao('all'); setGrupo('all'); setPage(1) }}
+              className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${secao === 'all' ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'}`}>
               Todas
             </button>
-            {categories.map(c => (
-              <button key={c} onClick={() => { setCategory(category === c ? 'all' : c); setPage(1) }}
-                className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors ${category === c ? 'bg-[#34a853] text-white border-[#34a853]' : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'}`}>
-                {c}
+            {SECOES.map((s) => (
+              <button key={s} onClick={() => { setSecao(secao === s ? 'all' : s); setGrupo('all'); setPage(1) }}
+                className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${secao === s ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'}`}>
+                {s}
               </button>
             ))}
-            <label className="ml-auto flex items-center gap-1.5 text-[11px] text-gray-400 cursor-pointer">
-              <input type="checkbox" checked={privOnly} onChange={e => { setPrivOnly(e.target.checked); setPage(1) }}
-                className="accent-[#34a853]" />
-              Privilegiadas only
-            </label>
-            <span className="text-[10px] text-gray-500">{filtered.length} privilégios</span>
+            <span className="ml-auto text-2xs text-fg-muted">{filtered.length} privilégios</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-2xs text-fg-muted uppercase tracking-wider">Grupo:</span>
+            <button onClick={() => { setGrupo('all'); setPage(1) }}
+              className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${grupo === 'all' ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'}`}>
+              Todos
+            </button>
+            {grupos.map((g) => (
+              <button key={g} onClick={() => { setGrupo(grupo === g ? 'all' : g); setPage(1) }}
+                className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${grupo === g ? 'bg-csp-gws text-white border-csp-gws' : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'}`}>
+                {g}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Table */}
+        {/* Tabela */}
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-[12px] border-collapse">
+          <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-800 border-b border-gray-700">
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-6"></th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">API Privilege</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-32">Categoria</th>
-                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-20">Roles</th>
+              <tr className="bg-surface-alt border-b border-line-strong">
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-80">Privilégio</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider w-36">Seção</th>
+                <th className="px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider">{t('table.description')}</th>
               </tr>
             </thead>
             <tbody>
-              {paginated.map((p) => {
-                const isExp = expanded === p.privilege
-                const hasPrivRole = p.usedByRoles.some(r => r.isPrivileged)
-                return (
-                  <>
-                    <tr key={p.privilege}
-                      className="border-b border-gray-800 hover:bg-gray-800/60 transition-colors cursor-pointer"
-                      onClick={() => setExpanded(isExp ? null : p.privilege)}>
-                      <td className="px-4 py-2.5 align-middle text-gray-600">
-                        {isExp ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                      </td>
-                      <td className="px-4 py-2.5 align-middle">
-                        <code className="text-[11px] font-mono text-[#34a853]">{p.privilege}</code>
-                        {hasPrivRole && <span className="ml-2 text-[9px] uppercase font-bold text-red-400 bg-red-900/30 border border-red-800/50 px-1.5 py-0.5 rounded">priv</span>}
-                      </td>
-                      <td className="px-4 py-2.5 align-middle">
-                        <span className="text-[10px] text-gray-400 bg-gray-800 border border-gray-700 px-2 py-0.5 rounded-full">
-                          {p.category}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 align-middle text-gray-500">{p.usedByRoles.length}</td>
-                    </tr>
-                    {isExp && (
-                      <tr key={p.privilege + '-exp'} className="border-b border-gray-800 bg-gray-900/60">
-                        <td colSpan={4} className="px-8 py-2.5">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">Concedida pelas admin roles:</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {p.usedByRoles.map((r) => {
-                              const tm = GWS_TIER_META[r.tier]
-                              return (
-                                <span key={r.slug}
-                                  className="text-[10px] px-2 py-0.5 rounded border"
-                                  style={{ color: tm.textColor, backgroundColor: tm.darkBg, borderColor: tm.textColor + '40' }}>
-                                  {r.name}
-                                </span>
-                              )
-                            })}
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                )
-              })}
+              {paginated.map((p) => (
+                <tr key={p.slug} className="border-b border-line hover:bg-surface-alt/60 transition-colors">
+                  <td className="px-4 py-2.5 align-top">
+                    {/* Sub-privilégio recuado: espelha a hierarquia do Admin console */}
+                    <span className={p.isChild ? 'pl-4 text-fg-muted' : 'font-medium text-csp-gws-onLight dark:text-csp-gws-onDark'}>
+                      {p.name}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 align-top">
+                    <span className="text-2xs text-fg-subtle bg-surface-alt border border-line-strong px-2 py-0.5 rounded-full whitespace-nowrap">
+                      {p.section}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 align-top text-fg-muted text-3xs leading-relaxed">
+                    {p.description || <span className="text-fg-subtle italic">—</span>}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="flex items-center justify-center h-48 text-gray-500 text-[14px]">Nenhum privilégio encontrado.</div>
-          )}
-          {paginated.length < filtered.length && (
-            <div className="flex justify-center py-4">
-              <button onClick={() => setPage(p => p + 1)}
-                className="text-[12px] px-4 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors">
-                Mostrar mais ({filtered.length - paginated.length} restantes)
-              </button>
-            </div>
+            <div className="flex items-center justify-center h-48 text-fg-muted text-note">{t('empty.privileges')}</div>
           )}
         </div>
+        <Pagination
+          total={filtered.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#34a853" noun="noun.privileges"
+        />
       </div>
     </AppShell>
   )
@@ -193,7 +182,7 @@ function GwsPrivilegesContent() {
 
 export default function GwsPrivilegesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-400">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-subtle">Carregando...</div>}>
       <GwsPrivilegesContent />
     </Suspense>
   )

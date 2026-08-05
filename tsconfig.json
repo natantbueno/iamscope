@@ -23,6 +23,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "_backup-ui-ux-20260802-232301"
   ]
 }

@@ -5,36 +5,37 @@ import Link from 'next/link'
 import { Search, ShieldAlert, Sparkles, ChevronRight, X, Loader2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { searchRoles, AdvisorPlatform, AdvisorResult } from '@/lib/roleAdvisor'
+import { useT } from '@/i18n/LanguageProvider'
+import { Rich } from '@/i18n/Rich'
+import type { TranslationKey } from '@/i18n/dictionary'
 
-const PLATFORMS: { value: AdvisorPlatform | 'all'; label: string; color: string }[] = [
-  { value: 'all',              label: 'Todas as plataformas', color: '#6b7280' },
-  { value: 'entraId',         label: 'Entra ID',             color: '#0078d4' },
-  { value: 'azureRbac',       label: 'Azure RBAC',           color: '#008ad7' },
-  { value: 'googleWorkspace', label: 'Google Workspace',     color: '#34a853' },
-  { value: 'ibmCloud',        label: 'IBM Cloud',            color: '#0f62fe' },
-  { value: 'gcp',             label: 'GCP IAM',              color: '#4285f4' },
-  { value: 'aws',             label: 'AWS IAM',              color: '#ff9900' },
+// Só o rótulo de "todas" é texto — os demais são nomes de plataforma.
+const PLATFORMS: { value: AdvisorPlatform | 'all'; label: TranslationKey | null; color: string }[] = [
+  { value: 'all',             label: 'adv.allPlatforms', color: '#6b7280' },
+  { value: 'entraId',         label: null,               color: '#0078d4' },
+  { value: 'azureRbac',       label: null,               color: '#5c2d91' },
+  { value: 'googleWorkspace', label: null,               color: '#34a853' },
+  { value: 'ibmCloud',        label: null,               color: '#08bdba' },
+  { value: 'gcp',             label: null,               color: '#4285f4' },
+  { value: 'aws',             label: null,               color: '#ff9900' },
 ]
 
-const EXAMPLES = [
-  'Quero acesso de leitura somente para auditar recursos no Azure',
-  'Preciso gerenciar DNS e rede na infraestrutura clássica IBM',
-  'Administrar usuários e grupos no Google Workspace',
-  'Gerenciar políticas IAM e identidades no Entra ID',
-  'Acesso total ao Kubernetes sem permissão de billing',
-  'Configurar regras de firewall e segurança de rede',
-  'Monitorar e visualizar logs e métricas de observabilidade',
-  'Gerenciar certificados SSL e chaves SSH',
-  'Acesso somente leitura ao S3 e DynamoDB na AWS',
-  'Administrar contas de serviço e funções no GCP IAM',
-  'Criar e rotacionar segredos no Key Vault do Azure',
-  'Acesso a billing e custos sem tocar em recursos',
-  'Gerenciar pipelines de CI/CD e repositórios de containers',
-  'Conceder acesso just-in-time a roles privilegiadas via PIM',
-  'Quem tem acesso equivalente a root/owner em cada cloud?',
+const PLATFORM_NAME: Record<string, string> = {
+  all: '', entraId: 'Entra ID', azureRbac: 'Azure RBAC', googleWorkspace: 'Google Workspace',
+  ibmCloud: 'IBM Cloud', gcp: 'GCP IAM', aws: 'AWS IAM',
+}
+
+// O exemplo vira a consulta digitada, então precisa sair no idioma da pessoa —
+// e a busca é por substring sobre dado em inglês, o que já é dito na dica de
+// "nenhum resultado".
+const EXAMPLES: TranslationKey[] = [
+  'adv.exOne', 'adv.exTwo', 'adv.exThree', 'adv.exFour', 'adv.exFive',
+  'adv.exSix', 'adv.exSeven', 'adv.exFifteen', 'adv.exEight', 'adv.exNine',
+  'adv.exTen', 'adv.exEleven', 'adv.exTwelve', 'adv.exThirteen', 'adv.exFourteen',
 ]
 
 export default function AdvisorPage() {
+  const t = useT()
   const [query, setQuery]           = useState('')
   const [platform, setPlatform]     = useState<AdvisorPlatform | 'all'>('all')
   const [results, setResults]       = useState<AdvisorResult[]>([])
@@ -95,21 +96,21 @@ export default function AdvisorPage() {
   return (
     <AppShell
       headerTitle="Role Advisor"
-      headerSub="Descreva o que você precisa fazer — encontraremos a role ideal em todas as plataformas"
+      headerSub={t('adv.headerSub')}
     >
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
 
         {/* ── Search area ─────────────────────────────────────────────────── */}
-        <div className="px-6 pt-6 pb-4 border-b border-[#dde3ec] dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+        <div className="px-6 pt-6 pb-4 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
 
           {/* Intro banner */}
           {!searched && (
             <div className="mb-4 flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-950/40 dark:to-blue-950/40 border border-violet-200/60 dark:border-violet-800/40">
               <Sparkles size={18} className="text-violet-500 mt-0.5 shrink-0" />
               <div>
-                <p className="text-[13px] font-medium text-gray-800 dark:text-gray-200">Role Advisor — busca semântica cross-platform</p>
-                <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">
-                  Descreva em linguagem natural o que você precisa fazer. O advisor pesquisa em <strong>{'>'}1.700 roles</strong> do Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM e AWS IAM e retorna as mais relevantes para o seu contexto.
+                <p className="text-body font-medium text-gray-800 dark:text-gray-200">{t('adv.pageTitle')}</p>
+                <p className="text-tiny text-fg-muted mt-0.5">
+                  <Rich text={t('adv.introBody')} />
                 </p>
               </div>
             </div>
@@ -117,17 +118,17 @@ export default function AdvisorPage() {
 
           {/* Textarea */}
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
+            <Search size={16} className="absolute left-3 top-3.5 text-fg-muted shrink-0" />
             <textarea
               ref={inputRef}
               value={query}
               onChange={e => handleChange(e.target.value)}
-              placeholder="Ex: Preciso gerenciar registros DNS e configurar VPN na infraestrutura clássica IBM..."
+              placeholder={t('ph.advisorExample')}
               rows={2}
-              className="w-full pl-9 pr-10 py-3 text-[13px] rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none focus:border-violet-500 dark:focus:border-violet-400 focus:ring-1 focus:ring-violet-500/30 transition-colors"
+              className="w-full pl-9 pr-10 py-3 text-body rounded-lg border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none focus:border-violet-500 dark:focus:border-violet-400 focus:ring-1 focus:ring-violet-500/30 transition-colors"
             />
             {query && (
-              <button onClick={clear} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              <button onClick={clear} className="absolute right-3 top-3 text-fg-subtle hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 <X size={15} />
               </button>
             )}
@@ -137,19 +138,19 @@ export default function AdvisorPage() {
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             {PLATFORMS.map(p => (
               <button key={p.value} onClick={() => handlePlatform(p.value)}
-                className={`text-[12px] px-3 py-1 rounded-full border transition-colors font-medium ${
+                className={`text-tiny px-3 py-1 rounded-full border transition-colors font-medium ${
                   platform === p.value
                     ? 'text-white border-transparent'
-                    : 'bg-transparent text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    : 'bg-transparent text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={platform === p.value ? { background: p.color, borderColor: p.color } : {}}>
-                {p.label}
+                {p.label ? t(p.label) : PLATFORM_NAME[p.value]}
               </button>
             ))}
-            {loading && <Loader2 size={14} className="ml-2 text-gray-400 animate-spin" />}
+            {loading && <Loader2 size={14} className="ml-2 text-fg-subtle animate-spin" />}
             {searched && !loading && (
-              <span className="ml-auto text-[12px] text-gray-400 dark:text-gray-500">
-                {results.length} resultado{results.length !== 1 ? 's' : ''}
+              <span className="ml-auto text-tiny text-fg-muted">
+                {results.length} {results.length === 1 ? t('adv.resultOne') : t('adv.resultMany')}
               </span>
             )}
           </div>
@@ -161,13 +162,13 @@ export default function AdvisorPage() {
           {/* Idle state — examples */}
           {!searched && !loading && (
             <div>
-              <p className="text-[12px] text-gray-400 dark:text-gray-500 mb-3 font-medium uppercase tracking-wider">Exemplos de busca</p>
+              <p className="text-tiny text-fg-muted mb-3 font-medium uppercase tracking-wider">{t('adv.examplesTitle')}</p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {EXAMPLES.map(ex => (
-                  <button key={ex} onClick={() => handleExample(ex)}
-                    className="text-left text-[13px] px-4 py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/30 transition-all flex items-center gap-2">
+                {EXAMPLES.map(exKey => (
+                  <button key={exKey} onClick={() => handleExample(t(exKey))}
+                    className="text-left text-body px-4 py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-fg-muted hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/30 transition-all flex items-center gap-2">
                     <Sparkles size={12} className="shrink-0 opacity-60" />
-                    {ex}
+                    {t(exKey)}
                   </button>
                 ))}
               </div>
@@ -176,10 +177,10 @@ export default function AdvisorPage() {
 
           {/* No results */}
           {searched && !loading && results.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500">
+            <div className="flex flex-col items-center justify-center py-16 text-fg-muted">
               <Search size={32} className="mb-3 opacity-40" />
-              <p className="text-[14px] font-medium">Nenhuma role encontrada</p>
-              <p className="text-[12px] mt-1">Tente termos mais específicos ou em inglês</p>
+              <p className="text-note font-medium">{t('adv.emptyTitle')}</p>
+              <p className="text-tiny mt-1">{t('adv.emptyHint')}</p>
             </div>
           )}
 
@@ -191,10 +192,10 @@ export default function AdvisorPage() {
                 return (
                   <div key={platformLabel}>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded text-white" style={{ background: platformColor }}>
+                      <span className="text-3xs font-semibold px-2 py-0.5 rounded text-white" style={{ background: platformColor }}>
                         {platformLabel}
                       </span>
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500">{items.length} role{items.length !== 1 ? 's' : ''}</span>
+                      <span className="text-3xs text-fg-muted">{items.length} {items.length === 1 ? t('adv.roleOne') : t('noun.roles')}</span>
                     </div>
                     <div className="space-y-1.5">
                       {items.map(({ role, score, matchedTerms }) => (
@@ -208,24 +209,24 @@ export default function AdvisorPage() {
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-[13px] font-medium text-gray-800 dark:text-gray-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                              <span className="text-body font-medium text-gray-800 dark:text-gray-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                                 {role.name}
                               </span>
                               {role.isPrivileged && <ShieldAlert size={12} className="text-red-500 shrink-0" />}
-                              <span className="text-[11px] px-1.5 py-0.5 rounded-full font-medium"
+                              <span className="text-3xs px-1.5 py-0.5 rounded-full font-medium"
                                 style={{ background: role.tierColor + '20', color: role.tierColor }}>
                                 {role.tier}
                               </span>
                             </div>
-                            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+                            <p className="text-tiny text-fg-muted mt-0.5 line-clamp-2">
                               {role.description}
                             </p>
                             {matchedTerms.length > 0 && (
                               <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-                                <span className="text-[10px] text-gray-400 dark:text-gray-600">termos:</span>
-                                {matchedTerms.slice(0, 6).map(t => (
-                                  <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-mono">
-                                    {t}
+                                <span className="text-2xs text-fg-subtle dark:text-gray-600">{t('adv.termsLabel')}</span>
+                                {matchedTerms.slice(0, 6).map(term => (
+                                  <span key={term} className="text-2xs px-1.5 py-0.5 rounded bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-mono">
+                                    {term}
                                   </span>
                                 ))}
                               </div>
@@ -234,8 +235,8 @@ export default function AdvisorPage() {
 
                           {/* Relevance */}
                           <div className="flex flex-col items-end gap-1 shrink-0">
-                            <ChevronRight size={14} className="text-gray-300 dark:text-gray-600 group-hover:text-violet-500 transition-colors" />
-                            <span className="text-[10px] text-gray-300 dark:text-gray-600 font-mono">{Math.round(score)}</span>
+                            <ChevronRight size={14} className="text-fg-muted dark:text-gray-600 group-hover:text-violet-500 transition-colors" />
+                            <span className="text-2xs text-fg-muted dark:text-gray-600 font-mono">{Math.round(score)}</span>
                           </div>
                         </Link>
                       ))}

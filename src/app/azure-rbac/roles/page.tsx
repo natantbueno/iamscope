@@ -1,26 +1,21 @@
 'use client'
 
 import { Suspense, useState, useMemo, useEffect } from 'react'
+import ClassificationBadge from '@/components/ClassificationBadge'
+import { useT } from '@/i18n/LanguageProvider'
 import { useSearchParams, useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
 import Link from 'next/link'
-import { ChevronUp, ChevronDown, ChevronsUpDown, ShieldAlert, ChevronRight, Search, X } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, ShieldAlert, ChevronRight } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import { usePagination } from '@/hooks/usePagination'
 import ExportMenu from '@/components/ExportMenu'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 
 type SortCol = 'name' | 'category' | 'tier' | 'permissionCount'
 type SortDir = 'asc' | 'desc'
-
-/**
- * Índice invertido permissão -> roles, gerado por scripts/build-azure-perms-index.js.
- * `index` guarda posições dentro de `slugs` (mais compacto que repetir o slug).
- */
-interface PermIndex {
-  slugs: string[]
-  index: Record<string, number[]>
-}
 
 const TIER_ORDER: Record<AzureRbacTier, number> = {
   FullControl: 0, AccessManagement: 1, Contributor: 2, DataPlane: 3, Reader: 4, Specialized: 5,
@@ -49,6 +44,7 @@ const CATEGORY_COLORS: Record<AzureRbacCategory, { bg: string; text: string; bor
 }
 
 function AzureRbacRolesContent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -59,43 +55,7 @@ function AzureRbacRolesContent() {
   const [sortCol, setSortCol]         = useState<SortCol>('name')
   const [sortDir, setSortDir]         = useState<SortDir>('asc')
 
-  // Busca por permissão — usa o índice invertido gerado em build time
-  // (public/azure-perms-index.json). Carregado sob demanda: só baixa o índice
-  // quando o usuário realmente digita algo, para não pesar a página.
-  const [permQuery, setPermQuery]   = useState('')
-  const [permIndex, setPermIndex]   = useState<PermIndex | null>(null)
-  const [permLoading, setPermLoad]  = useState(false)
-  const [permError, setPermError]   = useState(false)
-
-  useEffect(() => {
-    if (!permQuery.trim() || permIndex || permLoading) return
-    setPermLoad(true)
-    fetch('/azure-perms-index.json')
-      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() })
-      .then((data: PermIndex) => { setPermIndex(data); setPermError(false) })
-      .catch(() => setPermError(true))
-      .finally(() => setPermLoad(false))
-  }, [permQuery, permIndex, permLoading])
-
-  // slug -> permissões que casam com a busca atual
-  const permMatches = useMemo(() => {
-    const q = permQuery.trim().toLowerCase()
-    if (!q || !permIndex) return null
-    const bySlug = new Map<string, string[]>()
-    for (const action of Object.keys(permIndex.index)) {
-      if (!action.toLowerCase().includes(q)) continue
-      for (const i of permIndex.index[action]) {
-        const slug = permIndex.slugs[i]
-        if (!slug) continue
-        const arr = bySlug.get(slug)
-        if (arr) arr.push(action)
-        else bySlug.set(slug, [action])
-      }
-    }
-    return bySlug
-  }, [permQuery, permIndex])
-
-  const { widths, onMouseDown } = useColumnResize([200, 240, 220, 100, 150, 80, 60])
+  const { widths, onMouseDown } = useColumnResize([200, 240, 100, 150, 80, 60])
 
   // Sync state from URL params — fires on every navigation (sidebar clicks)
   useEffect(() => {
@@ -116,10 +76,9 @@ function AzureRbacRolesContent() {
       const matchTier    = activeTier === 'all' || r.tier === activeTier
       const matchCat     = activeCat  === 'all' || r.category === activeCat
       const matchPriv    = !privilegedOnly || r.isPrivileged
-      const matchPerm    = !permMatches || permMatches.has(r.slug)
-      return matchSearch && matchTier && matchCat && matchPriv && matchPerm
+      return matchSearch && matchTier && matchCat && matchPriv
     })
-  }, [search, activeTier, activeCat, privilegedOnly, permMatches])
+  }, [search, activeTier, activeCat, privilegedOnly])
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => {
     let cmp = 0
@@ -149,11 +108,14 @@ function AzureRbacRolesContent() {
     router.replace(`/azure-rbac/roles?${p.toString()}`, { scroll: false })
   }
 
+  const { paginated, page, setPage, pageSize, setPageSize } = usePagination(sorted)
+
+
   return (
     <AppShell
       headerTitle="Azure RBAC — Built-in Roles"
       headerSub={`${AZURE_ROLES.length} roles · ${ALL_CATEGORIES.length} categorias · 6 risk tiers`}
-      headerActions={<ExportMenu mode="azureRbac" azureRoles={sorted} matchedPerms={permMatches} />}
+      headerActions={<ExportMenu mode="azureRbac" azureRoles={sorted} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
@@ -167,15 +129,16 @@ function AzureRbacRolesContent() {
         ]} />
 
         {/* Filter bar — row 1: search + tier chips */}
-        <div className="px-4 pt-3 pb-2 border-b border-gray-800 bg-gray-900">
+        <div className="px-4 pt-3 pb-2 border-b border-line bg-surface">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             {/* Tier chips */}
+            <ClassificationBadge size="sm" className="mr-1" />
             <button
               onClick={() => pushTier('all')}
-              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap ${
+              className={`text-3xs px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap ${
                 activeTier === 'all'
-                  ? 'bg-gray-700 text-gray-100 border-gray-500'
-                  : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
+                  ? 'bg-gray-700 text-fg border-gray-500'
+                  : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
               }`}>
               Todos
             </button>
@@ -185,7 +148,7 @@ function AzureRbacRolesContent() {
               return (
                 <button key={tier}
                   onClick={() => pushTier(active ? 'all' : tier)}
-                  className="text-[11px] px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap"
+                  className="text-3xs px-2.5 py-1 rounded-full border transition-colors font-medium whitespace-nowrap"
                   style={active
                     ? { backgroundColor: meta.textColor + '30', color: meta.darkText, borderColor: meta.textColor + '80' }
                     : { color: '#6b7280', borderColor: '#374151' }
@@ -197,24 +160,24 @@ function AzureRbacRolesContent() {
 
             <button
               onClick={() => setPriv((v) => !v)}
-              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap ml-auto ${
+              className={`flex items-center gap-1 text-3xs px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap ml-auto ${
                 privilegedOnly
-                  ? 'bg-red-950 text-red-400 border-red-700 font-medium'
-                  : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
+                  ? 'bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 font-medium'
+                  : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
               }`}>
               <ShieldAlert size={11} /> Privilegiadas
             </button>
-            <span className="text-[12px] text-gray-500">{sorted.length}</span>
+            <span className="text-tiny text-fg-muted">{sorted.length}</span>
           </div>
 
           {/* Row 2: Category chips */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={() => pushCat('all')}
-              className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
+              className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
                 activeCat === 'all'
-                  ? 'bg-[#0078d4] text-white border-[#0078d4]'
-                  : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
+                  ? 'bg-brand text-white border-brand'
+                  : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
               }`}>
               Todas
             </button>
@@ -222,63 +185,21 @@ function AzureRbacRolesContent() {
               <button
                 key={cat}
                 onClick={() => pushCat(activeCat === cat ? 'all' : cat)}
-                className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
+                className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors whitespace-nowrap ${
                   activeCat === cat
-                    ? 'bg-[#0078d4] text-white border-[#0078d4]'
-                    : 'text-gray-500 border-gray-700 hover:border-gray-500 hover:text-gray-300'
+                    ? 'bg-brand text-white border-brand'
+                    : 'text-fg-muted border-line-strong hover:border-gray-500 hover:text-fg-muted'
                 }`}>
                 {cat}
               </button>
             ))}
           </div>
 
-          {/* Row 3: busca por permissão */}
-          <div className="flex items-center gap-2 flex-wrap mt-2 pt-2 border-t border-gray-800">
-            <div className="relative flex-1 min-w-[260px] max-w-xl">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
-              <input
-                type="text"
-                value={permQuery}
-                onChange={(e) => setPermQuery(e.target.value)}
-                placeholder="Buscar permissão (ex.: Microsoft.Storage/storageAccounts/listKeys/action)"
-                aria-label="Buscar roles por permissão"
-                className="w-full text-[12px] pl-8 pr-8 py-1.5 rounded-md border border-gray-700 bg-gray-800 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-[#0078d4] transition-colors"
-              />
-              {permQuery && (
-                <button
-                  onClick={() => setPermQuery('')}
-                  aria-label="Limpar busca por permissão"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                >
-                  <X size={13} />
-                </button>
-              )}
-            </div>
-
-            {permLoading && (
-              <span className="text-[11px] text-gray-500">Carregando índice de permissões…</span>
-            )}
-            {permError && (
-              <span className="text-[11px] text-red-400">
-                Falha ao carregar o índice de permissões.
-              </span>
-            )}
-            {permMatches && !permLoading && (
-              <span className="text-[11px] text-[#85b7eb]">
-                {permMatches.size} role(s) com permissão correspondente
-              </span>
-            )}
-            {!permQuery && !permLoading && (
-              <span className="text-[11px] text-gray-600">
-                Busca por permissão exata ou parcial em todas as {AZURE_ROLES.length} roles
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Table */}
         <div className="flex-1 overflow-auto">
-          <table className="text-[12px] border-collapse w-full" style={{ tableLayout: 'fixed' }}>
+          <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: widths[0] }} />
               <col style={{ width: widths[1] }} />
@@ -286,72 +207,42 @@ function AzureRbacRolesContent() {
               <col style={{ width: widths[3] }} />
               <col style={{ width: widths[4] }} />
               <col style={{ width: widths[5] }} />
-              <col style={{ width: widths[6] }} />
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-800 border-b border-gray-700">
+              <tr className="bg-surface-alt border-b border-line-strong">
                 <RszTh col="name"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={0} onMD={onMouseDown}>Role</RszTh>
-                <th className="relative px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider overflow-hidden select-none">
+                <th className="relative px-4 py-2.5 text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider overflow-hidden select-none">
                   Descrição
                   <div onMouseDown={onMouseDown(1)} onClick={(e) => e.stopPropagation()}
                     className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />
                 </th>
-                <th className="relative px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider overflow-hidden select-none">
-                  Permissão
-                  <div onMouseDown={onMouseDown(2)} onClick={(e) => e.stopPropagation()}
-                    className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-blue-500/40 transition-colors z-10" />
-                </th>
-                <RszTh col="category"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Categoria</RszTh>
-                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown}>Risk Tier</RszTh>
-                <RszTh col="permissionCount" active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown} right>Permissões</RszTh>
-                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={6} onMD={onMouseDown}>Priv.</RszTh>
-                <th className="px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider w-10"></th>
+                <RszTh col="category"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>{t('table.category')}</RszTh>
+                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Risk Tier</RszTh>
+                <RszTh col="permissionCount" active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown} right>{t('table.permissions')}</RszTh>
+                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown}>Priv.</RszTh>
+                <th className="px-4 py-2.5 text-2xs font-semibold text-fg-muted uppercase tracking-wider w-10"></th>
               </tr>
             </thead>
             <tbody>
-              {sorted.map((role) => {
+              {paginated.map((role) => {
                 const meta = AZURE_TIER_META[role.tier]
                 return (
-                  <tr key={role.slug} className="border-b border-gray-800 hover:bg-gray-800/60 transition-colors group">
+                  <tr key={role.slug} className="border-b border-line hover:bg-surface-alt/60 transition-colors group">
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
                       <Link href={`/azure-rbac/roles/${role.slug}`}
-                        className="text-[13px] font-medium text-[#85b7eb] hover:text-[#0078d4] hover:underline truncate block">
+                        className="text-body font-medium text-brand-onDark hover:text-brand hover:underline truncate block">
                         {role.name}
                       </Link>
                     </td>
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
-                      <p className="text-[11px] text-gray-400 leading-snug line-clamp-2">{role.description}</p>
-                    </td>
-                    {/* Permissão — mostra as ações que casaram com a busca */}
-                    <td className="px-4 py-2.5 align-middle overflow-hidden">
-                      {(() => {
-                        const hits = permMatches?.get(role.slug)
-                        if (!hits || hits.length === 0) {
-                          return <span className="text-[11px] text-gray-700">—</span>
-                        }
-                        const shown = hits.slice(0, 2)
-                        return (
-                          <div className="flex flex-col gap-0.5" title={hits.join('\n')}>
-                            {shown.map((a) => (
-                              <code key={a} className="text-[10px] font-mono text-[#85b7eb] leading-snug break-all line-clamp-1">
-                                {a}
-                              </code>
-                            ))}
-                            {hits.length > shown.length && (
-                              <span className="text-[10px] text-gray-500">
-                                +{hits.length - shown.length} outra(s)
-                              </span>
-                            )}
-                          </div>
-                        )
-                      })()}
+                      <p className="text-3xs text-fg-subtle leading-snug line-clamp-2">{role.description}</p>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       {(() => {
                         const cc = CATEGORY_COLORS[role.category]
                         return (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
+                          <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
                             style={{ backgroundColor: cc.bg, color: cc.text, borderColor: cc.border }}>
                             {role.category}
                           </span>
@@ -359,22 +250,22 @@ function AzureRbacRolesContent() {
                       })()}
                     </td>
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
                         style={{ backgroundColor: meta.textColor + '20', color: meta.darkText, borderColor: meta.textColor + '50' }}>
                         {meta.label}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 align-middle text-right">
-                      <span className="text-[12px] font-semibold tabular-nums" style={{ color: meta.darkText }}>{role.permissionCount}</span>
+                      <span className="text-tiny font-semibold tabular-nums" style={{ color: meta.darkText }}>{role.permissionCount}</span>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       {role.isPrivileged
                         ? <ShieldAlert size={13} className="text-red-400" />
-                        : <span className="text-[12px] text-gray-700">—</span>}
+                        : <span className="text-tiny text-gray-700">—</span>}
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       <Link href={`/azure-rbac/roles/${role.slug}`}
-                        className="text-gray-600 group-hover:text-[#85b7eb] transition-colors">
+                        className="text-gray-600 group-hover:text-brand-onDark transition-colors">
                         <ChevronRight size={15} />
                       </Link>
                     </td>
@@ -384,11 +275,16 @@ function AzureRbacRolesContent() {
             </tbody>
           </table>
           {sorted.length === 0 && (
-            <div className="flex items-center justify-center h-48 text-gray-500 text-[14px]">
+            <div className="flex items-center justify-center h-48 text-fg-muted text-note">
               Nenhuma role encontrada.
             </div>
           )}
         </div>
+        <Pagination
+          total={sorted.length} page={page} pageSize={pageSize}
+          onPageChange={setPage} onPageSizeChange={setPageSize}
+          accent="#0078d4" noun="noun.roles"
+        />
       </div>
     </AppShell>
   )
@@ -396,7 +292,7 @@ function AzureRbacRolesContent() {
 
 export default function AzureRbacRolesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-gray-500">Carregando...</div>}>
+    <Suspense fallback={<div className="p-6 text-fg-muted">Carregando...</div>}>
       <AzureRbacRolesContent />
     </Suspense>
   )
@@ -408,8 +304,8 @@ function RszTh({ col, active, dir, onSort, idx, onMD, children, right }: {
   children: React.ReactNode; right?: boolean
 }) {
   return (
-    <th className={`relative ${right ? 'text-right' : 'text-left'} text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden`}>
-      <button onClick={() => onSort(col)} className="inline-flex items-center gap-1 hover:text-gray-300">
+    <th className={`relative ${right ? 'text-right' : 'text-left'} text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden`}>
+      <button onClick={() => onSort(col)} className="inline-flex items-center gap-1 hover:text-fg-muted">
         {children}
         {active === col ? (dir === 'asc' ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : <ChevronsUpDown size={11} className="opacity-30" />}
       </button>

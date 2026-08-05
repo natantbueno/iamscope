@@ -24,17 +24,7 @@ export interface AzureRbacRole {
   isPrivileged: boolean; permissionCount: number; assignableScopes: string[]
 }
 
-export const AZURE_TIER_META: Record<AzureRbacTier, {
-  label: string; short: string; description: string
-  bgColor: string; textColor: string; darkBg: string; darkText: string
-}> = {
-  FullControl:      { label: 'Full Control',      short: 'FC',  description: 'Grants unrestricted access to all resources including the ability to assign roles. Highest risk tier.',                      bgColor: '#fef2f2', textColor: '#dc2626', darkBg: '#450a0a', darkText: '#fca5a5' },
-  AccessManagement: { label: 'Access Management', short: 'AM',  description: 'Grants the ability to manage security configurations, role assignments, or identity services without full resource control.', bgColor: '#fff7ed', textColor: '#ea580c', darkBg: '#431407', darkText: '#fdba74' },
-  Contributor:      { label: 'Contributor',       short: 'CTB', description: 'Grants full write access to create and manage all resources but cannot assign roles or manage access to others.',            bgColor: '#fefce8', textColor: '#ca8a04', darkBg: '#422006', darkText: '#fde047' },
-  DataPlane:        { label: 'Data Plane',        short: 'DP',  description: 'Grants access to data stored within services (blobs, queues, secrets, keys) without management plane control.',                bgColor: '#f0f9ff', textColor: '#0284c7', darkBg: '#082f49', darkText: '#7dd3fc' },
-  Reader:           { label: 'Reader',            short: 'RDR', description: 'Grants read-only access to view existing resources. Cannot make changes or access sensitive data.',                           bgColor: '#f0fdf4', textColor: '#16a34a', darkBg: '#052e16', darkText: '#86efac' },
-  Specialized:      { label: 'Specialized',       short: 'SPZ', description: 'Service-specific operational role with a narrow, well-defined scope. Risk level varies by role.',                            bgColor: '#f5f3ff', textColor: '#7c3aed', darkBg: '#2e1065', darkText: '#c4b5fd' },
-}
+export { AZURE_TIER_META } from './tierMeta'
 
 export const AZURE_ROLES: AzureRbacRole[] = [
   { name: 'AcrDelete', slug: 'acrdelete', id: 'c2f4ef07-c644-48eb-af81-4b1b4947fb11', description: 'acr delete', category: 'Containers', tier: 'Contributor', isPrivileged: false, permissionCount: 1, assignableScopes: ['/'] },

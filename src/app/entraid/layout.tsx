@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Microsoft Entra ID',
   description:
-    'Referência de roles, API permissions e role actions do Microsoft Entra ID, com classificação de risco por tier (Enterprise Access Model) e integração com PIM.',
+    'Microsoft Entra ID roles, API permissions and role actions, with risk classified by tier (Enterprise Access Model) and PIM guidance.',
 }
 
 export default function EntraIdLayout({ children }: { children: React.ReactNode }) {

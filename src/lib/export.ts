@@ -1,8 +1,11 @@
-import { ROLES, EntraRole } from '@/data/roles'
-import { RoleActionEntry } from '@/lib/roleActions'
-import { API_PERMISSIONS } from '@/data/apiPermissions'
-
-type ApiPermission = typeof API_PERMISSIONS[number]
+// Tudo aqui é tipo, e todo tipo entra com `import type` — que é apagado na
+// compilação. Import de valor traria os datasets junto: '@/lib/roleActions'
+// arrasta roles.ts (392 kB) e '@/data/apiPermissions' são 615 kB. Como este
+// módulo é a base do ExportButton, que está em quase toda página, um import de
+// valor aqui vaza dataset para o bundle de rotas que não têm nada a ver.
+import type { EntraRole } from '@/data/roles'
+import type { RoleActionEntry } from '@/lib/roleActions'
+import type { ApiPermission } from '@/data/apiPermissions'
 
 // Achata uma role para uma linha de export (sem o array de permissions completo)
 function roleToRow(role: EntraRole) {
@@ -30,13 +33,13 @@ function download(filename: string, content: string | Blob, mime: string) {
 }
 
 // ---------- JSON ----------
-export function exportJSON(roles: EntraRole[] = ROLES) {
+export function exportJSON(roles: EntraRole[]) {
   const data = JSON.stringify(roles, null, 2)
   download('entra-roles.json', data, 'application/json')
 }
 
 // JSON com todas as permissões expandidas (uma entrada por role action)
-export function exportPermissionsJSON(roles: EntraRole[] = ROLES) {
+export function exportPermissionsJSON(roles: EntraRole[]) {
   const flat = roles.flatMap((r) =>
     r.permissions.map((p) => ({
       roleName: r.name,
@@ -69,12 +72,12 @@ function toCSV(rows: Record<string, unknown>[]): string {
   return '\uFEFF' + lines.join('\r\n')
 }
 
-export function exportCSV(roles: EntraRole[] = ROLES) {
+export function exportCSV(roles: EntraRole[]) {
   const rows = roles.map(roleToRow)
   download('entra-roles.csv', toCSV(rows), 'text/csv;charset=utf-8')
 }
 
-export function exportPermissionsCSV(roles: EntraRole[] = ROLES) {
+export function exportPermissionsCSV(roles: EntraRole[]) {
   const rows = roles.flatMap((r) =>
     r.permissions.map((p) => ({
       roleName: r.name,
@@ -90,7 +93,7 @@ export function exportPermissionsCSV(roles: EntraRole[] = ROLES) {
 // ---------- Excel (SpreadsheetML / xls compatível) ----------
 // Gera um arquivo .xls em formato XML que o Excel abre nativamente,
 // sem dependência externa.
-export function exportExcel(roles: EntraRole[] = ROLES) {
+export function exportExcel(roles: EntraRole[]) {
   const rows = roles.map(roleToRow)
   const headers = Object.keys(rows[0])
 
@@ -178,6 +181,9 @@ export function exportApiPermissionsCSV(perms: ApiPermission[]) {
     type: p.type,
     category: p.category,
     eamTier: p.eamTier,
+    consentType: p.consentType ?? '',
+    tierSource: p.tierSource,
+    description: p.description,
   }))
   download('entra-api-permissions.csv', toCSV(rows), 'text/csv;charset=utf-8')
 }
@@ -187,7 +193,7 @@ export function exportApiPermissionsJSON(perms: ApiPermission[]) {
 }
 
 // ---------- Azure RBAC ----------
-import { AzureRbacRole } from '@/data/azureRbac'
+import type { AzureRbacRole } from '@/data/azureRbac'
 
 export function exportAzureRbacCSV(roles: AzureRbacRole[]) {
   const rows = roles.map((r) => ({

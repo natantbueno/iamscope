@@ -1,6 +1,10 @@
 'use client'
 
-// Campo de busca da sidebar com estado na URL (?q=).
+// Busca global, com estado na URL (?q=).
+//
+// Ficava na sidebar; foi movida para logo abaixo do menu de clouds em 30/07,
+// para ganhar largura e ficar no caminho natural do olho — na sidebar ela
+// competia com a navegação e sumia quando o menu era recolhido.
 //
 // Por que URL e não useState no AppShell:
 // - O AppShell é instanciado por página; qualquer navegação o remonta e
@@ -25,14 +29,14 @@ import { Search } from 'lucide-react'
 let pendingSearchFocus = false
 
 const INPUT_CLASSES =
-  'w-full text-[12px] pl-8 pr-3 py-1.5 border border-gray-700 rounded-md bg-gray-800 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#0078d4] focus:border-[#0078d4]'
+  'w-full text-tiny pl-8 pr-3 py-1.5 border border-line-strong rounded-md bg-surface-alt text-fg placeholder-fg-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand'
 
 function normalizePath(p: string): string {
   const trimmed = p.replace(/\/+$/, '')
   return trimmed === '' ? '/' : trimmed
 }
 
-function SidebarSearchInner({ basePath }: { basePath: string }) {
+function GlobalSearchInner({ basePath }: { basePath: string }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -78,7 +82,7 @@ function SidebarSearchInner({ basePath }: { basePath: string }) {
 
   return (
     <div className="relative">
-      <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+      <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" />
       <input
         ref={inputRef}
         type="text"
@@ -96,16 +100,16 @@ function SidebarSearchInner({ basePath }: { basePath: string }) {
 function SearchFallback() {
   return (
     <div className="relative">
-      <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+      <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" />
       <input type="text" disabled placeholder="Buscar..." className={INPUT_CLASSES} />
     </div>
   )
 }
 
-export default function SidebarSearch({ basePath }: { basePath: string }) {
+export default function GlobalSearch({ basePath }: { basePath: string }) {
   return (
     <Suspense fallback={<SearchFallback />}>
-      <SidebarSearchInner basePath={basePath} />
+      <GlobalSearchInner basePath={basePath} />
     </Suspense>
   )
 }

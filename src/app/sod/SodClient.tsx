@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo } from 'react'
+import { useT } from '@/i18n/LanguageProvider'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ShieldAlert, Cloud, LayoutGrid } from 'lucide-react'
 import AppShell from '@/components/AppShell'
@@ -15,6 +16,7 @@ import { SOD_RULES, SOD_SEVERITY_META, SOD_CATEGORY_META, SoDSeverity, SoDCatego
 const VALID_TABS: SoDTab[] = ['catalog', 'matrix', 'evaluate']
 
 export default function SodClient() {
+  const t = useT()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -45,36 +47,36 @@ export default function SodClient() {
   return (
     <AppShell
       headerTitle="SoD Analyzer"
-      headerSub="Segregation of Duties para Entra ID e Azure RBAC — catálogo, matriz e avaliação de usuário"
+      headerSub={t('sod.headerSub')}
       headerActions={
-        <div className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+        <div className="flex items-center gap-1.5 text-3xs text-fg-muted">
           <ShieldAlert size={14} />
           <span>{SOD_RULES.length} regras · 100% client-side</span>
         </div>
       }
     >
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-4 py-3 border-b border-[#dde3ec] dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
-          <MetricCard label="Total de regras">
-            <p className="text-[20px] font-bold text-gray-800 dark:text-gray-100">{SOD_RULES.length}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-4 py-3 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+          <MetricCard label={t('sod.totalRules')}>
+            <p className="text-heading font-bold text-gray-800 dark:text-gray-100">{SOD_RULES.length}</p>
           </MetricCard>
-          <MetricCard label="Severidade">
+          <MetricCard label={t('table.severity')}>
             <div className="flex items-center gap-2 flex-wrap">
               {(Object.keys(metrics.severityBreakdown) as SoDSeverity[]).map((s) => (
-                <span key={s} className="inline-flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                <span key={s} className="inline-flex items-center gap-1 text-3xs text-fg-muted">
                   <SoDSeverityBadge severity={s} /> {metrics.severityBreakdown[s]}
                 </span>
               ))}
             </div>
           </MetricCard>
           <MetricCard label="Clouds cobertas" icon={<Cloud size={13} />}>
-            <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-100">Entra ID + Azure RBAC</p>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+            <p className="text-body font-semibold text-gray-800 dark:text-gray-100">Entra ID + Azure RBAC</p>
+            <p className="text-2xs text-fg-muted mt-0.5">
               {metrics.entraOnly} Entra · {metrics.azureOnly} Azure · {metrics.crossCloud} cross-cloud
             </p>
           </MetricCard>
           <MetricCard label="Categorias cobertas" icon={<LayoutGrid size={13} />}>
-            <p className="text-[20px] font-bold text-gray-800 dark:text-gray-100">{metrics.categoriesCovered} <span className="text-[13px] font-normal text-gray-400">de {metrics.totalCategories}</span></p>
+            <p className="text-heading font-bold text-gray-800 dark:text-gray-100">{metrics.categoriesCovered} <span className="text-body font-normal text-fg-subtle">de {metrics.totalCategories}</span></p>
           </MetricCard>
         </div>
         <SoDTabs active={activeTab} onChange={setTab} />
@@ -100,8 +102,8 @@ export default function SodClient() {
 
 function MetricCard({ label, icon, children }: { label: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="p-3 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-[#f7f9fc] dark:bg-gray-800/60">
-      <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+    <div className="p-3 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800/60">
+      <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider mb-1 flex items-center gap-1">
         {icon} {label}
       </p>
       {children}

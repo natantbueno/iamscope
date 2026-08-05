@@ -1,6 +1,8 @@
 'use client'
 
+import { themedText } from '@/lib/readableColor'
 import AppShell from '@/components/AppShell'
+import { useT } from '@/i18n/LanguageProvider'
 import { GWS_ROLES, GWS_SCOPES, GWS_TIER_META, GwsTier } from '@/data/googleWorkspace'
 import Link from 'next/link'
 import {
@@ -23,6 +25,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 }
 
 export default function GwsDashboard() {
+  const t = useT()
   const total      = GWS_ROLES.length
   const privileged = GWS_ROLES.filter((r) => r.isPrivileged).length
   const scopes     = GWS_SCOPES.length
@@ -53,28 +56,28 @@ export default function GwsDashboard() {
             { label: 'Restricted Scopes', value: restricted, href: '/google-workspace/api-permissions?sensitivity=restricted', color: '#dc2626' },
           ].map((s) => (
             <Link key={s.label} href={s.href}
-              className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-[#34a853]/40 dark:hover:border-[#34a853]/30 transition-colors group">
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-csp-gws/40 dark:hover:border-csp-gws/30 transition-colors group">
+              <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </p>
-              <p className="text-[28px] font-bold leading-none" style={{ color: s.color }}>{s.value}</p>
+              <p className="text-display font-bold leading-none themed-color" style={themedText(s.color, undefined, 3)}>{s.value}</p>
             </Link>
           ))}
         </div>
 
         {/* Two-column: Admin Tier breakdown + Roles Privilegiadas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-4">Distribuição por Admin Tier</h2>
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.adminTierDist')}</h2>
             <div className="space-y-3">
               {byTier.map(({ tier, count, meta }) => (
                 <Link key={tier} href={`/google-workspace/roles?tier=${tier}`} className="block group">
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ background: meta.darkText }} />
-                      <span className="text-[12px] text-gray-600 dark:text-gray-400 group-hover:underline">{meta.label}</span>
+                      <span className="text-tiny text-fg-muted group-hover:underline">{meta.label}</span>
                     </div>
-                    <span className="text-[12px] font-semibold" style={{ color: meta.darkText }}>{count}</span>
+                    <span className="text-tiny font-semibold" style={{ color: meta.darkText }}>{count}</span>
                   </div>
                   <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
                     <div className="h-1 rounded-full transition-all"
@@ -85,8 +88,8 @@ export default function GwsDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-[13px] font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
+          <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
+            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
               <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
             </h2>
             <div className="space-y-1 max-h-56 overflow-y-auto">
@@ -95,8 +98,8 @@ export default function GwsDashboard() {
                 return (
                   <Link key={role.slug} href={`/google-workspace/roles/${role.slug}`}
                     className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors group">
-                    <span className="text-[11px] text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400 truncate mr-2">{role.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
+                    <span className="text-3xs text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400 truncate mr-2">{role.name}</span>
+                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
                       {meta.short}
                     </span>
                   </Link>
@@ -107,18 +110,18 @@ export default function GwsDashboard() {
         </div>
 
         {/* Categories */}
-        <div className="bg-white dark:bg-gray-900 border border-[#dde3ec] dark:border-gray-800 rounded-lg p-4 shadow-sm">
-          <h2 className="text-[13px] font-semibold text-gray-800 dark:text-gray-100 mb-3">Por Categoria</h2>
+        <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm">
+          <h2 className="text-body font-semibold text-gray-800 dark:text-gray-100 mb-3">{t('section.byCategory')}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
             {categories.sort().map((cat) => {
               const count = GWS_ROLES.filter((r) => r.category === cat).length
               return (
                 <Link key={cat} href={`/google-workspace/roles?category=${cat}`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#dde3ec] dark:border-gray-700 bg-[#f7f9fc] dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-[#0a2010] hover:border-green-300 dark:hover:border-green-800 transition-colors">
-                  <span className="text-[#34a853] dark:text-[#4ade80] shrink-0">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-[#0a2010] hover:border-green-300 dark:hover:border-green-800 transition-colors">
+                  <span className="text-csp-gws-onLight dark:text-csp-gws-onDark dark:text-success-fg shrink-0">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
-                    <p className="text-[10px] text-gray-400">{count} roles</p>
+                    <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
+                    <p className="text-2xs text-fg-subtle">{count} roles</p>
                   </div>
                 </Link>
               )
@@ -127,12 +130,12 @@ export default function GwsDashboard() {
         </div>
 
         {/* Info bar */}
-        <div className="rounded-xl border border-[#34a853]/30 bg-[#34a853]/5 dark:bg-[#34a853]/10 px-5 py-4 flex items-start gap-3">
-          <Info size={15} className="text-[#34a853] dark:text-[#4ade80] mt-0.5 shrink-0" />
-          <p className="text-[12px] text-[#1a5c28] dark:text-[#4ade80] leading-relaxed">
+        <div className="rounded-xl border border-csp-gws/30 bg-csp-gws/5 dark:bg-csp-gws/10 px-5 py-4 flex items-start gap-3">
+          <Info size={15} className="text-csp-gws-onLight dark:text-csp-gws-onDark dark:text-success-fg mt-0.5 shrink-0" />
+          <p className="text-tiny text-[#1a5c28] dark:text-success-fg leading-relaxed">
             <strong>OAuth 2.0 & Service Accounts</strong> — os escopos OAuth do Google Workspace definem o que uma aplicação pode acessar em nome de um usuário.
             Escopos <strong>Restricted</strong> exigem aprovação do Google antes de uso em apps publicados. Use{' '}
-            <code className="font-mono text-[11px] bg-[#34a853]/10 dark:bg-[#34a853]/20 px-1 rounded">gam oauth info</code>{' '}
+            <code className="font-mono text-3xs bg-csp-gws/10 dark:bg-csp-gws/20 px-1 rounded">gam oauth info</code>{' '}
             para inspecionar os tokens ativos no seu domínio.
           </p>
         </div>

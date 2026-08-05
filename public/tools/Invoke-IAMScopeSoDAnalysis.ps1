@@ -378,8 +378,8 @@ function Invoke-SoDEvaluation {
         $keyA = Get-RoleKey $rule.roleA
         $keyB = Get-RoleKey $rule.roleB
 
-        foreach ($pid in $byPrincipal.Keys) {
-            $held = $byPrincipal[$pid]
+        foreach ($principalId in $byPrincipal.Keys) {
+            $held = $byPrincipal[$principalId]
             if (-not ($held.ContainsKey($keyA) -and $held.ContainsKey($keyB))) { continue }
 
             $hitsA = $held[$keyA]
@@ -395,7 +395,7 @@ function Invoke-SoDEvaluation {
                 PrincipalName   = $sample.PrincipalName
                 PrincipalUPN    = $sample.PrincipalUPN
                 PrincipalType   = $sample.PrincipalType
-                PrincipalId     = $pid
+                PrincipalId     = $principalId
                 RoleA           = $rule.roleA.name
                 RoleACloud      = $rule.roleA.cloud
                 RoleAVia        = (($hitsA | Select-Object -ExpandProperty Via -Unique) -join ' / ')
