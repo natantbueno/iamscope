@@ -2,12 +2,13 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, HelpCircle, ChevronDown } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import RoleInput from '@/components/RoleInput'
 import EvaluationResult from '@/components/EvaluationResult'
 import { evaluateRole, getResultForSlug, EvaluateCloud, EvaluationResultData, EVALUATE_CLOUDS } from '@/lib/evaluate'
 import { useT } from '@/i18n/LanguageProvider'
+import { Rich } from '@/i18n/Rich'
 
 type Status = 'empty' | 'loading' | 'result' | 'error'
 
@@ -85,11 +86,11 @@ export default function EvaluateClient() {
   return (
     <AppShell
       headerTitle="Role Evaluator"
-      headerSub="{t('eval.headerSub')}"
+      headerSub={t('eval.headerSub')}
       headerActions={
         <div className="flex items-center gap-1.5 text-3xs text-fg-muted">
           <ShieldCheck size={14} />
-          <span>100% client-side — zero chamadas externas</span>
+          <span>{t('eval.clientBadge')}</span>
         </div>
       }
     >
@@ -114,19 +115,56 @@ export default function EvaluateClient() {
             {status === 'empty' && !result && <EmptyState />}
             {status === 'loading' && (
               <div className="flex items-center justify-center h-64 text-fg-muted text-body">
-                Avaliando role...
+                {t('eval.evaluating')}
               </div>
             )}
             {status === 'error' && !result && (
               <div className="flex items-center justify-center h-64 text-fg-muted text-body text-center px-6">
-                Corrija o JSON colado à esquerda e tente novamente.
+                {t('eval.fixJson')}
               </div>
             )}
             {result && status === 'result' && <EvaluationResult data={result} />}
           </div>
+
+          {/* Ocupa a grade inteira: o método vale para as duas colunas. */}
+          <HowItWorks />
         </div>
       </div>
     </AppShell>
+  )
+}
+
+/**
+ * A divida do item 8, metade do Evaluator.
+ *
+ * Fechada por padrao e no fim da pagina: quem ja confia no resultado nao
+ * tropeca; quem duvida acha o metodo sem sair dali. O ponto que MAIS importa
+ * aqui e' o `eval.howTier` — o veredito de tier e' classificacao editorial do
+ * IAM Scope, nao do provedor, e uma ferramenta que nao diz isso induz o leitor
+ * a citar a nossa opiniao como se fosse documentacao oficial.
+ */
+function HowItWorks() {
+  const t = useT()
+  const [open, setOpen] = useState(false)
+  return (
+    <section className="lg:col-span-5 border-t border-line pt-5 mt-2">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex items-center gap-2 text-tiny font-medium text-fg-muted hover:text-fg transition-colors">
+        <HelpCircle size={14} />
+        {t('eval.howTitle')}
+        <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-3 max-w-3xl space-y-2.5 text-tiny text-fg-muted leading-relaxed">
+          <p><Rich text={t('eval.howInput')} className="text-fg" /></p>
+          <p><Rich text={t('eval.howMatch')} className="text-fg" /></p>
+          <p><Rich text={t('eval.howTier')} className="text-fg" /></p>
+          <p><Rich text={t('eval.howLimit')} className="text-fg" /></p>
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -136,10 +174,7 @@ function EmptyState() {
     <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center px-6 py-16 border border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
       <ShieldCheck size={32} className="text-fg-muted dark:text-gray-700 mb-3" />
       <p className="text-note font-medium text-gray-600 dark:text-gray-300 mb-1">{t('eval.pasteToStart')}</p>
-      <p className="text-tiny text-fg-muted max-w-sm">
-        Funciona com o JSON exportado de qualquer uma das 6 clouds catalogadas: Entra ID, Azure RBAC, AWS IAM, GCP IAM,
-        Google Workspace e IBM Cloud IAM. A cloud é detectada automaticamente pela estrutura do JSON.
-      </p>
+      <p className="text-tiny text-fg-muted max-w-sm">{t('eval.emptyBody')}</p>
     </div>
   )
 }

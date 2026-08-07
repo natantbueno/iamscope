@@ -94,14 +94,14 @@ function GwsScopesContent() {
   return (
     <AppShell
       headerTitle="Google Workspace — OAuth Scopes"
-      headerSub={`${GWS_SCOPES.length} escopos · ${ALL_SERVICES.length} serviços · 3 níveis de sensibilidade`}
+      headerSub={t('sub.gwsScopes')}
       headerActions={<ExportButton filename="google-workspace-oauth-scopes" data={sorted.map((s) => ({
         name: s.name, scope: s.scope, service: s.service, sensitivity: s.sensitivity, description: s.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total',      value: GWS_SCOPES.length,                                              color: 'green',  href: '/google-workspace/api-permissions' },
+          { label: t('count.total'), value: GWS_SCOPES.length,                                              color: 'green',  href: '/google-workspace/api-permissions' },
           { label: 'Restricted', value: GWS_SCOPES.filter((s) => s.sensitivity === 'restricted').length, color: 'red',    href: '/google-workspace/api-permissions?sensitivity=restricted' },
           { label: 'Sensitive',  value: GWS_SCOPES.filter((s) => s.sensitivity === 'sensitive').length,  color: 'orange', href: '/google-workspace/api-permissions?sensitivity=sensitive' },
           { label: 'Standard',   value: GWS_SCOPES.filter((s) => s.sensitivity === 'standard').length,   color: 'gray',   href: '/google-workspace/api-permissions?sensitivity=standard' },

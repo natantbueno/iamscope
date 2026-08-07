@@ -13,6 +13,7 @@ import AppShell from '@/components/AppShell'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GcpCategory } from '@/data/gcp'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
+import StatsBar from '@/components/StatsBar'
 import DeprecatedBadge from '@/components/DeprecatedBadge'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
@@ -25,14 +26,20 @@ function GcpRolesContent() {
   const [activeCategory, setActiveCat]  = useState<GcpCategory | null>(null)
   const { widths, onMouseDown } = useColumnResize([200, 260, 120, 120, 110, 60])
 
+  // Sincroniza a partir da URL nos DOIS sentidos. Antes o filtro só era lido
+  // quando o parâmetro existia, então um link para /gcp/roles — o "Total" da
+  // legenda — não limpava o tier escolhido: a lista voltava cheia e o chip
+  // continuava aceso.
   useEffect(() => {
     const filter = params.get('filter')
     const cat    = params.get('category')
-    if (filter === 'privileged') setActiveTier('privileged')
-    else if (filter && filter !== 'all') setActiveTier(filter as GcpTier)
-    if (cat) setActiveCat(cat as GcpCategory)
+    setActiveTier(filter === 'privileged' ? 'privileged'
+      : filter && filter !== 'all' ? (filter as GcpTier)
+      : 'all')
+    setActiveCat(cat ? (cat as GcpCategory) : null)
     setQuery(params.get('q') ?? '')
-  }, [params])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.toString()])
 
   const categories = [...new Set(GCP_ROLES.map(r => r.category))].sort() as GcpCategory[]
 
@@ -53,13 +60,26 @@ function GcpRolesContent() {
   return (
     <AppShell
       headerTitle="GCP IAM Roles"
-      headerSub={`${filtered.length} de ${GCP_ROLES.length} predefined roles`}
+      headerSub={t('sub.gcpRoles')}
       headerActions={<ExportButton filename="gcp-roles" data={filtered.map((r) => ({
         name: r.name, roleId: r.roleId, tier: r.tier, category: r.category,
         isPrivileged: r.isPrivileged, description: r.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        {/* Legenda de contagem — mesmo componente e mesma leitura do Entra e do
+            Azure. Total do dataset, não do filtro atual. */}
+        <StatsBar stats={[
+          { label: t('count.total'),      value: GCP_ROLES.length,                                            color: 'blue',   href: '/gcp/roles' },
+          { label: 'Project Owner',       value: GCP_ROLES.filter((r) => r.tier === 'ProjectOwner').length,   color: 'red',    href: '/gcp/roles?filter=ProjectOwner' },
+          { label: 'Admin',               value: GCP_ROLES.filter((r) => r.tier === 'Admin').length,          color: 'orange', href: '/gcp/roles?filter=Admin' },
+          { label: 'Editor',              value: GCP_ROLES.filter((r) => r.tier === 'Editor').length,         color: 'gray',   href: '/gcp/roles?filter=Editor' },
+          { label: 'Operator',            value: GCP_ROLES.filter((r) => r.tier === 'Operator').length,       color: 'gray',   href: '/gcp/roles?filter=Operator' },
+          { label: 'Developer',           value: GCP_ROLES.filter((r) => r.tier === 'Developer').length,      color: 'purple', href: '/gcp/roles?filter=Developer' },
+          { label: 'Specialized',         value: GCP_ROLES.filter((r) => r.tier === 'Specialized').length,    color: 'purple', href: '/gcp/roles?filter=Specialized' },
+          { label: 'Viewer',              value: GCP_ROLES.filter((r) => r.tier === 'Viewer').length,         color: 'green',  href: '/gcp/roles?filter=Viewer' },
+          { label: t('count.privileged'), value: GCP_ROLES.filter((r) => r.isPrivileged).length,              color: 'red',    href: '/gcp/roles?filter=privileged' },
+        ]} />
 
         {/* Search chip */}
         {query && (

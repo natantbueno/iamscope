@@ -98,7 +98,7 @@ function AzureRbacRolesContent() {
   return (
     <AppShell
       headerTitle="Azure RBAC — Built-in Roles"
-      headerSub={`${AZURE_ROLES.length} roles · ${ALL_CATEGORIES.length} categorias · 6 risk tiers`}
+      headerSub={t('sub.azureRoles')}
       headerActions={<ExportMenu mode="azureRbac" azureRoles={sorted} />}
     >
       <div className="flex flex-col flex-1 min-h-0">

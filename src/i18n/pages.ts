@@ -710,16 +710,25 @@ export const PAGES_DICTIONARY = {
                          en: 'Paste the JSON of a role or policy and get the analysis straight away' },
   'eval.pasteToStart': { pt: 'Cole o JSON de uma role para começar',
                          en: 'Paste a role’s JSON to get started' },
+  'eval.emptyBody':    { pt: 'Funciona com o JSON exportado de qualquer uma das 6 clouds catalogadas: Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace e IBM Cloud IAM. A cloud é detectada pela estrutura do documento.',
+                         en: 'Works with JSON exported from any of the six catalogued clouds: Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace and IBM Cloud IAM. The cloud is detected from the document structure.' },
+  'eval.evaluating':   { pt: 'Avaliando role…',            en: 'Evaluating the role…' },
+  'eval.fixJson':      { pt: 'Corrija o JSON colado à esquerda e tente novamente.',
+                         en: 'Fix the JSON pasted on the left and try again.' },
+  'eval.clientBadge':  { pt: '100% no navegador — nada é enviado',
+                         en: '100% in your browser — nothing is sent' },
 
   // ── /advisor ──────────────────────────────────────────────────────────────
   'adv.headerSub':     { pt: 'Descreva o que você precisa fazer — a busca encontra a role em qualquer uma das 6 clouds',
                          en: 'Describe what you need to do — the search finds the role in any of the six clouds' },
-  'adv.pageTitle':     { pt: 'Role Advisor — busca semântica entre plataformas',
-                         en: 'Role Advisor — semantic search across platforms' },
+  // NÃO escreva "semântica" aqui. Não há embedding nem modelo: é recuperação
+  // léxica (BM25) com léxico curado. Ver o cabeçalho de lib/roleAdvisor.ts.
+  'adv.pageTitle':     { pt: 'Role Advisor — busca por termo entre as 6 clouds',
+                         en: 'Role Advisor — term search across the six clouds' },
   'adv.examplesTitle': { pt: 'Exemplos de busca',   en: 'Example searches' },
   'adv.emptyTitle':    { pt: 'Nenhuma role encontrada', en: 'No role found' },
-  'adv.emptyHint':     { pt: 'Tente termos mais específicos, ou em inglês — o dado é todo em inglês.',
-                         en: 'Try narrower terms. The data is all in English, so English terms match best.' },
+  'adv.emptyHint':     { pt: 'Nenhuma role do catálogo casou com o que você escreveu. Tente nomear o serviço (Storage, BigQuery, Key Vault) ou a ação (ler, publicar, administrar).',
+                         en: 'No role in the catalogue matched what you wrote. Try naming the service (Storage, BigQuery, Key Vault) or the action (read, publish, administer).' },
   'adv.exOne':         { pt: 'Quero acesso somente leitura para auditar recursos no Azure',
                          en: 'Read-only access to audit resources in Azure' },
   'adv.exTwo':         { pt: 'Preciso gerenciar DNS e rede na infraestrutura clássica da IBM',
@@ -751,12 +760,58 @@ export const PAGES_DICTIONARY = {
   'adv.exFifteen':     { pt: 'Gerenciar certificado SSL e chave SSH',
                          en: 'Manage SSL certificates and SSH keys' },
   'adv.allPlatforms':  { pt: 'Todas as plataformas', en: 'All platforms' },
-  'adv.introBody':     { pt: 'Descreva em linguagem natural o que precisa fazer. A busca varre **mais de 1.700 roles** de Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM e AWS IAM, e devolve as mais próximas do que você descreveu.',
-                         en: 'Describe what you need to do in plain language. The search sweeps **more than 1,700 roles** across Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM and AWS IAM, and returns the closest matches to what you described.' },
+  // A contagem sai de getIndexSize() em tempo de execução, não do texto: esta
+  // frase já anunciou "mais de 1.700" quando o índice tinha 4.603.
+  'adv.introBody':     { pt: 'Descreva em linguagem natural o que precisa fazer, em português ou inglês. A busca varre o catálogo inteiro de Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM e AWS IAM.',
+                         en: 'Describe what you need to do in plain language, in English or Portuguese. The search sweeps the whole catalogue across Entra ID, Azure RBAC, Google Workspace, IBM Cloud, GCP IAM and AWS IAM.' },
   'adv.resultOne':     { pt: 'resultado',  en: 'result' },
   'adv.resultMany':    { pt: 'resultados', en: 'results' },
   'adv.roleOne':       { pt: 'role',       en: 'role' },
   'adv.termsLabel':    { pt: 'termos:',    en: 'terms:' },
+
+  // ── /advisor — o que a busca entendeu ─────────────────────────────────────
+  // Estes rótulos existem porque a busca passou a DEVOLVER o raciocínio dela.
+  // Uma busca que erra e mostra por que errou é corrigível por quem lê.
+  'adv.planTitle':     { pt: 'O que eu entendi',        en: 'What I understood' },
+  'adv.planTerms':     { pt: 'Procurando por',          en: 'Looking for' },
+  'adv.planScope':     { pt: 'Só em',                   en: 'Only in' },
+  'adv.planExcluded':  { pt: 'Excluindo',               en: 'Excluding' },
+  'adv.planUnmatched': { pt: 'Sem correspondência no catálogo',
+                         en: 'No match in the catalogue' },
+  'adv.confHigh':      { pt: 'Encaixe alto',            en: 'Strong match' },
+  'adv.confMedium':    { pt: 'Encaixe parcial',         en: 'Partial match' },
+  'adv.confLow':       { pt: 'Encaixe fraco',           en: 'Weak match' },
+  'adv.confLowNote':   { pt: 'O melhor resultado atende só parte do que você pediu. Trate como ponto de partida, não como resposta.',
+                         en: 'The best result covers only part of what you asked for. Treat it as a starting point, not an answer.' },
+  'adv.candidates':    { pt: 'de {n} roles que pontuaram',
+                         en: 'of {n} roles that scored' },
+
+  // ── Como funciona — a dívida do item 8 ────────────────────────────────────
+  'adv.howTitle':      { pt: 'Como esta busca funciona',
+                         en: 'How this search works' },
+  'adv.howMethod':     { pt: '**O método.** Casamento de termo com BM25 sobre nome, descrição e metadados de cada role. Termo raro pesa mais que termo comum, e por isso escrever "Azure" não empurra para cima as roles cujo nome começa com "Azure" — o nome da plataforma vira **filtro**, não pontuação.',
+                         en: '**The method.** Term matching with BM25 over each role\u2019s name, description and metadata. A rare term weighs more than a common one, which is why typing “Azure” does not push up every role whose name starts with “Azure” — the platform name becomes a **filter**, not a score.' },
+  'adv.howLexicon':    { pt: '**Português e intenção.** Todo o dado do catálogo é em inglês (ver ADR-001). Um léxico curado traduz conceito ("leitura" → read/reader/viewer) e intenção ("terraform" → contributor/editor). Essa tradução é editorial do IAM Scope, como a classificação de tier — e por isso a busca mostra o que interpretou.',
+                         en: '**Portuguese and intent.** All catalogue data is in English (see ADR-001). A curated lexicon translates concepts (“leitura” → read/reader/viewer) and intent (“terraform” → contributor/editor). That translation is IAM Scope editorial, like the tier classification — which is why the search shows what it interpreted.' },
+  'adv.howNegation':   { pt: '**Exclusão.** "sem billing", "não quero global admin" e "without IAM" viram filtro de verdade. Role cujo **nome** casa com o termo excluído é removida; se o termo aparece só no corpo do texto, ela cai para o fim.',
+                         en: '**Exclusion.** “without billing”, “not global admin” and “sem IAM” become real filters. A role whose **name** matches the excluded term is dropped; if the term only appears in the body text, it sinks to the bottom.' },
+  'adv.howNot':        { pt: '**O que isto não é.** Não há IA, embedding nem modelo de linguagem. Nada é gerado: toda role exibida existe no catálogo e leva à página dela, com a fonte e a data de verificação. A busca não sabe o que existe no seu tenant e não recebe dado nenhum seu.',
+                         en: '**What this is not.** There is no AI, no embedding and no language model. Nothing is generated: every role shown exists in the catalogue and links to its own page, with the source and the verification date. The search knows nothing about your tenant and receives no data from you.' },
+  'adv.howCoverage':   { pt: 'Cobertura: **{n} roles** de 6 plataformas. Permissão e action individuais não estão neste índice — para isso existe o {scope}.',
+                         en: 'Coverage: **{n} roles** across six platforms. Individual permissions and actions are not in this index — that is what {scope} is for.' },
+
+  // ── Como funciona — Role Evaluator ────────────────────────────────────────
+  'eval.howTitle':     { pt: 'Como esta análise funciona',
+                         en: 'How this analysis works' },
+  'eval.howInput':     { pt: '**A entrada.** O JSON colado é lido **no seu navegador** e nunca é enviado a lugar nenhum — não há servidor nesta página. A cloud é detectada pelo formato do documento; se não der, você escolhe na mão.',
+                         en: '**The input.** The JSON you paste is read **in your browser** and never sent anywhere — there is no server behind this page. The cloud is detected from the document shape; if that fails, you pick it by hand.' },
+  'eval.howMatch':     { pt: '**O casamento.** A role é procurada no catálogo pelo identificador nativo primeiro e pelo nome depois — a interface diz por qual dos dois casou, porque casar por nome é mais frágil.',
+                         en: '**The match.** The role is looked up in the catalogue by native identifier first and by name second — the interface says which of the two matched, because matching by name is the weaker of the two.' },
+  'eval.howTier':      { pt: '**O veredito de tier.** Vem do catálogo de equivalências do IAM Scope (Tier 0/1/2), que é **classificação editorial nossa, não do provedor** — o mesmo aviso que aparece nas listagens. Risco e mitigação vêm da mesma curadoria.',
+                         en: '**The tier verdict.** It comes from the IAM Scope equivalence catalogue (Tier 0/1/2), which is **our editorial classification, not the provider\u2019s** — the same notice shown on the listings. Risk and mitigation come from the same curation.' },
+  'eval.howLimit':     { pt: '**O limite.** Role que não está no catálogo de equivalências não recebe veredito — a análise diz isso em vez de arriscar um palpite. Role customizada do seu tenant cai nesse caso.',
+                         en: '**The limit.** A role that is not in the equivalence catalogue gets no verdict — the analysis says so instead of guessing. A custom role from your tenant falls into this case.' },
+
 
   // ── SoD Analyzer — cartão do script (/sod) ────────────────────────────────
   'sods.title':        { pt: 'Rodar a análise no seu tenant', en: 'Run the analysis on your own tenant' },
@@ -925,10 +980,14 @@ export const PAGES_DICTIONARY = {
                         en: 'Each provider documents its own IAM in its own place, in its own shape. IAM Scope organises that material so it can be filtered and searched — for access reviews, custom role design, security audits and side-by-side comparison across clouds.' },
 
   'info.platformsTitle': { pt: 'Plataformas cobertas', en: 'Platforms covered' },
-  'info.platformEntra':  { pt: '144 built-in roles + role actions + permissões de API do Microsoft Graph, classificadas pelo Enterprise Access Model (EAM).',
-                           en: '144 built-in roles, role actions and Microsoft Graph API permissions, classified against the Enterprise Access Model (EAM).' },
-  'info.platformAzure':  { pt: '926 roles built-in do Azure Resource Manager com Risk Tier e escopos de atribuição.',
-                           en: '926 built-in Azure Resource Manager roles with risk tier and assignment scopes.' },
+  // SEM CONTAGEM NESTAS DUAS FRASES, de propósito. A do Azure dizia "926 roles"
+  // — número de um dataset que virou 504 em julho. O check-stale-numbers só
+  // pegou em 07/08, quando passou a varrer src/i18n; até ali a página que
+  // explica o site anunciava um número que o próprio site desmentia.
+  'info.platformEntra':  { pt: 'Built-in roles, role actions e permissões de API do Microsoft Graph, classificadas pelo Enterprise Access Model (EAM).',
+                           en: 'Built-in roles, role actions and Microsoft Graph API permissions, classified against the Enterprise Access Model (EAM).' },
+  'info.platformAzure':  { pt: 'Roles built-in do Azure Resource Manager com Risk Tier e escopos de atribuição.',
+                           en: 'Built-in Azure Resource Manager roles with risk tier and assignment scopes.' },
   'info.platformGcp':    { pt: 'Roles predefinidas do GCP IAM por serviço, tier e categoria — Primitive, Predefined e Custom.',
                            en: 'GCP IAM roles by service, tier and category — primitive, predefined and custom.' },
   'info.platformGws':    { pt: 'Admin Roles predefinidas e OAuth Scopes classificados por sensibilidade.',

@@ -5,7 +5,6 @@ import ReferenceIndex from '@/components/ReferenceIndex'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier } from '@/data/azureRbac'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 import { Rich } from '@/i18n/Rich'
 
@@ -19,8 +18,6 @@ export default function AzureRbacReferenceClient() {
     <AppShell
       headerTitle="Reference"
       headerSub={t('azure.headerSub')}
-      headerActions={<ExportButton filename="azure-rbac-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter((d) => d.platform === 'Azure RBAC').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl px-8 py-8 space-y-12">

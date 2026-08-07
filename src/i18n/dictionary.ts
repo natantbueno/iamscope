@@ -61,6 +61,42 @@ const SHARED = {
   'kpi.restrictedScopes': { pt: 'Scopes restritos',    en: 'Restricted scopes' },
   'count.total':          { pt: 'Total',              en: 'Total' },
 
+  // ── SUBTÍTULOS de cabeçalho das listagens ─────────────────────────────────
+  // Dizem o QUE a página lista, nunca QUANTOS itens ela tem: a contagem já
+  // aparece logo abaixo, na StatsBar, com o recorte por tier e link de filtro.
+  // Repetir o número no subtítulo dava duas fontes para o mesmo fato — e as
+  // duas divergiam assim que um filtro entrava.
+  'sub.entraRoleActions': { pt: 'Actions distintas usadas pelas roles built-in do Entra ID',
+                            en: 'Distinct actions used by Entra ID built-in roles' },
+  'sub.azureRoles':       { pt: 'Roles built-in do Azure RBAC classificadas por risk tier',
+                            en: 'Azure RBAC built-in roles classified by risk tier' },
+  'sub.azurePerms':       { pt: 'Catálogo de actions concedidas pelas built-in roles',
+                            en: 'Catalogue of actions granted by the built-in roles' },
+  'sub.awsPolicies':      { pt: 'Managed policies, service roles e permission sets da AWS',
+                            en: 'AWS managed policies, service roles and permission sets' },
+  'sub.awsActions':       { pt: 'Padrões de action usados pelas managed policies',
+                            en: 'Action patterns used by the managed policies' },
+  'sub.gcpRoles':         { pt: 'Predefined roles do GCP IAM classificadas por tier',
+                            en: 'GCP IAM predefined roles classified by tier' },
+  'sub.gcpPerms':         { pt: 'Permissões concedidas pelas predefined roles',
+                            en: 'Permissions granted by the predefined roles' },
+  'sub.gwsRoles':         { pt: 'Roles de administração do Google Workspace por admin tier',
+                            en: 'Google Workspace admin roles by admin tier' },
+  'sub.gwsPrivileges':    { pt: 'Privilégios oficiais de administração do Google Workspace',
+                            en: 'Official Google Workspace admin privileges' },
+  'sub.gwsScopes':        { pt: 'Escopos OAuth por serviço e nível de sensibilidade',
+                            en: 'OAuth scopes by service and sensitivity level' },
+  'sub.ibmRoles':         { pt: 'Roles de IAM da IBM Cloud — platform e service',
+                            en: 'IBM Cloud IAM roles — platform and service' },
+
+  // Rótulos usados só nas StatsBar das listagens.
+  'label.wildcards':      { pt: 'Wildcards',           en: 'Wildcards' },
+  'label.groups':         { pt: 'Grupos',              en: 'Groups' },
+  'label.subPrivileges':  { pt: 'Sub-privilégios',     en: 'Sub-privileges' },
+  'label.namespaces':     { pt: 'Namespaces',          en: 'Namespaces' },
+  'label.providers':      { pt: 'Providers',           en: 'Providers' },
+  'label.types':          { pt: 'Tipos',               en: 'Types' },
+
   // Frescor do dado na página de detalhe. Ver getPlatformSync().
   'sync.verifiedOn':      { pt: 'Dado verificado em',   en: 'Data verified on' },
   'sync.source':          { pt: 'Fonte',                en: 'Source' },

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
@@ -140,12 +140,14 @@ const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
 // recebe o acento. Ícones alinhados com os cards da home, para que sidebar e
 // home não descrevam a mesma ferramenta de dois jeitos.
 const TOOLS: { href: string; label: string; icon: LucideIcon }[] = [
+  // Permission Scope abre a lista por pedido do Natan (07/08/2026); a ordem
+  // dos demais é a de antes.
+  { href: '/permission-scope', label: 'Permission Scope',    icon: ScanSearch },
   { href: '/advisor',          label: 'Role Advisor',        icon: Compass },
   { href: '/compare',          label: 'Multi-Cloud Compare', icon: GitCompare },
   { href: '/evaluate',         label: 'Role Evaluator',      icon: FileJson },
   { href: '/sod',              label: 'SoD Analyzer',        icon: ShieldAlert },
   { href: '/assessment',       label: 'Assessment',          icon: Gauge },
-  { href: '/permission-scope', label: 'Permission Scope',    icon: ScanSearch },
   { href: '/tier-comparison',  label: 'Tier 0 Comparison',   icon: ShieldCheck },
 ]
 
@@ -161,6 +163,52 @@ const CLOUD_LINKS: { label: string; href: string; color: string }[] = [
   { label: 'IBM Cloud',       href: '/ibm-cloud',        color: CLOUD_COLORS.ibmCloud.mark },
 ]
 
+/**
+ * Estado de abrir/fechar de seção da sidebar que sobrevive à troca de página.
+ *
+ * Cada rota monta o seu próprio AppShell, então a Sidebar é REMONTADA a cada
+ * navegação e um `useState(true)` reabre sozinho a seção que a pessoa tinha
+ * fechado. O valor mora no localStorage.
+ *
+ * Por que existe o cache de módulo além do localStorage: o primeiro render
+ * precisa bater com o HTML gerado no build (export estático), senão a
+ * hidratação acusa divergência — por isso o valor inicial é sempre o padrão e
+ * o localStorage só entra no `useEffect`. O cache de módulo sobrevive à
+ * navegação no cliente, então da segunda página em diante o estado certo já
+ * está no primeiro render e não há piscada.
+ */
+const SECTION_KEY = 'iamscope.sidebar.sections'
+const SECTION_CACHE: Record<string, boolean> = {}
+let sectionCacheReady = false
+
+function loadSections() {
+  if (sectionCacheReady) return
+  sectionCacheReady = true
+  try {
+    const raw = window.localStorage.getItem(SECTION_KEY)
+    if (raw) Object.assign(SECTION_CACHE, JSON.parse(raw) as Record<string, boolean>)
+  } catch { /* storage bloqueado ou JSON corrompido: segue com o padrão */ }
+}
+
+function useSectionOpen(key: string, fallback = true): [boolean, () => void] {
+  const [open, setOpen] = useState(() => SECTION_CACHE[key] ?? fallback)
+
+  useEffect(() => {
+    loadSections()
+    const saved = SECTION_CACHE[key]
+    if (typeof saved === 'boolean') setOpen(saved)
+  }, [key])
+
+  const toggle = () => setOpen((o) => {
+    const next = !o
+    SECTION_CACHE[key] = next
+    try { window.localStorage.setItem(SECTION_KEY, JSON.stringify(SECTION_CACHE)) } catch { /* idem */ }
+    return next
+  })
+
+  return [open, toggle]
+}
+
 export default function Sidebar({
   platform, view, searchBasePath, totalRoles, totalApiPerms, totalRoleActions, totalAzureRoles = 0, totalIbmRoles = IBM_ROLES_COUNT,
   onViewChange, onCategoryFilter,
@@ -168,18 +216,19 @@ export default function Sidebar({
   const t = useT()
   const router = useRouter()
   const pathname = usePathname()
-  const [tierOpen, setTierOpen] = useState(true)
-  const [eamOpen, setEamOpen] = useState(true)
-  const [gwsTierOpen, setGwsTierOpen] = useState(true)
-  const [ibmTierOpen, setIbmTierOpen] = useState(true)
-  const [gcpTierOpen, setGcpTierOpen] = useState(true)
-  const [gcpCatOpen, setGcpCatOpen] = useState(true)
-  const [awsTierOpen, setAwsTierOpen] = useState(true)
-  const [awsCatOpen, setAwsCatOpen] = useState(true)
-  const [catOpen, setCatOpen] = useState(true)
+  const [tierOpen, toggleTier]         = useSectionOpen('tier')
+  const [eamOpen, toggleEam]           = useSectionOpen('eam')
+  const [gwsTierOpen, toggleGwsTier]   = useSectionOpen('gwsTier')
+  const [ibmTierOpen, toggleIbmTier]   = useSectionOpen('ibmTier')
+  const [gcpTierOpen, toggleGcpTier]   = useSectionOpen('gcpTier')
+  const [gcpCatOpen, toggleGcpCat]     = useSectionOpen('gcpCat')
+  const [awsTierOpen, toggleAwsTier]   = useSectionOpen('awsTier')
+  const [awsCatOpen, toggleAwsCat]     = useSectionOpen('awsCat')
+  const [catOpen, toggleCat]           = useSectionOpen('cat')
   // Ferramentas abrem por padrão: são o diferencial do site e ficariam
-  // escondidas atrás de um clique se começassem fechadas.
-  const [toolsOpen, setToolsOpen] = useState(true)
+  // escondidas atrás de um clique se começassem fechadas. Quem fechar,
+  // porém, continua fechado ao trocar de página.
+  const [toolsOpen, toggleTools]       = useSectionOpen('tools')
 
   return (
     <aside className="w-60 shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0">
@@ -207,7 +256,7 @@ export default function Sidebar({
 
       {/* Ferramentas globais */}
       <div className="px-3 py-2 border-b border-line shrink-0 flex flex-col gap-1.5">
-        <SectionToggle label={t('sidebar.tools')} open={toolsOpen} onToggle={() => setToolsOpen((o) => !o)} />
+        <SectionToggle label={t('sidebar.tools')} open={toolsOpen} onToggle={toggleTools} />
         {toolsOpen && (
         <>
         {TOOLS.map(({ href, label, icon: Icon }) => {
@@ -319,7 +368,7 @@ export default function Sidebar({
             <NavItem icon={<HelpCircle size={15} />}     label="Reference"       active={view === 'reference'}      badge="3" onClick={() => onViewChange('reference')} />
           </div>
           <div className="mb-4">
-            <SectionToggle label="Enterprise Access Model" open={eamOpen} onToggle={() => setEamOpen((o) => !o)} />
+            <SectionToggle label="Enterprise Access Model" open={eamOpen} onToggle={toggleEam} />
             {eamOpen && ENTRA_TIERS.map((tier) => {
               const m = EAM_META[tier]
               return (
@@ -362,7 +411,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Risk Tier" open={tierOpen} onToggle={() => setTierOpen((o) => !o)} />
+            <SectionToggle label="Risk Tier" open={tierOpen} onToggle={toggleTier} />
             {tierOpen && AZURE_TIERS.map((tier) => {
               const m = AZURE_TIER_META[tier]
               return (
@@ -376,7 +425,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label={t('sidebar.categories')} open={catOpen} onToggle={() => setCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={catOpen} onToggle={toggleCat} />
             {catOpen && AZURE_CATEGORIES.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/azure-rbac/roles?category=${cat}`)}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
@@ -410,7 +459,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Admin Tier" open={gwsTierOpen} onToggle={() => setGwsTierOpen((o) => !o)} />
+            <SectionToggle label="Admin Tier" open={gwsTierOpen} onToggle={toggleGwsTier} />
             {gwsTierOpen && GWS_TIERS.map((tier) => {
               const m = GWS_TIER_META[tier]
               return (
@@ -445,7 +494,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Role Tier" open={gcpTierOpen} onToggle={() => setGcpTierOpen((o) => !o)} />
+            <SectionToggle label="Role Tier" open={gcpTierOpen} onToggle={toggleGcpTier} />
             {gcpTierOpen && GCP_TIERS.map((tier) => {
               const m = GCP_TIER_META[tier]
               return (
@@ -459,7 +508,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label={t('sidebar.categories')} open={gcpCatOpen} onToggle={() => setGcpCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={gcpCatOpen} onToggle={toggleGcpCat} />
             {gcpCatOpen && GCP_CATEGORIES.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/gcp/roles?category=${cat}`)}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
@@ -495,7 +544,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label="Access Tier" open={awsTierOpen} onToggle={() => setAwsTierOpen((o) => !o)} />
+            <SectionToggle label="Access Tier" open={awsTierOpen} onToggle={toggleAwsTier} />
             {awsTierOpen && AWS_TIERS.map((tier) => {
               const m = AWS_TIER_META[tier]
               return (
@@ -509,7 +558,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <SectionToggle label={t('sidebar.categories')} open={awsCatOpen} onToggle={() => setAwsCatOpen((o) => !o)} />
+            <SectionToggle label={t('sidebar.categories')} open={awsCatOpen} onToggle={toggleAwsCat} />
             {awsCatOpen && AWS_CATS.map(({ label, cat, icon }) => (
               <button key={cat} onClick={() => router.push(`/aws/policies?category=${cat}`)}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
@@ -562,7 +611,7 @@ export default function Sidebar({
           */}
 
           <div>
-            <SectionToggle label="Access Tier" open={ibmTierOpen} onToggle={() => setIbmTierOpen((o) => !o)} />
+            <SectionToggle label="Access Tier" open={ibmTierOpen} onToggle={toggleIbmTier} />
             {ibmTierOpen && IBM_TIERS.map((tier) => {
               const m = IBM_TIER_META[tier]
               return (

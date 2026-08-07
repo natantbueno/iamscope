@@ -74,7 +74,7 @@ function GcpPermissionsContent() {
   return (
     <AppShell
       headerTitle="GCP IAM Permissions"
-      headerSub={`${stats.total} permissões únicas · ${stats.services} serviços`}
+      headerSub={t('sub.gcpPerms')}
       headerActions={<ExportButton filename="gcp-permissions" data={filtered.map((p) => ({
         permission: p.permission, service: p.service, verb: p.verb, tier: p.tier,
         isUsedByPrivileged: p.isUsedByPrivileged, usedByRolesCount: p.usedByRoles.length,
@@ -91,7 +91,7 @@ function GcpPermissionsContent() {
           <div className="m-4 text-tiny text-fg-subtle">{t('perm.loadingGcp')}</div>
         )}
         <StatsBar stats={[
-          { label: 'Total',         value: stats.total,     color: 'green' },
+          { label: t('count.total'), value: stats.total,     color: 'green' },
           { label: 'Project Owner', value: stats.owner,     color: 'red' },
           { label: 'Admin',         value: stats.admin,     color: 'orange' },
           { label: 'Viewer',        value: stats.viewer,    color: 'green' },

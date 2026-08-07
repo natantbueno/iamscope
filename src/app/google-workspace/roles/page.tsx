@@ -94,7 +94,7 @@ function GwsRolesContent() {
   return (
     <AppShell
       headerTitle="Google Workspace — Admin Roles"
-      headerSub={`${GWS_ROLES.length} roles · ${ALL_CATEGORIES.length} categorias · 5 admin tiers`}
+      headerSub={t('sub.gwsRoles')}
       headerActions={<ExportButton filename="google-workspace-roles" data={sorted.map((r) => ({
         name: r.name, category: r.category, tier: r.tier, isPrivileged: r.isPrivileged, description: r.description,
       }))} />}

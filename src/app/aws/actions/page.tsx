@@ -71,7 +71,7 @@ function AwsActionsContent() {
   return (
     <AppShell
       headerTitle="AWS IAM Actions"
-      headerSub={`${stats.total} action patterns · ${stats.services} serviços`}
+      headerSub={t('sub.awsActions')}
       headerActions={<ExportButton filename="aws-actions" data={filtered.map((a) => ({
         action: a.action, service: a.service, tier: a.tier, isWildcard: a.isWildcard,
         isUsedByPrivileged: a.isUsedByPrivileged, usedByPoliciesCount: a.usedByPolicies.length,
@@ -89,7 +89,7 @@ function AwsActionsContent() {
         )}
         <StatsBar stats={[
           { label: t('count.total'),      value: stats.total,      color: 'orange' },
-          { label: 'Wildcards',   value: stats.wildcards,  color: 'red' },
+          { label: t('label.wildcards'), value: stats.wildcards,  color: 'red' },
           { label: t('label.specificPlural'), value: stats.specific,   color: 'green' },
           { label: 'Full Access', value: stats.fullAccess, color: 'red' },
           { label: t('count.privileged'),value: stats.privileged,color: 'red' },

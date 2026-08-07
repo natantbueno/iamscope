@@ -429,6 +429,17 @@ const nextConfig = {
 1. **Zero secrets no código.** Nenhum `process.env`, nenhum `NEXT_PUBLIC_*`, nenhum token/credencial hardcoded em `src/` ou `scripts/`. Os scripts de dados usam exclusivamente fontes públicas sem autenticação.
 2. **Dependências em dia com o security release de mai/2026:** next 15.5.19 (≥ 15.5.18 patched), react/react-dom 19.2.7 (≥ 19.2.6 patched). `npm audit`: 0 critical / 0 high.
 3. **Superfície mínima:** site estático sem backend, sem formulários com submit, sem cookies, sem `localStorage`/`sessionStorage` (verificado — nem o tema usa storage), sem chamadas de rede externas no client (os 2 únicos `fetch` são same-origin para `/azure-perms/*.json`).
+
+> **Nota de 07/08/2026 — este item envelheceu em dois pontos.**
+> (a) O site passou a usar `localStorage` em três lugares: idioma (`iamscope.lang`), tema e
+> o estado das seções da sidebar (`iamscope.sidebar.sections`). Todos guardam preferência de
+> interface, nenhum guarda dado de tenant.
+> (b) Foi aprovada uma exceção deliberada à ausência de backend: o modo agente do Role
+> Advisor terá endpoint próprio. Só a frase em linguagem natural do Advisor sai do
+> navegador; Role Evaluator e SoD Analyzer seguem inteiramente locais, por desenho e não só
+> por política — as ferramentas do agente executam no cliente. Ver "A linha do que sai do
+> navegador" no `PRODUCT.md`. **Esta avaliação precisa ser refeita antes de o endpoint ir ao
+> ar**, com atenção a CORS, limite de uso e retenção de log.
 4. **Sem `eval`/`new Function`/`innerHTML`/`document.write`** em todo o código.
 5. **Escape correto nos 4 usos de `dangerouslySetInnerHTML`** (`&<>` antes do highlight) e renderização de todo o resto via JSX (auto-escape do React).
 6. **Sem recursos de CDN externos:** nenhuma fonte do Google, nenhum `<script src>` de terceiros — nada exigindo SRI; isso também permite uma CSP `default-src 'self'` limpa.

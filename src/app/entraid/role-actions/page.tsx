@@ -28,7 +28,7 @@ function RoleActionsContent() {
     namespaces: namespaces.length,
   }), [actions, namespaces])
 
-  const subtitle = `${stats.total.toLocaleString()} role actions únicas · ${stats.namespaces} namespaces`
+  const subtitle = t('sub.entraRoleActions')
 
   return (
     <AppShell
@@ -43,7 +43,7 @@ function RoleActionsContent() {
           { label: 'Management Plane', value: stats.management, color: 'orange' },
           { label: 'User Access', value: stats.userAccess, color: 'green' },
           { label: t('label.usedByPriv'), value: stats.privileged, color: 'red' },
-          { label: 'Namespaces', value: stats.namespaces, color: 'gray' },
+          { label: t('label.namespaces'), value: stats.namespaces, color: 'gray' },
         ]} />
         <RoleActionsTable
           actions={actions}

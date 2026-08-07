@@ -18,7 +18,6 @@ import ExportButton from '@/components/ExportButton'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
 import StatsBar from '@/components/StatsBar'
-import { AZURE_ROLES } from '@/data/azureRbac'
 import {
   AzurePermIndexFile, AzurePermissionEntry,
   buildAzurePermissionCatalog, getProviderCounts, getVerbCounts,
@@ -89,7 +88,7 @@ function AzurePermissionsContent() {
   return (
     <AppShell
       headerTitle={t('perm.azureHeader')}
-      headerSub={entries ? `${fmt(entries.length)} ${t('perm.azureUsedByA')} ${AZURE_ROLES.length} ${t('perm.azureUsedByB')}` : t('state.loadingCatalog')}
+      headerSub={entries ? t('sub.azurePerms') : t('state.loadingCatalog')}
       headerActions={
         filtered.length > 0
           ? <ExportButton filename="azure-rbac-permissions" title="Azure RBAC Permissions"
@@ -103,9 +102,9 @@ function AzurePermissionsContent() {
       <div className="flex flex-col flex-1 min-h-0">
         {entries && (
           <StatsBar stats={[
-            { label: 'Actions', value: entries.length, color: 'blue' },
-            { label: 'Providers', value: providers.length, color: 'purple' },
-            { label: 'Wildcards', value: entries.filter((e) => e.isWildcard).length, color: 'orange' },
+            { label: t('count.actions'), value: entries.length, color: 'blue' },
+            { label: t('label.providers'), value: providers.length, color: 'purple' },
+            { label: t('label.wildcards'), value: entries.filter((e) => e.isWildcard).length, color: 'orange' },
             { label: t('label.withOfficialDesc'), value: withDesc, color: withDesc > 0 ? 'green' : 'gray' },
           ]} />
         )}

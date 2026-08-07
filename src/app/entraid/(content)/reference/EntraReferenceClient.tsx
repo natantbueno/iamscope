@@ -5,7 +5,6 @@ import ReferenceIndex from '@/components/ReferenceIndex'
 import { EAM_META, EamTier } from '@/data/roles'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 import type { TranslationKey } from '@/i18n/dictionary'
 
@@ -37,8 +36,6 @@ export default function EntraReferenceClient() {
     <AppShell
       headerTitle="Reference"
       headerSub={t('entra.headerSub')}
-      headerActions={<ExportButton filename="entraid-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter((d) => d.platform === 'Entra ID').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl px-8 py-8 space-y-12">

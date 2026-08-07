@@ -61,6 +61,7 @@ const OBSOLETOS = {
   15: 'roles GWS com privileges (dataset foi reconstruído)',
   3311: 'páginas do build (hoje ~7.769)',
   7796: 'páginas do build (hoje 7.769)',
+  1700: 'roles no índice do Role Advisor (hoje 4.603) — a frase dizia "mais de 1.700"',
 }
 
 const arquivos = []
@@ -79,13 +80,73 @@ const arquivos = []
   }
 })(path.join(ROOT, 'src', 'components'))
 
+/*
+  O DICIONÁRIO TAMBÉM É TELA — e era o buraco.
+
+  Em 07/08 a frase de abertura do Role Advisor anunciava "mais de 1.700 roles"
+  enquanto o índice tinha 4.603. Passou meses porque este script varria só
+  src/app e src/components, e só .tsx: `src/i18n/pages.ts` é onde mora a prosa
+  longa das páginas, e nunca foi olhado.
+
+  Estes entram como `.ts`, e a prosa deles é justamente o que a pessoa lê.
+*/
+for (const nome of ['dictionary.ts', 'pages.ts']) {
+  const p = path.join(ROOT, 'src', 'i18n', nome)
+  if (fs.existsSync(p)) arquivos.push(p)
+}
+
 const rel = (p) => path.relative(ROOT, p).replace(/\\/g, '/')
+
+/*
+  NÚMERO FIXO QUE PODE FICAR — com o motivo, sempre.
+
+  Sem esta lista o script fica vermelho por prosa legítima e vira ruído que
+  ninguém lê, que é o pior destino de um verificador. Com ela, cada exceção
+  precisa ser defendida por escrito.
+
+  Duas naturezas, e a diferença importa:
+
+  PROSA_HISTORICA — o número descreve o passado ("das 44 admin roles listadas,
+                    só 14 existem"). Trocar por dinâmico destruiria a frase.
+                    Fica para sempre.
+  A_INTERPOLAR    — o número é a contagem de HOJE, escrita à mão dentro de
+                    prosa. Está certo agora e vai apodrecer em silêncio. É
+                    dívida registrada, não isenção: o alvo é a frase receber
+                    {n} e o chamador preencher de counts.ts, como já faz
+                    `adv.howCoverage` no Role Advisor.
+*/
+const PROSA_HISTORICA = {
+  'chlog.entraDescBody':  '130 de 132 roles — narrativa do que mudou, é o passado',
+  'chlog.gwsRebuildBody': '44 → 14 roles e 84 → 120 privilégios — mesma coisa',
+  'chlog.gcpFullBody':     '2.381 roles do GCP na narrativa da recoleta completa',
+  'chlog.azureCountTitle': '"Azure RBAC reconciliado em 504 roles" — o número É o título',
+  'chlog.azureCountBody':  'a divergência 504 × 937 do AzAdvertizer É o assunto da frase',
+  'chlog.awsOfficialBody': '1.553 policies — narrativa da recoleta das descrições oficiais',
+}
+const A_INTERPOLAR = {
+  'pim.whatTwo':     'as 144 directory roles — deveria ler ENTRA_ROLES_COUNT',
+  'sod.scopeIbm':    'as 71 permissões clássicas — deveria ler IBM_CLASSIC_PERMISSIONS_COUNT',
+  'ibm.classicDesc': 'as 71 permissões clássicas — idem',
+}
+
+/** Qual chave do dicionário contém um dado deslocamento do arquivo. */
+function chaveDoDicionario(src, idx) {
+  const antes = src.slice(0, idx)
+  const m = [...antes.matchAll(/^\s+'([a-zA-Z]+\.[a-zA-Z]+)':/gm)]
+  return m.length ? m[m.length - 1][1] : null
+}
 
 const erros = []
 const avisos = []
+// Número certo hoje, escrito à mão em prosa. Não falha o build; aparece sempre.
+const divida = []
 
 for (const abs of arquivos) {
-  const src = fs.readFileSync(abs, 'utf8')
+  // Separador de milhar vira nada antes de qualquer coisa: sem isto "1.700"
+  // era lido como o número 700 e nenhuma regra pegava. O texto que aparece no
+  // relatório sai já normalizado, o que é aceitável — o que importa ali é o
+  // número, e o arquivo/linha levam ao original.
+  const src = fs.readFileSync(abs, 'utf8').replace(/(\d)[.,\u00a0](\d{3})\b/g, '$1$2')
 
   /*
     Extrai só o que a pessoa LÊ na tela. A primeira versão limpava className e
@@ -139,6 +200,12 @@ for (const abs of arquivos) {
       // custa mais em falso positivo do que vale em cobertura.
       if (n < 20) continue
       const ctx = { arquivo: rel(abs), linha, valor: n, texto: txt.trim().slice(0, 100) }
+      // Prosa do dicionário passa pelas exceções antes de virar erro.
+      if (ctx.arquivo.startsWith('src/i18n/')) {
+        const chave = chaveDoDicionario(semRuido, idx)
+        if (chave && PROSA_HISTORICA[chave]) continue
+        if (chave && A_INTERPOLAR[chave]) { divida.push({ ...ctx, chave }); continue }
+      }
       if (OBSOLETOS[n]) erros.push({ ...ctx, motivo: `valor obsoleto — ${OBSOLETOS[n]}` })
       else if (atuais.has(n)) erros.push({ ...ctx, motivo: `igual a ${atuais.get(n)} — deveria vir de counts.ts` })
       else if (TUDO) avisos.push(ctx)
@@ -219,6 +286,16 @@ if (erros.length) {
   }
 } else {
   console.log('OK — contagens, syncMeta e lista de ferramentas do /info conferem.')
+}
+
+if (divida.length) {
+  console.log(`\n${divida.length} contagem(ns) escritas à mão em prosa (dívida conhecida, ver A_INTERPOLAR):`)
+  const vistos = new Set()
+  for (const d of divida) {
+    if (vistos.has(d.chave)) continue
+    vistos.add(d.chave)
+    console.log(`  ${d.chave}  —  ${A_INTERPOLAR[d.chave]}`)
+  }
 }
 
 if (TUDO && avisos.length) {

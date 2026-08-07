@@ -6,7 +6,6 @@ import { GCP_ROLES, GCP_TIER_META, GcpTier } from '@/data/gcp'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 import type { TranslationKey } from '@/i18n/dictionary'
 
@@ -55,8 +54,6 @@ export default function GcpReferenceClient() {
     <AppShell
       headerTitle="GCP IAM Reference"
       headerSub={t('ref.headerSubTiers')}
-      headerActions={<ExportButton filename="gcp-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter(d => d.platform === 'GCP IAM').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-4xl space-y-6">

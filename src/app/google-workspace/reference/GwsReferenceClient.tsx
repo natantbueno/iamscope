@@ -5,7 +5,6 @@ import ReferenceIndex from '@/components/ReferenceIndex'
 import { GWS_ROLES, GWS_SCOPES, GWS_PRIVILEGES, GWS_SOURCES, GWS_TIER_META, GWS_SCOPE_META, GwsTier, GwsScopeSensitivity } from '@/data/googleWorkspace'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 
 const TIER_ORDER: GwsTier[] = ['SuperAdmin', 'DelegatedAdmin', 'ServiceAdmin', 'SpecializedAdmin', 'ReadOnly']
@@ -16,8 +15,6 @@ export default function GwsReferenceClient() {
 
   return (
     <AppShell headerTitle="Google Workspace — Reference" headerSub={t('gws.headerSub')}
-      headerActions={<ExportButton filename="google-workspace-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter((d) => d.platform === 'Google Workspace').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
       <div className="px-8 py-8 space-y-12 max-w-3xl">

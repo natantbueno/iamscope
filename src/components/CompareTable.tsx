@@ -52,7 +52,9 @@ export default function CompareTable({ equivalences, visibleClouds, sortBy = 'ti
             <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2 border-b border-surface-border dark:border-gray-800 w-56 min-w-[180px]">
               Função
             </th>
-            <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2 border-b border-surface-border dark:border-gray-800 w-20">
+            {/* w-20 (80px) menos os 24px de padding deixavam 56px de conteúdo
+                para um badge de ~62px: "Tier 0" quebrava em duas linhas. */}
+            <th className="text-left text-2xs font-semibold text-fg-muted uppercase tracking-wider px-3 py-2 border-b border-surface-border dark:border-gray-800 w-24 min-w-[92px]">
               Tier
             </th>
             {visibleClouds.map(cloud => (
@@ -84,8 +86,8 @@ export default function CompareTable({ equivalences, visibleClouds, sortBy = 'ti
                   </td>
 
                   {/* Tier badge */}
-                  <td className="px-3 py-2.5">
-                    <span className="text-2xs font-bold px-2 py-1 rounded-full"
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <span className="inline-block text-2xs font-bold px-2 py-1 rounded-full whitespace-nowrap"
                       style={{ background: tierMeta.bg, color: tierMeta.color }}>
                       {tierMeta.label}
                     </span>

@@ -111,9 +111,41 @@ achar a resposta e voltar. Tratar a home como landing page foi o erro corrigido 
   sobre um detalhe, o produto linka em vez de reescrever.
 - **Não inventar dado que o provedor não publica.** A IBM não publica ação por role; o
   card mostra o que existe e explica a ausência, em vez de preencher.
-- **Não pedir credencial nem receber dado do tenant do usuário.**
-- **Não ter conta, tema salvo em servidor, nem qualquer estado remoto.** Export estático,
-  sem backend.
+- **Não pedir credencial nem receber dado do tenant do usuário.** Esta não mudou e não vai
+  mudar. Ver "A linha do que sai do navegador" abaixo.
+- **Não ter conta nem estado remoto.** Não há login, o site não sabe quem você é, e nada do
+  que você faz aqui é guardado do lado de servidor.
+
+## A linha do que sai do navegador
+
+Registrada em 07/08/2026, quando o Role Advisor foi aprovado para virar agente com um
+endpoint próprio. Até aqui este documento prometia "sem backend", e o
+`SECURITY-ASSESSMENT` listava como positivo a ausência de chamada de rede externa. Isso
+deixa de valer para **uma** superfície, e a promessa precisa ficar exata em vez de
+confortável.
+
+**O que passa a sair:** só a frase que a pessoa escreve no Role Advisor, quando ela usa o
+modo agente, e só para o endpoint do IAM Scope. Nada mais.
+
+**O que não sai, nunca:**
+
+- O JSON colado no **Role Evaluator**. Continua lido e avaliado no navegador.
+- A lista de roles do **SoD Analyzer**. Idem.
+- Qualquer identificador de tenant, assinatura, projeto ou conta.
+- Credencial de qualquer tipo — o produto continua não tendo onde recebê-las.
+
+**Como o desenho garante isso, e não só a intenção:** as ferramentas do agente rodam no
+CLIENTE. O servidor guarda a chave e o system prompt; quando o modelo pede uma busca, um
+conflito de SoD ou uma avaliação, quem executa é o navegador, sobre o catálogo que já está
+nele, e devolve ao modelo apenas o resultado. O catálogo nunca precisa subir; o JSON colado
+não tem por onde vazar, porque o código que o lê nunca fala com a rede.
+
+**O guardrail do conteúdo:** o modelo só pode citar role devolvida por chamada de
+ferramenta, e a resposta passa por uma verificação que derruba qualquer nome ausente do
+catálogo. Sem isso ele inventa `roles/bigquery.readOnly` — plausível e inexistente — e a
+moeda deste produto é citabilidade.
+
+O Advisor sem o modo agente, e todo o resto do site, seguem export estático sem servidor.
 
 ## Forma técnica
 

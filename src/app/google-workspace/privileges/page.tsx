@@ -66,16 +66,16 @@ function GwsPrivilegesContent() {
   return (
     <AppShell
       headerTitle="Google Workspace — Admin Privileges"
-      headerSub={`${stats.total} privilégios oficiais · ${stats.grupos} grupos`}
+      headerSub={t('sub.gwsPrivileges')}
       headerActions={<ExportButton filename="google-workspace-privileges" data={filtered.map((p) => ({
         privilege: p.name, section: p.section, group: p.group, description: p.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total',          value: stats.total,    color: 'green' },
-          { label: 'Grupos',         value: stats.grupos,   color: 'green' },
-          { label: 'Sub-privilégios',value: stats.filhos,   color: 'gray' },
+          { label: t('count.total'), value: stats.total,    color: 'green' },
+          { label: t('label.groups'), value: stats.grupos,   color: 'green' },
+          { label: t('label.subPrivileges'), value: stats.filhos,   color: 'gray' },
           { label: 'Admin settings', value: stats.admin,    color: 'gray' },
           { label: 'Services',       value: stats.servicos, color: 'gray' },
         ]} />

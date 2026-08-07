@@ -11,6 +11,7 @@ import { usePagination } from '@/hooks/usePagination'
 import Link from 'next/link'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
+import StatsBar from '@/components/StatsBar'
 import DeprecatedBadge from '@/components/DeprecatedBadge'
 import { useT } from '@/i18n/LanguageProvider'
 
@@ -68,13 +69,29 @@ function AwsPoliciesContent() {
 
 
   return (
-    <AppShell headerTitle="AWS IAM Policies" headerSub={`${AWS_POLICIES.length} policies — Managed, Service Roles e Permission Sets`}
+    <AppShell headerTitle="AWS IAM Policies" headerSub={t('sub.awsPolicies')}
       headerActions={<ExportButton filename="aws-policies" data={filtered.map((p) => ({
         name: p.name, arn: p.arn, tier: p.tier, category: p.category, type: p.type,
         isPrivileged: p.isPrivileged, description: p.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        {/*
+          Legenda de contagem, igual à do Entra e do Azure: diz de que é feita a
+          lista antes de qualquer filtro e cada número navega para o recorte.
+          Os totais são do dataset inteiro, nunca do filtro atual — se
+          acompanhassem o filtro, "Full Access 1" logo abaixo de uma lista de 1
+          item não informaria nada.
+        */}
+        <StatsBar stats={[
+          { label: t('count.total'),      value: AWS_POLICIES.length,                                            color: 'blue',   href: '/aws/policies' },
+          { label: 'Full Access',         value: AWS_POLICIES.filter((p) => p.tier === 'FullAccess').length,     color: 'red',    href: '/aws/policies?filter=FullAccess' },
+          { label: 'Power User',          value: AWS_POLICIES.filter((p) => p.tier === 'PowerUser').length,      color: 'orange', href: '/aws/policies?filter=PowerUser' },
+          { label: 'Operator',            value: AWS_POLICIES.filter((p) => p.tier === 'Operator').length,       color: 'gray',   href: '/aws/policies?filter=Operator' },
+          { label: 'Specialized',         value: AWS_POLICIES.filter((p) => p.tier === 'Specialized').length,    color: 'purple', href: '/aws/policies?filter=Specialized' },
+          { label: 'Read Only',           value: AWS_POLICIES.filter((p) => p.tier === 'ReadOnly').length,       color: 'green',  href: '/aws/policies?filter=ReadOnly' },
+          { label: t('count.privileged'), value: AWS_POLICIES.filter((p) => p.isPrivileged).length,              color: 'red',    href: '/aws/policies?filter=privileged' },
+        ]} />
 
         {/* Filters */}
         <div className="px-4 pt-3 pb-2 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0 space-y-2">

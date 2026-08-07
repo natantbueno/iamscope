@@ -11,7 +11,6 @@ import type { IbmTier } from '@/data/ibmCloud'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 import { Rich } from '@/i18n/Rich'
 import type { TranslationKey } from '@/i18n/dictionary'
@@ -42,8 +41,6 @@ export default function IbmReferenceClient() {
     <AppShell
       headerTitle="IBM Cloud IAM — Reference"
       headerSub={t('ref.headerSubTiers')}
-      headerActions={<ExportButton filename="ibm-cloud-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter(d => d.platform === 'IBM Cloud').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="px-8 py-8 max-w-3xl space-y-8">

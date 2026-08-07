@@ -12,6 +12,7 @@ import AppShell from '@/components/AppShell'
 import { IBM_ROLES, IBM_TIER_META, IbmTier, IbmCategory, IbmRoleKind } from '@/data/ibmCloud'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
+import StatsBar, { StatItem } from '@/components/StatsBar'
 
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
 
@@ -39,16 +40,20 @@ function IbmRolesContent() {
   const [activeKind, setActiveKind] = useState<IbmRoleKind | 'all'>('all')
   const { widths, onMouseDown } = useColumnResize([200, 240, 120, 130, 100, 60])
 
+  // Mesmo motivo do GCP: a URL manda nos três filtros, inclusive quando o
+  // parâmetro sai. Sem isso o "Total" da legenda deixava o chip anterior aceso.
   useEffect(() => {
     const filter = params.get('filter')
     const cat    = params.get('category')
     const kind   = params.get('kind')
-    if (filter === 'privileged') setActiveTier('privileged')
-    else if (filter && filter !== 'all') setActiveTier(filter as IbmTier)
-    if (cat) setActiveCategory(cat as IbmCategory)
-    if (kind) setActiveKind(kind as IbmRoleKind)
+    setActiveTier(filter === 'privileged' ? 'privileged'
+      : filter && filter !== 'all' ? (filter as IbmTier)
+      : 'all')
+    setActiveCategory(cat ? (cat as IbmCategory) : null)
+    setActiveKind(kind ? (kind as IbmRoleKind) : 'all')
     setQuery(params.get('q') ?? '')
-  }, [params])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.toString()])
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase()
@@ -70,13 +75,23 @@ function IbmRolesContent() {
   return (
     <AppShell
       headerTitle="IBM Cloud IAM Roles"
-      headerSub={`${filtered.length} de ${IBM_ROLES.length} roles`}
+      headerSub={t('sub.ibmRoles')}
       headerActions={<ExportButton filename="ibm-cloud-roles" data={filtered.map((r) => ({
         name: r.name, tier: r.tier, category: r.category, kind: r.kind,
         isPrivileged: r.isPrivileged, description: r.description,
       }))} />}
     >
       <div className="flex flex-col flex-1 min-h-0">
+        {/* Legenda de contagem — igual à do Entra e do Azure. */}
+        <StatsBar stats={([
+          { label: t('count.total'),      value: IBM_ROLES.length,                                                 color: 'blue',   href: '/ibm-cloud/roles' },
+          { label: 'Account Admin',       value: IBM_ROLES.filter((r) => r.tier === 'AccountAdmin').length,        color: 'red',    href: '/ibm-cloud/roles?filter=AccountAdmin' },
+          { label: 'Platform Admin',      value: IBM_ROLES.filter((r) => r.tier === 'PlatformAdmin').length,       color: 'orange', href: '/ibm-cloud/roles?filter=PlatformAdmin' },
+          { label: 'Platform Operator',   value: IBM_ROLES.filter((r) => r.tier === 'PlatformOperator').length,    color: 'gray',   href: '/ibm-cloud/roles?filter=PlatformOperator' },
+          { label: 'Service Manager',     value: IBM_ROLES.filter((r) => r.tier === 'ServiceManager').length,      color: 'purple', href: '/ibm-cloud/roles?filter=ServiceManager' },
+          { label: 'Read Only',           value: IBM_ROLES.filter((r) => r.tier === 'ReadOnly').length,            color: 'green',  href: '/ibm-cloud/roles?filter=ReadOnly' },
+          { label: t('count.privileged'), value: IBM_ROLES.filter((r) => r.isPrivileged).length,                   color: 'red',    href: '/ibm-cloud/roles?filter=privileged' },
+        ] as StatItem[]).filter((s) => s.value !== 0)} />
 
         {/* Search chip */}
         {query && (

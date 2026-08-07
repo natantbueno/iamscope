@@ -6,7 +6,6 @@ import { AWS_POLICIES, AWS_TIER_META, AwsTier } from '@/data/aws'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { DATA_SYNC } from '@/data/syncMeta'
-import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
 import { Rich } from '@/i18n/Rich'
 import type { TranslationKey } from '@/i18n/dictionary'
@@ -55,8 +54,6 @@ export default function AwsReferenceClient() {
 
   return (
     <AppShell headerTitle="AWS IAM Reference" headerSub={t('aws.headerSub')}
-      headerActions={<ExportButton filename="aws-data-sync" label={t('data.exportFreshness')}
-        data={DATA_SYNC.filter(d => d.platform === 'AWS IAM').map((d) => ({ dataset: d.label, lastSynced: d.lastSynced, source: d.sourceLabel }))} />}
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-4xl space-y-6">
