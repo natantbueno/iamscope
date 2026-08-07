@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark" data-nivel="0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IAM Scope — quanto de cor tirar</title>
+<style>
+:root{
+  --c-bg-app:238 241 245; --c-bg-surface:255 255 255; --c-bg-surface-alt:246 248 251;
+  --c-line:221 227 236; --c-line-strong:197 206 219;
+  --c-fg:31 41 55; --c-fg-muted:90 99 112; --c-fg-subtle:102 110 123;
+  --c-accent:0 108 190; --c-danger:180 35 24;
+  --track:246 248 251;
+  /* marca das clouds — valores de cloudColors.ts */
+  --cl-entra:#0078d4; --cl-rbac:#5c2d91; --cl-aws:#ff9900;
+  --cl-gcp:#4285f4;   --cl-gws:#34a853;  --cl-ibm:#08bdba;
+  /* tiers — valores de tierMeta.ts */
+  --t1:#dc2626; --t2:#ea580c; --t3:#16a34a; --t4:#0891b2; --t5:#7c3aed;
+  /* ícones */
+  --ico:#6b7280;
+}
+html.dark{
+  --c-bg-app:3 7 18; --c-bg-surface:17 24 39; --c-bg-surface-alt:31 41 55;
+  --c-line:42 52 68; --c-line-strong:64 76 94;
+  --c-fg:243 244 246; --c-fg-muted:176 183 194; --c-fg-subtle:138 146 158;
+  --c-accent:133 183 235; --c-danger:248 113 113;
+  --track:31 41 55;
+  --cl-rbac:#a479d5;
+}
+/* nível 1 — só os ícones perdem a cor */
+html[data-nivel="1"]{ --ico:rgb(var(--c-fg-subtle)); }
+/* nível 2 — escada de tier vira risco+neutro; ponto de cloud usa a variante legível */
+html[data-nivel="2"]{
+  --ico:rgb(var(--c-fg-subtle));
+  --t1:rgb(var(--c-danger)); --t2:rgb(var(--c-fg-muted)); --t3:rgb(var(--c-fg-muted));
+  --t4:rgb(var(--c-fg-muted)); --t5:rgb(var(--c-fg-muted));
+  --cl-entra:#006ec3; --cl-rbac:#5c2d91; --cl-aws:#9c5d00;
+  --cl-gcp:#0e62ed;   --cl-gws:#267c3d;  --cl-ibm:#057977;
+}
+html.dark[data-nivel="2"]{
+  --cl-entra:#85b7eb; --cl-rbac:#a479d5; --cl-aws:#ff9900;
+  --cl-gcp:#4285f4;   --cl-gws:#34a853;  --cl-ibm:#08bdba;
+}
+/* nível 3 — monocromático: nem as clouds têm cor */
+html[data-nivel="3"]{
+  --ico:rgb(var(--c-fg-subtle));
+  --t1:rgb(var(--c-danger)); --t2:rgb(var(--c-fg-muted)); --t3:rgb(var(--c-fg-muted));
+  --t4:rgb(var(--c-fg-muted)); --t5:rgb(var(--c-fg-muted));
+  --cl-entra:rgb(var(--c-fg-subtle)); --cl-rbac:rgb(var(--c-fg-subtle));
+  --cl-aws:rgb(var(--c-fg-subtle));   --cl-gcp:rgb(var(--c-fg-subtle));
+  --cl-gws:rgb(var(--c-fg-subtle));   --cl-ibm:rgb(var(--c-fg-subtle));
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:rgb(var(--c-bg-app));color:rgb(var(--c-fg));
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;
+  font-size:14px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 80px}
+h1{font-size:23px;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:rgb(var(--c-fg-muted));font-size:13px;margin:0 0 22px;max-width:76ch}
+.bar{position:sticky;top:0;z-index:9;background:rgb(var(--c-bg-app));padding:12px 0 14px;
+  border-bottom:1px solid rgb(var(--c-line));margin-bottom:26px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar .sep{width:1px;height:22px;background:rgb(var(--c-line-strong));margin:0 6px}
+button.n{font:inherit;font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;
+  border:1px solid rgb(var(--c-line-strong));background:rgb(var(--c-bg-surface));color:rgb(var(--c-fg-muted))}
+button.n[aria-pressed="true"]{background:rgb(var(--c-accent));border-color:rgb(var(--c-accent));color:#fff;font-weight:600}
+button.n:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px}
+.lvlname{font-size:12.5px;color:rgb(var(--c-fg-muted));margin-left:4px}
+.lvlname b{color:rgb(var(--c-fg))}
+
+section{margin:0 0 34px}
+h2{font-size:15px;margin:0 0 3px}
+.why{color:rgb(var(--c-fg-muted));font-size:12.5px;margin:0 0 14px;max-width:82ch}
+.why b{color:rgb(var(--c-fg));font-weight:600}
+.card{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:10px;padding:14px}
+.grid2{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.ic{width:14px;height:14px;flex:none;color:var(--ico)}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* nav topo */
+.topnav{display:flex;gap:2px;border-bottom:1px solid rgb(var(--c-line));background:rgb(var(--c-bg-surface));
+  border-radius:10px 10px 0 0;padding:0 6px;overflow:hidden}
+.topnav a{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;padding:11px 12px;
+  color:rgb(var(--c-fg-muted));text-decoration:none;border-bottom:2px solid transparent}
+.topnav a.on{color:rgb(var(--c-fg));border-bottom-color:var(--navon,rgb(var(--c-accent)));font-weight:600}
+
+/* sidebar */
+.sb{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:10px;padding:10px}
+.sbh{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgb(var(--c-fg-subtle));margin:10px 2px 6px}
+.sbh:first-child{margin-top:0}
+.row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:12.5px;
+  color:rgb(var(--c-fg-subtle));border-left:2px solid transparent}
+.row.on{background:rgb(var(--c-bg-surface-alt));color:rgb(var(--c-fg));border-left-color:rgb(var(--c-accent))}
+.row .nm{flex:1}
+
+/* cards de cloud */
+.clouds{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:760px){.clouds{grid-template-columns:1fr}}
+.cc{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:10px;padding:12px}
+.cc .top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cc .nm{font-size:12.5px;font-weight:600}
+.cc .mt{font-size:11.5px;color:rgb(var(--c-fg-muted))}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.kpi{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:8px;padding:11px 12px}
+.kpi .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:rgb(var(--c-fg-subtle));margin-bottom:5px}
+.kpi .v{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+
+/* tiers */
+.tier{margin-bottom:11px}
+.tier .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.tier .lb{font-size:12px;font-weight:500}
+.tier .vl{font-size:11px;color:rgb(var(--c-fg-muted));font-variant-numeric:tabular-nums}
+.trk{height:6px;border-radius:3px;background:rgb(var(--track));overflow:hidden}
+.trk i{display:block;height:100%;border-radius:3px}
+
+/* pílulas de tier */
+.pill{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid;white-space:nowrap}
+.plist{display:flex;flex-direction:column;gap:5px}
+.pline{display:flex;align-items:center;gap:8px;font-size:12px}
+.pline .pn{flex:1;color:rgb(var(--c-fg))}
+
+/* categorias */
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(max-width:900px){.cats{grid-template-columns:repeat(3,1fr)}}
+.cat{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;
+  border:1px solid rgb(var(--c-line));background:rgb(var(--c-bg-surface-alt))}
+.cat .t{font-size:11.5px;font-weight:500;line-height:1.25}
+.cat .c{font-size:10px;color:rgb(var(--c-fg-subtle))}
+
+.note{margin-top:12px;font-size:12px;color:rgb(var(--c-fg-muted));
+  border-left:2px solid rgb(var(--c-line-strong));padding-left:11px;max-width:84ch}
+.note b{color:rgb(var(--c-fg))}
+table.m{border-collapse:collapse;font-size:12px;margin-top:10px;width:100%;max-width:620px}
+table.m th,table.m td{text-align:left;padding:5px 10px;border-bottom:1px solid rgb(var(--c-line))}
+table.m th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:rgb(var(--c-fg-subtle))}
+table.m td.num{text-align:right;font-variant-numeric:tabular-nums}
+.bad{color:rgb(var(--c-danger));font-weight:600}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+footer{margin-top:50px;padding-top:16px;border-top:1px solid rgb(var(--c-line));font-size:12px;color:rgb(var(--c-fg-subtle))}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>IAM Scope — quanto de cor tirar</h1>
+<p class="sub">Três níveis de redução, aplicados aos mesmos componentes. Troque de nível e de
+tema nos botões: tudo abaixo responde junto, então dá para comparar sem rolar duas telas.
+Os ícones ficam em todos os níveis — o que sai é a cor deles.</p>
+
+<div class="bar">
+  <button class="n" data-l="0" aria-pressed="true">Atual</button>
+  <button class="n" data-l="1" aria-pressed="false">Nível 1</button>
+  <button class="n" data-l="2" aria-pressed="false">Nível 2</button>
+  <button class="n" data-l="3" aria-pressed="false">Nível 3</button>
+  <span class="sep"></span>
+  <button class="n" id="tema">Alternar tema</button>
+  <span class="lvlname" id="desc"></span>
+</div>
+
+<!-- 1 -->
+<section>
+  <h2>1. Navegação</h2>
+  <p class="why">O menu do topo e a sidebar. <b>A cor da cloud é a única que muda entre os
+  níveis</b> — os ícones já ficam neutros a partir do nível 1.</p>
+  <div class="topnav">
+    <a href="#" class="on">AWS IAM</a><a href="#">Home</a><a href="#">Entra ID</a>
+    <a href="#">Azure RBAC</a><a href="#">GCP IAM</a><a href="#">G. Workspace</a><a href="#">IBM Cloud</a>
+  </div>
+  <div style="height:14px"></div>
+  <div class="grid2">
+    <div class="sb">
+      <p class="sbh">Ferramentas</p>
+      <div class="row on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span class="nm">Role Advisor</span></div>
+      <div class="row"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"/></svg><span class="nm">Multi-Cloud Compare</span></div>
+      <div class="row"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="nm">SoD Analyzer</span></div>
+      <p class="sbh">Clouds</p>
+      <div class="row"><span class="dot" style="background:var(--cl-entra)"></span><span class="nm">Entra ID</span></div>
+      <div class="row"><span class="dot" style="background:var(--cl-rbac)"></span><span class="nm">Azure RBAC</span></div>
+      <div class="row"><span class="dot" style="background:var(--cl-aws)"></span><span class="nm">AWS IAM</span></div>
+      <div class="row"><span class="dot" style="background:var(--cl-gcp)"></span><span class="nm">GCP IAM</span></div>
+      <div class="row"><span class="dot" style="background:var(--cl-gws)"></span><span class="nm">Google Workspace</span></div>
+      <div class="row"><span class="dot" style="background:var(--cl-ibm)"></span><span class="nm">IBM Cloud</span></div>
+    </div>
+    <div>
+      <div class="clouds">
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-entra)"></span><span class="nm">Entra ID</span></div><div class="mt">144 Roles · 1.504 API Permissions</div></div>
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-rbac)"></span><span class="nm">Azure RBAC</span></div><div class="mt">504 Roles · 58 Privilegiadas</div></div>
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-aws)"></span><span class="nm">AWS IAM</span></div><div class="mt">1.553 Policies · 448 Serviços</div></div>
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-gcp)"></span><span class="nm">GCP IAM</span></div><div class="mt">2.381 Roles · 314 Serviços</div></div>
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-gws)"></span><span class="nm">Google Workspace</span></div><div class="mt">14 Roles · 4 Privilegiadas</div></div>
+        <div class="cc"><div class="top"><span class="dot" style="background:var(--cl-ibm)"></span><span class="nm">IBM Cloud</span></div><div class="mt">7 IAM Roles · 1 Privilegiada</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="note" id="note-nav"></p>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2>2. Distribuição por tier e as pílulas</h2>
+  <p class="why">Aqui vive a maior parte da cor do site: cinco tons por plataforma, seis
+  plataformas. <b>É também onde está o problema que você sentiu</b> — a nota abaixo mostra.</p>
+  <div class="grid2" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <div style="font-size:12.5px;font-weight:600;margin-bottom:11px">Distribuição por Tier</div>
+      <div class="tier"><div class="hd"><span class="lb" style="color:var(--t1)">Full Access</span><span class="vl">328</span></div><div class="trk"><i style="width:43%;background:var(--t1)"></i></div></div>
+      <div class="tier"><div class="hd"><span class="lb" style="color:var(--t2)">Power User</span><span class="vl">62</span></div><div class="trk"><i style="width:8%;background:var(--t2)"></i></div></div>
+      <div class="tier"><div class="hd"><span class="lb" style="color:var(--t3)">Read Only</span><span class="vl">307</span></div><div class="trk"><i style="width:40%;background:var(--t3)"></i></div></div>
+      <div class="tier"><div class="hd"><span class="lb" style="color:var(--t4)">Operator</span><span class="vl">86</span></div><div class="trk"><i style="width:11%;background:var(--t4)"></i></div></div>
+      <div class="tier"><div class="hd"><span class="lb" style="color:var(--t5)">Specialized</span><span class="vl">770</span></div><div class="trk"><i style="width:100%;background:var(--t5)"></i></div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:12.5px;font-weight:600;margin-bottom:11px">Policies Privilegiadas</div>
+      <div class="plist">
+        <div class="pline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="pn">AdministratorAccess</span><span class="pill" style="color:var(--t1);border-color:var(--t1)">FullAccess</span></div>
+        <div class="pline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="pn">AIOpsConsoleAdminPolicy</span><span class="pill" style="color:var(--t2);border-color:var(--t2)">PowerUser</span></div>
+        <div class="pline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="pn">AccountManagementFromVercel</span><span class="pill" style="color:var(--t5);border-color:var(--t5)">Specialized</span></div>
+        <div class="pline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="pn">CloudWatchReadOnlyAccess</span><span class="pill" style="color:var(--t3);border-color:var(--t3)">ReadOnly</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="note"><b>O desencontro que você notou é real e é medível.</b> O mesmo roxo
+  <span class="sw" style="background:#7c3aed"></span><code>#7c3aed</code> significa
+  <b>Specialized</b> em AWS, Azure e Workspace — mas <b>Developer</b> no GCP. E "Specialized",
+  que é roxo em quatro plataformas, é <b>cinza</b> <span class="sw" style="background:#6b7280"></span>
+  no GCP. Ou seja: a mesma cor tem dois sentidos, e o mesmo sentido tem duas cores.
+  Do nível 2 em diante o problema desaparece por construção, porque a escada deixa de ser
+  cromática.</p>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2>3. KPI e categorias</h2>
+  <p class="why">A linha de KPI já ficou com a regra de três estados. O grid de categorias é
+  o que você pediu para manter — <b>aqui ele aparece com os ícones e sem os 15 tons</b>.</p>
+  <div class="kpis" style="margin-bottom:14px">
+    <div class="kpi"><div class="k">Total de policies</div><div class="v" style="color:rgb(var(--c-accent))">1.553</div></div>
+    <div class="kpi"><div class="k">Privilegiadas</div><div class="v" style="color:rgb(var(--c-danger))">408</div></div>
+    <div class="kpi"><div class="k">Full access</div><div class="v">328</div></div>
+    <div class="kpi"><div class="k">Categorias</div><div class="v">15</div></div>
+  </div>
+  <div class="card">
+    <div style="font-size:12.5px;font-weight:600;margin-bottom:11px">Por Categoria</div>
+    <div class="cats" id="cats"></div>
+  </div>
+  <p class="note">Os quinze ícones ficam. O que sai é o hex próprio de cada um — hoje
+  <code>CAT_COLORS</code> tem quinze valores escritos à mão, e nenhum deles significa nada
+  além de "esta caixa é diferente daquela".</p>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2>4. O que cada nível faz</h2>
+  <table class="m">
+    <thead><tr><th></th><th>Nível 1</th><th>Nível 2</th><th>Nível 3</th></tr></thead>
+    <tbody>
+      <tr><td>Ícones</td><td>neutros</td><td>neutros</td><td>neutros</td></tr>
+      <tr><td>Cor por categoria</td><td>sai</td><td>sai</td><td>sai</td></tr>
+      <tr><td>Escada de tier</td><td>fica</td><td>risco + neutro</td><td>risco + neutro</td></tr>
+      <tr><td>Ponto da cloud</td><td>fica</td><td>variante legível</td><td>neutro</td></tr>
+      <tr><td>Sublinhado do menu</td><td>cor da cloud</td><td>cor da cloud</td><td>acento único</td></tr>
+      <tr><td>Matizes distintos</td><td class="num">13</td><td class="num">8</td><td class="num">2</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Contagem conferida nos arquivos, não estimada: hoje a página da AWS soma
+  <b>23 matizes distintos</b> (15 de categoria + 5 de tier + as de cloud + acento e risco).
+  Nível 1 leva a 13, nível 2 a 8, nível 3 a 2 — a tinta e o vermelho de risco.</p>
+
+  <p class="note" style="margin-top:14px"><b>E um detalhe que só aparece contando:</b> os
+  cinco hex da escada de tier são exatamente cinco dos quinze de categoria. Na mesma tela da
+  AWS, <span class="sw" style="background:#dc2626"></span><code>#dc2626</code> é "Full Access"
+  no gráfico e "IAM" no grid; <span class="sw" style="background:#7c3aed"></span><code>#7c3aed</code>
+  é "Specialized" ali e "Database" aqui. Não é excesso de cor no abstrato — é a mesma cor
+  dizendo duas coisas a 300px de distância.</p>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2>5. Um problema que aparece de graça no nível 2</h2>
+  <p class="why">O comentário do <code>cloudColors.ts</code> promete que a variante
+  <code>mark</code> — a que pinta os pontos — tem no mínimo 3:1 contra o fundo.
+  <b>Medi: três das seis não têm.</b></p>
+  <table class="m">
+    <thead><tr><th>Cloud</th><th>mark</th><th class="num">tema claro</th><th class="num">tema escuro</th></tr></thead>
+    <tbody>
+      <tr><td>Entra ID</td><td><span class="sw" style="background:#0078d4"></span>#0078d4</td><td class="num">4,53:1</td><td class="num">3,92:1</td></tr>
+      <tr><td>Azure RBAC</td><td><span class="sw" style="background:#5c2d91"></span>#5c2d91</td><td class="num">9,38:1</td><td class="num bad">1,89:1</td></tr>
+      <tr><td>AWS IAM</td><td><span class="sw" style="background:#ff9900"></span>#ff9900</td><td class="num bad">2,14:1</td><td class="num">8,29:1</td></tr>
+      <tr><td>GCP IAM</td><td><span class="sw" style="background:#4285f4"></span>#4285f4</td><td class="num">3,56:1</td><td class="num">4,98:1</td></tr>
+      <tr><td>Google Workspace</td><td><span class="sw" style="background:#34a853"></span>#34a853</td><td class="num">3,06:1</td><td class="num">5,81:1</td></tr>
+      <tr><td>IBM Cloud</td><td><span class="sw" style="background:#08bdba"></span>#08bdba</td><td class="num bad">2,33:1</td><td class="num">7,60:1</td></tr>
+    </tbody>
+  </table>
+  <p class="note">O nível 2 resolve sem discussão de gosto: o ponto passa a usar a variante
+  <code>onLight</code>/<code>onDark</code>, que já existe no arquivo e já foi calculada para
+  passar. O nível 3 resolve removendo o problema. O nível 1 deixa como está.</p>
+</section>
+
+<footer>
+  Protótipo estático — nada no projeto foi alterado. Cores e contrastes vêm de
+  <code>globals.css</code>, <code>cloudColors.ts</code> e <code>tierMeta.ts</code>;
+  as razões de contraste foram calculadas, não estimadas.
+</footer>
+</div>
+
+<script>
+// hex reais de CAT_COLORS (src/app/aws/page.tsx) — só usados no nível "Atual"
+const CAT_HEX = {Management:'#6b7280',Compute:'#0891b2',AI:'#8b5cf6',IAM:'#dc2626',
+  Analytics:'#14b8a6',Storage:'#16a34a',Security:'#b91c1c',Networking:'#0369a1',
+  Containers:'#326ce5',Database:'#7c3aed',DevOps:'#ea580c',Messaging:'#d97706',
+  Serverless:'#f59e0b',IoT:'#059669',Billing:'#475569'};
+
+const CATS = [
+  ['Management',352,'M12 15a3 3 0 100-6 3 3 0 000 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1'],
+  ['Compute',188,'M5 5h14v14H5zM9 9h6v6H9zM9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3'],
+  ['AI',161,'M12 3a4 4 0 00-4 4v1a3 3 0 000 6v1a4 4 0 008 0v-1a3 3 0 000-6V7a4 4 0 00-4-4z'],
+  ['IAM',147,'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'],
+  ['Analytics',100,'M4 20V10M10 20V4M16 20v-8M2 20h20'],
+  ['Storage',93,'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3v12c0 1.7-3.6 3-8 3s-8-1.3-8-3z M4 6c0 1.7 3.6 3 8 3s8-1.3 8-3'],
+  ['Security',90,'M5 11h14v10H5zM8 11V7a4 4 0 018 0v4'],
+  ['Networking',83,'M12 9a3 3 0 100-6 3 3 0 000 6zM5 21a3 3 0 100-6 3 3 0 000 6zM19 21a3 3 0 100-6 3 3 0 000 6zM12 9v3M12 12L6 15M12 12l6 3'],
+  ['Containers',70,'M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10'],
+  ['Database',69,'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'],
+  ['DevOps',58,'M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16'],
+  ['Messaging',42,'M21 12a8 8 0 11-3.2-6.4L21 8'],
+  ['Serverless',39,'M13 2L4 14h7l-1 8 9-12h-7z'],
+  ['IoT',35,'M5 5h14v14H5zM10 10h4v4h-4zM9 2v3M15 2v3M9 19v3M15 19v3'],
+  ['Billing',26,'M3 6h18v12H3zM3 10h18M6 15h4'],
+];
+function renderCats(level){
+  document.getElementById('cats').innerHTML = CATS.map(([n,c,d]) => {
+    const col = level == 0 ? `style="color:${CAT_HEX[n]}"` : '';
+    return `<div class="cat">
+      <svg class="ic" ${col} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="${d}"/></svg>
+      <span><span class="t">${n}</span><br><span class="c">${c} policies</span></span>
+    </div>`;
+  }).join('');
+}
+
+const DESC = {
+  0: '<b>Atual</b> — como está no site hoje.',
+  1: '<b>Nível 1</b> — só os ícones perdem a cor. Escada de tier e pontos de cloud intactos.',
+  2: '<b>Nível 2</b> — a escada de tier vira risco + neutro, e o ponto da cloud passa a usar a variante legível. Recomendado.',
+  3: '<b>Nível 3</b> — monocromático: nem as clouds têm cor. Sobram a tinta e o vermelho.',
+};
+const html = document.documentElement;
+function setLevel(l){
+  html.dataset.nivel = l;
+  document.querySelectorAll('button.n[data-l]').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.l === String(l)));
+  document.getElementById('desc').innerHTML = DESC[l];
+  // no nível 3 o sublinhado do menu deixa de ser a cor da cloud
+  html.style.setProperty('--navon', l === '3' || l === 3 ? 'rgb(var(--c-accent))' : 'var(--cl-aws)');
+  renderCats(l);
+  document.getElementById('note-nav').innerHTML = (l == 0)
+    ? 'Hoje o sublinhado do menu, o ponto da sidebar e o ponto do card usam a cor de marca da cloud — seis matizes só nesta seção.'
+    : (l == 3)
+      ? 'Sem cor de cloud, a identidade fica no nome e na posição. O sublinhado do menu passa a usar o acento único, igual ao item ativo da sidebar.'
+      : 'O ponto continua sendo o único lugar onde a marca da cloud aparece — e no nível 2 ele passa a usar a variante que atende contraste.';
+}
+document.querySelectorAll('button.n[data-l]').forEach(b =>
+  b.addEventListener('click', () => setLevel(b.dataset.l)));
+document.getElementById('tema').addEventListener('click', () => {
+  html.classList.toggle('dark');
+  setLevel(html.dataset.nivel);
+});
+setLevel(0);
+</script>
+</body>
+</html>

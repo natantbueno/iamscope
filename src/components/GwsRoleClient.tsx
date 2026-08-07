@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { KPI_TONE_VALUE } from '@/lib/kpiTone'
 import RoleDetailHeader, { BackToList, roleDetailSub } from './RoleDetailHeader'
 import { CLOUD_META } from '@/data/compare/types'
 import { useT } from '@/i18n/LanguageProvider'
@@ -57,11 +58,14 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={roleDetailSub(CLOUD_META.googleWorkspace.label, role.category, meta.label)}
       headerBack={<BackToList href="/google-workspace/roles" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto bg-app">
       <div className="max-w-5xl px-6 py-6">
 
         <RoleDetailHeader
+
+          syncPlatform={'Google Workspace'}
           name={role.name}
           tier={{ label: meta.label, color: meta.textColor, bg: meta.textColor + '18',
                   darkColor: meta.darkText, darkBg: meta.darkBg, description: meta.description }}
@@ -71,13 +75,13 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
 
         {/* Stat cards */}
         <div className="grid grid-cols-3 gap-2.5 mb-3">
-          <StatCard icon={<Layers size={13} />}      label="Admin Tier"   accent={meta.darkText}>
+          <StatCard icon={<Layers size={13} />}      label="Admin Tier"   accent={KPI_TONE_VALUE.neutral}>
             <span className="text-sub font-bold" style={{ color: meta.darkText }}>{meta.short}</span>
           </StatCard>
-          <StatCard icon={<Tag size={13} />}         label={t('table.category')}    accent="#93c5fd">
+          <StatCard icon={<Tag size={13} />}         label={t('table.category')}    accent={KPI_TONE_VALUE.neutral}>
             <span className="text-base font-bold text-[#93c5fd]">{role.category}</span>
           </StatCard>
-          <StatCard icon={<CheckSquare size={13} />} label={t('label.privileges')}  accent="#4ade80">
+          <StatCard icon={<CheckSquare size={13} />} label={t('label.privileges')}  accent={KPI_TONE_VALUE.accent}>
             <span className="text-stat font-bold text-success-fg">{role.privileges.length}</span>
           </StatCard>
         </div>
@@ -181,7 +185,6 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
                 { key: 'operation',  label: t('table.operation'), width: 'w-48' },
               ]}
               filterKey="area"
-              accent="#4ade80"
               filename={`google-workspace-${role.slug}-privileges`}
               noun="noun.privileges"
               searchPlaceholder="ph.filterPrivileges"
@@ -200,7 +203,7 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
               className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors z-10"
               title={t('action.copyJson')}
             >
-              {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-fg-subtle" />}
+              {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} className="text-fg-subtle" />}
             </button>
             <pre className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
               <code className="text-3xs font-mono text-fg-muted" dangerouslySetInnerHTML={{ __html: visibleJson

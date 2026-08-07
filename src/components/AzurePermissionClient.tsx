@@ -6,12 +6,14 @@
 // de uma role, lista as roles que concedem esta permissão.
 
 import { useEffect, useMemo, useState } from 'react'
+import { KPI_TONE_VALUE } from '@/lib/kpiTone'
 import ClassificationBadge from '@/components/ClassificationBadge'
 import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
-import { BackToList } from './RoleDetailHeader'
+import { BackToList, formatarData } from './RoleDetailHeader'
+import { getPlatformSync } from '@/data/syncMeta'
 import { Copy, CheckCheck, ExternalLink, ShieldAlert, Hash, Tag, Layers, Asterisk,
-} from 'lucide-react'
+  CalendarCheck } from 'lucide-react'
 
 import AppShell from '@/components/AppShell'
 import PermissionsTable from '@/components/PermissionsTable'
@@ -29,6 +31,9 @@ import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 export default function AzurePermissionClient({ slug }: { slug: string }) {
   const t = useT()
+  // As permissions do Azure vêm de dois datasets (roles e actions); o
+  // getPlatformSync devolve a verificação mais antiga entre eles.
+  const sync = getPlatformSync('Azure RBAC')
   const [entry, setEntry] = useState<AzurePermissionEntry | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -88,6 +93,7 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
       headerTitle={entry.action}
       headerSub={`Azure RBAC · ${entry.provider} · concedida por ${entry.roles.length} role(s)`}
       headerBack={<BackToList href="/azure-rbac/permissions" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto bg-app">
         <div className="max-w-5xl px-6 py-6">
@@ -107,14 +113,36 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
                 <Rich text={t('perm.wildcardNote')} />
               </p>
             )}
+
+            {/*
+              Frescor do dado. Esta página não usa o RoleDetailHeader — tem
+              cabeçalho próprio porque o título é uma action em monoespaçada —
+              e por isso ficou de fora quando as outras seis passaram a mostrar
+              a verificação. São 2.698 páginas, o maior conjunto do site.
+            */}
+            {sync && (
+              <p className="mt-2 flex items-center gap-1.5 text-3xs text-fg-subtle">
+                <CalendarCheck size={11} className="shrink-0" aria-hidden="true" />
+                <span>
+                  {t('sync.verifiedOn')}{' '}
+                  <time dateTime={sync.lastSynced}>{formatarData(sync.lastSynced)}</time>
+                  {' · '}
+                  <a href={sync.sourceUrl} target="_blank" rel="noopener noreferrer"
+                     className="underline decoration-dotted underline-offset-2 hover:text-fg-muted"
+                     title={sync.sourceLabel}>
+                    {t('sync.source')}
+                  </a>
+                </span>
+              </p>
+            )}
           </div>
 
           {/* Números */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3">
-            <StatCard label={t('perm.rolesGranting')} value={entry.roles.length} accent="#0078d4" />
-            <StatCard label={t('filter.privileged')} value={privileged} accent={privileged > 0 ? '#f87171' : '#6b7280'} />
-            <StatCard label="Risk Tiers" value={tierBreakdown.length} accent="#a78bfa" />
-            <StatCard label={t('perm.segments')} value={entry.action.split('/').length} accent="#34d399" />
+            <StatCard label={t('perm.rolesGranting')} value={entry.roles.length} accent={KPI_TONE_VALUE.accent} />
+            <StatCard label={t('filter.privileged')} value={privileged} accent={privileged > 0 ? KPI_TONE_VALUE.danger : KPI_TONE_VALUE.neutral} />
+            <StatCard label="Risk Tiers" value={tierBreakdown.length} accent={KPI_TONE_VALUE.neutral} />
+            <StatCard label={t('perm.segments')} value={entry.action.split('/').length} accent={KPI_TONE_VALUE.neutral} />
           </div>
 
           {/* Fatos */}
@@ -123,7 +151,7 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
               <div className="flex items-center gap-1.5">
                 <code className="font-mono text-3xs text-fg-muted break-all">{entry.action}</code>
                 <button onClick={copy} className="text-fg-subtle hover:text-fg shrink-0" title={t('action.copy')} aria-label={t('perm.copyAction')}>
-                  {copied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
+                  {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} />}
                 </button>
               </div>
             </FactCard>
@@ -206,8 +234,7 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
                 { key: 'totalPermissoes', label: t('table.permissions'), width: 'w-24' },
               ]}
               filterKey="tier"
-              colors={{ [t('label.yes')]: '#f87171', [t('label.no')]: '#6b7280', 'Full Control': '#fca5a5', 'Access Management': '#fdba74', Contributor: '#fde047', 'Data Plane': '#7dd3fc', Reader: '#86efac', Specialized: '#c4b5fd' }}
-              accent="#85b7eb"
+              riskValues={[t('label.yes'), 'Full Control']}
               filename={`azure-permissao-${entry.slug}-roles`}
               noun="noun.roles"
               searchPlaceholder="ph.filterRoles"
@@ -216,7 +243,7 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
               {entry.roles.slice(0, 40).map((r) => (
                 <Link key={r.slug} href={`/azure-rbac/roles/${r.slug}`}
                   className="inline-flex items-center gap-1 text-3xs px-2 py-0.5 rounded border bg-surface-alt border-line-strong text-fg-muted hover:border-brand-onDark transition-colors">
-                  {r.isPrivileged && <ShieldAlert size={10} className="text-red-500 shrink-0" />}
+                  {r.isPrivileged && <ShieldAlert size={10} className="text-danger shrink-0" />}
                   {r.name}
                 </Link>
               ))}

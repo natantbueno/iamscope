@@ -48,9 +48,7 @@ export default function ClassificationBadge({
       title={tip}
       aria-label={tip}
       className={`inline-flex items-center rounded-full border whitespace-nowrap cursor-help
-                  border-violet-200 dark:border-violet-800/60
-                  bg-violet-50 dark:bg-violet-950/50
-                  text-violet-700 dark:text-violet-300
+                  border-line bg-surface-alt text-fg-muted
                   font-medium ${dims} ${className}`}
     >
       <Info size={size === 'sm' ? 9 : 11} className="shrink-0 opacity-70" />

@@ -25,18 +25,6 @@ const ALL_CATEGORIES: GwsCategory[] = [
   'Identity', 'Security', 'Communication', 'Productivity', 'Device', 'Storage', 'Analytics', 'Billing', 'Infrastructure',
 ]
 
-const CATEGORY_COLORS: Record<GwsCategory, { bg: string; text: string; border: string }> = {
-  Identity:       { bg: '#1a2340', text: '#93c5fd', border: '#1e40af' },
-  Security:       { bg: '#3b1a1a', text: '#f87171', border: '#7f1d1d' },
-  Communication:  { bg: '#0f2a2e', text: '#22d3ee', border: '#0e7490' },
-  Productivity:   { bg: '#162a22', text: '#34d399', border: '#065f46' },
-  Device:         { bg: '#251a40', text: '#a78bfa', border: '#5b21b6' },
-  Storage:        { bg: '#1a2e1a', text: '#86efac', border: '#15803d' },
-  Analytics:      { bg: '#302010', text: '#fbbf24', border: '#b45309' },
-  Billing:        { bg: '#2a1a30', text: '#e879f9', border: '#a21caf' },
-  Infrastructure: { bg: '#1f2937', text: '#9ca3af', border: '#374151' },
-}
-
 function GwsRolesContent() {
   const t = useT()
   const searchParams = useSearchParams()
@@ -113,13 +101,13 @@ function GwsRolesContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total',          value: GWS_ROLES.length,                                              color: 'green',  href: '/google-workspace/roles' },
+          { label: t('count.total'),         value: GWS_ROLES.length,                                              color: 'green',  href: '/google-workspace/roles' },
           { label: 'Super Admin',    value: GWS_ROLES.filter((r) => r.tier === 'SuperAdmin').length,       color: 'red',    href: '/google-workspace/roles?tier=SuperAdmin' },
           { label: 'Delegated',      value: GWS_ROLES.filter((r) => r.tier === 'DelegatedAdmin').length,   color: 'orange', href: '/google-workspace/roles?tier=DelegatedAdmin' },
           { label: 'Service',        value: GWS_ROLES.filter((r) => r.tier === 'ServiceAdmin').length,     color: 'gray',   href: '/google-workspace/roles?tier=ServiceAdmin' },
           { label: 'Specialized',    value: GWS_ROLES.filter((r) => r.tier === 'SpecializedAdmin').length, color: 'purple', href: '/google-workspace/roles?tier=SpecializedAdmin' },
           { label: 'Read Only',      value: GWS_ROLES.filter((r) => r.tier === 'ReadOnly').length,         color: 'green',  href: '/google-workspace/roles?tier=ReadOnly' },
-          { label: 'Privilegiadas',  value: GWS_ROLES.filter((r) => r.isPrivileged).length,               color: 'red',    href: '/google-workspace/roles?filter=privileged' },
+          { label: t('count.privileged'),    value: GWS_ROLES.filter((r) => r.isPrivileged).length,               color: 'red',    href: '/google-workspace/roles?filter=privileged' },
         ]} />
 
         {/* Search query chip */}
@@ -208,7 +196,6 @@ function GwsRolesContent() {
             <tbody>
               {paginated.map((role) => {
                 const meta = GWS_TIER_META[role.tier]
-                const cc = CATEGORY_COLORS[role.category]
                 return (
                   <tr key={role.slug} className="border-b border-line hover:bg-surface-alt/60 transition-colors group">
                     <td className="px-4 py-2.5 align-middle overflow-hidden">
@@ -221,8 +208,7 @@ function GwsRolesContent() {
                       <p className="text-3xs text-fg-subtle leading-snug line-clamp-2">{role.description}</p>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
-                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
-                        style={{ backgroundColor: cc.bg, color: cc.text, borderColor: cc.border }}>
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap bg-surface-alt text-fg-muted border-line">
                         {role.category}
                       </span>
                     </td>
@@ -254,8 +240,7 @@ function GwsRolesContent() {
         </div>
         <Pagination
           total={sorted.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#34a853" noun="noun.roles"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
         />
       </div>
     </AppShell>

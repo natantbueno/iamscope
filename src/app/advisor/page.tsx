@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { Search, ShieldAlert, Sparkles, ChevronRight, X, Loader2 } from 'lucide-react'
+import { Search, ShieldAlert, Compass, ChevronRight, X, Loader2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { searchRoles, AdvisorPlatform, AdvisorResult } from '@/lib/roleAdvisor'
 import { useT } from '@/i18n/LanguageProvider'
@@ -105,8 +105,8 @@ export default function AdvisorPage() {
 
           {/* Intro banner */}
           {!searched && (
-            <div className="mb-4 flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-950/40 dark:to-blue-950/40 border border-violet-200/60 dark:border-violet-800/40">
-              <Sparkles size={18} className="text-violet-500 mt-0.5 shrink-0" />
+            <div className="mb-4 flex items-start gap-3 p-4 rounded-lg bg-surface-alt border border-line">
+              <Compass size={18} className="text-fg-subtle mt-0.5 shrink-0" />
               <div>
                 <p className="text-body font-medium text-gray-800 dark:text-gray-200">{t('adv.pageTitle')}</p>
                 <p className="text-tiny text-fg-muted mt-0.5">
@@ -166,8 +166,8 @@ export default function AdvisorPage() {
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {EXAMPLES.map(exKey => (
                   <button key={exKey} onClick={() => handleExample(t(exKey))}
-                    className="text-left text-body px-4 py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-fg-muted hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/30 transition-all flex items-center gap-2">
-                    <Sparkles size={12} className="shrink-0 opacity-60" />
+                    className="text-left text-body px-4 py-3 rounded-lg border border-dashed border-line-strong text-fg-muted hover:border-accent hover:text-fg hover:bg-surface-alt transition-all flex items-center gap-2">
+                    <ChevronRight size={12} className="shrink-0 opacity-60" />
                     {t(exKey)}
                   </button>
                 ))}

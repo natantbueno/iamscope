@@ -246,6 +246,7 @@ function PermissionScopeContent() {
           ? <ExportButton filename="permission-scope" title="Permission Scope" data={exportRows} />
           : undefined
       }
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl px-6 py-6 space-y-6">
@@ -381,10 +382,10 @@ function PermissionScopeContent() {
                   style={{ background: meta.color + '14' }}
                 >
                   {cloudOpen
-                    ? <ChevronDown size={14} style={{ color: meta.color }} className="shrink-0" />
-                    : <ChevronRight size={14} style={{ color: meta.color }} className="shrink-0" />}
+                    ? <ChevronDown size={14} className="shrink-0" />
+                    : <ChevronRight size={14} className="shrink-0" />}
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: meta.color }} />
-                  <h2 className="text-body font-semibold" style={{ color: meta.color }}>{meta.label}</h2>
+                  <h2 className="text-body font-semibold">{meta.label}</h2>
                   <span className="text-3xs text-fg-muted">
                     {fmt(total)} {terms.permission.toLowerCase()}(s)
                     {total > matches.length && ` · ${t('perm.showing')} ${matches.length}`}
@@ -407,7 +408,7 @@ function PermissionScopeContent() {
                             {open
                               ? <ChevronDown size={13} className="text-fg-subtle shrink-0 mt-0.5" />
                               : <ChevronRight size={13} className="text-fg-subtle shrink-0 mt-0.5" />}
-                            <code className="flex-1 text-tiny font-mono break-all" style={{ color: meta.color }}>
+                            <code className="flex-1 text-tiny font-mono break-all">
                               {m.permission}
                             </code>
                             <span className="text-2xs text-fg-muted whitespace-nowrap shrink-0 mt-0.5">
@@ -438,7 +439,7 @@ function PermissionScopeContent() {
                                         <td className="px-3 py-2">
                                           <Link href={getCloudUrl(cloud, r.slug)}
                                             className="text-tiny font-medium hover:underline"
-                                            style={{ color: meta.color }}>
+                                           >
                                             {r.name}
                                           </Link>
                                         </td>

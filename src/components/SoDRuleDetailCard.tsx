@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import { ExternalLink, ShieldAlert, AlertTriangle, Shield, BookOpen, ChevronRight, Link2 } from 'lucide-react'
-import { SoDRule } from '@/data/sod/rules'
+import { SoDRule, SOD_CLOUD_META, SOD_FRAMEWORK_META, SOD_PLATFORM_META } from '@/data/sod/rules'
 import { resolveRoleRef, findConflictsForRole } from '@/lib/sod'
 import SoDSeverityBadge from './SoDSeverityBadge'
 import SoDCloudBadge from './SoDCloudBadge'
-import { SOD_FRAMEWORK_META } from '@/data/sod/rules'
 import MitigationList from './MitigationList'
 import { useT } from '@/i18n/LanguageProvider'
 
@@ -37,9 +36,9 @@ export default function SoDRuleDetailCard({ rule, compact = false }: { rule: SoD
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <SoDSeverityBadge severity={rule.severity} />
-              <span className="text-3xs text-fg-muted">
-                {rule.cloud === 'both' ? 'Entra ID + Azure RBAC' : rule.cloud === 'entra-id' ? 'Entra ID' : 'Azure RBAC'}
-              </span>
+              {/* Antes esta linha era um ternário sobre 'both'/'entra-id'/'azure-rbac'.
+                  Com cinco plataformas e dois cruzamentos, o rótulo vem do metadado. */}
+              <span className="text-3xs text-fg-muted">{SOD_CLOUD_META[rule.cloud].label}</span>
             </div>
             <h1 className="text-sub font-semibold text-gray-800 dark:text-gray-100">{rule.name}</h1>
             <p className="text-body text-fg-muted mt-1 max-w-2xl">{rule.description}</p>
@@ -53,6 +52,7 @@ export default function SoDRuleDetailCard({ rule, compact = false }: { rule: SoD
           <div key={i} className="p-3 rounded-lg bg-surface-faint dark:bg-gray-800 border border-surface-border dark:border-gray-700">
             <div className="flex items-center gap-2 mb-1.5">
               <SoDCloudBadge cloud={r.ref.cloud} />
+              <span className="text-micro text-fg-subtle">{SOD_PLATFORM_META[r.ref.cloud].unit}</span>
             </div>
             {r.resolved ? (
               <Link href={r.resolved.url} className="text-body font-medium text-brand-strong dark:text-brand-onDark hover:underline inline-flex items-center gap-1">
@@ -71,12 +71,12 @@ export default function SoDRuleDetailCard({ rule, compact = false }: { rule: SoD
       </Section>
 
       {/* Risco */}
-      <Section icon={<AlertTriangle size={14} />} title="Risco">
+      <Section icon={<AlertTriangle size={14} />} title={t('sod.risk')}>
         <p className="text-body text-fg-muted leading-relaxed">{rule.risk}</p>
       </Section>
 
       {/* Mitigação */}
-      <Section icon={<Shield size={14} />} title="Como mitigar">
+      <Section icon={<Shield size={14} />} title={t('sod.howToMitigate')}>
         <MitigationList items={rule.mitigation} color="#0078d4" />
       </Section>
 
@@ -108,7 +108,7 @@ export default function SoDRuleDetailCard({ rule, compact = false }: { rule: SoD
 
       {/* Roles relacionados */}
       {!compact && relatedRules.length > 0 && (
-        <Section icon={<Link2 size={14} />} title="Roles relacionados">
+        <Section icon={<Link2 size={14} />} title={t('sod.relatedRoles')}>
           <div className="space-y-1.5">
             {relatedRules.map((r) => (
               <Link key={r.id} href={`/sod/rules/${r.id}`}
@@ -126,12 +126,12 @@ export default function SoDRuleDetailCard({ rule, compact = false }: { rule: SoD
         <div className="flex flex-wrap gap-2 pt-2">
           {roleA && (
             <Link href={roleA.url} className="text-tiny px-3 py-1.5 rounded-md border border-surface-border dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center gap-1.5">
-              Ver Role A no site <ExternalLink size={12} />
+              {t('sod.seeRoleA')} <ExternalLink size={12} />
             </Link>
           )}
           {roleB && (
             <Link href={roleB.url} className="text-tiny px-3 py-1.5 rounded-md border border-surface-border dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center gap-1.5">
-              Ver Role B no site <ExternalLink size={12} />
+              {t('sod.seeRoleB')} <ExternalLink size={12} />
             </Link>
           )}
         </div>

@@ -25,6 +25,45 @@ const SHARED = {
   'action.export':        { pt: 'Exportar',            en: 'Export' },
   'action.clear':         { pt: 'Limpar',              en: 'Clear' },
   'action.clearFilters':  { pt: 'Limpar filtros',      en: 'Clear filters' },
+  'action.evaluate':      { pt: 'Avaliar',              en: 'Evaluate' },
+  'action.evaluateRole':  { pt: 'Avaliar role',         en: 'Evaluate role' },
+
+  // ── Rótulos de CONTAGEM ───────────────────────────────────────────────────
+  // Vêm sempre depois de um número, então são plurais. Antes a home
+  // reaproveitava `table.category` (cabeçalho de coluna, singular por
+  // definição) e imprimia "13 Categoria". Nomes de produto — Roles, Policies,
+  // Actions — ficam iguais nos dois idiomas, como manda o ADR-001.
+  'count.roles':            { pt: 'Roles',              en: 'Roles' },
+  'count.iamRoles':         { pt: 'IAM Roles',          en: 'IAM Roles' },
+  'count.policies':         { pt: 'Policies',           en: 'Policies' },
+  'count.actions':          { pt: 'Actions',            en: 'Actions' },
+  'count.roleActions':      { pt: 'Role Actions',       en: 'Role Actions' },
+  'count.apiPermissions':   { pt: 'API Permissions',    en: 'API Permissions' },
+  'count.permissions':      { pt: 'Permissões',         en: 'Permissions' },
+  'count.services':         { pt: 'Serviços',           en: 'Services' },
+  'count.categories':       { pt: 'Categorias',         en: 'Categories' },
+  'count.privileged':       { pt: 'Privilegiadas',      en: 'Privileged' },
+  'count.oauthScopes':      { pt: 'OAuth Scopes',       en: 'OAuth Scopes' },
+  'count.accessPrimitives': { pt: 'Access Primitives',  en: 'Access Primitives' },
+
+  // ── Rótulos da linha de KPI das landings ──────────────────────────────────
+  // Antes cada landing escrevia os quatro rótulos à mão, e três delas
+  // misturavam português e inglês na mesma linha ("Total Policies · Privileged
+  // · FullAccess · Categorias").
+  'kpi.builtinRoles':     { pt: 'Built-in roles',      en: 'Built-in roles' },
+  'kpi.totalRoles':       { pt: 'Total de roles',      en: 'Total roles' },
+  'kpi.totalPolicies':    { pt: 'Total de policies',   en: 'Total policies' },
+  'kpi.adminRoles':       { pt: 'Admin roles',         en: 'Admin roles' },
+  'kpi.fullAccess':       { pt: 'Full access',         en: 'Full access' },
+  'kpi.fullControl':      { pt: 'Full control',        en: 'Full control' },
+  'kpi.adminOwner':       { pt: 'Admin / Owner',       en: 'Admin / Owner' },
+  'kpi.accountAdmin':     { pt: 'Account admin',       en: 'Account admin' },
+  'kpi.restrictedScopes': { pt: 'Scopes restritos',    en: 'Restricted scopes' },
+  'count.total':          { pt: 'Total',              en: 'Total' },
+
+  // Frescor do dado na página de detalhe. Ver getPlatformSync().
+  'sync.verifiedOn':      { pt: 'Dado verificado em',   en: 'Data verified on' },
+  'sync.source':          { pt: 'Fonte',                en: 'Source' },
   'action.copy':          { pt: 'Copiar',              en: 'Copy' },
   'action.download':      { pt: 'Baixar',              en: 'Download' },
   'action.back':          { pt: 'Voltar',              en: 'Back' },
@@ -74,6 +113,15 @@ const SHARED = {
   'filter.privilegedOnly':{ pt: 'Somente privilegiadas', en: 'Privileged only' },
   'filter.privileged':    { pt: 'Privilegiadas',       en: 'Privileged' },
   'filter.deprecated':    { pt: 'Descontinuada',       en: 'Deprecated' },
+
+  // Níveis do Enterprise Access Model. São nomes próprios do modelo da
+  // Microsoft — iguais nos dois idiomas, como os nomes de role (ADR-001).
+  // Existem como chave para que a barra de filtro seja 100% dicionário, e não
+  // metade chave / metade texto cru.
+  'tier.controlPlane':    { pt: 'Control Plane',       en: 'Control Plane' },
+  'tier.managementPlane': { pt: 'Management Plane',    en: 'Management Plane' },
+  'tier.userAccess':      { pt: 'User Access',         en: 'User Access' },
+  'tier.unclassified':    { pt: 'Unclassified',        en: 'Unclassified' },
 
   // ── Estados ───────────────────────────────────────────────────────────────
   'state.loading':        { pt: 'Carregando…',         en: 'Loading…' },

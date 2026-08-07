@@ -32,7 +32,6 @@ interface PaginationProps {
   onPageChange: (page: number) => void
   onPageSizeChange: (size: PageSize) => void
   /** Cor de destaque da cloud (ex.: '#4285f4'). */
-  accent: string
   /**
    * Chave do dicionário para o que está sendo paginado ('noun.roles',
    * 'noun.permissions'...). É chave e não texto solto justamente para o rótulo
@@ -67,7 +66,7 @@ function buildPages(current: number, last: number): (number | '…')[] {
 }
 
 export default function Pagination({
-  total, page, pageSize, onPageChange, onPageSizeChange, accent, noun = 'noun.items',
+  total, page, pageSize, onPageChange, onPageSizeChange, noun = 'noun.items',
 }: PaginationProps) {
   const t = useT()
   const { lang } = useLanguage()
@@ -132,7 +131,8 @@ export default function Pagination({
               onClick={() => onPageChange(p)}
               className="text-tiny min-w-[26px] px-1.5 py-1 rounded-md border transition-colors"
               style={p === page
-                ? { background: accent, borderColor: accent, color: '#fff' }
+                // Nível 3: a página ativa usa o acento único, não a cor da cloud.
+                ? { background: 'rgb(var(--c-accent))', borderColor: 'rgb(var(--c-accent))', color: 'rgb(var(--c-fg-on-accent))' }
                 : { borderColor: 'transparent', color: '#9ca3af' }}
             >
               {p}

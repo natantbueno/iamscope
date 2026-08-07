@@ -234,8 +234,7 @@ function GcpPermissionsContent() {
         </div>
         <Pagination
           total={filtered.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#4285f4" noun="noun.permissions"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.permissions"
         />
       </div>
     </AppShell>

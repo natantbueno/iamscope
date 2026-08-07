@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
+import type { TranslationKey } from '@/i18n/dictionary'
 import { Copy, CheckCheck, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
@@ -15,12 +16,12 @@ type PermType  = 'all' | 'Application' | 'Delegated'
 type SortCol   = 'name' | 'type' | 'action' | 'scope' | 'category' | 'tier'
 type SortDir   = 'asc' | 'desc'
 
-const TIER_FILTERS: { label: string; value: ApiFilter }[] = [
-  { label: 'Todas',          value: 'all' },
-  { label: 'Control Plane',  value: 'ControlPlane' },
-  { label: 'Management Plane', value: 'ManagementPlane' },
-  { label: 'User Access',    value: 'UserAccess' },
-  { label: 'Unclassified',   value: 'Unclassified' },
+const TIER_FILTERS: { label: TranslationKey; value: ApiFilter }[] = [
+  { label: 'filter.allFem',        value: 'all' },
+  { label: 'tier.controlPlane',    value: 'ControlPlane' },
+  { label: 'tier.managementPlane', value: 'ManagementPlane' },
+  { label: 'tier.userAccess',      value: 'UserAccess' },
+  { label: 'tier.unclassified',    value: 'Unclassified' },
 ]
 
 const TIER_ORDER: Record<EamTier, number> = {
@@ -117,18 +118,18 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
       {/* Filter bar */}
       <div className="px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap">
         {/* Type quick-filter */}
-        {(['all', 'Application', 'Delegated'] as PermType[]).map((t) => (
-          <button key={t} onClick={() => { setPermType(t); setPage(1) }}
+        {(['all', 'Application', 'Delegated'] as PermType[]).map((pt) => (
+          <button key={pt} onClick={() => { setPermType(pt); setPage(1) }}
             className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
-              permType === t
-                ? t === 'Application'
+              permType === pt
+                ? pt === 'Application'
                   ? 'bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-medium'
-                  : t === 'Delegated'
+                  : pt === 'Delegated'
                   ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-medium'
                   : 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
                 : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
-            {t === 'all' ? 'Todas' : t}
+            {pt === 'all' ? t('filter.allFem') : pt}
           </button>
         ))}
 
@@ -142,7 +143,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
                 ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
                 : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
-            {f.label}
+            {t(f.label)}
           </button>
         ))}
 
@@ -151,7 +152,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
           <span className="text-3xs text-fg-muted">Categoria:</span>
           <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }}
             className="text-3xs border border-surface-border dark:border-gray-700 rounded-md px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand max-w-[180px]">
-            <option value="all">Todas ({categories.length})</option>
+            <option value="all">{t('filter.allFem')} ({categories.length})</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <span className="text-tiny text-fg-muted ml-2">{filtered.length.toLocaleString()} perm.</span>
@@ -186,7 +187,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
                         <code className="font-mono text-3xs text-brand-strong dark:text-brand-onDark font-medium break-all">{perm.name}</code>
                         <TypeBadge type={perm.type} />
                         <button onClick={() => copyId(perm.id)}
-                          className="opacity-0 group-hover:opacity-100 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 transition-opacity"
+                          className="reveal-on-hover text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 transition-opacity"
                           title={t('action.copyId')}>
                           {copiedId === perm.id ? <CheckCheck size={11} className="text-green-600 opacity-100" /> : <Copy size={11} />}
                         </button>
@@ -218,8 +219,7 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
 
             <Pagination
               total={sorted.length} page={page} pageSize={pageSize}
-              onPageChange={setPage} onPageSizeChange={setPageSize}
-              accent="#0078d4" noun="noun.permissions"
+              onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.permissions"
             />
           </>
         )}

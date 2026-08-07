@@ -53,11 +53,19 @@ module.exports = {
           strong: semantic('--c-line-strong'),  // bordas de input/controle
         },
 
+        // Acento de interface — o ÚNICO realce cromático da navegação.
+        // Resolve de --c-accent, que já existe nos dois temas e está
+        // verificado (5.4:1 no claro, 8.4:1 no escuro). Serve ao estado
+        // "selecionado"; decoração não usa cor (ver ROTEIRO-UI-ANTI-IA.md).
+        accent: semantic('--c-accent'),
+
         // Estado — cor NUNCA é o único portador de significado (regra
         // `color-not-only`): sempre acompanhada de ícone ou rótulo.
         success: { DEFAULT: '#1a7f4b', fg: '#4ade80', soft: '#0a2a1a' },
         warning: { DEFAULT: '#a16207', fg: '#fbbf24', soft: '#2a1800' },
-        danger:  { DEFAULT: '#b42318', fg: '#f87171', soft: '#2a1010' },
+        // DEFAULT resolve de --c-danger: um `text-danger` serve os dois temas,
+        // sem par `x dark:x`. `fg`/`soft` continuam fixos para quem já os usa.
+        danger:  { DEFAULT: semantic('--c-danger'), fg: '#f87171', soft: '#2a1010' },
         info:    { DEFAULT: '#0078d4', fg: '#85b7eb', soft: '#0a1a38' },
 
         // Cor de marca (Entra/Azure blue) e seus estados.
@@ -79,51 +87,38 @@ module.exports = {
         },
 
         // ---------------------------------------------------------------
-        // Cores por Cloud Solution Provider — FONTE ÚNICA DE VERDADE.
+        // Cores por Cloud Solution Provider — NEUTRALIZADAS (nível 3).
         //
-        // Antes existiam três listas divergentes (este arquivo, CloudNav.tsx e
-        // clouds.ts): GCP era azul no card e verde no menu, IBM azul no card e
-        // teal no menu, Azure RBAC herdava o azul do Entra. Agora só existe
-        // esta. CloudNav e clouds.ts consomem daqui via src/lib/cloudColors.ts.
+        // Histórico: existiam três listas divergentes; foram unificadas aqui em
+        // agosto/2026, com uma cor de marca por cloud e variantes onDark/onLight
+        // para texto. Em 06/08/2026 o site passou a ser monocromático e os
+        // tokens foram REAPONTADOS para a escala neutra, em vez de removidos —
+        // são 221 usos em 26 arquivos, e apagá-los seria churn sem ganho.
         //
-        // Critério: cor oficial de cada marca, escolhendo a variante que
-        // mantém os 7 itens do menu distinguíveis entre si (evita três azuis
-        // adjacentes e dois verdes idênticos). Cada `-hover` é ~10% mais escuro.
+        // Por que a cor de cloud saiu, e não é gosto:
+        //   1. Três das seis não cumpriam o próprio requisito de 3:1 declarado
+        //      logo acima — AWS #ff9900 dava 2.14:1 no tema claro, IBM #08bdba
+        //      2.33:1, e o roxo do Azure RBAC 1.89:1 no escuro.
+        //   2. A identidade da cloud já está no nome, na rota e na posição do
+        //      menu. A cor era redundante com três sinais mais fortes.
         //
-        // Cada cloud tem DUAS cores, e a distinção importa:
-        //   `csp-<cloud>`         — marca: ponto, barra, fundo de badge.
-        //                            precisa de 3:1 contra o fundo.
-        //   `csp-<cloud>-onDark`  — texto sobre superfície escura.
-        //                            precisa de 4.5:1 (WCAG AA para 13px).
-        // Usar a cor de marca como texto no tema escuro é o que fazia o roxo do
-        // Azure RBAC ficar em 1.89:1 no menu — ilegível.
+        // Os quatro papéis continuam existindo para que nenhum `className`
+        // quebre, mas os quatro resolvem da mesma escala neutra e theme-aware.
+        // Voltar atrás é reescrever este bloco — e só ele.
         // ---------------------------------------------------------------
-        csp: {
-          azure: '#0078d4',            // Microsoft / Entra ID
-          'azure-hover': '#106ebe',
-          'azure-onDark': '#85b7eb',   // 8.4:1 sobre #111827
-          'azure-onLight': '#006ec3',
-          'azure-rbac': '#5c2d91',     // Azure RBAC — roxo Azure (era azul duplicado)
-          'azure-rbac-hover': '#4a2475',
-          'azure-rbac-onDark': '#a479d5', // 5.3:1 (a cor de marca dá 1.9:1)
-          'azure-rbac-onLight': '#5c2d91',
-          aws: '#ff9900',
-          'aws-hover': '#e68a00',
-          'aws-onDark': '#ff9900',     // 8.3:1 — já passa como texto
-          'aws-onLight': '#9c5d00',
-          gcp: '#4285f4',              // Google Blue (era verde, colidia com GWS)
-          'gcp-hover': '#3b78e7',
-          'gcp-onDark': '#4285f4',     // 5.0:1
-          'gcp-onLight': '#0e62ed',
-          gws: '#34a853',              // Google Green
-          'gws-hover': '#2d9249',
-          'gws-onDark': '#34a853',     // 5.8:1
-          'gws-onLight': '#267c3d',
-          ibm: '#08bdba',              // IBM Carbon teal (era azul, colidia com Entra/GCP)
-          'ibm-hover': '#07a4a1',
-          'ibm-onDark': '#08bdba',     // 7.6:1
-          'ibm-onLight': '#057977',
-        },
+        csp: (() => {
+          const mark    = semantic('--c-fg-subtle')  // ponto, barra, fundo de badge
+          const onText  = semantic('--c-fg-muted')   // texto sobre qualquer superfície
+          const hover   = semantic('--c-fg')
+          const out = {}
+          for (const c of ['azure', 'azure-rbac', 'aws', 'gcp', 'gws', 'ibm']) {
+            out[c] = mark
+            out[`${c}-hover`] = hover
+            out[`${c}-onDark`] = onText
+            out[`${c}-onLight`] = onText
+          }
+          return out
+        })(),
 
         // Mantido para compatibilidade com classes existentes (entra-blue etc.).
         entra: {

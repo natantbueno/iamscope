@@ -12,13 +12,11 @@ import type { TranslationKey } from '@/i18n/dictionary'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
-  Kubernetes: '#326ce5', Database: '#7c3aed', Networking: '#0369a1',
-  Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  AI: '#8b5cf6', Analytics: '#14b8a6', Observability: '#ca8a04',
-  Billing: '#6b7280', Management: '#475569',
-}
+// Nível 3: a lista continua, a cor saiu. Eram 15 hex para distinguir 15
+// palavras que já se distinguem — e cinco deles eram os mesmos da escada de tier.
+const CATEGORIES: string[] = [
+  'IAM', 'Compute', 'Storage', 'BigQuery', 'Kubernetes', 'Database', 'Networking', 'Security', 'DevOps', 'Serverless', 'AI', 'Analytics', 'Observability', 'Billing', 'Management',
+]
 
 // Título de documentação oficial não se traduz — é o nome da página no
 // cloud.google.com, e é por ele que a pessoa acha o documento.
@@ -77,7 +75,7 @@ export default function GcpReferenceClient() {
                     <span className="w-2.5 h-2.5 rounded-full mt-1 shrink-0" style={{ background: meta.color }} />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-tiny font-semibold" style={{ color: meta.color }}>{meta.label}</span>
+                        <span className="text-tiny font-semibold">{meta.label}</span>
                         <Link href={`/gcp/roles?filter=${tier}`}
                           className="text-2xs text-fg-subtle hover:text-csp-gcp transition-colors">{count} {t('noun.roles')} →</Link>
                       </div>
@@ -113,17 +111,17 @@ export default function GcpReferenceClient() {
           <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
             <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.categoriesByService')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {Object.entries(CAT_COLORS).map(([cat, color]) => {
+              {CATEGORIES.map((cat) => {
                 const count = GCP_ROLES.filter(r => r.category === cat).length
                 if (!count) return null
                 return (
                   <Link key={cat} href={`/gcp/roles?category=${cat}`}
                     className="flex items-center justify-between px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-current transition-colors group">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ background: color }} />
+                      <span className="w-2 h-2 rounded-full bg-fg-subtle" />
                       <span className="text-tiny text-fg-muted group-hover:font-medium">{cat}</span>
                     </div>
-                    <span className="text-3xs font-semibold" style={{ color }}>{count}</span>
+                    <span className="text-3xs font-semibold text-fg-muted tabular">{count}</span>
                   </Link>
                 )
               })}

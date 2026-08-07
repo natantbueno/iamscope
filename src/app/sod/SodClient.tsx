@@ -6,12 +6,16 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ShieldAlert, Cloud, LayoutGrid } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import SoDTabs, { SoDTab } from '@/components/SoDTabs'
+import SoDScopeNotice from '@/components/SoDScopeNotice'
 import SoDRulesCatalog from '@/components/SoDRulesCatalog'
 import SoDMatrix from '@/components/SoDMatrix'
 import SoDUserEvaluator from '@/components/SoDUserEvaluator'
 import SoDSeverityBadge from '@/components/SoDSeverityBadge'
 import SodScriptCard from '@/components/SodScriptCard'
-import { SOD_RULES, SOD_SEVERITY_META, SOD_CATEGORY_META, SoDSeverity, SoDCategory } from '@/data/sod/rules'
+import {
+  SOD_RULES, SOD_CATEGORY_META, SOD_PROVIDER_META, SOD_PROVIDERS, SOD_PLATFORMS,
+  SoDSeverity, SoDCategory, SoDProvider, ruleProvider, isCrossPlatform,
+} from '@/data/sod/rules'
 
 const VALID_TABS: SoDTab[] = ['catalog', 'matrix', 'evaluate']
 
@@ -32,17 +36,28 @@ export default function SodClient() {
   const metrics = useMemo(() => {
     const severityBreakdown: Record<SoDSeverity, number> = { critical: 0, high: 0, medium: 0, low: 0 }
     const categoriesCovered = new Set<SoDCategory>()
-    let entraOnly = 0, azureOnly = 0, crossCloud = 0
+    const byProvider: Record<SoDProvider, number> = { microsoft: 0, aws: 0, google: 0 }
+    let crossCloud = 0
     for (const r of SOD_RULES) {
       severityBreakdown[r.severity]++
       categoriesCovered.add(r.category)
-      if (r.cloud === 'entra-id') entraOnly++
-      else if (r.cloud === 'azure-rbac') azureOnly++
-      else crossCloud++
+      byProvider[ruleProvider(r)]++
+      if (isCrossPlatform(r)) crossCloud++
     }
-    const totalCategories = Object.keys(SOD_CATEGORY_META).length
-    return { severityBreakdown, categoriesCovered: categoriesCovered.size, totalCategories, entraOnly, azureOnly, crossCloud }
+    return {
+      severityBreakdown,
+      categoriesCovered: categoriesCovered.size,
+      totalCategories: Object.keys(SOD_CATEGORY_META).length,
+      byProvider,
+      crossCloud,
+    }
   }, [])
+
+  // O script PowerShell fala com o Microsoft Graph e com o Azure Resource
+  // Manager: ele só consegue avaliar as regras Microsoft. Passar
+  // SOD_RULES.length aqui prometeria cobertura de AWS/GCP/Workspace que o
+  // script não tem.
+  const microsoftRuleCount = metrics.byProvider.microsoft
 
   return (
     <AppShell
@@ -51,7 +66,7 @@ export default function SodClient() {
       headerActions={
         <div className="flex items-center gap-1.5 text-3xs text-fg-muted">
           <ShieldAlert size={14} />
-          <span>{SOD_RULES.length} regras · 100% client-side</span>
+          <span>{SOD_RULES.length} {t('noun.rules')} · {t('sod.clientSide')}</span>
         </div>
       }
     >
@@ -69,16 +84,36 @@ export default function SodClient() {
               ))}
             </div>
           </MetricCard>
-          <MetricCard label="Clouds cobertas" icon={<Cloud size={13} />}>
-            <p className="text-body font-semibold text-gray-800 dark:text-gray-100">Entra ID + Azure RBAC</p>
+          {/*
+            Antes este card mostrava "Entra ID + Azure RBAC" cravado. Agora
+            conta por PROVEDOR, que é o recorte que importa: é dentro do
+            provedor que uma regra pode cruzar plataformas.
+          */}
+          <MetricCard label={t('sod.cloudsCovered')} icon={<Cloud size={13} />}>
+            <p className="text-body font-semibold text-gray-800 dark:text-gray-100">
+              {SOD_PLATFORMS.length} <span className="font-normal text-fg-subtle">{t('sod.scopePlatforms')}</span>
+            </p>
             <p className="text-2xs text-fg-muted mt-0.5">
-              {metrics.entraOnly} Entra · {metrics.azureOnly} Azure · {metrics.crossCloud} cross-cloud
+              {SOD_PROVIDERS.map((p, i) => (
+                <span key={p}>
+                  {i > 0 && ' · '}{metrics.byProvider[p]} {SOD_PROVIDER_META[p].label}
+                </span>
+              ))}
             </p>
           </MetricCard>
-          <MetricCard label="Categorias cobertas" icon={<LayoutGrid size={13} />}>
-            <p className="text-heading font-bold text-gray-800 dark:text-gray-100">{metrics.categoriesCovered} <span className="text-body font-normal text-fg-subtle">de {metrics.totalCategories}</span></p>
+          <MetricCard label={t('sod.categoriesCovered')} icon={<LayoutGrid size={13} />}>
+            <p className="text-heading font-bold text-gray-800 dark:text-gray-100">
+              {metrics.categoriesCovered} <span className="text-body font-normal text-fg-subtle">{t('sod.outOf')} {metrics.totalCategories}</span>
+            </p>
           </MetricCard>
         </div>
+        {/*
+          O aviso de escopo fica ACIMA das abas, não dentro de uma delas: vale
+          para o catálogo, para a matriz e para a avaliação por igual. Se ficasse
+          numa aba só, quem entra direto em /sod?tab=evaluate — o caminho de quem
+          já sabe o que quer — nunca o veria.
+        */}
+        <SoDScopeNotice platformCount={SOD_PLATFORMS.length} crossCloudCount={metrics.crossCloud} />
         <SoDTabs active={activeTab} onChange={setTab} />
         {activeTab === 'catalog' && <SoDRulesCatalog />}
         {activeTab === 'matrix' && <SoDMatrix />}
@@ -90,7 +125,7 @@ export default function SodClient() {
               mesma pergunta em escalas diferentes.
             */}
             <div className="px-4 pt-4">
-              <SodScriptCard ruleCount={SOD_RULES.length} />
+              <SodScriptCard ruleCount={microsoftRuleCount} />
             </div>
             <SoDUserEvaluator />
           </div>

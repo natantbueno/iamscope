@@ -240,8 +240,7 @@ function AzurePermissionsContent() {
               )}
               <Pagination
                 total={filtered.length} page={page} pageSize={pageSize}
-                onPageChange={setPage} onPageSizeChange={setPageSize}
-                accent="#0078d4" noun="noun.permissions"
+                onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.permissions"
               />
 
               {withDesc < (entries.length * 0.5) && (

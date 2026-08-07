@@ -13,13 +13,10 @@ import { getGcpRolePermissions } from '@/lib/gcpPermissions'
 import PermissionsTable from '@/components/PermissionsTable'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
-  Kubernetes: '#326ce5', Database: '#7c3aed', Networking: '#0369a1',
-  Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  AI: '#8b5cf6', Analytics: '#14b8a6', Observability: '#ca8a04',
-  Billing: '#6b7280', Management: '#475569',
-}
+// Nível 3: a cor por categoria saiu. Eram 14 hex escritos à mão para dizer
+// "esta categoria é diferente daquela" — coisa que o nome já diz, e que colidia
+// com a escada de tier na mesma página. O ícone e o rótulo ficam.
+const CATEGORY_TINT = 'rgb(var(--c-fg-subtle))'
 
 export default function GcpRoleClient({ slug }: { slug: string }) {
   const t = useT()
@@ -28,7 +25,7 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
   if (!role) return notFound()
 
   const tier     = GCP_TIER_META[role.tier]
-  const catColor = CAT_COLORS[role.category] || '#4285f4'
+  const catColor = CATEGORY_TINT
 
   // Related roles: same category, different slug, up to 5
   const related = GCP_ROLES
@@ -75,11 +72,14 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={roleDetailSub(CLOUD_META.gcp.label, role.category, tier.label)}
       headerBack={<BackToList href="/gcp/roles" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-5xl space-y-5">
 
           <RoleDetailHeader
+
+            syncPlatform={'GCP IAM'}
             name={role.name}
             tier={{ label: tier.label, color: tier.color, bg: tier.bg, description: tier.description }}
             categoryBadge={
@@ -111,9 +111,9 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
 
           {/* Privileged warning */}
           {role.isPrivileged && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3">
-              <ShieldAlert size={14} className="text-red-500 mt-0.5 shrink-0" />
-              <p className="text-tiny text-red-600 dark:text-red-400 leading-relaxed">
+            <div className="flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3">
+              <ShieldAlert size={14} className="text-danger mt-0.5 shrink-0" />
+              <p className="text-tiny text-danger leading-relaxed">
                 Esta é uma role <strong>privilegiada</strong> — concede capacidades de controle elevado. Aplique o princípio do menor privilégio e monitore atribuições via Cloud Audit Logs.
               </p>
             </div>
@@ -211,7 +211,6 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
                   { key: 'verb',       label: t('table.verb'),     badge: true, width: 'w-28' },
                 ]}
                 filterKey="verb"
-                accent="#4285f4"
                 filename={`gcp-${role.slug}-permissions`}
                 noun="noun.permissions"
                 searchPlaceholder="ph.filterPermissions"
@@ -231,7 +230,7 @@ export default function GcpRoleClient({ slug }: { slug: string }) {
                 className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors z-10"
                 title={t('action.copyJson')}
               >
-                {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-fg-subtle" />}
+                {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} className="text-fg-subtle" />}
               </button>
               <pre className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
                 <code className="text-3xs font-mono text-fg-muted" dangerouslySetInnerHTML={{ __html: visibleJson

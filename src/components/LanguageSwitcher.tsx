@@ -63,14 +63,18 @@ export default function LanguageSwitcher() {
             onClick={() => setLang(code)}
             aria-pressed={active}
             title={t(code === 'pt' ? 'lang.pt' : 'lang.en')}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-3xs font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-1.5 sm:px-2 py-1.5 rounded-md text-3xs font-medium transition-colors ${
               active
                 ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100'
                 : 'text-fg-subtle hover:text-gray-600 dark:hover:text-gray-300'
             }`}
           >
             <Flag className={`w-4 h-3 rounded-[1px] ${active ? '' : 'opacity-50 grayscale'}`} />
-            {label}
+            {/* Abaixo de sm o rótulo sai: em 390px ele custava ~50px do header,
+                e quem pagava era o título da página, que aparecia truncado
+                ("Multi-Cloud IAM Ref…"). A bandeira mais o `title`/`aria-pressed`
+                continuam identificando o idioma. */}
+            <span className="hidden sm:inline">{label}</span>
           </button>
         )
       })}

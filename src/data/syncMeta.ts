@@ -129,3 +129,26 @@ export const DATA_SYNC: DataSourceSync[] = [
 export function getLatestSync(): string {
   return DATA_SYNC.reduce((latest, d) => (d.lastSynced > latest ? d.lastSynced : latest), DATA_SYNC[0].lastSynced)
 }
+
+
+/**
+ * A verificação mais recente de uma plataforma, para exibir na página de detalhe.
+ *
+ * POR QUE ISSO EXISTE
+ *   O `DATA_SYNC` já registrava, por dataset, quando o dado foi conferido contra
+ *   a fonte oficial — mas isso só aparecia na página /info. Quem chega por busca
+ *   direto numa role (o caminho mais comum num site de referência) decidia um
+ *   desenho de acesso sem ver se o dado é de ontem ou de seis meses atrás.
+ *   Para um produto cuja moeda é ser citado, era a informação certa no lugar
+ *   errado.
+ *
+ *   Uma plataforma pode ter mais de um dataset (o Entra tem roles e API
+ *   permissions). Mostramos a verificação MAIS ANTIGA entre eles: é a garantia
+ *   real da página, não a mais bonita.
+ */
+export function getPlatformSync(platform: string): DataSourceSync | null {
+  const doPlatform = DATA_SYNC.filter((d) => d.platform === platform)
+  if (!doPlatform.length) return null
+  return doPlatform.reduce((maisAntigo, d) =>
+    d.lastSynced < maisAntigo.lastSynced ? d : maisAntigo)
+}

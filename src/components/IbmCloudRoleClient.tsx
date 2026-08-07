@@ -11,11 +11,10 @@ import AppShell from '@/components/AppShell'
 import { IBM_ROLES, IBM_TIER_META } from '@/data/ibmCloud'
 import PermissionsTable from '@/components/PermissionsTable'
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Identity: '#7c3aed', Platform: '#08bdba', Infrastructure: '#ea580c',
-  Compute: '#0891b2', Data: '#16a34a', Security: '#dc2626',
-  Observability: '#ca8a04', Networking: '#6366f1', Classic: '#78716c',
-}
+// Nível 3: a cor por categoria saiu. Eram 9 hex escritos à mão para dizer
+// "esta categoria é diferente daquela" — coisa que o nome já diz, e que colidia
+// com a escada de tier na mesma página. O ícone e o rótulo ficam.
+const CATEGORY_TINT = 'rgb(var(--c-fg-subtle))'
 
 export default function IbmCloudRoleClient({ slug }: { slug: string }) {
   const t = useT()
@@ -26,7 +25,7 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false)
 
   const tier = IBM_TIER_META[role.tier]
-  const catColor = CATEGORY_COLORS[role.category] || '#6366f1'
+  const catColor = CATEGORY_TINT
 
 
   const roleJson = JSON.stringify({
@@ -51,11 +50,14 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={roleDetailSub(CLOUD_META.ibmCloud.label, role.category, tier.label)}
       headerBack={<BackToList href="/ibm-cloud/roles" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-5xl space-y-5">
 
           <RoleDetailHeader
+
+            syncPlatform={'IBM Cloud'}
             name={role.name}
             tier={{ label: tier.label, color: tier.color, bg: tier.bg, description: tier.description }}
             categoryBadge={
@@ -75,9 +77,9 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
 
           {/* Privileged warning */}
           {role.isPrivileged && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3">
-              <ShieldAlert size={14} className="text-red-500 mt-0.5 shrink-0" />
-              <p className="text-tiny text-red-600 dark:text-red-400 leading-relaxed">
+            <div className="flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3">
+              <ShieldAlert size={14} className="text-danger mt-0.5 shrink-0" />
+              <p className="text-tiny text-danger leading-relaxed">
                 Esta é uma role <strong>privilegiada</strong> — concede capacidades de controle elevado. Aplique o princípio do menor privilégio e monitore o uso via Activity Tracker.
               </p>
             </div>
@@ -122,7 +124,7 @@ export default function IbmCloudRoleClient({ slug }: { slug: string }) {
                 className="absolute top-2 right-2 p-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors z-10"
                 title={t('action.copyJson')}
               >
-                {copied ? <CheckCheck size={13} className="text-green-400" /> : <Copy size={13} className="text-fg-subtle" />}
+                {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} className="text-fg-subtle" />}
               </button>
               <pre className="bg-black dark:bg-black rounded-lg p-4 border border-line overflow-x-auto">
                 <code className="text-3xs font-mono text-fg-muted" dangerouslySetInnerHTML={{ __html: visibleJson

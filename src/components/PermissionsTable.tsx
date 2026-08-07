@@ -30,7 +30,7 @@ export interface PermissionColumn {
   label: string
   /** Renderiza em fonte monoespaçada (para strings técnicas). */
   mono?: boolean
-  /** Renderiza como pílula colorida (usa `colors` quando disponível). */
+  /** Renderiza como pílula. */
   badge?: boolean
   /** Largura fixa da coluna, ex.: 'w-36'. */
   width?: string
@@ -43,9 +43,20 @@ interface PermissionsTableProps {
   /** Coluna usada para os chips de filtro rápido (ex.: 'tier', 'type'). */
   filterKey?: string
   /** Cores por valor da coluna de filtro e das colunas badge. */
-  colors?: Record<string, string>
   /** Cor de destaque da cloud (usada na permissão e no foco da busca). */
-  accent: string
+  /**
+   * Nível 3: `accent` deixou de ser hex.
+   *
+   * Antes cada chamada passava a cor de marca da cloud (`#ff9900`, `#4285f4`,
+   * `#34a853`…) e o componente a concatenava com sufixo de alpha (`c + '20'`).
+   * Isso amarrava a cor a hex — nenhum token podia entrar — e mantinha 17 pontos
+   * de cor de cloud vivos depois de os `csp-*` terem sido neutralizados.
+   *
+   * Agora o único eixo é semântico: `risk` para o valor que representa risco,
+   * neutro para todo o resto. Quem quiser marcar um valor como risco passa o
+   * nome dele em `riskValues`.
+   */
+  riskValues?: string[]
   /** Nome base do arquivo exportado. */
   filename: string
   /** Rótulo do que está sendo listado, ex.: 'actions', 'permissions'. */
@@ -56,7 +67,7 @@ interface PermissionsTableProps {
 }
 
 export default function PermissionsTable({
-  rows, columns, filterKey, colors = {}, accent, filename,
+  rows, columns, filterKey, riskValues = [], filename,
   noun = 'noun.permissions', searchPlaceholder = 'ph.filterGeneric',
 }: PermissionsTableProps) {
   const t = useT()
@@ -107,7 +118,7 @@ export default function PermissionsTable({
             placeholder={t(searchPlaceholder)}
             aria-label={t(searchPlaceholder)}
             className="w-full text-tiny pl-8 pr-8 py-1.5 border border-surface-border dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1"
-            style={{ ['--tw-ring-color' as string]: accent }}
+            style={{ ['--tw-ring-color' as string]: 'rgb(var(--c-accent))' }}
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label={t('action.clearSearch')}
@@ -125,18 +136,23 @@ export default function PermissionsTable({
                   ? 'font-medium text-white border-transparent'
                   : 'text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
-              style={activeFilter === 'all' ? { background: accent, borderColor: accent } : {}}>
+              style={activeFilter === 'all'
+                ? { background: 'rgb(var(--c-accent))', borderColor: 'rgb(var(--c-accent))', color: 'rgb(var(--c-fg-on-accent))' }
+                : {}}>
               Todas ({rows.length})
             </button>
             {filterOptions.map(([value, n]) => {
               const active = activeFilter === value
-              const c = colors[value] ?? accent
+              const isRisk = riskValues.includes(value)
               return (
                 <button key={value} onClick={() => setActiveFilter(active ? 'all' : value)}
                   className={`text-3xs px-2.5 py-1 rounded-full border transition-colors ${
-                    active ? 'font-medium' : 'text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                  style={active ? { background: c + '20', color: c, borderColor: c + '80' } : {}}>
+                    !active
+                      ? 'text-fg-muted border-line hover:bg-surface-hover'
+                      : isRisk
+                        ? 'font-medium text-danger border-danger/50 bg-danger/10'
+                        : 'font-medium text-fg border-line-strong bg-surface-alt'
+                  }`}>
                   {value} ({n})
                 </button>
               )
@@ -177,11 +193,14 @@ export default function PermissionsTable({
                       const v = row[c.key] ?? ''
                       const isFirst = ci === 0
                       if (c.badge && v) {
-                        const col = colors[v] ?? accent
+                        const isRisk = riskValues.includes(String(v))
                         return (
                           <td key={c.key} className="px-3 py-2 align-top">
-                            <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
-                              style={{ color: col, borderColor: col + '50', background: col + '15' }}>
+                            <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${
+                              isRisk
+                                ? 'text-danger border-danger/40 bg-danger/10'
+                                : 'text-fg-muted border-line bg-surface-alt'
+                            }`}>
                               {v}
                             </span>
                           </td>
@@ -193,7 +212,7 @@ export default function PermissionsTable({
                             className={`${c.mono || isFirst ? 'font-mono text-3xs break-all' : 'text-3xs'} ${
                               isFirst ? 'font-medium' : 'text-fg-muted'
                             } leading-snug`}
-                            style={isFirst ? { color: accent } : undefined}
+                            style={isFirst ? { color: 'rgb(var(--c-fg))' } : undefined}
                           >
                             {v || '—'}
                           </span>
@@ -202,7 +221,7 @@ export default function PermissionsTable({
                     })}
                     <td className="px-2 py-2 align-top">
                       <button onClick={() => copy(row.permission)} title={t('action.copy')}
-                        className="opacity-0 group-hover:opacity-100 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
+                        className="reveal-on-hover text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity">
                         {copied === row.permission
                           ? <CheckCheck size={11} className="text-green-600 opacity-100" />
                           : <Copy size={11} />}
@@ -219,7 +238,7 @@ export default function PermissionsTable({
       <Pagination
         total={filtered.length} page={page} pageSize={pageSize}
         onPageChange={setPage} onPageSizeChange={setPageSize}
-        accent={accent} noun={noun}
+        noun={noun}
       />
     </div>
   )

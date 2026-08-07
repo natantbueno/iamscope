@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { KPI_TONE_VALUE } from '@/lib/kpiTone'
 import { useT } from '@/i18n/LanguageProvider'
 import {
   Copy, CheckCheck, ExternalLink, Shield, Hash, Tag, Layers, BookOpen,
@@ -74,6 +75,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={roleDetailSub(CLOUD_META.entraId.label, role.category, `EAM ${role.eamTier}`)}
       headerBack={<BackToList href="/entraid/roles" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto bg-app">
       <div className="max-w-5xl px-6 py-6">
@@ -84,6 +86,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
           nome oficial da role ao lado sugere que seja. Daí source="entraops".
         */}
         <RoleDetailHeader
+          syncPlatform={'Entra ID'}
           name={role.name}
           tierBadge={<EamTierBadge tier={role.eamTier} />}
           categoryBadge={<CategoryBadge category={role.category} />}
@@ -91,13 +94,25 @@ export default function RolePageClient({ slug }: { slug: string }) {
           classificationSource="entraops"
         />
 
-        {/* Stats + facts grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mb-3">
-          <StatCard icon={<ListTree size={13} />} label="Role Actions" value={permStats.total} accent="#0078d4" />
-          <StatCard icon={<ShieldAlert size={13} />} label="Control Plane" value={permStats.control} accent="#dc2626" />
-          <StatCard icon={<Settings2 size={13} />} label="Management Plane" value={permStats.management} accent="#ea580c" />
-          <StatCard icon={<Users2 size={13} />} label="User Access" value={permStats.userAccess} accent="#16a34a" />
-          <StatCard icon={<HelpCircle size={13} />} label={t('label.unclassifiedFem')} value={permStats.unclassified} accent="#6b7280" />
+        {/*
+          Um card de valor zero não é informação: "Não classificadas: 0" ocupava
+          um card inteiro para dizer que não há nada, e no mobile — grid de duas
+          colunas — sobrava sozinho numa terceira linha. Some quando é zero.
+          Quando existe classificação pendente ele volta, que é quando importa.
+
+          A contagem de colunas acompanha a contagem de cards, senão o grid de
+          5 colunas abriria um buraco no desktop.
+        */}
+        <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3 ${
+          permStats.unclassified > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'
+        }`}>
+          <StatCard icon={<ListTree size={13} />} label="Role Actions" value={permStats.total} accent={KPI_TONE_VALUE.accent} />
+          <StatCard icon={<ShieldAlert size={13} />} label="Control Plane" value={permStats.control} accent={KPI_TONE_VALUE.danger} />
+          <StatCard icon={<Settings2 size={13} />} label="Management Plane" value={permStats.management} accent={KPI_TONE_VALUE.neutral} />
+          <StatCard icon={<Users2 size={13} />} label="User Access" value={permStats.userAccess} accent={KPI_TONE_VALUE.neutral} />
+          {permStats.unclassified > 0 && (
+            <StatCard icon={<HelpCircle size={13} />} label={t('label.unclassifiedFem')} value={permStats.unclassified} accent={KPI_TONE_VALUE.neutral} />
+          )}
         </div>
 
         {/* Quick facts grid */}
@@ -106,7 +121,7 @@ export default function RolePageClient({ slug }: { slug: string }) {
             <div className="flex items-center gap-1.5">
               <code className="font-mono text-3xs text-gray-600 dark:text-gray-300 break-all">{role.id}</code>
               <button onClick={copyId} className="text-fg-subtle hover:text-gray-700 dark:hover:text-gray-200 shrink-0" title={t('action.copy')}>
-                {copied ? <CheckCheck size={13} className="text-green-600" /> : <Copy size={13} />}
+                {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} />}
               </button>
             </div>
           </FactCard>
@@ -337,7 +352,7 @@ function RoleDefinitionJson({ role }: { role: { id: string; name: string; descri
           className="flex items-center gap-1.5 text-3xs text-fg-subtle hover:text-fg transition-colors"
           title={t('action.copyJson')}
         >
-          {copied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
+          {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} />}
           {copied ? 'Copiado!' : 'Copiar'}
         </button>
       </div>

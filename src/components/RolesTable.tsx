@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import ClassificationBadge from './ClassificationBadge'
 import { useT } from '@/i18n/LanguageProvider'
+import type { TranslationKey } from '@/i18n/dictionary'
 import Link from 'next/link'
 import { AlertTriangle, ChevronRight, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import Pagination from '@/components/Pagination'
@@ -25,12 +26,12 @@ interface RolesTableProps {
   onCategoryChange: (c: RoleCategory | null) => void
 }
 
-const TIER_FILTERS: { label: string; value: FilterType }[] = [
-  { label: 'Todas', value: 'all' },
-  { label: 'Control Plane', value: 'ControlPlane' },
-  { label: 'Management Plane', value: 'ManagementPlane' },
-  { label: 'User Access', value: 'UserAccess' },
-  { label: 'Privilegiadas', value: 'privileged' },
+const TIER_FILTERS: { label: TranslationKey; value: FilterType }[] = [
+  { label: 'filter.allFem',         value: 'all' },
+  { label: 'tier.controlPlane',     value: 'ControlPlane' },
+  { label: 'tier.managementPlane',  value: 'ManagementPlane' },
+  { label: 'tier.userAccess',       value: 'UserAccess' },
+  { label: 'filter.privileged',     value: 'privileged' },
 ]
 
 const TIER_ORDER: Record<EamTier, number> = {
@@ -90,7 +91,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
                 ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
                 : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}>
-            {f.label}
+            {t(f.label)}
           </button>
         ))}
         <span className="ml-auto text-tiny text-fg-muted">{roles.length} roles</span>
@@ -134,7 +135,10 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
                   <td className="px-4 py-3 align-top overflow-hidden">
                     <Link href={`/entraid/roles/${role.slug}`} className="block">
                       <div className="font-medium text-brand-strong dark:text-brand-onDark text-body group-hover:underline truncate">{role.name}</div>
-                      <div className="text-2xs text-fg-muted font-mono mt-0.5 truncate">{role.id}</div>
+                      {/* 12px, não 10px. Este GUID é o que a persona primária vem copiar e colar
+                          num ticket de mudança — era o conteúdo mais importante da linha
+                          exibido no menor corpo do sistema. Ver PRODUCT.md, "Tensões abertas". */}
+                      <div className="text-tiny text-fg-muted font-mono mt-0.5 truncate">{role.id}</div>
                     </Link>
                   </td>
                   <td className="px-4 py-3 align-top overflow-hidden">
@@ -157,9 +161,13 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
                     )}
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <Link href={`/entraid/roles/${role.slug}`} className="text-fg-muted dark:text-gray-600 group-hover:text-brand-strong dark:group-hover:text-brand-onDark transition-colors">
+                    {/* Sem nome acessível e sem foco: este link vai para o MESMO
+                        destino do nome da role, na mesma linha. Como link de verdade
+                        ele era uma parada de teclado duplicada e um "link" anunciado
+                        sem texto — 20 deles por página. Vira decoração. */}
+                    <span aria-hidden="true" className="text-fg-muted group-hover:text-fg transition-colors">
                       <ChevronRight size={16} />
-                    </Link>
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -169,8 +177,7 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
       </div>
         <Pagination
           total={sorted.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#0078d4" noun="noun.roles"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
         />
     </div>
   )

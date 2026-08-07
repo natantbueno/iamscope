@@ -3,16 +3,25 @@
  * Gera public/sod-rules.json a partir de src/data/sod/rules.ts.
  *
  * POR QUE ESTE ARQUIVO EXISTE
- *   O script PowerShell que o usuário roda no tenant precisa das 96 regras de
- *   SoD. Ele não pode ler TypeScript, e reescrever as regras dentro do .ps1
- *   criaria uma segunda cópia que sairia de sincronia com o site na primeira
- *   alteração. Então o site publica as regras como JSON e o script baixa (ou
- *   lê de um arquivo local).
+ *   O script PowerShell que o usuário roda no tenant precisa das regras de SoD.
+ *   Ele não pode ler TypeScript, e reescrever as regras dentro do .ps1 criaria
+ *   uma segunda cópia que sairia de sincronia com o site na primeira alteração.
+ *   Então o site publica as regras como JSON e o script baixa (ou lê de um
+ *   arquivo local).
  *
  *   O JSON acrescenta o que o TypeScript não tem e o script precisa: o GUID de
  *   cada role. As regras referenciam roles por SLUG (para linkar as páginas do
  *   site); no tenant, o que existe são roleTemplateId (Entra) e
  *   roleDefinitionId (Azure RBAC). A resolução slug -> GUID acontece aqui.
+ *
+ * SÓ AS REGRAS MICROSOFT SAEM DAQUI
+ *   Desde 07/08/2026 o catálogo cobre cinco plataformas, mas o .ps1 fala com o
+ *   Microsoft Graph e com o Azure Resource Manager: ele não tem como enumerar
+ *   uma conta AWS, um projeto GCP ou um tenant do Workspace. Exportar as regras
+ *   dessas plataformas produziria um JSON com regras que o script carregaria e
+ *   nunca conseguiria avaliar — e o relatório diria "0 conflitos" para elas,
+ *   que é pior do que não cobrir. O corte é registrado no console e no próprio
+ *   JSON (campo `scope`), nunca em silêncio.
  *
  * O TS é transpilado com sucrase e carregado de verdade, em vez de parseado com
  * regex: assim uma vírgula fora do lugar vira erro em vez de dado faltando em
@@ -32,7 +41,7 @@ const OUT = path.join(ROOT, 'public', 'sod-rules.json')
 const DRY = process.argv.includes('--dry-run')
 
 
-const { SOD_RULES, SOD_CATEGORY_META, SOD_SEVERITY_META } = loadTs('src/data/sod/rules.ts')
+const { SOD_RULES, SOD_CATEGORY_META, SOD_SEVERITY_META, platformProvider } = loadTs('src/data/sod/rules.ts')
 const { ROLES } = loadTs('src/data/roles.ts')
 const { AZURE_ROLES } = loadTs('src/data/azureRbac.ts')
 
@@ -68,7 +77,21 @@ function resolveRole(ref) {
   }
 }
 
-const rules = SOD_RULES.map((rule) => ({
+// Corte de escopo — ver o cabeçalho. platformProvider vem de rules.ts para que
+// a definição de "o que é Microsoft" fique num lugar só.
+const microsoftRules = SOD_RULES.filter((r) => platformProvider(r.roleA.cloud) === 'microsoft')
+const skipped = SOD_RULES.length - microsoftRules.length
+if (skipped > 0) {
+  const outros = {}
+  for (const r of SOD_RULES) {
+    const prov = platformProvider(r.roleA.cloud)
+    if (prov !== 'microsoft') outros[prov] = (outros[prov] ?? 0) + 1
+  }
+  console.log(`Escopo            : ${microsoftRules.length} de ${SOD_RULES.length} regras (só Microsoft)`)
+  console.log(`Fora do JSON      : ${JSON.stringify(outros)} — o .ps1 não alcança essas plataformas`)
+}
+
+const rules = microsoftRules.map((rule) => ({
   id: rule.id,
   name: rule.name,
   description: rule.description,
@@ -109,6 +132,9 @@ if (DRY) { console.log('\n--dry-run: nada escrito.'); return }
 fs.writeFileSync(OUT, JSON.stringify({
   generatedAt: new Date().toISOString(),
   source: 'IAM Scope — SoD Analyzer',
+  // Declarado no artefato, não só no console: quem consome este JSON precisa
+  // saber que ele é um recorte, e de quanto.
+  scope: { platforms: ['entra-id', 'azure-rbac'], exportedRules: rules.length, catalogRules: SOD_RULES.length },
   ruleCount: rules.length,
   severityMeta: SOD_SEVERITY_META ?? null,
   rules,

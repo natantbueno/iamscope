@@ -13,12 +13,11 @@ import type { TranslationKey } from '@/i18n/dictionary'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', Database: '#7c3aed',
-  Networking: '#0369a1', Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  Containers: '#326ce5', AI: '#8b5cf6', Analytics: '#14b8a6', Management: '#6b7280',
-  IoT: '#059669', Billing: '#475569', Messaging: '#d97706',
-}
+// Nível 3: a lista continua, a cor saiu. Eram 15 hex para distinguir 15
+// palavras que já se distinguem — e cinco deles eram os mesmos da escada de tier.
+const CATEGORIES: string[] = [
+  'IAM', 'Compute', 'Storage', 'Database', 'Networking', 'Security', 'DevOps', 'Serverless', 'Containers', 'AI', 'Analytics', 'Management', 'IoT', 'Billing', 'Messaging',
+]
 
 // Título de documentação oficial não se traduz — é o nome da página no
 // docs.aws.amazon.com, e é por ele que a pessoa acha o documento.
@@ -76,7 +75,7 @@ export default function AwsReferenceClient() {
                     <span className="w-2.5 h-2.5 rounded-full mt-1 shrink-0" style={{ background: meta.color }} />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-tiny font-semibold" style={{ color: meta.color }}>{meta.label}</span>
+                        <span className="text-tiny font-semibold">{meta.label}</span>
                         <Link href={`/aws/policies?filter=${tier}`} className="text-2xs text-fg-subtle hover:text-csp-aws transition-colors">{count} {t('noun.policies')} →</Link>
                       </div>
                       <p className="text-tiny text-fg-muted">{meta.description}</p>
@@ -95,7 +94,7 @@ export default function AwsReferenceClient() {
                 <div key={pt.type} className="p-3 rounded-lg border border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 rounded-full" style={{ background: pt.color }} />
-                    <span className="text-tiny font-semibold" style={{ color: pt.color }}>{pt.label}</span>
+                    <span className="text-tiny font-semibold">{pt.label}</span>
                   </div>
                   <p className="text-3xs text-fg-muted leading-relaxed">{t(pt.desc)}</p>
                   <div className="mt-1 text-3xs text-fg-subtle">
@@ -143,17 +142,17 @@ export default function AwsReferenceClient() {
           <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
             <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.categoriesByService')}</h2>
             <div className="grid grid-cols-3 gap-2">
-              {Object.entries(CAT_COLORS).map(([cat, color]) => {
+              {CATEGORIES.map((cat) => {
                 const count = AWS_POLICIES.filter(p => p.category === cat).length
                 if (!count) return null
                 return (
                   <Link key={cat} href={`/aws/policies?category=${cat}`}
                     className="flex items-center justify-between px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-current transition-colors group">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ background: color }} />
+                      <span className="w-2 h-2 rounded-full bg-fg-subtle" />
                       <span className="text-tiny text-fg-muted group-hover:font-medium">{cat}</span>
                     </div>
-                    <span className="text-3xs font-semibold" style={{ color }}>{count}</span>
+                    <span className="text-3xs font-semibold text-fg-muted tabular">{count}</span>
                   </Link>
                 )
               })}

@@ -88,11 +88,11 @@ function AwsActionsContent() {
           <div className="m-4 text-tiny text-fg-subtle">{t('state.loadingAwsActions')}</div>
         )}
         <StatsBar stats={[
-          { label: 'Total',       value: stats.total,      color: 'orange' },
+          { label: t('count.total'),      value: stats.total,      color: 'orange' },
           { label: 'Wildcards',   value: stats.wildcards,  color: 'red' },
           { label: t('label.specificPlural'), value: stats.specific,   color: 'green' },
           { label: 'Full Access', value: stats.fullAccess, color: 'red' },
-          { label: 'Privilegiadas',value: stats.privileged,color: 'red' },
+          { label: t('count.privileged'),value: stats.privileged,color: 'red' },
           { label: t('label.services'),    value: stats.services,   color: 'gray' },
         ]} />
 
@@ -211,8 +211,7 @@ function AwsActionsContent() {
         </div>
       <Pagination
         total={filtered.length} page={page} pageSize={pageSize}
-        onPageChange={setPage} onPageSizeChange={setPageSize}
-        accent="#ff9900" noun="noun.actions"
+        onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.actions"
       />
       </div>
     </AppShell>

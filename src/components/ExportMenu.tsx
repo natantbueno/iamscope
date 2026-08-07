@@ -65,7 +65,7 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportCSV(roles))}>
                   CSV
                 </MenuItem>
-                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportJSON(roles))}>
+                <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportJSON(roles))}>
                   JSON
                 </MenuItem>
                 <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
@@ -73,7 +73,7 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportPermissionsCSV(roles))}>
                   CSV (uma linha por ação)
                 </MenuItem>
-                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportPermissionsJSON(roles))}>
+                <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportPermissionsJSON(roles))}>
                   JSON (uma entrada por ação)
                 </MenuItem>
               </>
@@ -88,7 +88,7 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportRoleActionsCSV(actions))}>
                   CSV
                 </MenuItem>
-                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportRoleActionsJSON(actions))}>
+                <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportRoleActionsJSON(actions))}>
                   JSON
                 </MenuItem>
               </>
@@ -103,7 +103,7 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportApiPermissionsCSV(perms))}>
                   CSV
                 </MenuItem>
-                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportApiPermissionsJSON(perms))}>
+                <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportApiPermissionsJSON(perms))}>
                   JSON
                 </MenuItem>
               </>
@@ -120,7 +120,7 @@ export default function ExportMenu(props: Props) {
                 <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportAzureRbacCSV(azureRoles))}>
                   CSV
                 </MenuItem>
-                <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportAzureRbacJSON(azureRoles))}>
+                <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportAzureRbacJSON(azureRoles))}>
                   JSON
                 </MenuItem>
                 {matchedPerms && matchedPerms.size > 0 && (

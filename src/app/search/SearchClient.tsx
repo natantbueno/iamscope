@@ -316,8 +316,7 @@ export default function SearchClient() {
 
             <Pagination
               total={filtrados.length} page={page} pageSize={pageSize}
-              onPageChange={setPage} onPageSizeChange={setPageSize}
-              accent="#0078d4" noun="noun.roles"
+              onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
             />
           </>
         )}

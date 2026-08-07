@@ -30,6 +30,7 @@
   --c-fg-subtle: 102 110 123;       /* #666e7b — 5.2:1 sobre branco, 4.5:1 sobre o fundo da app */
   --c-fg-on-accent: 255 255 255;
   --c-accent: 0 108 190;            /* #006cbe — 5.4:1 sobre branco */
+  --c-danger: 180 35 24;            /* #b42318 — 6.6:1 sobre branco */
   --c-ring: 0 120 212;              /* #0078d4 */
 }
 
@@ -46,6 +47,7 @@
   --c-fg-subtle: 138 146 158;       /* #8a929e — 5.7:1  sobre surface */
   --c-fg-on-accent: 255 255 255;
   --c-accent: 133 183 235;          /* #85b7eb — 8.4:1 sobre surface */
+  --c-danger: 248 113 113;          /* #f87171 — 6.4:1 sobre surface */
   --c-ring: 133 183 235;            /* anel de foco precisa ser visível no escuro */
 }
 
@@ -149,19 +151,66 @@ html {
 }
 
 /* CloudNav — hover & active state driven by per-item CSS custom property */
+/* ---------------------------------------------------------------------------
+   Controle que aparece no hover.
+
+   `opacity-0 group-hover:opacity-100` parece inofensivo e não é: num aparelho
+   de toque NÃO EXISTE hover, então o elemento fica em opacidade 0 para sempre.
+   Na página de uma role do Entra isso eram 254 botões "Copiar" — um por
+   permissão — invisíveis e inalcançáveis exatamente para quem veio copiar
+   identificador, que é a persona primária do site (ver PRODUCT.md).
+
+   A regra inverte o padrão: visível por padrão, e só se esconde onde existe
+   ponteiro de verdade. O `:focus-visible` e o `:focus-within` garantem que
+   quem navega por teclado também alcança.
+--------------------------------------------------------------------------- */
+.reveal-on-hover {
+  opacity: 1;
+  transition: opacity 150ms ease;
+}
+@media (hover: hover) {
+  .reveal-on-hover { opacity: 0; }
+  .group:hover .reveal-on-hover,
+  .group:focus-within .reveal-on-hover,
+  .reveal-on-hover:focus-visible { opacity: 1; }
+}
+
+/* Esmaecimento na borda direita da barra de clouds enquanto há item fora da
+   tela. `mask-image` some sozinho quando a barra chega ao fim da rolagem em
+   navegadores com scroll-driven animations; onde não há, o esmaecimento fica
+   fixo — é degradação aceitável, já que o custo é um item levemente esmaecido
+   na borda, não conteúdo escondido. */
+.cloud-nav-scroll {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+}
+.cloud-nav-scroll::-webkit-scrollbar { display: none; }
+@media (min-width: 1024px) {
+  /* No desktop os sete itens cabem: sem rolagem, sem esmaecimento. */
+  .cloud-nav-scroll { mask-image: none; }
+}
+
 .cloud-nav-item {
   transition: color 150ms ease, border-bottom-color 150ms ease;
 }
-.cloud-nav-item:hover,
+/* O hover fica GRUDADO depois do toque num dispositivo sem mouse: o item tocado
+   continua sublinhado até você tocar em outro lugar, e aí a barra mostra DOIS
+   itens ativos. `@media (hover: hover)` restringe a regra a quem tem ponteiro
+   de verdade. Encontrado medindo `borderBottomColor` no DOM: `aria-current`
+   estava certo num item só, mas dois tinham borda. */
 .cloud-nav-item[aria-current='page'] {
-  /* Texto usa a variante legível do tema atual; o sublinhado, que é decorativo
-     e fica sobre o fundo, usa a cor de marca cheia nos dois. */
-  color: var(--cloud-on-light);
-  border-bottom-color: var(--cloud-mark);
+  color: rgb(var(--c-fg));
+  border-bottom-color: rgb(var(--c-accent));
 }
-.dark .cloud-nav-item:hover,
-.dark .cloud-nav-item[aria-current='page'] {
-  color: var(--cloud-on-dark);
+@media (hover: hover) {
+  .cloud-nav-item:hover {
+  /* Nível 3: o item ativo usa o acento único, o mesmo da sidebar — não a cor
+     da cloud. Antes cada aba trazia a própria marca, e três das seis não
+     alcançavam 3:1 contra o fundo em um dos temas. O acento resolve de
+     --c-accent, que já está verificado nos dois (5.4:1 e 8.4:1). */
+    color: rgb(var(--c-fg));
+    border-bottom-color: rgb(var(--c-accent));
+  }
 }
 
 /* ---------------------------------------------------------------------------

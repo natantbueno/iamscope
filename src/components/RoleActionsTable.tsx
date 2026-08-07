@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
+import type { TranslationKey } from '@/i18n/dictionary'
 import Link from 'next/link'
 import { ChevronDown, ChevronUp, ChevronsUpDown, Copy, CheckCheck, AlertTriangle } from 'lucide-react'
 import Pagination from '@/components/Pagination'
@@ -14,12 +15,12 @@ import { deriveRoleActionDescription } from '@/lib/descriptions'
 type SortCol = 'action' | 'namespace' | 'verb' | 'tier' | 'category' | 'count'
 type SortDir = 'asc' | 'desc'
 
-const TIER_FILTERS: { label: string; value: 'all' | EamTier }[] = [
-  { label: 'Todas', value: 'all' },
-  { label: 'Control Plane', value: 'ControlPlane' },
-  { label: 'Management Plane', value: 'ManagementPlane' },
-  { label: 'User Access', value: 'UserAccess' },
-  { label: 'Unclassified', value: 'Unclassified' },
+const TIER_FILTERS: { label: TranslationKey; value: 'all' | EamTier }[] = [
+  { label: 'filter.allFem', value: 'all' },
+  { label: 'tier.controlPlane',    value: 'ControlPlane' },
+  { label: 'tier.managementPlane', value: 'ManagementPlane' },
+  { label: 'tier.userAccess',      value: 'UserAccess' },
+  { label: 'tier.unclassified',    value: 'Unclassified' },
 ]
 
 const TIER_ORDER: Record<EamTier, number> = {
@@ -114,7 +115,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                   ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing font-medium'
                   : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
 
@@ -145,7 +146,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
           <Select label="Verb" value={verb} onChange={(v) => { setVerb(v); setPage(1) }}
             options={[{ value: 'all', label: 'Todos' }, ...verbs.map((v) => ({ value: v, label: v }))]} />
           <Select label={t('table.category')} value={category} onChange={(v) => { setCategory(v); setPage(1) }}
-            options={[{ value: 'all', label: 'Todas' }, ...categories.map((c) => ({ value: c, label: c }))]} />
+            options={[{ value: 'all', label: t('filter.allFem') }, ...categories.map((c) => ({ value: c, label: c }))]} />
         </div>
       </div>
 
@@ -200,7 +201,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
                               {entry.action}
                             </code>
                             <button onClick={() => copyAction(entry.action)}
-                              className="opacity-0 group-hover:opacity-100 shrink-0 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity"
+                              className="reveal-on-hover shrink-0 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-opacity"
                               title={t('action.copy')}>
                               {copiedAction === entry.action
                                 ? <CheckCheck size={11} className="text-green-600 opacity-100" />
@@ -265,8 +266,7 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
 
             <Pagination
               total={sorted.length} page={page} pageSize={pageSize}
-              onPageChange={setPage} onPageSizeChange={setPageSize}
-              accent="#0078d4" noun="noun.actions"
+              onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.actions"
             />
           </>
         )}

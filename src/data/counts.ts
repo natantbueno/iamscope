@@ -23,4 +23,4 @@ export const GWS_PRIVILEGES_COUNT = 120
 export const IBM_ROLES_COUNT = 7
 export const IBM_ACCESS_PRIMITIVES_COUNT = 2
 export const IBM_CLASSIC_PERMISSIONS_COUNT = 71
-export const SOD_RULES_COUNT = 96
+export const SOD_RULES_COUNT = 190

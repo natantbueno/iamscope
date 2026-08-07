@@ -99,7 +99,7 @@ export default function TierComparisonClient() {
                   <div key={cloud} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: meta.color }} />
-                      <span className="text-3xs font-semibold uppercase tracking-wider" style={{ color: meta.color }}>{meta.label}</span>
+                      <span className="text-3xs font-semibold uppercase tracking-wider">{meta.label}</span>
                     </div>
                     {entry.slug ? (
                       <Link href={getCloudUrl(cloud, entry.slug)} className="text-note font-semibold text-gray-800 dark:text-gray-100 hover:underline">
@@ -177,7 +177,7 @@ export default function TierComparisonClient() {
                 em português — ver a nota no relatório sobre texto editorial
                 que mora em src/data/ e não aparece no find-untranslated. */}
             <div className="p-3 rounded-lg" style={{ background: tier0.bg, borderLeft: `3px solid ${tier0.color}` }}>
-              <p className="text-tiny font-semibold" style={{ color: tier0.color }}>{tier0.name}</p>
+              <p className="text-tiny font-semibold">{tier0.name}</p>
               <p className="text-tiny text-fg-muted leading-relaxed mt-1">{tier0.description}</p>
             </div>
           </Section>

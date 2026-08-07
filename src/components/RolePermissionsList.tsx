@@ -54,17 +54,17 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
             className="w-full text-tiny pl-8 pr-3 py-1.5 border border-surface-border dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
-        {tiers.map((t) => {
-          const count = t === 'all' ? permissions.length : (tierCounts[t] || 0)
-          if (t !== 'all' && count === 0) return null
+        {tiers.map((tier) => {
+          const count = tier === 'all' ? permissions.length : (tierCounts[tier] || 0)
+          if (tier !== 'all' && count === 0) return null
           return (
-            <button key={t} onClick={() => setTierFilter(t)}
+            <button key={tier} onClick={() => setTierFilter(tier)}
               className={`text-3xs px-2.5 py-1 rounded-full border transition-colors ${
-                tierFilter === t
+                tierFilter === tier
                   ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid font-medium'
                   : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
-              {t === 'all' ? 'Todas' : EAM_META[t].label} ({count})
+              {tier === 'all' ? t('filter.allFem') : EAM_META[tier].label} ({count})
             </button>
           )
         })}
@@ -95,7 +95,7 @@ export default function RolePermissionsList({ permissions }: { permissions: Role
                     <div className="flex items-start gap-1.5">
                       <code className="font-mono text-3xs text-gray-600 dark:text-gray-300 break-all leading-relaxed">{p.action}</code>
                       <button onClick={() => copy(p.action)}
-                        className="opacity-0 group-hover:opacity-100 text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 mt-0.5 transition-opacity"
+                        className="reveal-on-hover text-fg-muted dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 mt-0.5 transition-opacity"
                         title={t('action.copy')}>
                         {copied === p.action ? <CheckCheck size={11} className="text-green-600 opacity-100" /> : <Copy size={11} />}
                       </button>

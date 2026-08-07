@@ -2,47 +2,53 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Sparkles, Trash2, Download, ChevronDown, ChevronUp, AlertTriangle, CheckCheck } from 'lucide-react'
+import { Play, ScanLine, Trash2, Download, ChevronDown, ChevronUp, AlertTriangle, CheckCheck, Info } from 'lucide-react'
 import {
-  SoDCloudScope, parseRoleListInput, evaluateUserRoles, generateSoDReportText,
-  SOD_RISK_META, SOD_EXAMPLE_ROLES, SOD_EXAMPLE_ROLES_TYPICAL, SoDEvaluationResult,
-  findSimilarRoleNames,
+  SoDPlatformScope, parseRoleListInput, evaluateUserRoles, generateSoDReportText,
+  SOD_RISK_META, SOD_EXAMPLES, SoDEvaluationResult, findSimilarRoleNames,
 } from '@/lib/sod'
+import { SOD_RULES, SOD_PROVIDER_META, SOD_PROVIDERS } from '@/data/sod/rules'
 import SoDSeverityBadge from './SoDSeverityBadge'
 import SoDCloudBadge from './SoDCloudBadge'
 import SoDRuleDetailCard from './SoDRuleDetailCard'
 import { useT } from '@/i18n/LanguageProvider'
+import type { TranslationKey } from '@/i18n/dictionary'
+
+/* Os exemplos vivem em lib/sod.ts (dado) e o rótulo aqui (interface). Cada um
+   é um conjunto real que dispara conflitos catalogados na plataforma indicada
+   — sem exemplo por provedor, quem chega para testar AWS ou GCP cola nomes do
+   Entra ID e conclui que a ferramenta não funciona. */
+const EXAMPLE_LABELS: Record<string, TranslationKey> = {
+  'entra-critical': 'sod.exEntraCritical',
+  'entra-typical': 'sod.exEntraTypical',
+  aws: 'sod.exAws',
+  gcp: 'sod.exGcp',
+  gws: 'sod.exGoogle',
+}
 
 export default function SoDUserEvaluator() {
   const t = useT()
   const [rawInput, setRawInput] = useState('')
-  const [cloudScope, setCloudScope] = useState<SoDCloudScope>('both')
+  const [scope, setScope] = useState<SoDPlatformScope>('all')
   const [result, setResult] = useState<SoDEvaluationResult | null>(null)
   const [expandedConflict, setExpandedConflict] = useState<Set<number>>(new Set())
   const [copied, setCopied] = useState(false)
 
   const runEvaluation = () => {
     const names = parseRoleListInput(rawInput)
-    setResult(evaluateUserRoles(names, cloudScope))
+    setResult(evaluateUserRoles(names, scope))
     setExpandedConflict(new Set())
   }
 
-  const loadExampleCritical = () => {
-    setRawInput(SOD_EXAMPLE_ROLES.join('\n'))
-    setCloudScope('entra-id')
+  const loadExample = (id: string) => {
+    const ex = SOD_EXAMPLES.find((e) => e.id === id)
+    if (!ex) return
+    setRawInput(ex.roles.join('\n'))
+    setScope(ex.scope)
     setResult(null)
   }
 
-  const loadExampleTypical = () => {
-    setRawInput(SOD_EXAMPLE_ROLES_TYPICAL.join('\n'))
-    setCloudScope('entra-id')
-    setResult(null)
-  }
-
-  const clear = () => {
-    setRawInput('')
-    setResult(null)
-  }
+  const clear = () => { setRawInput(''); setResult(null) }
 
   const toggleConflict = (i: number) => {
     setExpandedConflict((prev) => {
@@ -54,20 +60,25 @@ export default function SoDUserEvaluator() {
 
   const exportReport = () => {
     if (!result) return
-    const text = generateSoDReportText(result)
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(generateSoDReportText(result))
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }
+
+  const SCOPES: { value: SoDPlatformScope; label: string }[] = useMemo(() => [
+    { value: 'all', label: t('filter.all') },
+    ...SOD_PROVIDERS.map((p) => ({ value: p as SoDPlatformScope, label: SOD_PROVIDER_META[p].label })),
+  ], [t])
 
   return (
     <div className="p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6 overflow-y-auto flex-1">
       {/* Coluna esquerda — input */}
       <div className="lg:col-span-2 flex flex-col gap-3">
-        <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider block">
-          Roles atribuídas (uma por linha, JSON array ou CSV)
+        <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider block" htmlFor="sod-roles-input">
+          {t('sod.assignedRoles')}
         </label>
         <textarea
+          id="sod-roles-input"
           value={rawInput}
           onChange={(e) => setRawInput(e.target.value)}
           rows={14}
@@ -77,37 +88,41 @@ export default function SoDUserEvaluator() {
         />
 
         <div>
-          <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-1.5 block">Cloud</label>
-          <div className="flex items-center gap-2">
-            {(['both', 'entra-id', 'azure-rbac'] as SoDCloudScope[]).map((c) => (
-              <button key={c} onClick={() => setCloudScope(c)}
+          <label className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-1.5 block">{t('sod.provider')}</label>
+          <div className="flex items-center gap-2 flex-wrap">
+            {SCOPES.map((s) => (
+              <button key={s.value} onClick={() => setScope(s.value)}
                 className={`text-3xs px-2.5 py-1 rounded-full border font-medium transition-colors ${
-                  cloudScope === c ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing'
+                  scope === s.value ? 'bg-brand-soft dark:bg-brand-activeBg text-brand-strong dark:text-brand-onDark border-brand-mid dark:border-brand-activeRing'
                                     : 'text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}>
-                {c === 'both' ? 'Ambos' : c === 'entra-id' ? 'Entra ID' : 'Azure RBAC'}
+                {s.label}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button onClick={runEvaluation} disabled={!rawInput.trim()}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand hover:bg-[#006cbe] disabled:opacity-40 disabled:cursor-not-allowed text-white text-body font-medium transition-colors">
-            <Sparkles size={14} /> Avaliar
-          </button>
-          <button onClick={loadExampleCritical}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted text-body font-medium transition-colors">
-            Exemplo — Cenário Crítico
-          </button>
-          <button onClick={loadExampleTypical}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted text-body font-medium transition-colors">
-            Exemplo — Cenário Típico
+            <Play size={14} /> {t('action.evaluate')}
           </button>
           <button onClick={clear}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted text-body font-medium transition-colors">
-            <Trash2 size={14} /> Limpar
+            <Trash2 size={14} /> {t('action.clear')}
           </button>
+        </div>
+
+        <div>
+          <p className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-1.5">{t('sod.examples')}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            {SOD_EXAMPLES.map((ex) => (
+              <button key={ex.id} onClick={() => loadExample(ex.id)}
+                className="text-3xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted font-medium transition-colors">
+                {t(EXAMPLE_LABELS[ex.id])}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -115,10 +130,10 @@ export default function SoDUserEvaluator() {
       <div className="lg:col-span-3">
         {!result && (
           <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center px-6 py-16 border border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
-            <Sparkles size={28} className="text-fg-muted dark:text-gray-700 mb-3" />
+            <ScanLine size={28} className="text-fg-subtle mb-3" />
             <p className="text-note font-medium text-gray-600 dark:text-gray-300 mb-1">{t('sod.pasteToStart')}</p>
             <p className="text-tiny text-fg-muted max-w-sm">
-              O avaliador cruza todos os pares da lista contra o catálogo de {`>`}40 regras SoD e calcula um score de risco geral — 100% client-side.
+              {t('sod.evaluatorIntroA')} {SOD_RULES.length} {t('sod.evaluatorIntroB')}
             </p>
           </div>
         )}
@@ -145,17 +160,34 @@ export default function SoDUserEvaluator() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                <Metric label="Roles avaliadas" value={result.totalRoles} />
-                <Metric label="Conflitos" value={result.conflictsFound} />
+                <Metric label={t('sod.mRolesEvaluated')} value={result.totalRoles} />
+                <Metric label={t('sod.mConflicts')} value={result.conflictsFound} />
                 <Metric label="Critical / High" value={`${result.severityBreakdown.critical} / ${result.severityBreakdown.high}`} />
-                <Metric label="Frameworks impactados" value={result.frameworksImpacted.length} />
+                <Metric label={t('sod.mFrameworks')} value={result.frameworksImpacted.length} />
               </div>
             </div>
+
+            {/*
+              Lista com mais de um provedor: o catálogo não cruza provedores, e
+              sem dizer isso aqui o "0 conflitos" entre AWS e Entra ID é lido
+              como resultado, quando é a ausência de uma pergunta.
+            */}
+            {result.providersMatched.length > 1 && (
+              <div className="rounded-lg p-3 bg-surface-faint dark:bg-gray-800/60 border border-surface-border dark:border-gray-700 flex items-start gap-2">
+                <Info size={13} className="text-fg-subtle shrink-0 mt-0.5" />
+                <p className="text-3xs text-fg-muted leading-relaxed">
+                  <span className="font-semibold text-fg">
+                    {result.providersMatched.map((p) => SOD_PROVIDER_META[p].label).join(' + ')}.
+                  </span>{' '}
+                  {t('sod.crossProviderBody')}
+                </p>
+              </div>
+            )}
 
             {/* Conflitos */}
             {result.conflicts.length > 0 && (
               <div>
-                <p className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-2">Conflitos encontrados</p>
+                <p className="text-3xs font-semibold text-fg-muted uppercase tracking-wider mb-2">{t('sod.conflictsFound')}</p>
                 <div className="space-y-2">
                   {result.conflicts.map((c, i) => {
                     const isOpen = expandedConflict.has(i)
@@ -173,7 +205,7 @@ export default function SoDUserEvaluator() {
                           <div className="px-4 pb-4 pt-1 bg-gray-50/60 dark:bg-gray-900/40">
                             <SoDRuleDetailCard rule={c.rule} compact />
                             <Link href={`/sod/rules/${c.rule.id}`} className="inline-block mt-3 text-tiny text-brand-strong dark:text-brand-onDark hover:underline">
-                              Ver página completa da regra →
+                              {t('sod.seeFullRule')} →
                             </Link>
                           </div>
                         )}
@@ -194,14 +226,14 @@ export default function SoDUserEvaluator() {
                 <p className="text-3xs text-amber-700 dark:text-amber-400 mb-2">{t('sod.unknownRolesBody')}</p>
                 <ul className="text-tiny text-fg-muted space-y-1.5">
                   {result.rolesNotFound.map((r, i) => {
-                    const suggestions = findSimilarRoleNames(r, cloudScope, 3)
+                    const suggestions = findSimilarRoleNames(r, scope, 3)
                     return (
                       <li key={i}>
                         <span>• {r}</span>
                         {suggestions.length > 0 && (
                           <span className="block pl-3 text-3xs text-fg-muted">
-                            Você quis dizer: {suggestions.map((s, si) => (
-                              <span key={s.slug}>
+                            {t('sod.didYouMean')} {suggestions.map((s, si) => (
+                              <span key={`${s.cloud}-${s.slug}`}>
                                 {si > 0 && ', '}
                                 <button
                                   onClick={() => setRawInput((prev) => prev.replace(new RegExp(r.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), s.name))}

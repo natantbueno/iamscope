@@ -197,8 +197,7 @@ function GwsScopesContent() {
 
         <Pagination
           total={sorted.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#34a853" noun="noun.scopes"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.scopes"
         />
       </div>
     </AppShell>

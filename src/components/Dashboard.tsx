@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useT } from '@/i18n/LanguageProvider'
+import { KPI_TONE } from '@/lib/kpiTone'
 import { AlertTriangle, Star, Shield, ChevronRight, Users, AppWindow, Lock, FileCheck, Monitor } from 'lucide-react'
 import { ROLES, EAM_META, EamTier, CATEGORY_META, RoleCategory } from '@/data/roles'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
@@ -46,17 +47,17 @@ export default function Dashboard() {
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Built-in Roles',  value: totalRoles,          href: '/entraid/roles',                      color: '#0078d4' },
-          { label: 'Control Plane',   value: controlPlaneRoles,   href: '/entraid/roles?tier=ControlPlane',     color: '#dc2626' },
-          { label: 'Privilegiadas',   value: privilegedRoles,     href: '/entraid/roles?filter=privileged',     color: '#6b7280' },
-          { label: 'API Permissions', value: API_PERMISSIONS.length, href: '/entraid/api-permissions',          color: '#6b7280' },
+          { label: t('kpi.builtinRoles'),   value: totalRoles,          href: '/entraid/roles',                      tone: 'accent' as const },
+          { label: t('tier.controlPlane'), value: controlPlaneRoles,   href: '/entraid/roles?tier=ControlPlane',     tone: 'neutral' as const },
+          { label: t('count.privileged'),  value: privilegedRoles,     href: '/entraid/roles?filter=privileged',     tone: 'danger' as const },
+          { label: t('count.apiPermissions'), value: API_PERMISSIONS.length, href: '/entraid/api-permissions',          tone: 'neutral' as const },
         ].map((s) => (
           <Link key={s.label} href={s.href}
             className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-brand/40 dark:hover:border-brand/30 transition-colors group">
             <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              {s.label}<ChevronRight size={10} className="reveal-on-hover" />
             </p>
-            <p className="text-display font-bold leading-none" style={{ color: s.color }}>{s.value}</p>
+            <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
           </Link>
         ))}
       </div>
@@ -90,7 +91,7 @@ export default function Dashboard() {
 
         <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
           <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
-            <Star size={13} className="text-amber-500" /> Roles mais consultadas
+            <Star size={13} className="text-fg-subtle" /> Roles mais consultadas
           </h2>
           <div className="space-y-1.5">
             {TOP_ROLES.slice(0, 6).map((name) => {
@@ -131,10 +132,10 @@ export default function Dashboard() {
       </div>
 
       {/* Info bar */}
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 px-5 py-4 flex items-start gap-3">
-        <Shield size={15} className="text-amber-800 dark:text-amber-400 mt-0.5 shrink-0" />
-        <p className="text-tiny text-amber-700 dark:text-amber-400 leading-relaxed">
-          <strong className="text-amber-800 dark:text-amber-300">Custom Roles</strong> permitem composição granular de permissões, mas nem todas as permissões das built-in
+      <div className="rounded-xl border border-line bg-surface-alt px-5 py-4 flex items-start gap-3">
+        <Shield size={15} className="text-fg-subtle mt-0.5 shrink-0" />
+        <p className="text-tiny text-fg-muted leading-relaxed">
+          <strong className="text-fg">Custom Roles</strong> permitem composição granular de permissões, mas nem todas as permissões das built-in
           roles estão disponíveis no catálogo. Requer licença Entra ID P1 ou P2. Consulte via{' '}
           <code className="font-mono text-3xs bg-amber-100 dark:bg-amber-900 px-1 rounded">
             GET /roleManagement/directory/resourceActions

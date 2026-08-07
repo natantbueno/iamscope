@@ -41,12 +41,23 @@ export interface CloudColor {
   onLight: string
 }
 
-export const CLOUD_COLORS: Record<CloudId, CloudColor> = {
-  home:            { mark: '#0078d4', onDark: '#85b7eb', onLight: '#006ec3' },
-  entraId:         { mark: '#0078d4', onDark: '#85b7eb', onLight: '#006ec3' },
-  azureRbac:       { mark: '#5c2d91', onDark: '#a479d5', onLight: '#5c2d91' },
-  aws:             { mark: '#ff9900', onDark: '#ff9900', onLight: '#9c5d00' },
-  gcp:             { mark: '#4285f4', onDark: '#4285f4', onLight: '#0e62ed' },
-  googleWorkspace: { mark: '#34a853', onDark: '#34a853', onLight: '#267c3d' },
-  ibmCloud:        { mark: '#08bdba', onDark: '#08bdba', onLight: '#057977' },
-}
+export const CLOUD_COLORS: Record<CloudId, CloudColor> = (() => {
+  // Nível 3 (06/08/2026): a cor de marca saiu. Os três papéis continuam, para
+  // que nenhum consumidor quebre, mas resolvem da escala neutra.
+  //
+  // Os valores são `rgb(var(--token))` e não hex porque TODO consumidor aplica
+  // isto como valor de CSS num `style` inline (ponto da Sidebar, barra do
+  // ReferenceIndex, texto do CompareTable). Com custom property o tema resolve
+  // sozinho — um hex fixo daria 3.6:1 como texto no escuro, abaixo do mínimo.
+  // Nenhum consumidor faz parse de hex nestes valores (o `themedText` recebe
+  // cor de TIER_META, não daqui) — conferido antes de trocar.
+  const neutro: CloudColor = {
+    mark:    'rgb(var(--c-fg-subtle))',
+    onDark:  'rgb(var(--c-fg-muted))',
+    onLight: 'rgb(var(--c-fg-muted))',
+  }
+  return {
+    home: neutro, entraId: neutro, azureRbac: neutro,
+    aws: neutro, gcp: neutro, googleWorkspace: neutro, ibmCloud: neutro,
+  }
+})()

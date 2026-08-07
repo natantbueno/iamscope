@@ -56,7 +56,7 @@ export default function ScpVsIdentityPoliciesClient() {
               </div>
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                 <div className="flex items-center gap-2 mb-2">
-                  <Lock size={16} className="text-emerald-500" />
+                  <Lock size={16} className="text-fg-subtle" />
                   <h3 className="text-body font-semibold text-gray-800 dark:text-gray-100">Identity-based Policy</h3>
                 </div>
                 <ul className="text-tiny text-fg-muted leading-relaxed space-y-1.5 list-disc list-inside">

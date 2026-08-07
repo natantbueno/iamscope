@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { CLOUD_COLORS, type CloudId } from '@/lib/cloudColors'
+import { type CloudId } from '@/lib/cloudColors'
 
 // A cor de cada cloud vem de src/lib/cloudColors.ts — este arquivo já não
 // declara hex nenhum. Antes mantinha uma segunda lista que divergia dos tokens
@@ -42,35 +43,34 @@ function getActivePlatform(pathname: string): CloudId | null {
 
 export default function CloudNav() {
   const pathname = usePathname()
+  const navRef = useRef<HTMLElement>(null)
   const active = getActivePlatform(pathname)
+
+  // O item ativo pode nascer fora da área visível no mobile. Rola só o
+  // contêiner, nunca a página — `block: 'nearest'` evita o pulo vertical.
+  useEffect(() => {
+    const el = navRef.current?.querySelector('[aria-current="page"]')
+    el?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [pathname])
 
   return (
     <nav
+      ref={navRef}
       aria-label="Cloud providers"
-      className="bg-surface border-b border-line overflow-x-auto shrink-0"
+      /* `cloud-nav-scroll` desenha um esmaecimento na borda direita enquanto
+         houver conteúdo fora da tela. Sem ele, em 390px o menu mostrava 4 das 7
+         plataformas e as outras três não davam nenhum sinal de existir — num
+         produto que se apresenta como "seis clouds num lugar só". */
+      className="cloud-nav-scroll bg-surface border-b border-line overflow-x-auto shrink-0"
     >
       <div className="flex items-stretch px-2 min-w-max">
         {CLOUDS.map((cloud) => {
           const isActive = active === cloud.id
-          const color = CLOUD_COLORS[cloud.id]
           return (
             <Link
               key={cloud.id}
               href={cloud.href}
               aria-current={isActive ? 'page' : undefined}
-              style={
-                {
-                  // O texto do item ativo troca de variante conforme o tema: a
-                  // cor de marca nunca serve nos dois (Azure RBAC dá 1.89:1 no
-                  // escuro, Entra dá 2.1:1 no claro). Quem escolhe entre as duas
-                  // é o seletor `.dark` em globals.css.
-                  '--cloud-on-light': color.onLight,
-                  '--cloud-on-dark': color.onDark,
-                  // O sublinhado é decorativo e fica sobre o fundo, não sobre
-                  // texto — pode usar a cor de marca cheia nos dois temas.
-                  '--cloud-mark': color.mark,
-                } as React.CSSProperties
-              }
               className="cloud-nav-item px-4 py-3 text-body font-semibold uppercase tracking-wider whitespace-nowrap border-b-[3px] border-transparent text-fg-muted"
             >
               {cloud.label}

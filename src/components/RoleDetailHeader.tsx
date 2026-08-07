@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, ShieldAlert, CalendarCheck } from 'lucide-react'
 import { useT } from '@/i18n/LanguageProvider'
+import { getPlatformSync } from '@/data/syncMeta'
 import { useTheme } from './ThemeProvider'
 import ClassificationBadge from './ClassificationBadge'
 
@@ -85,6 +86,7 @@ export default function RoleDetailHeader({
   isPrivileged = false,
   classificationSource = 'iamscope',
   extra,
+  syncPlatform,
 }: {
   name: string
   /** Pílula de tier padrão. Ignorado quando `tierBadge` vem preenchido. */
@@ -100,10 +102,20 @@ export default function RoleDetailHeader({
   classificationSource?: 'iamscope' | 'entraops'
   /** Ex.: contagem de permissões. Entra à direita da categoria. */
   extra?: React.ReactNode
+  /**
+   * Rótulo da plataforma em `DATA_SYNC` ('Entra ID', 'AWS IAM', …).
+   *
+   * Quando presente, o cabeçalho mostra quando aquele dado foi verificado
+   * contra a fonte oficial. É o que separa "achei num site" de "posso citar
+   * isto" — e o dado já existia, só não chegava aqui.
+   */
+  syncPlatform?: string
 }) {
   const t = useT()
   const { theme } = useTheme()
   const isDark = theme === 'dark'
+
+  const sync = syncPlatform ? getPlatformSync(syncPlatform) : null
 
   const cor = tier ? (isDark ? tier.darkColor ?? tier.color : tier.color) : undefined
   const fundo = tier ? (isDark ? tier.darkBg ?? tier.bg : tier.bg) : undefined
@@ -113,7 +125,7 @@ export default function RoleDetailHeader({
       <div className="flex items-start gap-3 flex-wrap mb-2">
         <h1 className="text-title font-semibold text-fg">{name}</h1>
         {isPrivileged && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-3xs font-semibold bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 mt-1.5">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-3xs font-semibold bg-danger/10 text-danger border border-danger/30 mt-1.5">
             <ShieldAlert size={12} /> {t('label.privilegedAdj')}
           </span>
         )}
@@ -144,6 +156,28 @@ export default function RoleDetailHeader({
           </>
         )}
       </div>
+
+      {sync && (
+        <p className="mt-2 flex items-center gap-1.5 text-3xs text-fg-subtle">
+          <CalendarCheck size={11} className="shrink-0" aria-hidden="true" />
+          <span>
+            {t('sync.verifiedOn')}{' '}
+            <time dateTime={sync.lastSynced}>{formatarData(sync.lastSynced)}</time>
+            {' · '}
+            <a href={sync.sourceUrl} target="_blank" rel="noopener noreferrer"
+               className="underline decoration-dotted underline-offset-2 hover:text-fg-muted"
+               title={sync.sourceLabel}>
+              {t('sync.source')}
+            </a>
+          </span>
+        </p>
+      )}
     </div>
   )
+}
+
+/** ISO curto para o formato local, sem arrastar dependência de data. */
+export function formatarData(iso: string): string {
+  const [ano, mes, dia] = iso.split('-')
+  return `${dia}/${mes}/${ano}`
 }

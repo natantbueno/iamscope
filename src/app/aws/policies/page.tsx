@@ -17,13 +17,6 @@ import { useT } from '@/i18n/LanguageProvider'
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const TYPES: AwsPolicyType[] = ['managed', 'service-role', 'permission-set', 'permission-boundary']
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', Database: '#7c3aed',
-  Networking: '#0369a1', Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  Containers: '#326ce5', AI: '#8b5cf6', Analytics: '#14b8a6', Management: '#6b7280',
-  IoT: '#059669', Billing: '#475569', Messaging: '#d97706',
-}
-
 const TYPE_LABELS: Record<string, string> = {
   'managed': 'Managed', 'service-role': 'Service Role', 'permission-set': 'Permission Set', 'permission-boundary': 'Permission Boundary',
 }
@@ -123,11 +116,11 @@ function AwsPoliciesContent() {
           <div className="flex items-center gap-1 flex-wrap">
             {categories.map(cat => {
               const active = activeCategory === cat
-              const color = CAT_COLORS[cat] ?? '#6b7280'
               return (
                 <button key={cat} onClick={() => setActiveCategory(active ? '' : cat)}
-                  className="text-2xs px-2 py-0.5 rounded-full border transition-colors"
-                  style={active ? { background: color, borderColor: color, color: '#fff' } : { borderColor: color + '60', color: color }}>
+                  className={`text-2xs px-2 py-0.5 rounded-full border transition-colors ${
+                    active ? 'bg-surface-alt text-fg border-line-strong font-medium' : 'text-fg-muted border-line hover:bg-surface-hover'
+                  }`}>
                   {cat}
                 </button>
               )
@@ -181,7 +174,7 @@ function AwsPoliciesContent() {
                       </span>
                     </td>
                     <td className="px-4 py-3 align-top" style={{ width: colWidths[3], minWidth: colWidths[3] }}>
-                      <span className="text-2xs px-2 py-0.5 rounded-full border" style={{ borderColor: (CAT_COLORS[p.category] ?? '#6b7280') + '60', color: CAT_COLORS[p.category] ?? '#6b7280' }}>
+                      <span className="text-2xs px-2 py-0.5 rounded-full border bg-surface-alt text-fg-muted border-line">
                         {p.category}
                       </span>
                     </td>
@@ -216,8 +209,7 @@ function AwsPoliciesContent() {
         </div>
         <Pagination
           total={filtered.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#ff9900" noun="noun.policies"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.policies"
         />
       </div>
     </AppShell>

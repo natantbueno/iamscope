@@ -1,8 +1,8 @@
 'use client'
 
-import { themedText } from '@/lib/readableColor'
 import AppShell from '@/components/AppShell'
 import { useT } from '@/i18n/LanguageProvider'
+import { KPI_TONE } from '@/lib/kpiTone'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacTier } from '@/data/azureRbac'
 import Link from 'next/link'
 import {
@@ -51,17 +51,17 @@ export default function AzureRbacDashboard() {
         {/* ── Stat cards ── */}
         <div className="grid grid-cols-4 gap-3">
           {[
-            { label: 'Built-in Roles', value: total,           href: '/azure-rbac/roles',                   color: '#0078d4' },
-            { label: 'Full Control',   value: byTier[0].count, href: '/azure-rbac/roles?tier=FullControl',  color: '#dc2626' },
-            { label: 'Privilegiadas',  value: privileged,      href: '/azure-rbac/roles?filter=privileged', color: '#6b7280' },
-            { label: 'Categorias',     value: categories.length, href: '/azure-rbac/roles',                 color: '#6b7280' },
+            { label: t('kpi.builtinRoles'),  value: total,           href: '/azure-rbac/roles',                   tone: 'accent' as const },
+            { label: t('kpi.fullControl'),   value: byTier[0].count, href: '/azure-rbac/roles?tier=FullControl',  tone: 'neutral' as const },
+            { label: t('count.privileged'),  value: privileged,      href: '/azure-rbac/roles?filter=privileged', tone: 'danger' as const },
+            { label: t('count.categories'),  value: categories.length, href: '/azure-rbac/roles',                 tone: 'neutral' as const },
           ].map((s) => (
             <Link key={s.label} href={s.href}
               className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-brand/40 dark:hover:border-brand/30 transition-colors group">
               <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                {s.label}<ChevronRight size={10} className="reveal-on-hover" />
               </p>
-              <p className="text-display font-bold leading-none themed-color" style={themedText(s.color, undefined, 3)}>{s.value}</p>
+              <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
             </Link>
           ))}
         </div>

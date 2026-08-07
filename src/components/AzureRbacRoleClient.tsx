@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import { KPI_TONE_VALUE } from '@/lib/kpiTone'
 import { lookupActionDoc } from '@/lib/azureActionDocs'
 import RoleDetailHeader, { BackToList, roleDetailSub } from './RoleDetailHeader'
 import { CLOUD_META } from '@/data/compare/types'
@@ -12,10 +13,13 @@ import AppShell from '@/components/AppShell'
 import PermissionsTable from '@/components/PermissionsTable'
 
 const TYPE_COLORS: Record<AzurePermType, { bg: string; text: string; label: string }> = {
-  Actions:        { bg: '#e6f4ea', text: '#1a5c28', label: 'Actions' },
-  NotActions:     { bg: '#fde8e8', text: '#9a2020', label: 'NotActions' },
-  DataActions:    { bg: '#e8f1fb', text: '#0a4f8c', label: 'DataActions' },
-  NotDataActions: { bg: '#fef3e2', text: '#7a4a00', label: 'NotDataActions' },
+  // Nível 3: o tipo da permission é categoria, não risco — a cor não distinguia
+  // nada que o rótulo já não diga. NotActions e NotDataActions são negações, e
+  // é isso que o nome carrega.
+  Actions:        { bg: '#6b728018', text: '#6b7280', label: 'Actions' },
+  NotActions:     { bg: '#6b728018', text: '#6b7280', label: 'NotActions' },
+  DataActions:    { bg: '#6b728018', text: '#6b7280', label: 'DataActions' },
+  NotDataActions: { bg: '#6b728018', text: '#6b7280', label: 'NotDataActions' },
 }
 
 export default function AzureRbacRoleClient({ slug }: { slug: string }) {
@@ -83,11 +87,13 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
       headerTitle={role.name}
       headerSub={roleDetailSub(CLOUD_META.azureRbac.label, role.category, meta.label)}
       headerBack={<BackToList href="/azure-rbac/roles" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto bg-app">
         <div className="max-w-5xl px-6 py-6">
 
           <RoleDetailHeader
+          syncPlatform={'Azure RBAC'}
             name={role.name}
             tier={{ label: meta.label, color: meta.textColor, bg: meta.bgColor,
                     darkColor: meta.darkText, darkBg: meta.darkBg, description: meta.description }}
@@ -98,10 +104,10 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
 
           {/* Stat blocks */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3">
-            <StatCard label={t('label.totalPerms')} value={role.permissionCount} accent="#0078d4" />
-            <StatCard label="Actions"     value={permsByType['Actions']?.length ?? 0}     accent="#1a5c28" />
-            <StatCard label="NotActions"  value={permsByType['NotActions']?.length ?? 0}  accent="#9a2020" />
-            <StatCard label="DataActions" value={(permsByType['DataActions']?.length ?? 0) + (permsByType['NotDataActions']?.length ?? 0)} accent="#0a4f8c" />
+            <StatCard label={t('label.totalPerms')} value={role.permissionCount} accent={KPI_TONE_VALUE.accent} />
+            <StatCard label="Actions"     value={permsByType['Actions']?.length ?? 0}     accent={KPI_TONE_VALUE.neutral} />
+            <StatCard label="NotActions"  value={permsByType['NotActions']?.length ?? 0}  accent={KPI_TONE_VALUE.danger} />
+            <StatCard label="DataActions" value={(permsByType['DataActions']?.length ?? 0) + (permsByType['NotDataActions']?.length ?? 0)} accent={KPI_TONE_VALUE.neutral} />
           </div>
 
           {/* Fact cards */}
@@ -110,7 +116,7 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
               <div className="flex items-center gap-1.5">
                 <code className="font-mono text-3xs text-fg-muted break-all">{role.id}</code>
                 <button onClick={copyId} className="text-fg-subtle hover:text-fg shrink-0" title={t('action.copy')} aria-label={t('action.copyRoleId')}>
-                  {copied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
+                  {copied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} />}
                 </button>
               </div>
             </FactCard>
@@ -178,11 +184,6 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
                   { key: 'description', label: t('label.descMicrosoft') },
                 ]}
                 filterKey="type"
-                colors={{
-                  Actions: '#34d399', NotActions: '#f87171',
-                  DataActions: '#60a5fa', NotDataActions: '#fbbf24',
-                }}
-                accent="#85b7eb"
                 filename={`azure-rbac-${slug}-permissoes`}
                 noun="noun.permissions"
                 searchPlaceholder="ph.filterActionOrDesc"
@@ -289,7 +290,7 @@ function AzureRoleDefinitionJson({ role, permsByType }: { role: { name: string; 
           className="flex items-center gap-1.5 text-3xs text-fg-subtle hover:text-fg transition-colors"
           title={t('action.copyJson')}
         >
-          {jsonCopied ? <CheckCheck size={13} className="text-green-500" /> : <Copy size={13} />}
+          {jsonCopied ? <CheckCheck size={13} className="text-fg" /> : <Copy size={13} />}
           {jsonCopied ? 'Copiado!' : 'Copiar'}
         </button>
       </div>

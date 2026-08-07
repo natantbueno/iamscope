@@ -13,14 +13,12 @@ import { ShieldAlert, ExternalLink, CheckSquare, Copy, CheckCheck, ChevronDown, 
 import PermissionsTable from '@/components/PermissionsTable'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', Database: '#7c3aed',
-  Networking: '#0369a1', Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  Containers: '#326ce5', AI: '#8b5cf6', Analytics: '#14b8a6', Management: '#6b7280',
-  IoT: '#059669', Billing: '#475569', Messaging: '#d97706',
-}
+// Nível 3: a cor por categoria saiu. Eram 15 hex escritos à mão para dizer
+// "esta categoria é diferente daquela" — coisa que o nome já diz, e que colidia
+// com a escada de tier na mesma página. O ícone e o rótulo ficam.
+const CATEGORY_TINT = 'rgb(var(--c-fg-subtle))'
 const TYPE_COLORS: Record<string, string> = {
-  'managed': '#0891b2', 'service-role': '#7c3aed', 'permission-set': '#16a34a', 'permission-boundary': '#dc2626',
+  'managed': '#6b7280', 'service-role': '#6b7280', 'permission-set': '#6b7280', 'permission-boundary': '#6b7280',
 }
 const TYPE_LABELS: Record<string, string> = {
   'managed': 'AWS Managed', 'service-role': 'Service Role', 'permission-set': 'Permission Set', 'permission-boundary': 'Permission Boundary',
@@ -59,7 +57,7 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
   }
 
   const tier = AWS_TIER_META[policy.tier]
-  const catColor = CAT_COLORS[policy.category] ?? '#6b7280'
+  const catColor = CATEGORY_TINT
   const typeColor = TYPE_COLORS[policy.type]
   const related = AWS_POLICIES.filter(p => p.category === policy.category && p.slug !== policy.slug).slice(0, 5)
 
@@ -77,11 +75,14 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
       headerTitle={policy.name}
       headerSub={roleDetailSub(CLOUD_META.aws.label, policy.category, tier.label)}
       headerBack={<BackToList href="/aws/policies" />}
+      pageHasOwnHeading
     >
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 max-w-5xl space-y-5">
 
           <RoleDetailHeader
+
+            syncPlatform={'AWS IAM'}
             name={policy.name}
             tier={{ label: tier.label, color: tier.color, bg: tier.bg, description: tier.description }}
             categoryBadge={
@@ -104,9 +105,9 @@ export default function AwsPolicyClient({ slug }: { slug: string }) {
 
           {/* Privileged warning */}
           {policy.isPrivileged && (
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/40">
-              <ShieldAlert size={14} className="text-red-500 shrink-0 mt-0.5" />
-              <p className="text-tiny text-red-700 dark:text-red-400">
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-danger/10 border border-danger/30">
+              <ShieldAlert size={14} className="text-danger shrink-0 mt-0.5" />
+              <p className="text-tiny text-danger">
                 <strong>Privilegiada.</strong> Esta policy concede acesso amplo ou crítico. Aplique com o princípio do menor privilégio.
               </p>
             </div>
@@ -246,8 +247,7 @@ function AwsActionsSection(
           { key: 'wildcard',   label: t('table.scope'), badge: true, width: 'w-32' },
         ]}
         filterKey="wildcard"
-        colors={{ Wildcard: '#fbbf24', [t('label.specific')]: '#34d399' }}
-        accent="#ff9900"
+        riskValues={['Wildcard']}
         filename={`aws-${slug}-actions`}
         noun="noun.actions"
         searchPlaceholder="ph.filterActions"

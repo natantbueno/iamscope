@@ -4,10 +4,10 @@ import { useState } from 'react'
 import {
   LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
-  ChevronDown, Shield, ChevronRight, ChevronLeft,
-  Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Sparkles,
+  ChevronDown, Shield, ChevronRight, Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Compass, FileJson,
   GitCompare, Timer, ShieldAlert, ScanSearch, Gauge, Server,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { RoleCategory, EamTier } from '@/data/roles'
 import { CLOUD_COLORS } from '@/lib/cloudColors'
 // Contagens vêm de counts.ts, não dos datasets: a Sidebar envolve TODAS as
@@ -29,7 +29,7 @@ import {
   EAM_META, AZURE_TIER_META, GWS_TIER_META, IBM_TIER_META, GCP_TIER_META, AWS_TIER_META,
 } from '@/data/tierMeta'
 import EntraScopeIcon from './EntraScopeIcon'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useT } from '@/i18n/LanguageProvider'
 
 export type Platform = 'home' | 'entraId' | 'azureRbac' | 'aws' | 'gcp' | 'googleWorkspace' | 'ibmCloud'
@@ -135,6 +135,20 @@ const AWS_CATS: { label: string; cat: AwsCategory; icon: React.ReactNode }[] = [
 
 
 // Links das 6 clouds — mesmas cores do CloudNav.tsx — usados na sidebar da Home.
+// Ferramentas globais. Uma lista, um tratamento: a cor não distingue itens
+// (todos são a mesma coisa e levam ao mesmo tipo de página) — só o item ativo
+// recebe o acento. Ícones alinhados com os cards da home, para que sidebar e
+// home não descrevam a mesma ferramenta de dois jeitos.
+const TOOLS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: '/advisor',          label: 'Role Advisor',        icon: Compass },
+  { href: '/compare',          label: 'Multi-Cloud Compare', icon: GitCompare },
+  { href: '/evaluate',         label: 'Role Evaluator',      icon: FileJson },
+  { href: '/sod',              label: 'SoD Analyzer',        icon: ShieldAlert },
+  { href: '/assessment',       label: 'Assessment',          icon: Gauge },
+  { href: '/permission-scope', label: 'Permission Scope',    icon: ScanSearch },
+  { href: '/tier-comparison',  label: 'Tier 0 Comparison',   icon: ShieldCheck },
+]
+
 const CLOUD_LINKS: { label: string; href: string; color: string }[] = [
   // Cores vindas de src/lib/cloudColors.ts (fonte unica). Aqui a cor pinta o
   // FUNDO de um ponto de 8px, nao texto: o token certo e' `mark`, a cor de marca
@@ -153,7 +167,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const t = useT()
   const router = useRouter()
-  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
   const [tierOpen, setTierOpen] = useState(true)
   const [eamOpen, setEamOpen] = useState(true)
   const [gwsTierOpen, setGwsTierOpen] = useState(true)
@@ -168,142 +182,59 @@ export default function Sidebar({
   const [toolsOpen, setToolsOpen] = useState(true)
 
   return (
-    <aside className={`${collapsed ? 'w-16' : 'w-60'} shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0 transition-[width] duration-200`}>
+    <aside className="w-60 shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0">
 
       {/* Logo */}
       <div className="p-4 border-b border-line">
-        <div className={`flex items-center mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className="flex items-center justify-between">
           <button onClick={() => router.push('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <EntraScopeIcon size={24} />
-            {!collapsed && <span className="text-body font-semibold text-fg">IAM Scope</span>}
+            <span className="text-body font-semibold text-fg">IAM Scope</span>
           </button>
-          {!collapsed && (
-            <button
-              onClick={() => router.push('/info')}
-              className={`p-1.5 rounded-md transition-colors ${
-                view === 'info'
-                  ? 'text-brand-onDark bg-brand-activeBg'
-                  : 'text-fg-muted hover:text-fg hover:bg-surface-alt'
-              }`}
-              title={t('sidebar.about')}
-            >
-              <Info size={15} />
-            </button>
-          )}
+          <button
+            onClick={() => router.push('/info')}
+            className={`p-1.5 rounded-md transition-colors ${
+              view === 'info'
+                ? 'text-brand-onDark bg-brand-activeBg'
+                : 'text-fg-muted hover:text-fg hover:bg-surface-alt'
+            }`}
+            title={t('sidebar.about')}
+          >
+            <Info size={15} />
+          </button>
         </div>
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          title={collapsed ? 'Expandir menu' : 'Encolher menu'}
-          className={`mt-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-fg-muted hover:text-fg hover:bg-surface-alt transition-colors ${collapsed ? 'w-full' : 'w-full'}`}
-        >
-          {collapsed ? <ChevronRight size={14} /> : <><ChevronLeft size={14} /><span className="text-3xs">Encolher</span></>}
-        </button>
       </div>
 
-      {/* Ferramentas globais — recolhíveis */}
-      <div className={`px-3 py-2 border-b border-line shrink-0 flex flex-col gap-1.5 ${collapsed ? 'items-center' : ''}`}>
-        {/*
-          Com a sidebar encolhida a lista vira uma coluna de ícones e não há
-          onde pôr o cabeçalho — nesse modo as ferramentas ficam sempre
-          visíveis, porque são a única navegação que sobra.
-        */}
-        {!collapsed && (
-          <SectionToggle label={t('sidebar.tools')} open={toolsOpen} onToggle={() => setToolsOpen((o) => !o)} />
-        )}
-        {(collapsed || toolsOpen) && (
+      {/* Ferramentas globais */}
+      <div className="px-3 py-2 border-b border-line shrink-0 flex flex-col gap-1.5">
+        <SectionToggle label={t('sidebar.tools')} open={toolsOpen} onToggle={() => setToolsOpen((o) => !o)} />
+        {toolsOpen && (
         <>
-        <button
-          onClick={() => router.push('/advisor')}
-          title="Role Advisor"
-          className={`flex items-center gap-2 rounded-lg bg-violet-50 dark:bg-violet-950/60 hover:bg-violet-100 dark:hover:bg-violet-900/60 border border-violet-200 dark:border-violet-800/50 hover:border-violet-300 dark:hover:border-violet-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <Sparkles size={14} className="text-violet-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-violet-700 dark:text-violet-300 group-hover:text-violet-800 dark:group-hover:text-violet-200">Role Advisor</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/compare')}
-          title="Multi-Cloud Compare"
-          className={`flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <GitCompare size={14} className="text-blue-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-blue-700 dark:text-blue-300 group-hover:text-blue-800 dark:group-hover:text-blue-200">Multi-Cloud Compare</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-blue-800 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/evaluate')}
-          title="Role Evaluator"
-          className={`flex items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-300 dark:hover:border-emerald-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-800 dark:group-hover:text-emerald-200">Role Evaluator</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/sod')}
-          title="SoD Analyzer"
-          className={`flex items-center gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/50 hover:border-amber-300 dark:hover:border-amber-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <ShieldAlert size={14} className="text-amber-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-amber-700 dark:text-amber-300 group-hover:text-amber-800 dark:group-hover:text-amber-200">SoD Analyzer</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/assessment')}
-          title="Assessment do Tenant"
-          className={`flex items-center gap-2 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/60 border border-sky-200 dark:border-sky-800/50 hover:border-sky-300 dark:hover:border-sky-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <Gauge size={14} className="text-sky-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-sky-700 dark:text-sky-300 group-hover:text-sky-800 dark:group-hover:text-sky-200">Assessment</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-sky-800 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/permission-scope')}
-          title="Permission Scope"
-          className={`flex items-center gap-2 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-800/50 hover:border-teal-300 dark:hover:border-teal-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <ScanSearch size={14} className="text-teal-400 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-tiny font-medium text-teal-700 dark:text-teal-300 group-hover:text-teal-800 dark:group-hover:text-teal-200">Permission Scope</span>
-              <span className="text-micro font-bold uppercase tracking-wider text-teal-800 dark:text-teal-400 bg-teal-100 dark:bg-teal-900/60 px-1.5 py-0.5 rounded">Beta</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={() => router.push('/tier-comparison')}
-          title="Tier 0 Comparison"
-          className={`flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700/70 transition-colors group ${collapsed ? 'w-9 h-9 justify-center' : 'w-full px-2.5 py-2 text-left'}`}
-        >
-          <ShieldCheck size={14} className="text-red-400 shrink-0" />
-          {!collapsed && <span className="flex-1 text-tiny font-medium text-red-700 dark:text-red-300 group-hover:text-red-800 dark:group-hover:text-red-200">Tier 0 Comparison</span>}
-        </button>
+        {TOOLS.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href
+          return (
+            <button
+              key={href}
+              onClick={() => router.push(href)}
+              title={label}
+              aria-current={active ? 'page' : undefined}
+              className={`flex items-center gap-2 rounded-md border-l-2 transition-colors ${
+                active
+                  ? 'border-accent bg-surface-alt text-fg'
+                  : 'border-transparent text-fg-subtle hover:bg-surface-alt hover:text-fg'
+              } w-full px-2.5 py-2 text-left`}
+            >
+              <Icon size={14} className="shrink-0" />
+              <span className="flex-1 text-tiny font-medium">{label}</span>
+            </button>
+          )
+        })}
         </>
         )}
       </div>
 
       {/* Nav — Home */}
-      {!collapsed && platform === 'home' && (
+      {platform === 'home' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Clouds</p>
@@ -376,7 +307,7 @@ export default function Sidebar({
       )}
 
       {/* Nav — Entra ID */}
-      {!collapsed && platform === 'entraId' && (
+      {platform === 'entraId' && (
         <nav className="flex-1 overflow-y-auto p-2">
           <div className="mb-4">
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -420,7 +351,7 @@ export default function Sidebar({
       )}
 
       {/* Nav — Azure RBAC */}
-      {!collapsed && platform === 'azureRbac' && (
+      {platform === 'azureRbac' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -467,7 +398,7 @@ export default function Sidebar({
 
 
       {/* Nav — Google Workspace */}
-      {!collapsed && platform === 'googleWorkspace' && (
+      {platform === 'googleWorkspace' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -503,7 +434,7 @@ export default function Sidebar({
       )}
 
       {/* Nav — GCP IAM */}
-      {!collapsed && platform === 'gcp' && (
+      {platform === 'gcp' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -552,7 +483,7 @@ export default function Sidebar({
 
 
       {/* Nav — AWS IAM */}
-      {!collapsed && platform === 'aws' && (
+      {platform === 'aws' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -603,7 +534,7 @@ export default function Sidebar({
 
 
       {/* Nav — IBM Cloud */}
-      {!collapsed && platform === 'ibmCloud' && (
+      {platform === 'ibmCloud' && (
         <nav className="flex-1 overflow-y-auto p-2 space-y-4">
           <div>
             <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider px-2 mb-1">Geral</p>
@@ -657,7 +588,7 @@ export default function Sidebar({
       )}
 
       {/* Footer */}
-      {!collapsed && (
+      {(
       <div className="p-4 border-t border-line">
         <p className="text-3xs text-fg-muted leading-relaxed">
           {platform === 'home'
@@ -683,7 +614,9 @@ export default function Sidebar({
 
 function SectionToggle({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
   return (
-    <button onClick={onToggle} className="w-full flex items-center justify-between px-2 mb-1">
+    // py-1.5 leva o alvo de 15px para 30px de altura. Um alvo de 15px é um alvo
+    // que se erra, mesmo com mouse.
+    <button onClick={onToggle} className="w-full flex items-center justify-between px-2 py-1.5 mb-0.5 rounded-md hover:bg-surface-alt transition-colors">
       <p className="text-2xs font-semibold text-fg-muted uppercase tracking-wider">{label}</p>
       {open ? <ChevronDown size={11} className="text-fg-muted" /> : <ChevronRight size={11} className="text-fg-muted" />}
     </button>

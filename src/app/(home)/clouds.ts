@@ -17,55 +17,48 @@ export interface CloudCard {
   name: string
   href: string
   metrics: { n: number; label: string }[]
-  total: number // usado no gráfico de cobertura (itens da listagem principal)
   dotClass: string      // ponto/ícone (token csp.*)
   hoverBorder: string   // borda no hover (token csp.*)
-  barClass: string      // barra do gráfico de cobertura
 }
 
-// As contagens são calculadas no build. Os rótulos de cada métrica saem como
-// chave, não como texto pronto: quem formata o número e traduz o rótulo é o
-// HomeClient, que sabe em que idioma a pessoa está.
+// As contagens são calculadas no build. Os rótulos saem TODOS como chave
+// `count.*` — plural, porque vêm depois de um número. Antes metade era texto
+// cru em inglês e a outra metade reaproveitava chave de cabeçalho de tabela,
+// o que imprimia "13 Categoria" no card do Azure RBAC.
 export function buildClouds(): CloudCard[] {
   return [
     {
       name: 'Entra ID', href: '/entraid',
-      metrics: [{ n: ROLES.length, label: 'Roles' }, { n: API_PERMISSIONS.length, label: 'API Permissions' }, { n: getRoleActions().length, label: 'Role Actions' }],
-      total: ROLES.length,
-      dotClass: 'bg-csp-azure', hoverBorder: 'hover:border-csp-azure', barClass: 'bg-csp-azure',
+      metrics: [{ n: ROLES.length, label: 'count.roles' }, { n: API_PERMISSIONS.length, label: 'count.apiPermissions' }, { n: getRoleActions().length, label: 'count.roleActions' }],
+      dotClass: 'bg-csp-azure', hoverBorder: 'hover:border-csp-azure',
     },
     {
       name: 'Azure RBAC', href: '/azure-rbac',
-      metrics: [{ n: AZURE_ROLES.length, label: 'Roles' }, { n: AZURE_ROLES.filter((r) => r.isPrivileged).length, label: 'filter.privileged' }, { n: [...new Set(AZURE_ROLES.map((r) => r.category))].length, label: 'table.category' }],
-      total: AZURE_ROLES.length,
-      dotClass: 'bg-csp-azure-rbac', hoverBorder: 'hover:border-csp-azure-rbac', barClass: 'bg-csp-azure-rbac',
+      metrics: [{ n: AZURE_ROLES.length, label: 'count.roles' }, { n: AZURE_ROLES.filter((r) => r.isPrivileged).length, label: 'count.privileged' }, { n: [...new Set(AZURE_ROLES.map((r) => r.category))].length, label: 'count.categories' }],
+      dotClass: 'bg-csp-azure-rbac', hoverBorder: 'hover:border-csp-azure-rbac',
     },
     {
       name: 'AWS IAM', href: '/aws',
-      metrics: [{ n: AWS_POLICIES.length, label: 'Policies' }, { n: AWS_ACTION_COUNT, label: 'Actions' }, { n: AWS_SERVICE_COUNT, label: 'Services' }],
-      total: AWS_POLICIES.length,
-      dotClass: 'bg-csp-aws', hoverBorder: 'hover:border-csp-aws', barClass: 'bg-csp-aws',
+      metrics: [{ n: AWS_POLICIES.length, label: 'count.policies' }, { n: AWS_ACTION_COUNT, label: 'count.actions' }, { n: AWS_SERVICE_COUNT, label: 'count.services' }],
+      dotClass: 'bg-csp-aws', hoverBorder: 'hover:border-csp-aws',
     },
     {
       name: 'GCP IAM', href: '/gcp',
-      metrics: [{ n: GCP_ROLES.length, label: 'Roles' }, { n: GCP_PERMISSION_COUNT, label: 'Permissions' }, { n: GCP_SERVICE_COUNT, label: 'Services' }],
-      total: GCP_ROLES.length,
-      dotClass: 'bg-csp-gcp', hoverBorder: 'hover:border-csp-gcp', barClass: 'bg-csp-gcp',
+      metrics: [{ n: GCP_ROLES.length, label: 'count.roles' }, { n: GCP_PERMISSION_COUNT, label: 'count.permissions' }, { n: GCP_SERVICE_COUNT, label: 'count.services' }],
+      dotClass: 'bg-csp-gcp', hoverBorder: 'hover:border-csp-gcp',
     },
     {
       name: 'Google Workspace', href: '/google-workspace',
-      metrics: [{ n: GWS_ROLES.length, label: 'Roles' }, { n: GWS_ROLES.filter((r) => r.isPrivileged).length, label: 'filter.privileged' }, { n: GWS_SCOPES.length, label: 'OAuth Scopes' }],
-      total: GWS_ROLES.length,
-      dotClass: 'bg-csp-gws', hoverBorder: 'hover:border-csp-gws', barClass: 'bg-csp-gws',
+      metrics: [{ n: GWS_ROLES.length, label: 'count.roles' }, { n: GWS_ROLES.filter((r) => r.isPrivileged).length, label: 'count.privileged' }, { n: GWS_SCOPES.length, label: 'count.oauthScopes' }],
+      dotClass: 'bg-csp-gws', hoverBorder: 'hover:border-csp-gws',
     },
     {
       name: 'IBM Cloud', href: '/ibm-cloud',
       // Sem Actions/Services: a IBM não publica action por role — cada serviço
       // mapeia as próprias ações para as 7 roles do IAM. Os números antigos
       // vinham de um dataset com 557 actions inventadas.
-      metrics: [{ n: IBM_ROLES.length, label: 'IAM Roles' }, { n: IBM_ROLES.filter((r) => r.isPrivileged).length, label: 'filter.privileged' }, { n: IBM_ACCESS_PRIMITIVES.length, label: 'Access Primitives' }],
-      total: IBM_ROLES.length,
-      dotClass: 'bg-csp-ibm', hoverBorder: 'hover:border-csp-ibm', barClass: 'bg-csp-ibm',
+      metrics: [{ n: IBM_ROLES.length, label: 'count.iamRoles' }, { n: IBM_ROLES.filter((r) => r.isPrivileged).length, label: 'count.privileged' }, { n: IBM_ACCESS_PRIMITIVES.length, label: 'count.accessPrimitives' }],
+      dotClass: 'bg-csp-ibm', hoverBorder: 'hover:border-csp-ibm',
     },
   ]
 }

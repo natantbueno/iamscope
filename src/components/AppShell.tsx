@@ -35,12 +35,25 @@ export default function AppShell({
   headerSub,
   headerActions,
   headerBack,
+  pageHasOwnHeading = false,
 }: {
   children: React.ReactNode
   headerTitle: string
   headerSub: string
   headerActions?: React.ReactNode
   headerBack?: React.ReactNode
+  /**
+   * A página já renderiza a própria `<h1>` no corpo?
+   *
+   * Então o título do header vira `<p>`. Sem isto o documento sai com DUAS
+   * `<h1>` — e nas páginas de detalhe as duas com o MESMO texto, porque elas
+   * passam `headerTitle={role.name}` e o `RoleDetailHeader` renderiza o mesmo
+   * nome logo abaixo. Eram ~7.400 das 7.622 páginas do build.
+   *
+   * O default é `false` porque a maioria das rotas não tem título próprio no
+   * corpo: para elas o título do header É o heading do documento.
+   */
+  pageHasOwnHeading?: boolean
 }) {
   const t = useT()
   const router = useRouter()
@@ -219,7 +232,9 @@ export default function AppShell({
             <div className="shrink-0">{headerBack}</div>
              )}
           <div className="flex-1 min-w-0">
-            <h1 className="text-lead font-semibold text-fg truncate">{headerTitle}</h1>
+            {pageHasOwnHeading
+              ? <p className="text-lead font-semibold text-fg truncate">{headerTitle}</p>
+              : <h1 className="text-lead font-semibold text-fg truncate">{headerTitle}</h1>}
             <p className="text-tiny text-fg-muted truncate">{headerSub}</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">

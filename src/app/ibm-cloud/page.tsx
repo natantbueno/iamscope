@@ -3,26 +3,13 @@
 import { themedText } from '@/lib/readableColor'
 import AppShell from '@/components/AppShell'
 import { useT } from '@/i18n/LanguageProvider'
+import { KPI_TONE } from '@/lib/kpiTone'
 import { IBM_ROLES, IBM_TIER_META, IbmTier } from '@/data/ibmCloud'
 import Link from 'next/link'
 import { ShieldAlert, Key, Server, Database, Cloud, Shield, ShieldCheck, Network, Lock, HardDrive, Settings, Activity, Box, Cpu, ChevronRight } from 'lucide-react'
 import { Rich } from '@/i18n/Rich'
 
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
-
-const CATEGORY_COLORS: Record<string, string> = {
-  Identity:          '#7c3aed',
-  AccountManagement: '#08bdba',
-  Platform:          '#2563eb',
-  Infrastructure:    '#ea580c',
-  Compute:           '#0891b2',
-  Data:              '#16a34a',
-  Security:          '#dc2626',
-  Observability:     '#ca8a04',
-  Networking:        '#6366f1',
-  Classic:           '#78716c',
-  CloudFoundry:      '#059669',
-}
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   Identity:          <ShieldCheck size={15} />,
@@ -72,17 +59,17 @@ export default function IbmCloudDashboard() {
           {/* Stat Cards */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: 'Total Roles',   value: total,            href: '/ibm-cloud/roles',                color: '#08bdba' },
-              { label: 'Privilegiadas', value: privileged,       href: '/ibm-cloud/roles?filter=privileged', color: '#dc2626' },
-              { label: 'Account Admin', value: accountAdmin,     href: '/ibm-cloud/roles?tier=AccountAdmin', color: '#ea580c' },
-              { label: 'Categorias',    value: categories.length, href: '/ibm-cloud/roles',               color: '#7c3aed' },
+              { label: t('kpi.totalRoles'),   value: total,            href: '/ibm-cloud/roles',                tone: 'accent' as const },
+              { label: t('count.privileged'), value: privileged,       href: '/ibm-cloud/roles?filter=privileged', tone: 'danger' as const },
+              { label: t('kpi.accountAdmin'), value: accountAdmin,     href: '/ibm-cloud/roles?tier=AccountAdmin', tone: 'neutral' as const },
+              { label: t('count.categories'), value: categories.length, href: '/ibm-cloud/roles',               tone: 'neutral' as const },
             ].map(s => (
               <Link key={s.label} href={s.href}
                 className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-csp-ibm/40 dark:hover:border-csp-ibm/30 transition-colors group">
                 <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {s.label}<ChevronRight size={10} className="reveal-on-hover" />
                 </p>
-                <p className="text-display font-bold leading-none themed-color" style={themedText(s.color, undefined, 3)}>{s.value}</p>
+                <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
               </Link>
             ))}
           </div>
@@ -96,19 +83,19 @@ export default function IbmCloudDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link href="/ibm-cloud/roles?kind=platform"
               className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
-              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#08bdba', undefined, 3)}>{platformRoles}</div>
+              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#6b7280', undefined, 3)}>{platformRoles}</div>
               <div className="text-tiny font-semibold text-gray-700 dark:text-gray-300">Platform roles</div>
               <p className="text-3xs text-fg-subtle mt-1 leading-relaxed">{t('ibm.platformDesc')}</p>
             </Link>
             <Link href="/ibm-cloud/roles?kind=service"
               className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
-              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#2563eb', undefined, 3)}>{serviceRoles}</div>
+              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#6b7280', undefined, 3)}>{serviceRoles}</div>
               <div className="text-tiny font-semibold text-gray-700 dark:text-gray-300">Service roles</div>
               <p className="text-3xs text-fg-subtle mt-1 leading-relaxed">{t('ibm.serviceDesc')}</p>
             </Link>
             <Link href="/ibm-cloud/classic"
               className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
-              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#78716c', undefined, 3)}>4</div>
+              <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#6b7280', undefined, 3)}>4</div>
               <div className="text-tiny font-semibold text-gray-700 dark:text-gray-300">Classic Infrastructure</div>
               <p className="text-3xs text-fg-subtle mt-1 leading-relaxed">{t('ibm.classicDesc')}</p>
             </Link>
@@ -161,7 +148,7 @@ export default function IbmCloudDashboard() {
               {catCounts.map(({ cat, count }) => (
                 <Link key={cat} href={`/ibm-cloud/roles?category=${cat}`}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-[#eef3fb] dark:hover:bg-info-soft hover:border-csp-ibm/40 transition-colors">
-                  <span className="shrink-0" style={{ color: CATEGORY_COLORS[cat] || '#08bdba' }}>{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
+                  <span className="shrink-0 text-fg-subtle">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
                     <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
                     <p className="text-2xs text-fg-subtle">{count} roles</p>

@@ -40,7 +40,7 @@ export default function CloudEquivalenceCard({ cloud, entry }: CloudEquivalenceC
             {href ? (
               <Link href={href}
                 className="text-tiny font-semibold hover:underline flex items-center gap-1 flex-wrap"
-                style={{ color: meta.color }}>
+               >
                 {entry.role}
                 <ExternalLink size={10} className="shrink-0 opacity-60" />
               </Link>

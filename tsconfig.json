@@ -24,6 +24,8 @@
   ],
   "exclude": [
     "node_modules",
-    "_backup-ui-ux-20260802-232301"
+    "out",
+    "_backup-*",
+    "_to_delete"
   ]
 }

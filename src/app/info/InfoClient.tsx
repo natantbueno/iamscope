@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import AppShell from '@/components/AppShell'
 import EntraScopeIcon from '@/components/EntraScopeIcon'
-import { Globe, Search, BookOpen, ExternalLink, Linkedin, ShieldCheck, GitCompare, Sparkles, Shield, RefreshCw, ScanSearch, FileJson, ShieldAlert, Gauge } from 'lucide-react'
+import { Globe, Search, BookOpen, ExternalLink, Linkedin, ShieldCheck, GitCompare, Compass, Shield, RefreshCw, ScanSearch, FileJson, ShieldAlert, Gauge } from 'lucide-react'
 import { DATA_SYNC, getLatestSync } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
@@ -54,14 +54,14 @@ export default function InfoClient() {
 
   // O nome de cada ferramenta é o próprio nome do produto — fica em inglês nos
   // dois idiomas, como no menu lateral.
-  const TOOLS: { icon: React.ReactNode; title: string; href: string; badge?: string; desc: TranslationKey }[] = [
-    { icon: <Gauge size={14} />,       title: 'Assessment',          href: '/assessment',       badge: 'Beta', desc: 'info.toolAssess' },
+  const TOOLS: { icon: React.ReactNode; title: string; href: string; desc: TranslationKey }[] = [
+    { icon: <Gauge size={14} />,       title: 'Assessment',          href: '/assessment', desc: 'info.toolAssess' },
     { icon: <Search size={14} />,      title: 'Busca global',        href: '/search',                          desc: 'info.toolSearch' },
-    { icon: <ScanSearch size={14} />,  title: 'Permission Scope',    href: '/permission-scope', badge: 'Beta', desc: 'info.toolScope' },
-    { icon: <Sparkles size={14} />,    title: 'Role Advisor',        href: '/advisor',          badge: 'Beta', desc: 'info.toolAdvisor' },
-    { icon: <GitCompare size={14} />,  title: 'Multi-Cloud Compare', href: '/compare',          badge: 'Beta', desc: 'info.toolCompare' },
-    { icon: <FileJson size={14} />,    title: 'Role Evaluator',      href: '/evaluate',         badge: 'Beta', desc: 'info.toolEval' },
-    { icon: <ShieldAlert size={14} />, title: 'SoD Analyzer',        href: '/sod',              badge: 'Beta', desc: 'info.toolSod' },
+    { icon: <ScanSearch size={14} />,  title: 'Permission Scope',    href: '/permission-scope', desc: 'info.toolScope' },
+    { icon: <Compass size={14} />  ,    title: 'Role Advisor',        href: '/advisor', desc: 'info.toolAdvisor' },
+    { icon: <GitCompare size={14} />,  title: 'Multi-Cloud Compare', href: '/compare', desc: 'info.toolCompare' },
+    { icon: <FileJson size={14} />,    title: 'Role Evaluator',      href: '/evaluate', desc: 'info.toolEval' },
+    { icon: <ShieldAlert size={14} />, title: 'SoD Analyzer',        href: '/sod', desc: 'info.toolSod' },
     { icon: <ShieldCheck size={14} />, title: 'Tier 0 Comparison',   href: '/tier-comparison',                 desc: 'info.toolTierZero' },
   ]
 
@@ -69,7 +69,8 @@ export default function InfoClient() {
     <AppShell
       headerTitle={t('info.title')}
       headerSub={t('info.headerSub')}
-    >
+      pageHasOwnHeading
+      >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl px-8 py-8 space-y-8">
 
@@ -137,12 +138,7 @@ export default function InfoClient() {
                   className="flex gap-3 p-3 rounded-lg bg-surface-faint dark:bg-gray-800 border border-surface-border dark:border-gray-700 hover:border-brand/50 dark:hover:border-brand-onDark/50 transition-colors">
                   <span className="text-brand-strong dark:text-brand-onDark mt-0.5 shrink-0">{item.icon}</span>
                   <div>
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="text-body font-medium text-gray-800 dark:text-gray-100">{item.title}</p>
-                      {item.badge && (
-                        <span className="text-micro font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30 dark:bg-violet-900/60 px-1.5 py-0.5 rounded">{item.badge}</span>
-                      )}
-                    </div>
+                    <p className="text-body font-medium text-gray-800 dark:text-gray-100 mb-0.5">{item.title}</p>
                     <p className="text-tiny text-fg-muted leading-snug">{t(item.desc)}</p>
                   </div>
                 </Link>

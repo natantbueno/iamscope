@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
-import { Sparkles, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Play, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { detectCloud, EvaluateCloud, EVALUATE_CLOUDS } from '@/lib/evaluate'
 import { CLOUD_META } from '@/data/compare/types'
 import { useTheme } from './ThemeProvider'
@@ -223,7 +223,7 @@ export default function RoleInput({
           disabled={!value.trim()}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand hover:bg-[#006cbe] disabled:opacity-40 disabled:cursor-not-allowed text-white text-body font-medium transition-colors"
         >
-          <Sparkles size={14} /> Avaliar Role
+          <Play size={14} /> {t('action.evaluateRole')}
         </button>
         <button
           onClick={onClear}

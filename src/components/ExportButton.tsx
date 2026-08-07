@@ -80,7 +80,7 @@ export default function ExportButton({ data, filename, label, title, wrapperClas
           <MenuItem icon={<FileText size={14} className="text-blue-600" />} onClick={() => run(() => exportGenericCSV(filename, data))}>
             CSV
           </MenuItem>
-          <MenuItem icon={<FileJson size={14} className="text-amber-600" />} onClick={() => run(() => exportGenericJSON(filename, data))}>
+          <MenuItem icon={<FileJson size={14} className="text-fg-subtle" />} onClick={() => run(() => exportGenericJSON(filename, data))}>
             JSON
           </MenuItem>
         </div>

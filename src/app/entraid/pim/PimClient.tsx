@@ -58,7 +58,7 @@ export default function PimClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                 <div className="flex items-center gap-2 mb-2">
-                  <Timer size={16} className="text-amber-500" />
+                  <Timer size={16} className="text-fg-subtle" />
                   <h3 className="text-body font-semibold text-gray-800 dark:text-gray-100">{t('pim.eligible')}</h3>
                 </div>
                 <p className="text-tiny text-fg-muted leading-relaxed">
@@ -67,7 +67,7 @@ export default function PimClient() {
               </div>
               <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                 <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck size={16} className="text-emerald-500" />
+                  <ShieldCheck size={16} className="text-fg-subtle" />
                   <h3 className="text-body font-semibold text-gray-800 dark:text-gray-100">{t('pim.active')}</h3>
                 </div>
                 <p className="text-tiny text-fg-muted leading-relaxed">

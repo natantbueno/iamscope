@@ -30,26 +30,6 @@ const ROLE_KINDS: { value: IbmRoleKind | 'all'; label: string }[] = [
   { value: 'service',  label: 'Service' },
 ]
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Identity:               '#7c3aed',
-  AccountManagement:      '#08bdba',
-  Platform:               '#2563eb',
-  Infrastructure:         '#ea580c',
-  Compute:                '#0891b2',
-  Data:                   '#16a34a',
-  Security:               '#dc2626',
-  Observability:          '#ca8a04',
-  Networking:             '#6366f1',
-  Classic:                '#78716c',
-  ClassicAdministrative:  '#a16207',
-  ClassicDevice:          '#c2410c',
-  ClassicNetwork:         '#0369a1',
-  ClassicSales:           '#7e22ce',
-  ClassicSecurity:        '#b91c1c',
-  ClassicSoftware:        '#047857',
-  CloudFoundry:           '#059669',
-}
-
 function IbmRolesContent() {
   const t = useT()
   const params = useSearchParams()
@@ -112,19 +92,18 @@ function IbmRolesContent() {
           <ClassificationBadge size="sm" className="mr-1" />
           {activeCategory && (
             <button onClick={() => setActiveCategory(null)}
-              className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border font-medium"
-              style={{ background: (CATEGORY_COLORS[activeCategory] || '#6366f1') + '18', color: CATEGORY_COLORS[activeCategory] || '#6366f1', borderColor: (CATEGORY_COLORS[activeCategory] || '#6366f1') + '60' }}>
+              className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border font-medium bg-surface-alt text-fg border-line-strong font-medium">
               {activeCategory} ×
             </button>
           )}
-          {(['all', ...TIERS, 'privileged'] as const).map(t => (
-            <button key={t} onClick={() => setActiveTier(t)}
+          {(['all', ...TIERS, 'privileged'] as const).map(tier => (
+            <button key={tier} onClick={() => setActiveTier(tier)}
               className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
-                activeTier === t
+                activeTier === tier
                   ? 'bg-csp-ibm/10 dark:bg-csp-ibm/20 text-csp-ibm-onLight dark:text-csp-ibm-onDark border-csp-ibm/40 font-medium'
                   : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
-              {t === 'all' ? 'Todas' : t === 'privileged' ? 'Privilegiadas' : IBM_TIER_META[t].label}
+              {tier === 'all' ? t('filter.allFem') : tier === 'privileged' ? t('count.privileged') : IBM_TIER_META[tier].label}
             </button>
           ))}
           <span className="ml-auto text-tiny text-fg-muted">{filtered.length} roles</span>
@@ -151,10 +130,9 @@ function IbmRolesContent() {
             <button key={cat} onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
               className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${
                 activeCategory === cat
-                  ? 'font-medium'
-                  : 'bg-transparent text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              style={activeCategory === cat ? { background: (CATEGORY_COLORS[cat] || '#6366f1') + '18', color: CATEGORY_COLORS[cat] || '#6366f1', borderColor: (CATEGORY_COLORS[cat] || '#6366f1') + '60' } : {}}>
+                  ? 'bg-surface-alt text-fg border-line-strong font-medium'
+                  : 'text-fg-muted border-line hover:bg-surface-hover'
+              }`}>
               {cat}
             </button>
           ))}
@@ -186,7 +164,6 @@ function IbmRolesContent() {
             <tbody>
               {paginated.map(role => {
                 const tier = IBM_TIER_META[role.tier]
-                const catColor = CATEGORY_COLORS[role.category] || '#6366f1'
                 return (
                   <tr key={role.slug} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                     <td className="px-4 py-3 align-top overflow-hidden">
@@ -205,8 +182,7 @@ function IbmRolesContent() {
                     </td>
                     <td className="px-4 py-3 align-top">
                       <button onClick={() => setActiveCategory(activeCategory === role.category ? null : role.category)}>
-                        <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium"
-                          style={{ background: catColor + '18', color: catColor }}>
+                        <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium border bg-surface-alt text-fg-muted border-line">
                           {role.category}
                         </span>
                       </button>
@@ -240,8 +216,7 @@ function IbmRolesContent() {
         </div>
         <Pagination
           total={filtered.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#08bdba" noun="noun.roles"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
         />
       </div>
     </AppShell>

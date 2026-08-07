@@ -97,12 +97,12 @@ function RolesContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total', value: GLOBAL_STATS.total, color: 'blue', href: '/entraid/roles' },
-          { label: 'Control Plane', value: GLOBAL_STATS.control, color: 'red', href: '/entraid/roles?tier=ControlPlane' },
-          { label: 'Management Plane', value: GLOBAL_STATS.management, color: 'orange', href: '/entraid/roles?tier=ManagementPlane' },
-          { label: 'User Access', value: GLOBAL_STATS.userAccess, color: 'green', href: '/entraid/roles?tier=UserAccess' },
+          { label: t('count.total'), value: GLOBAL_STATS.total, color: 'blue', href: '/entraid/roles' },
+          { label: t('tier.controlPlane'), value: GLOBAL_STATS.control, color: 'red', href: '/entraid/roles?tier=ControlPlane' },
+          { label: t('tier.managementPlane'), value: GLOBAL_STATS.management, color: 'orange', href: '/entraid/roles?tier=ManagementPlane' },
+          { label: t('tier.userAccess'), value: GLOBAL_STATS.userAccess, color: 'green', href: '/entraid/roles?tier=UserAccess' },
           { label: t('label.unclassifiedFem'), value: GLOBAL_STATS.unclassified, color: 'gray', href: '/entraid/roles?tier=Unclassified' },
-          { label: 'Privilegiadas', value: GLOBAL_STATS.privileged, color: 'red', href: '/entraid/roles?filter=privileged' },
+          { label: t('count.privileged'), value: GLOBAL_STATS.privileged, color: 'red', href: '/entraid/roles?filter=privileged' },
         ]} />
         <RolesTable
           roles={filteredRoles}

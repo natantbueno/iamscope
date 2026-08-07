@@ -17,7 +17,7 @@ Inspirado no [azure.permissions.cloud](https://azure.permissions.cloud), no [AzA
 | **Google Workspace** | 14 prebuilt roles | 120 privilégios do Admin console | 60 OAuth scopes |
 | **IBM Cloud** | 7 roles do IAM (4 platform + 3 service) | — (a IBM não publica ação por role) | 71 permissões clássicas em 6 categorias · 2 access primitives |
 
-Além disso: **96 regras de Segregation of Duties** e **29 equivalências** de função entre as seis clouds.
+Além disso: **190 regras de Segregation of Duties** e **29 equivalências** de função entre as seis clouds.
 
 As contagens vivem em `src/data/counts.ts`, gerado por `scripts/build-counts.js` — não edite à mão. A Sidebar e o AppShell leem dali em vez dos datasets, senão os 2,5 MB de `src/data/*.ts` entrariam no chunk compartilhado de todas as páginas.
 
@@ -25,7 +25,7 @@ As contagens vivem em `src/data/counts.ts`, gerado por `scripts/build-counts.js`
 
 Além das listas de referência, o site tem sete ferramentas:
 
-- 🛡️ **SoD Analyzer** (`/sod`) — 96 regras de Segregation of Duties cobrindo Entra ID, Azure RBAC e combinações cross-cloud, com catálogo filtrável, matriz de conflito e avaliação de uma lista de roles colada. 100% client-side.
+- 🛡️ **SoD Analyzer** (`/sod`) — 190 regras de Segregation of Duties em cinco plataformas (Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace), com catálogo filtrável por provedor e plataforma, matriz de conflito e avaliação de uma lista de roles colada. 100% client-side. Duas delimitações ficam explícitas na própria tela: IBM Cloud está fora — o SoD real da IBM vive nas 71 permissões da infraestrutura clássica, que não são roles — e nenhuma regra cruza provedores diferentes, porque não existe caminho técnico entre eles. Cruzamento só dentro do provedor: Entra ID + Azure RBAC e GCP + Google Workspace.
 - 📊 **Assessment do Tenant** (`/assessment`) — script PowerShell **somente leitura** que o usuário baixa e roda no próprio tenant. Lê as atribuições reais de Entra ID e Azure RBAC, cruza com este catálogo e gera Excel, CSV e um dashboard HTML local com três abas (Visão geral, Entra ID, Azure RBAC). Nenhum dado sai da máquina de quem roda.
 - 🔍 **Permission Scope** (`/permission-scope`) — busca uma permission ou action nas seis clouds ao mesmo tempo e mostra quais roles a concedem.
 - 🔀 **Multi-Cloud Compare** (`/compare`) — equivalência de função entre as seis plataformas, navegável por tier e por função.
@@ -218,7 +218,8 @@ Ferramentas de apoio:
 | `build-counts.js` | Regenera `src/data/counts.ts`. **Rode depois de qualquer coleta.** |
 | `build-azure-perms-index.js` | Índice invertido action → roles do Azure |
 | `build-assessment-catalog.js` | Gera `public/iamscope-catalog.json` para os scripts PowerShell |
-| `build-sod-rules-json.js` | Exporta as 96 regras de SoD para consumo externo |
+| `build-sod-rules-json.js` | Exporta as 123 regras Microsoft do SoD para consumo externo — o `.ps1` não alcança AWS/GCP/Workspace |
+| `build-sod-role-index.js` | Gera `src/data/sod/roleIndex.ts` (nome+slug das 4.596 roles) para o SoD não arrastar 2,2 MB de datasets |
 | `build-search-index.js` | Gera `public/search-index.json`, o índice da busca global |
 | `check-syntax.cjs` | Sintaxe e redeclaração — o parser sozinho deixa passar |
 | `check-imports.js` | Símbolo do projeto usado sem import. O `tsc` pega, mas leva minutos por causa dos datasets; este roda em segundos |

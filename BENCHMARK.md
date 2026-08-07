@@ -113,7 +113,7 @@ O item mais incômodo dessa lista é o **`undocumented`**. Eles conseguem marcar
 
 | Ferramenta | Nota |
 |---|---|
-| **SoD Analyzer** — 291 regras | Nenhum dos quatro sites tem nada parecido. Diferencial mais forte. |
+| **SoD Analyzer** — 190 regras | Nenhum dos quatro sites tem nada parecido. Diferencial mais forte. |
 | **Multi-Cloud Compare** — 25 funções equivalentes | Nenhum concorrente atravessa clouds. |
 | **Permission Scope** — busca reversa cross-cloud | Uma permissão → todas as roles que a concedem, em 6 clouds. |
 | **Role Advisor** | Busca em linguagem natural → role recomendada. |

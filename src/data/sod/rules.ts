@@ -1,12 +1,75 @@
-// SoD Analyzer — Catálogo de regras de Segregation of Duties (Entra ID + Azure RBAC)
+// SoD Analyzer — Catálogo de regras de Segregation of Duties
 // 100% client-side, dados curados manualmente a partir de riscos reais documentados
-// por Microsoft Learn, NIST, CIS e frameworks de compliance (SOX, ISO 27001, LGPD/GDPR, PCI-DSS).
+// pela documentação oficial de cada provedor, NIST, CIS e frameworks de compliance
+// (SOX, ISO 27001, LGPD/GDPR, PCI-DSS).
 //
-// roleA.id / roleB.id armazenam o SLUG do role no dataset correspondente
-// (src/data/roles.ts para 'entra-id', src/data/azureRbac.ts para 'azure-rbac'),
-// permitindo linkar direto para a página de detalhe do role no site (ver src/lib/sod.ts).
+// ESCOPO: cinco plataformas, três provedores.
+//
+//   Microsoft — Entra ID, Azure RBAC
+//   AWS       — AWS IAM (managed policies)
+//   Google    — GCP IAM, Google Workspace
+//
+// IBM Cloud está FORA por decisão de produto (07/08/2026): o IAM da IBM tem sete
+// roles genéricas (Viewer/Operator/Editor/Administrator + Reader/Writer/Manager) e
+// o SoD real da IBM vive nas 71 permissões da infraestrutura clássica, que não são
+// roles — o modelo "regra = par de roles" não as representa sem distorcer o dado,
+// que foi exatamente o erro do dataset IBM anterior (ver src/data/ibmCloud.ts).
+//
+// UMA REGRA NUNCA CRUZA PROVEDORES.
+//   Acumular AdministratorAccess na AWS e Global Administrator no Entra ID é um
+//   fato de governança, não um conflito de segregação: não existe caminho técnico
+//   entre os dois, e as mitigações não se encontram. O que existe é cruzamento
+//   DENTRO do provedor, onde os planos realmente se tocam — Entra ID ↔ Azure RBAC
+//   (mesmo tenant) e GCP ↔ Google Workspace (mesmo Cloud Identity). Só esses dois
+//   cruzamentos são modelados.
+//
+// roleA.id / roleB.id armazenam o SLUG da role/policy no dataset da plataforma
+// (ver SOD_PLATFORM_META), permitindo linkar direto para a página de detalhe no
+// site. A resolução acontece em src/lib/sod.ts, contra src/data/sod/roleIndex.ts.
 
 export type SoDSeverity = 'critical' | 'high' | 'medium' | 'low'
+
+/** Plataforma de uma referência individual de role/policy. */
+export type SoDPlatform = 'entra-id' | 'azure-rbac' | 'aws' | 'gcp' | 'google-workspace'
+
+/** Provedor. Agrupa as plataformas que compartilham um plano de identidade. */
+export type SoDProvider = 'microsoft' | 'aws' | 'google'
+
+/**
+ * Escopo de uma regra: uma plataforma, ou o cruzamento entre duas plataformas do
+ * MESMO provedor. `microsoft-cross` era `both` até 07/08/2026, quando o catálogo
+ * deixou de ter só um provedor e o nome parou de dizer qual cruzamento era.
+ */
+export type SoDCloud = SoDPlatform | 'microsoft-cross' | 'google-cross'
+
+export const SOD_PLATFORM_META: Record<SoDPlatform, {
+  label: string
+  provider: SoDProvider
+  /** Base da URL de detalhe no site. O slug de SoDRoleRef.id completa o caminho. */
+  urlBase: string
+  /** Como o provedor chama a unidade de acesso. A AWS não tem "role" gerenciada: tem policy. */
+  unit: string
+}> = {
+  'entra-id':         { label: 'Entra ID',         provider: 'microsoft', urlBase: '/entraid/roles',          unit: 'directory role' },
+  'azure-rbac':       { label: 'Azure RBAC',       provider: 'microsoft', urlBase: '/azure-rbac/roles',       unit: 'built-in role' },
+  'aws':              { label: 'AWS IAM',          provider: 'aws',       urlBase: '/aws/policies',           unit: 'managed policy' },
+  'gcp':              { label: 'GCP IAM',          provider: 'google',    urlBase: '/gcp/roles',              unit: 'predefined role' },
+  'google-workspace': { label: 'Google Workspace', provider: 'google',    urlBase: '/google-workspace/roles', unit: 'admin role' },
+}
+
+export const SOD_PROVIDER_META: Record<SoDProvider, {
+  label: string
+  platforms: SoDPlatform[]
+  /** Valor de `cloud` das regras que cruzam plataformas deste provedor. */
+  crossCloud: SoDCloud | null
+}> = {
+  microsoft: { label: 'Microsoft', platforms: ['entra-id', 'azure-rbac'],       crossCloud: 'microsoft-cross' },
+  aws:       { label: 'AWS',       platforms: ['aws'],                          crossCloud: null },
+  google:    { label: 'Google',    platforms: ['gcp', 'google-workspace'],      crossCloud: 'google-cross' },
+}
+
+export const SOD_PLATFORMS = Object.keys(SOD_PLATFORM_META) as SoDPlatform[]
+export const SOD_PROVIDERS = Object.keys(SOD_PROVIDER_META) as SoDProvider[]
 
 export type SoDCategory =
   | 'identity-management'      // criar usuários + resetar senhas
@@ -27,12 +90,16 @@ export type SoDFramework =
   | 'GDPR'
   | 'PCI-DSS'
 
-export type SoDCloud = 'entra-id' | 'azure-rbac' | 'both'
-
 export interface SoDRoleRef {
-  id: string   // slug do role no dataset da cloud (roles.ts / azureRbac.ts)
+  /** slug da role/policy no dataset da plataforma. */
+  id: string
   name: string
-  cloud: 'entra-id' | 'azure-rbac'
+  /**
+   * Nome histórico do campo: guarda a PLATAFORMA, não o provedor. Não foi
+   * renomeado para `platform` porque são 246 referências em 123 regras já
+   * revisadas — o custo do rename é alto e o ganho é cosmético.
+   */
+  cloud: SoDPlatform
 }
 
 export interface SoDRule {
@@ -49,6 +116,33 @@ export interface SoDRule {
   mitigation: string[]
   references: string[]
   frameworks: SoDFramework[]
+}
+
+// ── Derivações ──────────────────────────────────────────────────────────────
+// A UI nunca compara `rule.cloud` com um literal: pergunta ao helper. Foi assim
+// que o valor `both` conseguiu virar `microsoft-cross` sem quebrar as telas.
+
+export function platformProvider(platform: SoDPlatform): SoDProvider {
+  return SOD_PLATFORM_META[platform].provider
+}
+
+/** Provedor da regra. Deriva de roleA porque as duas pontas são sempre do mesmo. */
+export function ruleProvider(rule: SoDRule): SoDProvider {
+  return platformProvider(rule.roleA.cloud)
+}
+
+/** Plataformas tocadas pela regra — uma, ou duas quando é cruzamento. */
+export function rulePlatforms(rule: SoDRule): SoDPlatform[] {
+  return rule.roleA.cloud === rule.roleB.cloud ? [rule.roleA.cloud] : [rule.roleA.cloud, rule.roleB.cloud]
+}
+
+export function isCrossPlatform(rule: SoDRule): boolean {
+  return rule.roleA.cloud !== rule.roleB.cloud
+}
+
+/** URL da página de detalhe da role/policy referenciada. */
+export function roleRefUrl(ref: SoDRoleRef): string {
+  return `${SOD_PLATFORM_META[ref.cloud].urlBase}/${ref.id}`
 }
 
 // ── Metadados de apresentação ───────────────────────────────────────────────
@@ -79,7 +173,13 @@ export const SOD_FRAMEWORK_META: Record<SoDFramework, { label: string }> = {
 }
 
 export const SOD_CLOUD_META: Record<SoDCloud, { label: string }> = {
-  'entra-id': { label: 'Entra ID' }, 'azure-rbac': { label: 'Azure RBAC' }, both: { label: 'Entra ID + Azure RBAC' },
+  'entra-id':         { label: 'Entra ID' },
+  'azure-rbac':       { label: 'Azure RBAC' },
+  'aws':              { label: 'AWS IAM' },
+  'gcp':              { label: 'GCP IAM' },
+  'google-workspace': { label: 'Google Workspace' },
+  'microsoft-cross':  { label: 'Entra ID + Azure RBAC' },
+  'google-cross':     { label: 'GCP + Google Workspace' },
 }
 
 // ── Regras SoD ───────────────────────────────────────────────────────────────
@@ -258,7 +358,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'ga-owner-cross',
     name: 'Global Administrator (Entra ID) + Owner (Azure subscription)',
     description: 'Controle total de identidades no Entra ID combinado com controle total de recursos em uma subscription Azure — elimina a fronteira entre identidade e infraestrutura.',
-    severity: 'critical', category: 'identity-management', cloud: 'both',
+    severity: 'critical', category: 'identity-management', cloud: 'microsoft-cross',
     roleA: { id: 'global-administrator', name: 'Global Administrator', cloud: 'entra-id' },
     roleB: { id: 'owner', name: 'Owner', cloud: 'azure-rbac' },
     rationale: 'Global Administrator pode elevar-se a acesso a todas as subscriptions Azure do tenant via "Access management for Azure resources" no Entra ID. Combinado com Owner atribuído diretamente em uma subscription, a mesma identidade controla tanto o plano de identidade quanto o plano de recursos, sem qualquer camada de aprovação entre os dois mundos.',
@@ -278,7 +378,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'pra-uaa-cross',
     name: 'Privileged Role Administrator (Entra ID) + User Access Administrator (Azure RBAC)',
     description: 'Atribuir roles privilegiadas no Entra ID e, separadamente, atribuir permissões RBAC no Azure — controle completo da camada de autorização em ambas as clouds.',
-    severity: 'critical', category: 'identity-management', cloud: 'both',
+    severity: 'critical', category: 'identity-management', cloud: 'microsoft-cross',
     roleA: { id: 'privileged-role-administrator', name: 'Privileged Role Administrator', cloud: 'entra-id' },
     roleB: { id: 'user-access-administrator', name: 'User Access Administrator', cloud: 'azure-rbac' },
     rationale: 'Privileged Role Administrator controla quem recebe roles de directory no Entra ID; User Access Administrator controla quem recebe roles RBAC em recursos Azure. Juntas, a mesma identidade decide sozinha "quem pode fazer o quê" em ambas as camadas de autorização da organização, sem checagem cruzada.',
@@ -790,7 +890,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'ga-app-compliance-automation-admin',
     name: 'Global Administrator (Entra ID) + App Compliance Automation Administrator (Azure RBAC)',
     description: 'Controle total do tenant de identidade combinado com a administração da ferramenta que audita automaticamente a conformidade das aplicações da organização.',
-    severity: 'high', category: 'compliance-audit', cloud: 'both',
+    severity: 'high', category: 'compliance-audit', cloud: 'microsoft-cross',
     roleA: { id: 'global-administrator', name: 'Global Administrator', cloud: 'entra-id' },
     roleB: { id: 'app-compliance-automation-administrator', name: 'App Compliance Automation Administrator', cloud: 'azure-rbac' },
     rationale: 'App Compliance Automation Tool avalia continuamente a postura de conformidade de aplicações Microsoft 365 contra frameworks regulatórios. Se a mesma identidade que administra todo o tenant (Global Administrator) também controla essa ferramenta de avaliação automática, ela pode ajustar o escopo/configuração da avaliação para evitar que suas próprias mudanças administrativas apareçam como não-conformes.',
@@ -1446,7 +1546,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'security-admin-security-administrator-cross',
     name: 'Security Administrator (Entra ID) + Security Admin (Azure RBAC)',
     description: 'Administrar segurança de identidade e, separadamente, administrar segurança de recursos Azure — controle total sobre a postura de segurança em ambas as camadas.',
-    severity: 'high', category: 'security-operations', cloud: 'both',
+    severity: 'high', category: 'security-operations', cloud: 'microsoft-cross',
     roleA: { id: 'security-administrator', name: 'Security Administrator', cloud: 'entra-id' },
     roleB: { id: 'security-admin', name: 'Security Admin', cloud: 'azure-rbac' },
     rationale: 'Security Administrator (Entra ID) controla Conditional Access, Identity Protection e políticas de identidade; Security Admin (Azure RBAC) controla o Microsoft Defender for Cloud e a postura de segurança de recursos. Juntas, a mesma identidade decide e audita a segurança de ambas as camadas (identidade e recursos), sem qualquer checagem cruzada entre times.',
@@ -1466,7 +1566,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'ga-rbac-admin-cross',
     name: 'Global Administrator (Entra ID) + Role Based Access Control Administrator (Azure RBAC)',
     description: 'Controle total do tenant de identidade combinado com controle total de atribuição de permissões RBAC no Azure.',
-    severity: 'critical', category: 'privileged-access', cloud: 'both',
+    severity: 'critical', category: 'privileged-access', cloud: 'microsoft-cross',
     roleA: { id: 'global-administrator', name: 'Global Administrator', cloud: 'entra-id' },
     roleB: { id: 'role-based-access-control-administrator', name: 'Role Based Access Control Administrator', cloud: 'azure-rbac' },
     rationale: 'Global Administrator já pode elevar-se a "Access management for Azure resources". Somado a uma atribuição direta e permanente de Role Based Access Control Administrator em uma subscription, a mesma identidade tem um caminho direto e persistente (sem precisar da elevação temporária) para controlar toda a autorização de recursos Azure, além do controle total de identidade.',
@@ -1486,7 +1586,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'auth-policy-admin-network-contributor-cross',
     name: 'Authentication Policy Administrator (Entra ID) + Network Contributor (Azure RBAC)',
     description: 'Definir políticas de autenticação do tenant e, separadamente, controlar a infraestrutura de rede Azure que pode originar tráfego de autenticação confiável.',
-    severity: 'medium', category: 'privileged-access', cloud: 'both',
+    severity: 'medium', category: 'privileged-access', cloud: 'microsoft-cross',
     roleA: { id: 'authentication-policy-administrator', name: 'Authentication Policy Administrator', cloud: 'entra-id' },
     roleB: { id: 'network-contributor', name: 'Network Contributor', cloud: 'azure-rbac' },
     rationale: 'Network Contributor pode provisionar/alterar gateways, NAT e endereços IP públicos usados por infraestrutura Azure. Quando políticas de autenticação ou Conditional Access dependem de faixas de IP/rede como sinal de confiança, uma identidade que controla tanto a política de autenticação quanto a infraestrutura de rede pode criar um caminho de rede que "parece" confiável para a política que ela mesma administra.',
@@ -1506,7 +1606,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'ca-admin-network-contributor-cross',
     name: 'Conditional Access Administrator (Entra ID) + Network Contributor (Azure RBAC)',
     description: 'Criar políticas de acesso condicional baseadas em localização/rede e, separadamente, controlar a infraestrutura de rede Azure que define essas localizações.',
-    severity: 'medium', category: 'privileged-access', cloud: 'both',
+    severity: 'medium', category: 'privileged-access', cloud: 'microsoft-cross',
     roleA: { id: 'conditional-access-administrator', name: 'Conditional Access Administrator', cloud: 'entra-id' },
     roleB: { id: 'network-contributor', name: 'Network Contributor', cloud: 'azure-rbac' },
     rationale: 'Conditional Access Administrator gerencia "named locations" e políticas baseadas em rede confiável. Network Contributor controla a infraestrutura Azure (VPN Gateways, ExpressRoute, IPs públicos) que frequentemente define os limites reais dessas localizações nomeadas. Combinadas, a mesma identidade pode tanto definir o que é "confiável" quanto controlar a infraestrutura que origina esse tráfego.',
@@ -1526,7 +1626,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'user-admin-vm-contributor-cross',
     name: 'User Administrator (Entra ID) + Virtual Machine Contributor (Azure RBAC)',
     description: 'Criar/modificar contas de usuário no Entra ID e, separadamente, controlar máquinas virtuais no Azure — combinação que facilita movimentação lateral entre identidade e workload.',
-    severity: 'medium', category: 'privileged-access', cloud: 'both',
+    severity: 'medium', category: 'privileged-access', cloud: 'microsoft-cross',
     roleA: { id: 'user-administrator', name: 'User Administrator', cloud: 'entra-id' },
     roleB: { id: 'virtual-machine-contributor', name: 'Virtual Machine Contributor', cloud: 'azure-rbac' },
     rationale: 'Muitas VMs Azure usam Microsoft Entra ID para login (Azure AD Login for VMs) ou têm identidades gerenciadas associadas a contas de serviço. Uma identidade que pode tanto criar/alterar contas de usuário quanto controlar VMs pode criar uma conta específica e imediatamente provisionar acesso a ela em uma VM de interesse, sem envolvimento de uma segunda pessoa em nenhuma das duas etapas.',
@@ -1546,7 +1646,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'app-admin-contributor-cross',
     name: 'Application Administrator (Entra ID) + Contributor (Azure RBAC)',
     description: 'Registrar/gerenciar aplicações no Entra ID e, separadamente, criar/modificar toda a infraestrutura Azure que essas aplicações consomem.',
-    severity: 'medium', category: 'application-management', cloud: 'both',
+    severity: 'medium', category: 'application-management', cloud: 'microsoft-cross',
     roleA: { id: 'application-administrator', name: 'Application Administrator', cloud: 'entra-id' },
     roleB: { id: 'contributor', name: 'Contributor', cloud: 'azure-rbac' },
     rationale: 'Application Administrator controla o registro e as credenciais de aplicações (incluindo consentimento de permissões). Contributor controla a infraestrutura Azure que muitas dessas aplicações usam para funcionar. Combinadas, a mesma identidade pode registrar uma aplicação com permissões amplas E provisionar a infraestrutura que a hospeda, sem segregação entre governança de identidade de aplicação e infraestrutura.',
@@ -1566,7 +1666,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'identity-governance-admin-uaa-cross',
     name: 'Identity Governance Administrator (Entra ID) + User Access Administrator (Azure RBAC)',
     description: 'Governar políticas de acesso/entitlement no Entra ID e, separadamente, atribuir diretamente permissões RBAC no Azure — contorna o fluxo de aprovação formal.',
-    severity: 'medium', category: 'access-provisioning', cloud: 'both',
+    severity: 'medium', category: 'access-provisioning', cloud: 'microsoft-cross',
     roleA: { id: 'identity-governance-administrator', name: 'Identity Governance Administrator', cloud: 'entra-id' },
     roleB: { id: 'user-access-administrator', name: 'User Access Administrator', cloud: 'azure-rbac' },
     rationale: 'Identity Governance Administrator define access packages e políticas de aprovação para solicitação de acesso a recursos, incluindo recursos Azure. Se a mesma identidade também é User Access Administrator, ela pode simplesmente atribuir a role RBAC diretamente, contornando por completo o fluxo de solicitação/aprovação formal que ela mesma configurou no Entitlement Management.',
@@ -1586,7 +1686,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'compliance-admin-app-compliance-cross',
     name: 'Compliance Administrator (Entra ID) + App Compliance Automation Administrator (Azure RBAC)',
     description: 'Gerenciar políticas de conformidade/retenção do tenant e, separadamente, administrar a ferramenta que auto-avalia a conformidade de aplicações.',
-    severity: 'medium', category: 'compliance-audit', cloud: 'both',
+    severity: 'medium', category: 'compliance-audit', cloud: 'microsoft-cross',
     roleA: { id: 'compliance-administrator', name: 'Compliance Administrator', cloud: 'entra-id' },
     roleB: { id: 'app-compliance-automation-administrator', name: 'App Compliance Automation Administrator', cloud: 'azure-rbac' },
     rationale: 'Compliance Administrator já deveria funcionar como a função responsável por verificar de forma independente a conformidade regulatória da organização. Se a mesma identidade também controla a ferramenta de auto-avaliação de compliance de aplicações, ela pode ajustar ambos os lados (política de retenção/DLP e escopo de avaliação automática) para que se validem mutuamente sem checagem externa real.',
@@ -1603,7 +1703,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'hybrid-identity-admin-owner-cross',
     name: 'Hybrid Identity Administrator (Entra ID) + Owner (Azure RBAC)',
     description: 'Controlar a fronteira de confiança híbrida (on-premises/cloud) e, separadamente, ter controle total dos recursos Azure — combina manipulação de trust com controle direto de infraestrutura.',
-    severity: 'high', category: 'identity-management', cloud: 'both',
+    severity: 'high', category: 'identity-management', cloud: 'microsoft-cross',
     roleA: { id: 'hybrid-identity-administrator', name: 'Hybrid Identity Administrator', cloud: 'entra-id' },
     roleB: { id: 'owner', name: 'Owner', cloud: 'azure-rbac' },
     rationale: 'Hybrid Identity Administrator controla a configuração de Azure AD Connect/federação, que estabelece a fronteira de confiança entre o Active Directory on-premises e o Entra ID. Combinado com Owner em uma subscription Azure, a mesma identidade pode manipular essa fronteira de confiança E controlar diretamente todos os recursos que dependem dela, sem qualquer camada intermediária de revisão.',
@@ -1623,7 +1723,7 @@ export const SOD_RULES: SoDRule[] = [
     id: 'app-admin-key-vault-admin-cross',
     name: 'Application Administrator (Entra ID) + Key Vault Administrator (Azure RBAC)',
     description: 'Registrar/gerenciar aplicações e suas credenciais no Entra ID e, separadamente, controlar os Key Vaults onde muitas dessas credenciais/segredos são armazenados.',
-    severity: 'medium', category: 'data-access', cloud: 'both',
+    severity: 'medium', category: 'data-access', cloud: 'microsoft-cross',
     roleA: { id: 'application-administrator', name: 'Application Administrator', cloud: 'entra-id' },
     roleB: { id: 'key-vault-administrator', name: 'Key Vault Administrator', cloud: 'azure-rbac' },
     rationale: 'Application Administrator pode registrar aplicações e gerar credenciais (client secrets/certificados). Muitas organizações armazenam esses segredos em Key Vaults para consumo por outras aplicações. Uma identidade com ambas as roles pode registrar um app malicioso E acessar diretamente os Key Vaults onde segredos de aplicações legítimas estão armazenados, sem segregação entre gestão de identidade de aplicação e gestão de segredos.',
@@ -1815,16 +1915,1962 @@ export const SOD_RULES: SoDRule[] = [
     references: ['https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles', 'https://learn.microsoft.com/en-us/azure/search/search-security-overview'],
     frameworks: ['ISO27001', 'LGPD'],
   },
+  // ═══════════════════════════════════════════════════════════════════════
+  // Lote 2026-08-07 — cobertura das roles privilegiadas que estavam fora do
+  // catálogo. Origem: auditoria de cobertura contra roles.ts (144 Entra) e
+  // azureRbac.ts (504 Azure), que encontrou 38 roles ControlPlane do Entra e
+  // 8 AccessManagement do Azure sem nenhuma regra. Escopo mantido em
+  // Entra ID + Azure RBAC (Microsoft) — nenhuma outra CSP entra aqui.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ── Entra ID: credencial e ciclo de vida da conta ──────────────────────
+  {
+    id: 'helpdesk-admin-user-admin',
+    name: 'Helpdesk Administrator + User Administrator',
+    description: 'Criar a conta e, sozinho, resetar a senha dela e derrubar todas as sessões ativas.',
+    severity: 'high', category: 'identity-management', cloud: 'entra-id',
+    roleA: { id: 'helpdesk-administrator', name: 'Helpdesk Administrator', cloud: 'entra-id' },
+    roleB: { id: 'user-administrator', name: 'User Administrator', cloud: 'entra-id' },
+    rationale: 'User Administrator cria e gerencia contas de usuário e grupos. Helpdesk Administrator concentra as três operações de credencial que fecham um takeover: microsoft.directory/users/password/update, microsoft.directory/users/invalidateAllRefreshTokens (força novo sign-in em todos os dispositivos da vítima) e microsoft.directory/bitlockerKeys/key/read. A Microsoft ainda documenta que Helpdesk Administrator reseta senha de outros Helpdesk Administrators — o que torna o próprio grupo auto-sustentável. Com as duas roles, a mesma identidade abre a conta, define a credencial e expulsa qualquer sessão legítima, sem nenhuma segunda pessoa no caminho.',
+    risk: 'Insider cria uma conta de aparência legítima, assume a credencial e invalida os tokens do titular real para mascarar a troca — o titular interpreta a re-autenticação como manutenção de rotina.',
+    mitigation: [
+      'Restringir Helpdesk Administrator por Administrative Unit, nunca no escopo do tenant inteiro.',
+      'Alertar no SIEM quando a mesma identidade criar um usuário e resetar a senha dele dentro da mesma janela de 24h.',
+      'Manter a criação de contas no fluxo de RH/onboarding e o reset de credencial no helpdesk, com equipes distintas.',
+      'Auditar trimestralmente quem tem Helpdesk Administrator ativo — é uma role Tier 0 apesar do nome operacional.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'helpdesk-admin-auth-admin',
+    name: 'Helpdesk Administrator + Authentication Administrator',
+    description: 'Resetar a senha e resetar o MFA da mesma conta — os dois fatores caem com uma pessoa só.',
+    severity: 'high', category: 'identity-management', cloud: 'entra-id',
+    roleA: { id: 'helpdesk-administrator', name: 'Helpdesk Administrator', cloud: 'entra-id' },
+    roleB: { id: 'authentication-administrator', name: 'Authentication Administrator', cloud: 'entra-id' },
+    rationale: 'MFA só protege enquanto quem troca a senha não é a mesma pessoa que troca o método de autenticação. Helpdesk Administrator define a senha e invalida os refresh tokens; Authentication Administrator remove e re-registra métodos de autenticação de usuários não-admin. Somadas, a barreira de segundo fator vira uma formalidade: a mesma identidade zera senha e MFA em sequência e entra como a vítima.',
+    risk: 'Account takeover completo de qualquer usuário não-privilegiado sem passar por nenhum controle compensatório — e, se a vítima tiver acesso a dados regulados, o incidente vira notificação obrigatória.',
+    mitigation: [
+      'Separar reset de senha (helpdesk N1) de reset de método de autenticação (equipe de identidade), inclusive no processo de chamado.',
+      'Exigir verificação de identidade fora de banda antes de qualquer reset de MFA, com registro no ticket.',
+      'Alertar sobre reset de senha seguido de alteração de método de autenticação do mesmo usuário em menos de 1h.',
+      'Aplicar Conditional Access exigindo re-registro de MFA a partir de rede confiável.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+
+  // ── Entra ID: extensibilidade de autenticação ──────────────────────────
+  {
+    id: 'auth-ext-admin-app-admin',
+    name: 'Authentication Extensibility Administrator + Application Administrator',
+    description: 'Injetar claims no token que está sendo emitido e, ao mesmo tempo, controlar a aplicação que recebe esse token.',
+    severity: 'critical', category: 'identity-management', cloud: 'entra-id',
+    roleA: { id: 'authentication-extensibility-administrator', name: 'Authentication Extensibility Administrator', cloud: 'entra-id' },
+    roleB: { id: 'application-administrator', name: 'Application Administrator', cloud: 'entra-id' },
+    rationale: 'Authentication Extensibility Administrator tem microsoft.directory/customAuthenticationExtensions/allProperties/allTasks — controle total das custom authentication extensions, que incluem o evento OnTokenIssuanceStart do custom claims provider: uma API externa chamada no momento em que o token é emitido, capaz de mapear claims vindas de fora para dentro do token. Application Administrator gerencia registros de aplicação, credenciais e a atribuição do claims provider às aplicações. Combinadas numa identidade só, ela escolhe o endpoint que fabrica as claims e escolhe quem confia nelas.',
+    risk: 'Emissão de tokens com claims fabricadas (grupo, papel, atributo de autorização) para uma aplicação sob controle do mesmo operador — escalonamento de privilégio que não aparece como atribuição de role no diretório e escapa de revisões de acesso convencionais.',
+    mitigation: [
+      'Tratar Authentication Extensibility Administrator como Tier 0 e mantê-la fora de qualquer perfil que também administre aplicações.',
+      'Exigir aprovação de mudança para criação/alteração de custom authentication extension, com revisão do endpoint REST de destino.',
+      'Monitorar alterações em customAuthenticationExtensions no log de auditoria e correlacionar com alterações de aplicação da mesma identidade.',
+      'Restringir os endpoints das extensões a domínios corporativos aprovados e exigir autenticação do próprio endpoint.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity-platform/custom-extension-overview',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'auth-ext-admin-ca-admin',
+    name: 'Authentication Extensibility Administrator + Conditional Access Administrator',
+    description: 'Customizar o fluxo de sign-in e escrever a política de acesso condicional que deveria avaliá-lo.',
+    severity: 'high', category: 'security-operations', cloud: 'entra-id',
+    roleA: { id: 'authentication-extensibility-administrator', name: 'Authentication Extensibility Administrator', cloud: 'entra-id' },
+    roleB: { id: 'conditional-access-administrator', name: 'Conditional Access Administrator', cloud: 'entra-id' },
+    rationale: 'As custom authentication extensions se inserem dentro do fluxo de autenticação; o Conditional Access é o controle que decide se aquele fluxo resulta em acesso. Quem escreve os dois lados define ao mesmo tempo o comportamento a ser avaliado e o critério de avaliação — a política deixa de ser um controle independente e vira parte do mesmo artefato.',
+    risk: 'Uma extensão maliciosa ou mal configurada passa despercebida porque a mesma pessoa ajusta a política de Conditional Access para não bloquear o cenário que ela produz.',
+    mitigation: [
+      'Manter a autoria das políticas de Conditional Access numa equipe de segurança separada de quem constrói extensões de autenticação.',
+      'Versionar e revisar políticas de Conditional Access como código, com aprovação de segundo revisor.',
+      'Usar o modo somente-relatório antes de promover qualquer política tocada por quem também administra extensões.',
+      'Alertar sobre alteração de custom authentication extension e de política de CA pela mesma identidade na mesma janela.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity-platform/custom-extension-overview',
+      'https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'auth-ext-admin-auth-ext-password-admin',
+    name: 'Authentication Extensibility Administrator + Authentication Extensibility Password Administrator',
+    description: 'Criar a extensão que recebe o evento de submissão de senha e também controlar o disparo desse evento.',
+    severity: 'high', category: 'identity-management', cloud: 'entra-id',
+    roleA: { id: 'authentication-extensibility-administrator', name: 'Authentication Extensibility Administrator', cloud: 'entra-id' },
+    roleB: { id: 'authentication-extensibility-password-administrator', name: 'Authentication Extensibility Password Administrator', cloud: 'entra-id' },
+    rationale: 'A Microsoft separou deliberadamente estas duas roles: Authentication Extensibility Administrator administra customAuthenticationExtensions em geral, e Authentication Extensibility Password Administrator administra especificamente onPasswordSubmitCustomAuthenticationExtension — a extensão que participa do momento em que a senha é submetida. A separação existe porque o evento de senha é o mais sensível de todos; juntar as duas numa identidade desfaz exatamente a barreira que a Microsoft desenhou.',
+    risk: 'Uma extensão sob controle único no caminho da submissão de senha é um ponto de interceptação de credencial em texto claro no fluxo de sign-in, sem que nenhuma outra role precise ser tocada.',
+    mitigation: [
+      'Nunca atribuir as duas roles à mesma identidade — se o cenário parece exigir isso, o desenho da extensão precisa ser revisto.',
+      'Exigir aprovação multi-party para atribuição de Authentication Extensibility Password Administrator.',
+      'Revisar o código e o endpoint de destino de qualquer extensão ligada ao evento de submissão de senha.',
+      'Alertar sobre qualquer criação ou alteração de onPasswordSubmitCustomAuthenticationExtension.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity-platform/custom-extension-overview',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'b2c-keyset-admin-b2c-policy-admin',
+    name: 'B2C IEF Keyset Administrator + B2C IEF Policy Administrator',
+    description: 'Controlar as chaves de assinatura do Identity Experience Framework e as políticas que as usam — os dois lados da emissão de token B2C.',
+    severity: 'critical', category: 'identity-management', cloud: 'entra-id',
+    roleA: { id: 'b2c-ief-keyset-administrator', name: 'B2C IEF Keyset Administrator', cloud: 'entra-id' },
+    roleB: { id: 'b2c-ief-policy-administrator', name: 'B2C IEF Policy Administrator', cloud: 'entra-id' },
+    rationale: 'B2C IEF Keyset Administrator tem microsoft.directory/b2cTrustFrameworkKeySet/allProperties/allTasks — os segredos de federação e as chaves de assinatura/criptografia do Identity Experience Framework. B2C IEF Policy Administrator tem microsoft.directory/b2cTrustFrameworkPolicy/allProperties/allTasks — as trust framework policies que definem a jornada do usuário e o conteúdo do token. Chave mais política é a cadeia inteira de emissão: uma identidade com as duas pode escrever uma jornada que emite o token que quiser e assiná-lo com uma chave que ela mesma introduziu.',
+    risk: 'Forja de tokens aceitos por todas as aplicações relying party do tenant B2C — inclusive aplicações voltadas ao cliente final, com impacto direto de fraude e de dados pessoais.',
+    mitigation: [
+      'Separar a custódia das policy keys da autoria das custom policies, em equipes e processos distintos.',
+      'Promover custom policies do B2C por pipeline versionado, com revisão obrigatória de segundo par.',
+      'Inventariar as policy keys periodicamente e alertar sobre qualquer keyset criado fora do processo aprovado.',
+      'Manter tenants B2C de desenvolvimento e produção separados, com atribuições independentes.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'PCI-DSS', 'LGPD', 'GDPR'],
+  },
+
+  // ── Entra ID: identidades agênticas (Agent ID) ─────────────────────────
+  {
+    id: 'agent-id-admin-app-admin',
+    name: 'Agent ID Administrator + Application Administrator',
+    description: 'Criar a identidade do agente e, na mesma pessoa, conceder a ela as permissões de aplicação que quiser.',
+    severity: 'critical', category: 'application-management', cloud: 'entra-id',
+    roleA: { id: 'agent-id-administrator', name: 'Agent ID Administrator', cloud: 'entra-id' },
+    roleB: { id: 'application-administrator', name: 'Application Administrator', cloud: 'entra-id' },
+    rationale: 'Agent ID Administrator gerencia o ciclo de vida completo das identidades agênticas do tenant — blueprints, service principals de agente, agent identities e agentic users. Application Administrator gerencia registros de aplicação, credenciais e concessões de permissão. Uma identidade agêntica é um principal não-humano que age sozinho: quem a cria não deveria ser quem decide o que ela pode fazer, exatamente como já se separa criar conta de conceder acesso.',
+    risk: 'Provisionamento de um agente com permissões amplas sobre o Microsoft Graph sem nenhuma aprovação independente — e o agente executa sem interação humana, então a janela entre a concessão e o uso indevido é mínima.',
+    mitigation: [
+      'Segregar o provisionamento de identidades de agente da concessão de permissões a elas.',
+      'Exigir revisão de segurança para qualquer agent blueprint que solicite permissão de aplicação de alto privilégio.',
+      'Incluir agent service principals e agentic users no escopo das Access Reviews, como qualquer identidade humana.',
+      'Monitorar criação de agent identity seguida de concessão de permissão pela mesma identidade.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'agent-id-admin-privileged-role-admin',
+    name: 'Agent ID Administrator + Privileged Role Administrator',
+    description: 'Criar uma identidade de agente e atribuir a ela uma role privilegiada do diretório.',
+    severity: 'critical', category: 'privileged-access', cloud: 'entra-id',
+    roleA: { id: 'agent-id-administrator', name: 'Agent ID Administrator', cloud: 'entra-id' },
+    roleB: { id: 'privileged-role-administrator', name: 'Privileged Role Administrator', cloud: 'entra-id' },
+    rationale: 'Privileged Role Administrator atribui roles do diretório e controla o PIM. Agent ID Administrator cria principals agênticos. Juntas, produzem um caminho de persistência de ponta a ponta que não passa por nenhuma conta humana: cria-se um agente, atribui-se a ele uma role Tier 0, e o agente continua ativo mesmo depois de a conta do operador ser desativada.',
+    risk: 'Backdoor não-humana com privilégio de diretório, invisível para revisões de acesso focadas em usuários e sobrevivente ao offboarding do operador que a criou.',
+    mitigation: [
+      'Nunca combinar as duas roles; se necessário, usar contas administrativas separadas com PIM em ambas.',
+      'Exigir aprovação multi-party para atribuição de qualquer role de diretório a um principal de agente.',
+      'Inventariar mensalmente principals não-humanos com role de diretório atribuída.',
+      'Alertar sobre atribuição de role privilegiada cujo destinatário seja um agent service principal.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+      'https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-configure',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'agent-id-developer-agent-id-admin',
+    name: 'Agent ID Developer + Agent ID Administrator',
+    description: 'Desenhar o blueprint do agente e também aprovar e promover esse mesmo blueprint no tenant.',
+    severity: 'medium', category: 'application-management', cloud: 'entra-id',
+    roleA: { id: 'agent-id-developer', name: 'Agent ID Developer', cloud: 'entra-id' },
+    roleB: { id: 'agent-id-administrator', name: 'Agent ID Administrator', cloud: 'entra-id' },
+    rationale: 'Agent ID Developer cria agent identity blueprints e vira owner deles (microsoft.directory/agentIdentityBlueprints/createAsOwner); Agent ID Administrator administra todos os agentes do tenant, incluindo os blueprints de terceiros. É o padrão clássico de desenvolvedor que também aprova a própria entrega, transposto para identidades agênticas.',
+    risk: 'Um blueprint com comportamento não revisado chega a produção porque autor e aprovador são a mesma pessoa — e o artefato promovido é uma identidade que age sozinha.',
+    mitigation: [
+      'Separar autoria de blueprint de sua promoção, como já se faz com deploy de aplicação.',
+      'Registrar a aprovação de cada blueprint num sistema de mudança fora do próprio Entra.',
+      'Revisar periodicamente os owners de agent identity blueprints.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['ISO27001', 'CIS'],
+  },
+
+  // ── Entra ID: sincronização híbrida ────────────────────────────────────
+  {
+    id: 'dirsync-accounts-hybrid-identity-admin',
+    name: 'Directory Synchronization Accounts + Hybrid Identity Administrator',
+    description: 'Uma role reservada ao serviço do Entra Connect nas mãos de quem configura o próprio Entra Connect.',
+    severity: 'high', category: 'privileged-access', cloud: 'entra-id',
+    roleA: { id: 'directory-synchronization-accounts', name: 'Directory Synchronization Accounts', cloud: 'entra-id' },
+    roleB: { id: 'hybrid-identity-administrator', name: 'Hybrid Identity Administrator', cloud: 'entra-id' },
+    rationale: 'A Microsoft documenta Directory Synchronization Accounts como uma role especial, atribuída pelo assistente do Entra Connect à conta do conector e não destinada a uso humano. Hybrid Identity Administrator configura password hash sync, pass-through authentication, seamless SSO e federação — ou seja, define o que o canal de sincronização faz. Se a mesma identidade detém a role do canal e a configuração do canal, não sobra ninguém independente para perceber que o canal foi reapontado ou que uma opção de autenticação foi trocada.',
+    risk: 'A sincronização entre AD on-premises e Entra ID é uma das rotas de comprometimento mais exploradas do ecossistema Microsoft; concentrar canal e configuração numa identidade só remove o último ponto de verificação antes que uma alteração de PHS ou de federação passe a valer para o tenant inteiro.',
+    mitigation: [
+      'Auditar se algum principal humano detém Directory Synchronization Accounts — a expectativa é que só a conta de serviço do Entra Connect a tenha.',
+      'Alertar sobre qualquer atribuição nova de Directory Synchronization Accounts ou de On Premises Directory Sync Account.',
+      'Manter a operação do servidor de sincronização separada da administração de identidade híbrida no portal.',
+      'Excluir as contas de sincronização de políticas que permitam sign-in interativo.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/reference-connect-accounts-permissions',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+
+  // ── Entra ID: acesso delegado de parceiro (GDAP) ───────────────────────
+  {
+    id: 'partner-tier2-support-cdar-admin',
+    name: 'Partner Tier2 Support + Customer Delegated Admin Relationship Administrator',
+    description: 'Definir a relação de administração delegada e, ao mesmo tempo, exercer o acesso privilegiado que ela concede.',
+    severity: 'high', category: 'access-provisioning', cloud: 'entra-id',
+    roleA: { id: 'partner-tier2-support', name: 'Partner Tier2 Support', cloud: 'entra-id' },
+    roleB: { id: 'customer-delegated-admin-relationship-administrator', name: 'Customer Delegated Admin Relationship Administrator', cloud: 'entra-id' },
+    rationale: 'Customer Delegated Admin Relationship Administrator administra as relações GDAP — quem pode administrar o tenant do cliente e com quais roles. Partner Tier2 Support é uma role ControlPlane de 46 permissões que a própria Microsoft marca como "Do not use - not intended for general use", usada no caminho de suporte de parceiro. Quem define o escopo da delegação não deve ser quem opera dentro dela: é a separação entre aprovar o acesso e usar o acesso, aplicada à cadeia de parceiros.',
+    risk: 'Ampliação silenciosa do escopo de administração delegada seguida de uso imediato desse escopo — um caminho de acesso que se origina fora do tenant e que revisões de acesso internas frequentemente não cobrem.',
+    mitigation: [
+      'Revisar todas as relações GDAP ativas e o conjunto de roles concedido em cada uma, com validade curta.',
+      'Não atribuir Partner Tier1 Support nem Partner Tier2 Support a nenhuma identidade — a Microsoft desaconselha o uso geral das duas.',
+      'Exigir aprovação do cliente registrada fora do Entra para qualquer alteração de relação GDAP.',
+      'Alertar sobre alteração de customerDelegatedAdminPrivileges e sobre sign-in de identidades de parceiro no tenant.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF'],
+  },
+
+  // ── Entra ID: financeiro e licenciamento ───────────────────────────────
+  {
+    id: 'billing-admin-license-admin',
+    name: 'Billing Administrator + License Administrator',
+    description: 'Comprar as assinaturas e distribuir as licenças compradas, sem uma segunda pessoa entre a despesa e o benefício.',
+    severity: 'medium', category: 'financial-control', cloud: 'entra-id',
+    roleA: { id: 'billing-administrator', name: 'Billing Administrator', cloud: 'entra-id' },
+    roleB: { id: 'license-administrator', name: 'License Administrator', cloud: 'entra-id' },
+    rationale: 'Billing Administrator tem microsoft.commerce.billing/allEntities/allProperties/allTasks — meios de pagamento, assinaturas e compras — além de poder alterar dados básicos da organização. License Administrator atribui licenças a usuários e grupos. O ciclo comprar → atribuir é o mesmo ciclo requisitar → aprovar que o controle financeiro clássico separa; concentrado numa identidade, não há quem confronte a despesa contra o consumo real.',
+    risk: 'Compra de assinaturas não justificadas com atribuição imediata a contas controladas pelo próprio operador, produzindo despesa recorrente que só aparece na conciliação contábil, meses depois.',
+    mitigation: [
+      'Manter a compra de assinaturas no processo de suprimentos e a atribuição de licenças na operação de identidade.',
+      'Conciliar mensalmente licenças compradas contra licenças atribuídas e usuários ativos.',
+      'Exigir aprovação orçamentária fora do portal para qualquer aumento de assinatura.',
+      'Revisar quem detém Billing Administrator — é ControlPlane no modelo EAM, apesar do nome administrativo.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+
+  // ── Entra ID: backup, IA e supervisão ──────────────────────────────────
+  {
+    id: 'entra-backup-admin-privileged-role-admin',
+    name: 'Entra Backup Administrator + Privileged Role Administrator',
+    description: 'Remover uma atribuição de role privilegiada e poder restaurá-la depois a partir de um snapshot, sem passar por aprovação.',
+    severity: 'high', category: 'privileged-access', cloud: 'entra-id',
+    roleA: { id: 'entra-backup-administrator', name: 'Entra Backup Administrator', cloud: 'entra-id' },
+    roleB: { id: 'privileged-role-administrator', name: 'Privileged Role Administrator', cloud: 'entra-id' },
+    rationale: 'Entra Backup Administrator cria snapshots e dispara jobs de recuperação (microsoft.directory/backup/recovery/create). Privileged Role Administrator controla atribuições de role e o PIM. O restore é um caminho de escrita no diretório que não se parece com uma atribuição de role: reintroduzir um estado anterior pode reintroduzir objetos e atribuições que uma revisão de acesso havia removido, e o registro fica como "recuperação", não como "concessão".',
+    risk: 'Reversão de decisões de governança sob a aparência de operação de continuidade — o privilégio removido volta sem passar pelo fluxo de aprovação que o removeu.',
+    mitigation: [
+      'Atribuir a operação de backup/restore do Entra a uma equipe de continuidade separada da administração de roles.',
+      'Exigir autorização registrada para cada job de recuperação, com escopo declarado antes da execução.',
+      'Comparar o estado pós-restore contra o resultado da última Access Review e reaplicar as remoções.',
+      'Alertar sobre qualquer microsoft.directory/backup/recovery/create no log de auditoria.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF'],
+  },
+  {
+    id: 'ai-admin-compliance-admin',
+    name: 'AI Administrator + Compliance Administrator',
+    description: 'Configurar o alcance do Copilot sobre os dados da organização e escrever as políticas de conformidade que limitariam esse alcance.',
+    severity: 'medium', category: 'compliance-audit', cloud: 'entra-id',
+    roleA: { id: 'ai-administrator', name: 'AI Administrator', cloud: 'entra-id' },
+    roleB: { id: 'compliance-administrator', name: 'Compliance Administrator', cloud: 'entra-id' },
+    rationale: 'AI Administrator administra o Microsoft 365 Copilot e os serviços de IA corporativos — o que inclui decidir quais fontes de dados alimentam as respostas. Compliance Administrator define DLP, retenção e rotulagem, que são justamente os controles que deveriam restringir esse alcance. Quem configura o consumo de dados e quem escreve a política de proteção desses dados precisam ser pessoas diferentes, ou a política deixa de ser um limite externo.',
+    risk: 'Ampliação do escopo de dados acessível pelo Copilot sem que nenhum controle de conformidade seja acionado, porque a mesma pessoa ajusta os dois lados — com exposição de conteúdo regulado a usuários que não teriam acesso direto a ele.',
+    mitigation: [
+      'Separar a administração dos serviços de IA da definição das políticas de conformidade que os governam.',
+      'Revisar o escopo de grounding do Copilot como item recorrente do comitê de privacidade.',
+      'Alertar sobre alteração de configuração de IA acompanhada de alteração de política de DLP ou retenção.',
+      'Usar AI Reader para quem só precisa auditar a configuração, sem poder alterá-la.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'ai-admin-ai-reader',
+    name: 'AI Administrator + AI Reader',
+    description: 'A role de supervisão dos serviços de IA nas mãos de quem os administra — o mesmo problema de Global Administrator + Global Reader.',
+    severity: 'low', category: 'compliance-audit', cloud: 'entra-id',
+    roleA: { id: 'ai-administrator', name: 'AI Administrator', cloud: 'entra-id' },
+    roleB: { id: 'ai-reader', name: 'AI Reader', cloud: 'entra-id' },
+    rationale: 'AI Reader existe para que auditores e áreas de risco vejam toda a configuração de Copilot e dos serviços de IA sem poder alterá-la. Atribuí-la a quem já tem AI Administrator não adiciona nenhum acesso — o administrador já enxerga tudo — e anula o propósito da role como ponto de observação independente.',
+    risk: 'A organização acredita ter supervisão independente sobre a configuração de IA quando, na prática, administrador e revisor são a mesma pessoa.',
+    mitigation: [
+      'Reservar AI Reader para auditoria interna, privacidade e risco, sem sobreposição com AI Administrator.',
+      'Incluir a sobreposição das duas roles no relatório periódico de Access Reviews.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'attribute-provisioning-admin-app-admin',
+    name: 'Attribute Provisioning Administrator + Application Administrator',
+    description: 'Definir como os atributos de segurança customizados chegam à aplicação e controlar a própria aplicação que decide com base neles.',
+    severity: 'medium', category: 'data-access', cloud: 'entra-id',
+    roleA: { id: 'attribute-provisioning-administrator', name: 'Attribute Provisioning Administrator', cloud: 'entra-id' },
+    roleB: { id: 'application-administrator', name: 'Application Administrator', cloud: 'entra-id' },
+    rationale: 'Attribute Provisioning Administrator lê e edita a configuração de provisionamento dos custom security attributes de uma aplicação (servicePrincipals/synchronization.customSecurityAttributes/schema). Esses atributos alimentam decisões de autorização baseadas em atributo, inclusive condições de atribuição de role. Application Administrator controla o service principal que consome esses atributos. Uma identidade com as duas define tanto o dado de autorização quanto quem confia nele.',
+    risk: 'Alteração do schema de atributos de segurança para produzir a decisão de acesso desejada, sem que nenhuma atribuição de role visível mude — difícil de detectar em revisão de acesso convencional.',
+    mitigation: [
+      'Tratar o schema de custom security attributes como configuração de segurança, com controle de mudança próprio.',
+      'Separar a curadoria dos atributos de segurança da administração das aplicações que os consomem.',
+      'Auditar alterações no schema de provisionamento como parte da revisão de acesso a dados.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['ISO27001', 'LGPD'],
+  },
+
+  // ── Azure RBAC: as roles AccessManagement sem cobertura ────────────────
+  {
+    id: 'vm-data-access-admin-vm-contributor',
+    name: 'Virtual Machine Data Access Administrator (preview) + Virtual Machine Contributor',
+    description: 'Criar a máquina virtual e conceder a si mesmo o login administrativo dentro dela.',
+    severity: 'high', category: 'privileged-access', cloud: 'azure-rbac',
+    roleA: { id: 'virtual-machine-data-access-administrator-preview', name: 'Virtual Machine Data Access Administrator (preview)', cloud: 'azure-rbac' },
+    roleB: { id: 'virtual-machine-contributor', name: 'Virtual Machine Contributor', cloud: 'azure-rbac' },
+    rationale: 'Virtual Machine Contributor gerencia as máquinas virtuais no plano de controle, mas não concede acesso ao sistema operacional. Virtual Machine Data Access Administrator (preview) faz exatamente isso: atribui Virtual Machine Administrator Login e Virtual Machine User Login. A separação entre administrar a VM e administrar quem entra na VM é o que impede que a operação de infraestrutura se transforme em acesso ao dado que roda dentro dela.',
+    risk: 'Uma identidade de operação de infraestrutura obtém sessão administrativa no sistema operacional de qualquer VM do escopo — incluindo VMs de produção com dados regulados — sem passar por concessão de acesso revisada.',
+    mitigation: [
+      'Manter a concessão de login em VM fora do perfil de operação de infraestrutura.',
+      'Usar a condição ABAC da role para restringir quais roles podem ser atribuídas e a quais principals.',
+      'Exigir Azure Bastion e acesso Just-in-Time para qualquer sessão administrativa em VM de produção.',
+      'Alertar sobre atribuição de Virtual Machine Administrator Login feita por quem também tem Virtual Machine Contributor.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'azure-file-sync-admin-storage-account-contributor',
+    name: 'Azure File Sync Administrator + Storage Account Contributor',
+    description: 'Controlar para onde os arquivos sincronizam e também as contas de armazenamento de destino.',
+    severity: 'high', category: 'data-access', cloud: 'azure-rbac',
+    roleA: { id: 'azure-file-sync-administrator', name: 'Azure File Sync Administrator', cloud: 'azure-rbac' },
+    roleB: { id: 'storage-account-contributor', name: 'Storage Account Contributor', cloud: 'azure-rbac' },
+    rationale: 'Azure File Sync Administrator tem acesso total aos recursos do Storage Sync Service — server endpoints, sync groups e cloud endpoints, ou seja, o mapeamento entre servidores de arquivo e shares na nuvem. Storage Account Contributor administra as contas de armazenamento, inclusive chaves de acesso. Juntas, uma identidade redireciona a sincronização e controla o destino: o dado sai do servidor de origem e chega a um lugar sob o mesmo controle.',
+    risk: 'Exfiltração de compartilhamentos de arquivo corporativos por meio de um cloud endpoint apontado para uma conta de armazenamento controlada pelo operador — o tráfego parece sincronização legítima.',
+    mitigation: [
+      'Separar a administração do Azure File Sync da administração das contas de armazenamento de destino.',
+      'Restringir as contas de armazenamento a redes virtuais aprovadas e desabilitar acesso por chave onde possível.',
+      'Revisar periodicamente todos os cloud endpoints e a qual conta de armazenamento apontam.',
+      'Alertar sobre criação ou alteração de cloud endpoint fora de janela de mudança.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles',
+      'https://learn.microsoft.com/en-us/azure/storage/file-sync/file-sync-planning',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'foundry-owner-storage-blob-data-owner',
+    name: 'Foundry Owner + Storage Blob Data Owner',
+    description: 'Administrar os projetos de IA e ainda ter posse total dos dados que os alimentam.',
+    severity: 'high', category: 'data-access', cloud: 'azure-rbac',
+    roleA: { id: 'foundry-owner', name: 'Foundry Owner', cloud: 'azure-rbac' },
+    roleB: { id: 'storage-blob-data-owner', name: 'Storage Blob Data Owner', cloud: 'azure-rbac' },
+    rationale: 'Foundry Owner administra contas e projetos do Microsoft Foundry, publica agentes, gerencia modelos e faz atribuições condicionais de role. Storage Blob Data Owner dá acesso total aos contêineres de blob, incluindo controle de acesso POSIX — normalmente onde ficam os dados de treinamento, fine-tuning e grounding. A combinação junta quem define o que o modelo consome e quem controla o dado consumido, sem nenhuma barreira entre os dois.',
+    risk: 'Dados sensíveis entram num projeto de IA ou num agente publicado sem revisão de privacidade, e a saída do modelo passa a expor conteúdo que a mesma pessoa disponibilizou — um caminho de vazamento que não aparece como acesso direto ao storage.',
+    mitigation: [
+      'Separar a posse dos dados da administração da plataforma de IA.',
+      'Exigir aprovação de privacidade registrada antes de conectar uma fonte de dados a um projeto do Foundry.',
+      'Inventariar quais contêineres estão ligados a projetos e agentes, e revisar periodicamente.',
+      'Registrar e revisar as atribuições de role feitas por Foundry Owner, que são condicionais mas reais.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry',
+      'https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'foundry-account-owner-foundry-project-manager',
+    name: 'Foundry Account Owner + Foundry Project Manager',
+    description: 'Criar as contas e projetos do Foundry e também construir e publicar dentro deles.',
+    severity: 'medium', category: 'application-management', cloud: 'azure-rbac',
+    roleA: { id: 'foundry-account-owner', name: 'Foundry Account Owner', cloud: 'azure-rbac' },
+    roleB: { id: 'foundry-project-manager', name: 'Foundry Project Manager', cloud: 'azure-rbac' },
+    rationale: 'A Microsoft separou as duas de propósito: Foundry Account Owner cria contas e projetos e faz atribuições de role, mas não constrói dentro dos projetos; Foundry Project Manager constrói, publica agentes e atribui a role Foundry User. Somadas, a mesma identidade cria o ambiente, desenvolve o agente, publica e concede acesso — não sobra nenhum ponto de aprovação entre desenvolver e liberar.',
+    risk: 'Um agente vai a produção sem revisão independente, com as permissões que o próprio autor concedeu, num serviço que interage com dados corporativos.',
+    mitigation: [
+      'Manter a criação de contas/projetos do Foundry na plataforma e o desenvolvimento nas equipes de produto.',
+      'Exigir aprovação de segundo revisor para publicação de agente em ambiente produtivo.',
+      'Revisar as atribuições de Foundry User feitas por cada Project Manager.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry',
+      'https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles',
+    ],
+    frameworks: ['ISO27001', 'CIS'],
+  },
+  {
+    id: 'azure-stack-hci-admin-monitoring-contributor',
+    name: 'Azure Stack HCI Administrator + Monitoring Contributor',
+    description: 'Acesso total ao cluster e controle do que é monitorado nele.',
+    severity: 'medium', category: 'compliance-audit', cloud: 'azure-rbac',
+    roleA: { id: 'azure-stack-hci-administrator', name: 'Azure Stack HCI Administrator', cloud: 'azure-rbac' },
+    roleB: { id: 'monitoring-contributor', name: 'Monitoring Contributor', cloud: 'azure-rbac' },
+    rationale: 'Azure Stack HCI Administrator concede acesso total ao cluster e aos seus recursos, incluindo registrar o cluster e atribuir Azure Arc HCI VM Contributor ou Reader a terceiros — são 103 permissões. Monitoring Contributor controla configurações de diagnóstico, regras de alerta e coleta. Quem administra a infraestrutura e também define o que é observado dela pode desligar a própria trilha.',
+    risk: 'Alterações no cluster deixam de gerar sinal porque a regra de alerta ou a configuração de diagnóstico foi ajustada pela mesma identidade — detecção atrasada num ambiente que hospeda cargas de produção.',
+    mitigation: [
+      'Manter a configuração de monitoramento sob a equipe de observabilidade, não sob a operação do cluster.',
+      'Enviar logs de diagnóstico para um workspace em assinatura separada, com acesso restrito.',
+      'Alertar sobre remoção ou desativação de regra de alerta e de configuração de diagnóstico.',
+      'Revisar quem detém Azure Stack HCI Administrator — é uma role de gestão de acesso, não só de operação.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'devcenter-owner-user-access-admin',
+    name: 'DevCenter Owner + User Access Administrator',
+    description: 'Dois caminhos independentes de concessão sobre os mesmos ambientes de desenvolvimento.',
+    severity: 'medium', category: 'privileged-access', cloud: 'azure-rbac',
+    roleA: { id: 'devcenter-owner', name: 'DevCenter Owner', cloud: 'azure-rbac' },
+    roleB: { id: 'user-access-administrator', name: 'User Access Administrator', cloud: 'azure-rbac' },
+    rationale: 'DevCenter Owner administra os recursos Microsoft.DevCenter e já concede acesso adicionando ou removendo as roles DevCenter Project Admin e DevCenter Dev Box — uma capacidade de concessão limitada e auditável por escopo. User Access Administrator concede qualquer role em qualquer escopo. Somadas, a concessão delimitada perde sentido: o operador contorna o limite do DevCenter pelo caminho genérico, e a revisão que olha só as atribuições de DevCenter não enxerga isso.',
+    risk: 'Provisionamento de Dev Boxes e ambientes com acesso concedido fora do modelo previsto do DevCenter, com privilégio que não aparece na revisão específica da plataforma.',
+    mitigation: [
+      'Não combinar User Access Administrator com roles que já têm concessão delimitada por serviço.',
+      'Restringir User Access Administrator a escopos mínimos e ativá-la via PIM com justificativa.',
+      'Revisar as atribuições de DevCenter Project Admin e Dev Box separadamente das atribuições genéricas do escopo.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles'],
+    frameworks: ['ISO27001', 'CIS'],
+  },
+  {
+    id: 'iot-operations-onboarding-network-contributor',
+    name: 'Azure IoT Operations Onboarding + Network Contributor',
+    description: 'Conectar clusters ao Azure Arc e controlar a rede pela qual eles se conectam.',
+    severity: 'medium', category: 'security-operations', cloud: 'azure-rbac',
+    roleA: { id: 'azure-iot-operations-onboarding', name: 'Azure IoT Operations Onboarding', cloud: 'azure-rbac' },
+    roleB: { id: 'network-contributor', name: 'Network Contributor', cloud: 'azure-rbac' },
+    rationale: 'Azure IoT Operations Onboarding permite conectar clusters via Azure Arc e implantar o IoT Operations — é o ponto em que um recurso externo passa a ser gerenciado pelo tenant. Network Contributor controla redes virtuais, NSGs e rotas, ou seja, o caminho por onde esse recurso se comunica. Quem admite o dispositivo e quem define a fronteira de rede dele precisam ser papéis distintos, ou o controle de rede deixa de ser um limite para o onboarding.',
+    risk: 'Um cluster não homologado entra no ambiente com a rota e as regras de rede ajustadas para não disparar controle nenhum, criando uma ponte entre a rede operacional e a rede corporativa.',
+    mitigation: [
+      'Segregar o onboarding de recursos Arc da administração de rede.',
+      'Exigir aprovação de arquitetura de rede para cada novo cluster IoT conectado.',
+      'Revisar NSGs e rotas associadas a sub-redes de cargas IoT como parte da revisão de mudança.',
+      'Alertar sobre criação de recurso Arc acompanhada de alteração de NSG pela mesma identidade.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+
+  // ── Cross-cloud Entra ID ↔ Azure RBAC ──────────────────────────────────
+  {
+    id: 'agent-id-admin-uaa-cross',
+    name: 'Agent ID Administrator + User Access Administrator',
+    description: 'Criar a identidade agêntica no Entra ID e colocá-la em qualquer escopo do Azure.',
+    severity: 'critical', category: 'privileged-access', cloud: 'microsoft-cross',
+    roleA: { id: 'agent-id-administrator', name: 'Agent ID Administrator', cloud: 'entra-id' },
+    roleB: { id: 'user-access-administrator', name: 'User Access Administrator', cloud: 'azure-rbac' },
+    rationale: 'Agent ID Administrator cria e administra identidades agênticas no diretório; User Access Administrator atribui qualquer role do Azure em qualquer escopo. É a versão agêntica do par clássico Privileged Role Administrator + User Access Administrator: uma identidade só produz o principal não-humano e o instala com privilégio sobre assinaturas inteiras, atravessando a fronteira entre o plano de identidade e o plano de recursos.',
+    risk: 'Um agente criado no Entra ID recebe Contributor ou Owner em produção sem que nenhuma aprovação de identidade nem de plataforma tenha ocorrido — e continua ativo após o offboarding de quem o criou, porque não é uma conta de usuário.',
+    mitigation: [
+      'Separar quem cria identidades de agente de quem concede acesso a recursos do Azure.',
+      'Ativar User Access Administrator apenas via PIM, com aprovação e escopo mínimo.',
+      'Usar Azure Policy ou deny assignments para impedir atribuição de Owner/Contributor a principals de agente fora do processo aprovado.',
+      'Inventariar mensalmente principals não-humanos com atribuição de role no Azure e correlacionar com o inventário de agentes do Entra.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+      'https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'ai-admin-foundry-owner-cross',
+    name: 'AI Administrator + Foundry Owner',
+    description: 'Administrar a IA do lado do Microsoft 365 e a plataforma de IA do lado do Azure — governança de IA sem contrapeso.',
+    severity: 'high', category: 'application-management', cloud: 'microsoft-cross',
+    roleA: { id: 'ai-administrator', name: 'AI Administrator', cloud: 'entra-id' },
+    roleB: { id: 'foundry-owner', name: 'Foundry Owner', cloud: 'azure-rbac' },
+    rationale: 'AI Administrator governa o Microsoft 365 Copilot e os serviços de IA corporativos — onde estão os dados de produtividade da organização. Foundry Owner administra contas e projetos do Microsoft Foundry, publica agentes e faz atribuições condicionais de role — onde os modelos e agentes são construídos. Uma identidade com as duas controla toda a superfície de IA da empresa nos dois lados da fronteira Microsoft 365 / Azure, sem que nenhuma equipe enxergue o quadro completo além dela.',
+    risk: 'Um agente construído no Foundry é conectado a dados do Microsoft 365 pela mesma pessoa que definiu o alcance do Copilot — o fluxo de dados atravessa as duas plataformas sem revisão em nenhum ponto.',
+    mitigation: [
+      'Distribuir a administração de IA entre a equipe de Microsoft 365 e a equipe de plataforma Azure.',
+      'Manter um inventário único de agentes e dos dados a que cada um tem acesso, revisado pelo comitê de privacidade.',
+      'Exigir aprovação conjunta para qualquer integração entre um projeto do Foundry e fontes de dados do Microsoft 365.',
+      'Usar AI Reader e roles de leitura do Foundry para auditoria, sem sobreposição com as roles administrativas.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'partner-tier1-support-privileged-auth-admin',
+    name: 'Partner Tier1 Support + Privileged Authentication Administrator',
+    description: 'Uma role que já cria contas, troca UPN e reseta senha, somada à role que reseta o MFA de qualquer administrador.',
+    severity: 'critical', category: 'privileged-access', cloud: 'entra-id',
+    roleA: { id: 'partner-tier1-support', name: 'Partner Tier1 Support', cloud: 'entra-id' },
+    roleB: { id: 'privileged-authentication-administrator', name: 'Privileged Authentication Administrator', cloud: 'entra-id' },
+    rationale: 'Partner Tier1 Support é uma das roles mais densas do diretório: cria, apaga, habilita e restaura usuários, altera userPrincipalName, atualiza senha, invalida todos os refresh tokens, atualiza credenciais de aplicação e administra oAuth2PermissionGrants. A Microsoft a marca como "Do not use - not intended for general use". Privileged Authentication Administrator reseta métodos de autenticação de qualquer usuário, inclusive Global Administrators. Somadas, uma identidade só percorre o caminho completo até uma conta administrativa: assume o controle da credencial e remove o segundo fator que a protegia.',
+    risk: 'Takeover de uma conta Global Administrator a partir de uma role de suporte de parceiro, sem tocar em nenhuma atribuição de role — o evento aparece como manutenção de credencial, não como escalonamento de privilégio.',
+    mitigation: [
+      'Não atribuir Partner Tier1 Support nem Partner Tier2 Support a nenhuma identidade: a Microsoft desaconselha o uso geral das duas.',
+      'Restringir Privileged Authentication Administrator a contas administrativas dedicadas, ativadas por PIM com aprovação.',
+      'Alertar sobre qualquer reset de método de autenticação cujo alvo detenha uma role de diretório.',
+      'Auditar mensalmente os detentores das duas roles — ambas são ControlPlane no modelo EAM.',
+    ],
+    references: [
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference',
+      'https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'attribute-provisioning-admin-attribute-provisioning-reader',
+    name: 'Attribute Provisioning Administrator + Attribute Provisioning Reader',
+    description: 'A role de leitura dos atributos de segurança customizados nas mãos de quem os edita.',
+    severity: 'low', category: 'compliance-audit', cloud: 'entra-id',
+    roleA: { id: 'attribute-provisioning-administrator', name: 'Attribute Provisioning Administrator', cloud: 'entra-id' },
+    roleB: { id: 'attribute-provisioning-reader', name: 'Attribute Provisioning Reader', cloud: 'entra-id' },
+    rationale: 'Attribute Provisioning Reader existe para que auditoria e áreas de risco leiam a configuração de provisionamento dos custom security attributes sem poder alterá-la. Atribuí-la a quem já tem Attribute Provisioning Administrator não acrescenta acesso — o administrador já lê tudo — e apaga a distinção entre quem configura e quem verifica num dado que alimenta decisões de autorização.',
+    risk: 'A organização supõe que a configuração de atributos de segurança tem revisão independente quando configurador e revisor são a mesma pessoa.',
+    mitigation: [
+      'Reservar Attribute Provisioning Reader para auditoria e governança de dados, sem sobreposição com a role administrativa.',
+      'Incluir a sobreposição das duas roles no relatório periódico de Access Reviews.',
+    ],
+    references: ['https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference'],
+    frameworks: ['ISO27001'],
+  },
+  // ═══════════════════════════════════════════════════════════════════════
+  // AWS IAM — managed policies
+  //
+  // A unidade da AWS não é role: é POLICY GERENCIADA. Uma role da AWS é um
+  // contêiner que recebe policies, e é a policy que carrega a permissão. Por
+  // isso as referências abaixo apontam para /aws/policies/<slug>, e o par de
+  // uma regra é um par de policies anexadas à mesma identidade — usuário,
+  // grupo, role ou permission set do Identity Center.
+  //
+  // Uma ressalva que vale para todo este bloco: a AWS avalia permissão pela
+  // UNIÃO das policies, limitada por SCP e permission boundary. Uma regra
+  // aponta acúmulo de policies conflitantes; se existe SCP ou boundary
+  // cortando o efeito, o conflito pode não se materializar. Isso é ambiente,
+  // não catálogo.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ── AWS: IAM e escalonamento ───────────────────────────────────────────
+  {
+    id: 'aws-poweruser-iamfullaccess',
+    name: 'PowerUserAccess + IAMFullAccess',
+    description: 'A policy desenhada como "tudo menos IAM" somada à que é só IAM — AdministratorAccess reconstruído por acúmulo.',
+    severity: 'critical', category: 'privileged-access', cloud: 'aws',
+    roleA: { id: 'poweruseraccess', name: 'PowerUserAccess', cloud: 'aws' },
+    roleB: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    rationale: 'PowerUserAccess existe por causa de uma única exclusão: dá acesso amplo aos serviços e nega justamente a gestão de identidade e acesso. É essa exclusão que a torna atribuível a quem opera sem ser administrador da conta. IAMFullAccess devolve exatamente o que foi tirado. A união das duas é funcionalmente AdministratorAccess, mas nenhum inventário que procure por "quem tem AdministratorAccess" vai encontrá-la.',
+    risk: 'Privilégio de administrador de conta invisível para a revisão que procura pelo nome da policy de administrador — e a pessoa pode se auto-conceder qualquer permissão restante, tornando qualquer limite subsequente inócuo.',
+    mitigation: [
+      'Não anexar IAMFullAccess a nenhuma identidade que já tenha PowerUserAccess; se o cenário exige as duas, o que se está descrevendo é AdministratorAccess.',
+      'Inventariar por PERMISSÃO EFETIVA, não por nome de policy — o IAM Access Analyzer e o simulador de policy respondem essa pergunta.',
+      'Aplicar permission boundary que negue iam:* às identidades de operação.',
+      'Usar SCP na organização para exigir MFA em qualquer chamada iam:Create*/iam:Attach*/iam:Put*.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html',
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'aws-iamfullaccess-cloudtrail-fullaccess',
+    name: 'IAMFullAccess + AWSCloudTrail_FullAccess',
+    description: 'Conceder a si mesmo qualquer permissão e poder parar ou apagar a trilha que registraria isso.',
+    severity: 'critical', category: 'privileged-access', cloud: 'aws',
+    roleA: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    roleB: { id: 'awscloudtrail-fullaccess', name: 'AWSCloudTrail_FullAccess', cloud: 'aws' },
+    rationale: 'IAMFullAccess permite criar usuários, roles e policies e anexá-las — inclusive a si mesmo. AWSCloudTrail_FullAccess inclui cloudtrail:StopLogging, cloudtrail:DeleteTrail e cloudtrail:UpdateTrail, ou seja, o poder de interromper, redirecionar ou remover a trilha de auditoria da conta. A ordem importa pouco: com as duas, dá para desligar o registro, escalar e religar.',
+    risk: 'Escalonamento de privilégio sem rastro recuperável. A investigação posterior encontra uma lacuna na trilha, não o evento — e sem CloudTrail a maior parte dos controles de detecção da AWS fica cega, porque é dele que se alimentam.',
+    mitigation: [
+      'Usar trilha de organização criada na conta de gestão: contas-membro não conseguem pará-la nem apagá-la.',
+      'Aplicar SCP negando cloudtrail:StopLogging, cloudtrail:DeleteTrail e cloudtrail:UpdateTrail em todas as contas-membro.',
+      'Entregar os logs num bucket S3 de conta separada, com Object Lock e política que negue exclusão.',
+      'Alertar sobre qualquer evento StopLogging ou DeleteTrail, tratando-o como incidente e não como mudança.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/awscloudtrail/latest/userguide/best-practices-security.html',
+      'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'aws-organizations-iamfullaccess',
+    name: 'AWSOrganizationsFullAccess + IAMFullAccess',
+    description: 'Remover o teto de permissão da organização e depois se conceder o que estava acima dele.',
+    severity: 'critical', category: 'privileged-access', cloud: 'aws',
+    roleA: { id: 'awsorganizationsfullaccess', name: 'AWSOrganizationsFullAccess', cloud: 'aws' },
+    roleB: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    rationale: 'A Service Control Policy é o único controle da AWS que limita o que um administrador de conta pode fazer — o teto acima do IAM. AWSOrganizationsFullAccess permite criar, alterar e desanexar SCPs, criar contas novas e mover contas entre OUs. IAMFullAccess concede permissão dentro da conta. Com as duas, o teto deixa de ser um limite externo: quem esbarra nele o remove.',
+    risk: 'Todo o modelo de contenção da organização vira decisão de uma pessoa só. Uma conta pode ser movida para uma OU sem SCP, ou receber permissão que a política corporativa proíbe, sem que nenhuma outra equipe participe.',
+    mitigation: [
+      'Restringir AWSOrganizationsFullAccess à conta de gestão e a um número mínimo de identidades, com MFA obrigatório.',
+      'Segregar quem administra a organização de quem administra IAM nas contas-membro.',
+      'Alertar sobre DetachPolicy, UpdatePolicy, MoveAccount e CreateAccount no CloudTrail da conta de gestão.',
+      'Revisar periodicamente a estrutura de OUs e quais SCPs estão de fato anexadas a cada uma.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html',
+      'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices_mgmt-acct.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'aws-cloudformation-iamfullaccess',
+    name: 'AWSCloudFormationFullAccess + IAMFullAccess',
+    description: 'Criar a role privilegiada e criar a stack que a assume — escalonamento por infraestrutura como código.',
+    severity: 'critical', category: 'privileged-access', cloud: 'aws',
+    roleA: { id: 'awscloudformationfullaccess', name: 'AWSCloudFormationFullAccess', cloud: 'aws' },
+    roleB: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    rationale: 'O CloudFormation executa com a role de serviço que a stack indica. IAMFullAccess permite criar uma role com a permissão desejada e uma trust policy que aceite o CloudFormation; AWSCloudFormationFullAccess permite criar a stack que a usa. O resultado é execução com privilégio arbitrário através de um serviço legítimo, e o evento no CloudTrail aparece como implantação de stack, não como escalonamento.',
+    risk: 'Escalonamento que atravessa a revisão de mudança: o template é o artefato revisado, mas quem tem as duas policies pode criar a stack fora do pipeline, com uma role que ninguém aprovou.',
+    mitigation: [
+      'Usar service roles fixas e aprovadas para CloudFormation, e negar iam:PassRole para roles fora dessa lista.',
+      'Segregar quem cria roles de quem implanta stacks — na prática, tirar IAMFullAccess de quem opera implantação.',
+      'Exigir que stacks de produção venham de um pipeline com revisão do template, e negar CreateStack fora dele por SCP.',
+      'Monitorar CreateRole seguido de CreateStack pela mesma identidade.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html',
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'aws-ssm-fullaccess-ec2-fullaccess',
+    name: 'AmazonSSMFullAccess + AmazonEC2FullAccess',
+    description: 'Criar a instância com um instance profile privilegiado e executar comando dentro dela.',
+    severity: 'high', category: 'privileged-access', cloud: 'aws',
+    roleA: { id: 'amazonssmfullaccess', name: 'AmazonSSMFullAccess', cloud: 'aws' },
+    roleB: { id: 'amazonec2fullaccess', name: 'AmazonEC2FullAccess', cloud: 'aws' },
+    rationale: 'AmazonEC2FullAccess permite lançar instâncias e associar instance profiles a elas. AmazonSSMFullAccess permite executar comandos nas instâncias gerenciadas via Run Command, com o privilégio do agente — normalmente root ou SYSTEM. Juntas, a identidade lança uma instância com o instance profile mais forte a que tem acesso e passa a executar código com aquele privilégio, colhendo as credenciais temporárias do metadata service.',
+    risk: 'Escalonamento lateral clássico da AWS: a permissão efetiva deixa de ser a das policies anexadas à pessoa e passa a ser a da role mais privilegiada que ela consegue anexar a uma instância.',
+    mitigation: [
+      'Restringir iam:PassRole por condição, listando explicitamente quais roles cada perfil pode passar para o EC2.',
+      'Segregar provisionamento de instância de operação remota (Run Command / Session Manager).',
+      'Exigir IMDSv2 e limitar o hop de resposta do metadata service.',
+      'Registrar sessões do Session Manager e comandos do Run Command em log imutável, com revisão.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html',
+      'https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-logging-auditing.html',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+
+  // ── AWS: Identity Center e provisionamento ─────────────────────────────
+  {
+    id: 'aws-sso-master-admin-iamfullaccess',
+    name: 'AWSSSOMasterAccountAdministrator + IAMFullAccess',
+    description: 'Dois caminhos independentes de concessão sobre a mesma conta — o federado e o local.',
+    severity: 'critical', category: 'access-provisioning', cloud: 'aws',
+    roleA: { id: 'awsssomasteraccountadministrator', name: 'AWSSSOMasterAccountAdministrator', cloud: 'aws' },
+    roleB: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    rationale: 'O IAM Identity Center existe para que o acesso às contas venha de um lugar só, com permission sets revisáveis e credencial temporária. AWSSSOMasterAccountAdministrator administra esse plano: quem entra em qual conta, com qual permission set. IAMFullAccess concede dentro da conta, por baixo dele, inclusive criando usuário IAM com chave de acesso permanente. Ter os dois significa poder conceder pelo caminho auditado e, quando ele incomodar, pelo caminho que ninguém revisa.',
+    risk: 'Acesso persistente por chave de longa duração criada ao lado do modelo federado — sobrevive à remoção do usuário no Identity Center e não aparece na revisão de permission sets.',
+    mitigation: [
+      'Bloquear a criação de usuários e access keys IAM por SCP nas contas-membro, deixando o Identity Center como único caminho.',
+      'Segregar a administração do Identity Center da administração de IAM das contas.',
+      'Revisar periodicamente usuários IAM com credencial permanente — a expectativa em uma conta federada é zero.',
+      'Alertar sobre CreateUser e CreateAccessKey em qualquer conta-membro.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/singlesignon/latest/userguide/security-best-practices.html',
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'aws-ssodirectoryadmin-ssomasteradmin',
+    name: 'AWSSSODirectoryAdministrator + AWSSSOMasterAccountAdministrator',
+    description: 'Criar a identidade no diretório e atribuí-la às contas — sem ninguém entre uma coisa e outra.',
+    severity: 'high', category: 'identity-management', cloud: 'aws',
+    roleA: { id: 'awsssodirectoryadministrator', name: 'AWSSSODirectoryAdministrator', cloud: 'aws' },
+    roleB: { id: 'awsssomasteraccountadministrator', name: 'AWSSSOMasterAccountAdministrator', cloud: 'aws' },
+    rationale: 'AWSSSODirectoryAdministrator administra o diretório do Identity Center — criar usuários e grupos, alterar associação. AWSSSOMasterAccountAdministrator atribui grupos e usuários a contas com permission sets. É o par criar-a-identidade / conceder-o-acesso, que toda a literatura de SoD separa: o ciclo inteiro de uma identidade fica numa pessoa, e a associação de grupo é o que carrega o privilégio.',
+    risk: 'Uma conta criada e imediatamente colocada num grupo com permission set administrativo. Se a criação e a atribuição são o mesmo ato operacional, não existe momento em que alguém possa recusar.',
+    mitigation: [
+      'Alimentar o diretório do Identity Center por SCIM a partir do IdP corporativo, tirando a criação manual da mesa de quem atribui acesso.',
+      'Segregar administração de diretório de atribuição de conta/permission set.',
+      'Alertar sobre criação de usuário seguida de atribuição de permission set pela mesma identidade.',
+      'Revisar trimestralmente a associação dos grupos ligados a permission sets administrativos.',
+    ],
+    references: ['https://docs.aws.amazon.com/singlesignon/latest/userguide/security-best-practices.html'],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  {
+    id: 'aws-servicecatalog-admin-enduser',
+    name: 'AWSServiceCatalogAdminFullAccess + AWSServiceCatalogEndUserFullAccess',
+    description: 'Publicar o produto no catálogo e provisioná-lo — autor e consumidor na mesma pessoa.',
+    severity: 'medium', category: 'application-management', cloud: 'aws',
+    roleA: { id: 'awsservicecatalogadminfullaccess', name: 'AWSServiceCatalogAdminFullAccess', cloud: 'aws' },
+    roleB: { id: 'awsservicecatalogenduserfullaccess', name: 'AWSServiceCatalogEndUserFullAccess', cloud: 'aws' },
+    rationale: 'O Service Catalog existe para separar quem aprova uma configuração de infraestrutura de quem a usa: o administrador publica produtos revisados com uma launch role definida, e o usuário final só provisiona o que está no portfólio. Acumular os dois papéis desfaz a separação — a pessoa publica o produto que quiser, com a launch role que quiser, e o provisiona em seguida.',
+    risk: 'Provisionamento de infraestrutura com permissões elevadas via launch role definida pelo próprio solicitante, sob a aparência de uso normal do catálogo aprovado.',
+    mitigation: [
+      'Manter a curadoria do portfólio numa equipe de plataforma e o consumo nas equipes de produto.',
+      'Revisar as launch roles associadas a cada produto — é ali que o privilégio real do catálogo está.',
+      'Exigir aprovação registrada para inclusão ou alteração de produto no portfólio.',
+    ],
+    references: ['https://docs.aws.amazon.com/servicecatalog/latest/adminguide/controlling_access.html'],
+    frameworks: ['ISO27001', 'CIS'],
+  },
+
+  // ── AWS: auditoria e detecção ──────────────────────────────────────────
+  {
+    id: 'aws-iamfullaccess-securityaudit',
+    name: 'IAMFullAccess + SecurityAudit',
+    description: 'Quem concede o acesso também é quem revisa se o acesso concedido está correto.',
+    severity: 'high', category: 'compliance-audit', cloud: 'aws',
+    roleA: { id: 'iamfullaccess', name: 'IAMFullAccess', cloud: 'aws' },
+    roleB: { id: 'securityaudit', name: 'SecurityAudit', cloud: 'aws' },
+    rationale: 'SecurityAudit é a policy de job function que a AWS publica para auditores: leitura ampla de configuração de segurança, sem escrita. Ela só cumpre esse papel se quem a detém for independente de quem configura. Somada a IAMFullAccess, a pessoa que decide quem tem acesso é a mesma que produz o relatório de quem tem acesso.',
+    risk: 'Achados de revisão de acesso perdem valor como evidência de controle: são gerados por quem seria o objeto da revisão, e uma concessão indevida pode simplesmente não ser reportada.',
+    mitigation: [
+      'Atribuir SecurityAudit a auditoria interna ou a uma conta de segurança separada, com acesso de leitura entre contas.',
+      'Rodar a revisão de acesso a partir do IAM Access Analyzer numa conta delegada, fora do alcance de quem administra IAM.',
+      'Exigir que o relatório de acesso seja assinado por alguém sem permissão de escrita em IAM.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html',
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF'],
+  },
+  {
+    id: 'aws-administratoraccess-securityaudit',
+    name: 'AdministratorAccess + SecurityAudit',
+    description: 'A policy de auditoria anexada a quem já pode tudo — supervisão que não supervisiona nada.',
+    severity: 'high', category: 'compliance-audit', cloud: 'aws',
+    roleA: { id: 'administratoraccess', name: 'AdministratorAccess', cloud: 'aws' },
+    roleB: { id: 'securityaudit', name: 'SecurityAudit', cloud: 'aws' },
+    rationale: 'AdministratorAccess já concede leitura de tudo, então anexar SecurityAudit por cima não adiciona nenhuma permissão. O que ela adiciona é a APARÊNCIA de um papel de auditoria: um inventário que procure "quem audita esta conta" encontra alguém que, na verdade, é o administrador dela. É o mesmo defeito de Global Administrator somado a Global Reader no Entra ID.',
+    risk: 'A organização acredita ter revisão independente da conta quando administrador e auditor são a mesma pessoa — e é justamente essa crença que faz ninguém procurar por um revisor de verdade.',
+    mitigation: [
+      'Nunca anexar SecurityAudit a uma identidade com AdministratorAccess: se ela já vê tudo, a policy só existe para enganar o inventário.',
+      'Manter a auditoria numa conta separada, acessando por role cross-account de leitura.',
+      'Revisar quem tem AdministratorAccess como item recorrente — a expectativa é um punhado de identidades quebra-vidro, com MFA.',
+    ],
+    references: ['https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'aws-securityaudit-auditmanager',
+    name: 'SecurityAudit + AWSAuditManagerAdministratorAccess',
+    description: 'Coletar a evidência de conformidade e administrar — inclusive apagar — o repositório dela.',
+    severity: 'medium', category: 'compliance-audit', cloud: 'aws',
+    roleA: { id: 'securityaudit', name: 'SecurityAudit', cloud: 'aws' },
+    roleB: { id: 'awsauditmanageradministratoraccess', name: 'AWSAuditManagerAdministratorAccess', cloud: 'aws' },
+    rationale: 'O Audit Manager coleta evidência automaticamente e a organiza em avaliações vinculadas a um framework. AWSAuditManagerAdministratorAccess administra essas avaliações: criar, alterar o escopo, atualizar controles e apagar. Quem produz a leitura de conformidade não deveria ser quem decide o que entra na avaliação e o que sai dela.',
+    risk: 'Evidência desfavorável removida do escopo antes do relatório, sem que a alteração apareça no artefato entregue ao auditor externo.',
+    mitigation: [
+      'Segregar a operação do Audit Manager da produção da evidência técnica.',
+      'Exportar as evidências para um bucket S3 com versionamento e Object Lock, fora do alcance de quem administra as avaliações.',
+      'Alertar sobre DeleteAssessment e UpdateAssessment em avaliações que suportam relatório regulatório.',
+    ],
+    references: ['https://docs.aws.amazon.com/audit-manager/latest/userguide/security.html'],
+    frameworks: ['SOX', 'ISO27001', 'PCI-DSS'],
+  },
+  {
+    id: 'aws-guardduty-cloudtrail',
+    name: 'AmazonGuardDutyFullAccess + AWSCloudTrail_FullAccess',
+    description: 'Administrar o detector e a fonte que o alimenta — as duas metades do mesmo sinal.',
+    severity: 'high', category: 'security-operations', cloud: 'aws',
+    roleA: { id: 'amazonguarddutyfullaccess', name: 'AmazonGuardDutyFullAccess', cloud: 'aws' },
+    roleB: { id: 'awscloudtrail-fullaccess', name: 'AWSCloudTrail_FullAccess', cloud: 'aws' },
+    rationale: 'O GuardDuty analisa eventos do CloudTrail, logs de DNS e de fluxo de VPC. AmazonGuardDutyFullAccess permite desabilitar o detector, criar filtros de supressão e arquivar achados; AWSCloudTrail_FullAccess permite parar a trilha que o alimenta. Concentrar as duas numa identidade dá dois modos independentes de silenciar a detecção, e o segundo não deixa nem o achado arquivado como pista.',
+    risk: 'Atividade maliciosa que não gera achado, ou gera um achado imediatamente suprimido — a lacuna só aparece numa revisão de configuração, não no fluxo de alertas que a equipe acompanha.',
+    mitigation: [
+      'Administrar o GuardDuty por conta delegada de segurança, com as contas-membro sem permissão de desabilitar o detector.',
+      'Aplicar SCP negando guardduty:DeleteDetector, guardduty:UpdateDetector e cloudtrail:StopLogging nas contas-membro.',
+      'Alertar sobre criação de filtro de supressão e sobre arquivamento em massa de achados.',
+      'Revisar mensalmente os filtros de supressão ativos — eles são a forma silenciosa de desligar a detecção.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudtrail.html',
+      'https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'aws-securityhub-guardduty',
+    name: 'AWSSecurityHubFullAccess + AmazonGuardDutyFullAccess',
+    description: 'Definir os padrões de conformidade e controlar a fonte que os alimenta com achados.',
+    severity: 'medium', category: 'security-operations', cloud: 'aws',
+    roleA: { id: 'awssecurityhubfullaccess', name: 'AWSSecurityHubFullAccess', cloud: 'aws' },
+    roleB: { id: 'amazonguarddutyfullaccess', name: 'AmazonGuardDutyFullAccess', cloud: 'aws' },
+    rationale: 'O Security Hub agrega achados e mede a conta contra padrões como o CIS AWS Foundations Benchmark; o GuardDuty é uma das fontes que ele agrega. AWSSecurityHubFullAccess permite desabilitar controles e padrões inteiros e alterar o estado de fluxo de trabalho dos achados. Somada ao controle da fonte, uma identidade pode melhorar o score de conformidade sem melhorar nada no ambiente.',
+    risk: 'O score de segurança da conta deixa de refletir o ambiente e passa a refletir a configuração escolhida por quem é medido — e o score é justamente o que a diretoria acompanha.',
+    mitigation: [
+      'Habilitar Security Hub e GuardDuty por administrador delegado, com configuração central e contas-membro sem poder alterá-la.',
+      'Alertar sobre BatchDisableStandards, UpdateStandardsControl e mudanças em massa de workflow status.',
+      'Revisar quais controles estão desabilitados e por quê, com justificativa registrada e validade.',
+    ],
+    references: ['https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-central-configuration-intro.html'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'aws-cloudtrail-cloudwatchlogs',
+    name: 'AWSCloudTrail_FullAccess + CloudWatchLogsFullAccess',
+    description: 'Controlar a trilha e o destino dela — parar o registro e apagar o que já foi registrado.',
+    severity: 'high', category: 'compliance-audit', cloud: 'aws',
+    roleA: { id: 'awscloudtrail-fullaccess', name: 'AWSCloudTrail_FullAccess', cloud: 'aws' },
+    roleB: { id: 'cloudwatchlogsfullaccess', name: 'CloudWatchLogsFullAccess', cloud: 'aws' },
+    rationale: 'Quando o CloudTrail entrega eventos ao CloudWatch Logs, é ali que ficam os alarmes de segurança da conta. AWSCloudTrail_FullAccess controla a origem; CloudWatchLogsFullAccess inclui logs:DeleteLogGroup e logs:DeleteLogStream, ou seja, o destino. A trilha e o repositório sob a mesma identidade removem a redundância que tornaria a supressão detectável.',
+    risk: 'Perda de evidência em duas camadas ao mesmo tempo, deixando apenas o bucket S3 da trilha — que muitas contas não configuram com Object Lock, e que pode estar na mesma conta.',
+    mitigation: [
+      'Entregar CloudTrail a um bucket S3 em conta separada, com Object Lock em modo compliance.',
+      'Aplicar SCP negando logs:DeleteLogGroup nos log groups de auditoria.',
+      'Definir retenção explícita nos log groups de segurança e alertar sobre qualquer redução dela.',
+      'Segregar a operação de observabilidade da administração da trilha de auditoria.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/awscloudtrail/latest/userguide/best-practices-security.html',
+      'https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'PCI-DSS'],
+  },
+
+  // ── AWS: dados e credenciais ───────────────────────────────────────────
+  {
+    id: 'aws-secretsmanager-kms-poweruser',
+    name: 'SecretsManagerReadWrite + AWSKeyManagementServicePowerUser',
+    description: 'Ler e escrever os segredos e operar as chaves que os cifram — custódia única.',
+    severity: 'high', category: 'data-access', cloud: 'aws',
+    roleA: { id: 'secretsmanagerreadwrite', name: 'SecretsManagerReadWrite', cloud: 'aws' },
+    roleB: { id: 'awskeymanagementservicepoweruser', name: 'AWSKeyManagementServicePowerUser', cloud: 'aws' },
+    rationale: 'A proteção de um segredo no Secrets Manager depende de duas autorizações distintas: acesso ao segredo e acesso à chave KMS que o cifra. É por isso que a AWS permite que a key policy seja gerida por um time diferente do que gere o segredo. Quando a mesma identidade tem as duas, a cifra deixa de ser um controle de acesso e vira só armazenamento.',
+    risk: 'Extração de credenciais de banco, chaves de API e tokens de integração por uma única identidade, sem que nenhuma segunda autorização precise ser obtida ou registrada.',
+    mitigation: [
+      'Manter a key policy do KMS sob custódia de uma equipe de segurança, separada de quem opera os segredos.',
+      'Usar chaves gerenciadas pelo cliente com key policy explícita, em vez da chave padrão do serviço.',
+      'Ativar rotação de segredo e alertar sobre GetSecretValue em volume atípico ou fora de horário.',
+      'Auditar Decrypt no CloudTrail para as chaves que cifram segredos de produção.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-best-practices.html',
+      'https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'PCI-DSS', 'LGPD'],
+  },
+  {
+    id: 'aws-macie-s3-fullaccess',
+    name: 'AmazonMacieFullAccess + AmazonS3FullAccess',
+    description: 'Controlar os buckets e também a ferramenta que descobre o que há de sensível neles.',
+    severity: 'medium', category: 'data-access', cloud: 'aws',
+    roleA: { id: 'amazonmaciefullaccess', name: 'AmazonMacieFullAccess', cloud: 'aws' },
+    roleB: { id: 'amazons3fullaccess', name: 'AmazonS3FullAccess', cloud: 'aws' },
+    rationale: 'O Macie existe para dizer, de fora, quais buckets contêm dado pessoal ou sensível — é um controle de descoberta, não de operação. AmazonMacieFullAccess permite desabilitar o Macie, alterar o escopo dos jobs de descoberta e suprimir achados. AmazonS3FullAccess controla os buckets. Quem tem as duas decide simultaneamente onde o dado fica e se alguém vai saber disso.',
+    risk: 'Dado regulado num bucket fora do escopo de descoberta — o inventário de dados pessoais fica incompleto sem que nada apareça como falha, o que é problema direto de LGPD e GDPR.',
+    mitigation: [
+      'Administrar o Macie por conta delegada de segurança, com escopo de descoberta definido fora das equipes que operam storage.',
+      'Revisar periodicamente quais buckets estão excluídos dos jobs de classificação e por quê.',
+      'Alertar sobre criação de bucket sem as tags de classificação de dado exigidas pela política interna.',
+      'Ativar S3 Block Public Access no nível da conta, por SCP.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/macie/latest/user/security-best-practices.html',
+      'https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR', 'PCI-DSS'],
+  },
+  {
+    id: 'aws-backup-fullaccess-s3-fullaccess',
+    name: 'AWSBackupFullAccess + AmazonS3FullAccess',
+    description: 'Restaurar um ponto de recuperação e escolher o destino da restauração.',
+    severity: 'medium', category: 'data-access', cloud: 'aws',
+    roleA: { id: 'awsbackupfullaccess', name: 'AWSBackupFullAccess', cloud: 'aws' },
+    roleB: { id: 'amazons3fullaccess', name: 'AmazonS3FullAccess', cloud: 'aws' },
+    rationale: 'O backup é uma cópia integral do dado de produção, e a operação de restore é um caminho de leitura que não passa pelos controles de acesso do recurso original. AWSBackupFullAccess permite iniciar restores e apagar recovery points; AmazonS3FullAccess controla o destino. A combinação transforma continuidade em via de acesso a dado.',
+    risk: 'Exfiltração por restore para um bucket sob controle do operador — o evento aparece no CloudTrail como operação de recuperação, que costuma estar fora da lista de alertas.',
+    mitigation: [
+      'Segregar a operação de backup/restore da administração de storage.',
+      'Usar cofre de backup com Vault Lock em contas separadas, e restore apenas mediante chamado aprovado.',
+      'Alertar sobre StartRestoreJob e DeleteRecoveryPoint, com revisão do destino declarado.',
+      'Cifrar os cofres com chave gerenciada pelo cliente cuja key policy esteja fora do alcance do operador de backup.',
+    ],
+    references: ['https://docs.aws.amazon.com/aws-backup/latest/devguide/security-considerations.html'],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'aws-datascientist-s3-fullaccess',
+    name: 'DataScientist + AmazonS3FullAccess',
+    description: 'Consultar os dados com Athena e Glue e também controlar os buckets de onde eles vêm.',
+    severity: 'medium', category: 'data-access', cloud: 'aws',
+    roleA: { id: 'datascientist', name: 'DataScientist', cloud: 'aws' },
+    roleB: { id: 'amazons3fullaccess', name: 'AmazonS3FullAccess', cloud: 'aws' },
+    rationale: 'DataScientist é a policy de job function que a AWS publica para quem consome dado analítico: Athena, Glue, SageMaker, EMR. Ela pressupõe que o acesso ao dado bruto seja concedido separadamente, por bucket, para que a curadoria fique com quem é dono do dado. AmazonS3FullAccess remove essa curadoria: o consumidor passa a poder ler e alterar qualquer bucket da conta, inclusive os que ninguém liberou para análise.',
+    risk: 'Uso de dado pessoal ou regulado em análise sem passar por aprovação de privacidade, porque não há um dono de dado no caminho — e a política de retenção do bucket original deixa de valer para as cópias derivadas.',
+    mitigation: [
+      'Conceder acesso a dado analítico por bucket e prefixo, nunca por AmazonS3FullAccess.',
+      'Usar Lake Formation ou S3 Access Grants para que a autorização de dado seja um artefato revisável.',
+      'Registrar acesso a dados no S3 e revisar quem lê buckets classificados como sensíveis.',
+      'Exigir aprovação de privacidade registrada antes de conectar uma fonte a um ambiente analítico.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html',
+      'https://docs.aws.amazon.com/lake-formation/latest/dg/security-data-access.html',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'aws-rds-fullaccess-s3-fullaccess',
+    name: 'AmazonRDSFullAccess + AmazonS3FullAccess',
+    description: 'Exportar um snapshot de banco e controlar o bucket para onde ele vai.',
+    severity: 'medium', category: 'data-access', cloud: 'aws',
+    roleA: { id: 'amazonrdsfullaccess', name: 'AmazonRDSFullAccess', cloud: 'aws' },
+    roleB: { id: 'amazons3fullaccess', name: 'AmazonS3FullAccess', cloud: 'aws' },
+    rationale: 'AmazonRDSFullAccess permite criar snapshots, exportá-los para o S3 e restaurar instâncias a partir deles. A exportação é um caminho de leitura do conteúdo do banco que não passa por nenhuma credencial de banco de dados nem pelas permissões definidas dentro dele. AmazonS3FullAccess controla o destino. Juntas, produzem acesso completo ao dado sem nenhum login no banco.',
+    risk: 'Cópia integral de base de produção — com dados pessoais — para um bucket sob controle do operador, sem que qualquer controle do lado do banco seja acionado.',
+    mitigation: [
+      'Restringir a exportação de snapshot por condição de IAM, limitando os buckets de destino permitidos.',
+      'Cifrar snapshots com chave gerenciada pelo cliente cuja key policy exclua o operador de banco.',
+      'Alertar sobre StartExportTask, CopyDBSnapshot para outra conta e ModifyDBSnapshotAttribute tornando o snapshot público.',
+      'Segregar operação de banco de administração de storage.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html',
+      'https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.Security.html',
+    ],
+    frameworks: ['ISO27001', 'PCI-DSS', 'LGPD', 'GDPR'],
+  },
+
+  // ── AWS: financeiro ────────────────────────────────────────────────────
+  {
+    id: 'aws-billing-organizations',
+    name: 'Billing + AWSOrganizationsFullAccess',
+    description: 'Criar contas novas e gerenciar a fatura delas, sem passar por suprimentos.',
+    severity: 'high', category: 'financial-control', cloud: 'aws',
+    roleA: { id: 'billing', name: 'Billing', cloud: 'aws' },
+    roleB: { id: 'awsorganizationsfullaccess', name: 'AWSOrganizationsFullAccess', cloud: 'aws' },
+    rationale: 'AWSOrganizationsFullAccess permite criar contas AWS sob a organização — cada uma passa a consumir e a gerar despesa consolidada. A policy Billing dá acesso à faturação, métodos de pagamento e relatórios de custo. O ciclo criar-o-que-gasta e administrar-a-conta-que-paga é o mesmo ciclo requisitar/aprovar que o controle financeiro separa por princípio.',
+    risk: 'Despesa recorrente criada e conciliada pela mesma pessoa — a divergência só aparece no fechamento contábil, quando a conta já rodou por meses.',
+    mitigation: [
+      'Manter a criação de contas num processo de plataforma com aprovação de suprimentos, idealmente via Control Tower Account Factory.',
+      'Segregar quem administra a organização de quem administra faturamento na conta de gestão.',
+      'Definir budgets com alerta por OU e revisar contas novas no fechamento mensal.',
+      'Alertar sobre CreateAccount e sobre alteração de método de pagamento.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices_mgmt-acct.html',
+      'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/control-access-billing.html',
+    ],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'aws-billing-marketplace',
+    name: 'Billing + AWSMarketplaceFullAccess',
+    description: 'Assinar produtos pagos de terceiros e administrar a fatura em que eles aparecem.',
+    severity: 'medium', category: 'financial-control', cloud: 'aws',
+    roleA: { id: 'billing', name: 'Billing', cloud: 'aws' },
+    roleB: { id: 'awsmarketplacefullaccess', name: 'AWSMarketplaceFullAccess', cloud: 'aws' },
+    rationale: 'AWSMarketplaceFullAccess permite assinar, aceitar termos e lançar produtos de terceiros, gerando compromisso financeiro imediato e, muitas vezes, contratos de vários anos. A policy Billing administra a fatura em que essa despesa aparece. Comprar e conciliar na mesma pessoa é a definição do conflito que o controle de compras existe para evitar.',
+    risk: 'Contratação de software de terceiro sem passar por suprimentos nem por avaliação de risco de fornecedor, com a despesa diluída na fatura consolidada da AWS.',
+    mitigation: [
+      'Usar Private Marketplace, restringindo o que pode ser assinado a um catálogo aprovado.',
+      'Segregar a assinatura de produtos da administração de faturamento.',
+      'Exigir avaliação de fornecedor registrada antes de qualquer nova assinatura do Marketplace.',
+      'Revisar as assinaturas ativas no fechamento mensal, contra a lista aprovada.',
+    ],
+    references: ['https://docs.aws.amazon.com/marketplace/latest/buyerguide/private-marketplace.html'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'aws-billing-accountmanagement',
+    name: 'Billing + AWSAccountManagementFullAccess',
+    description: 'Alterar quem recebe o alerta de cobrança e alterar a própria cobrança.',
+    severity: 'medium', category: 'financial-control', cloud: 'aws',
+    roleA: { id: 'billing', name: 'Billing', cloud: 'aws' },
+    roleB: { id: 'awsaccountmanagementfullaccess', name: 'AWSAccountManagementFullAccess', cloud: 'aws' },
+    rationale: 'AWSAccountManagementFullAccess permite alterar os contatos alternativos da conta — inclusive o contato de faturamento e o de segurança, que são para onde a AWS envia notificação quando algo relevante acontece. A policy Billing administra pagamento e relatórios. Quem controla os dois pode redirecionar a notificação para longe de quem deveria conferi-la.',
+    risk: 'A notificação de cobrança ou de incidente deixa de chegar a quem tem a obrigação de revisá-la, e a alteração do contato não costuma estar em nenhuma lista de alertas.',
+    mitigation: [
+      'Definir os contatos alternativos por Organizations, a partir da conta de gestão, e bloquear alteração local por SCP.',
+      'Usar caixas de e-mail de grupo, nunca endereços pessoais, nos contatos de faturamento e segurança.',
+      'Alertar sobre PutAlternateContact e revisar os contatos de todas as contas trimestralmente.',
+    ],
+    references: ['https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-update-contact-alternate.html'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+
+  // ── AWS: infraestrutura e entrega ──────────────────────────────────────
+  {
+    id: 'aws-systemadministrator-networkadministrator',
+    name: 'SystemAdministrator + NetworkAdministrator',
+    description: 'Operar a carga e também definir a fronteira de rede que a contém.',
+    severity: 'high', category: 'security-operations', cloud: 'aws',
+    roleA: { id: 'systemadministrator', name: 'SystemAdministrator', cloud: 'aws' },
+    roleB: { id: 'networkadministrator', name: 'NetworkAdministrator', cloud: 'aws' },
+    rationale: 'A AWS publica as duas como job functions distintas de propósito: SystemAdministrator opera instâncias, automação e implantação; NetworkAdministrator define VPC, sub-redes, rotas, security groups e gateways. A separação é o que garante que expor um serviço à internet exija duas pessoas. Acumuladas, quem sobe a carga também abre a porta para ela.',
+    risk: 'Exposição de serviço interno à internet, ou criação de rota de saída para exfiltração, sem que nenhuma equipe de rede participe da decisão — e mudanças de security group raramente passam por revisão de mudança.',
+    mitigation: [
+      'Manter a separação de job functions que a AWS já publica, alocando as duas policies a equipes diferentes.',
+      'Definir a topologia de rede como código, com revisão obrigatória, e negar alteração manual por SCP.',
+      'Alertar sobre AuthorizeSecurityGroupIngress com 0.0.0.0/0 e sobre criação de internet gateway ou peering.',
+      'Rodar IAM Access Analyzer e Network Access Analyzer para detectar caminhos de acesso não intencionais.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html',
+      'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'aws-codepipeline-lambda-fullaccess',
+    name: 'AWSCodePipeline_FullAccess + AWSLambda_FullAccess',
+    description: 'Definir a esteira de entrega e também publicar código direto em produção, contornando-a.',
+    severity: 'high', category: 'application-management', cloud: 'aws',
+    roleA: { id: 'awscodepipeline-fullaccess', name: 'AWSCodePipeline_FullAccess', cloud: 'aws' },
+    roleB: { id: 'awslambda-fullaccess', name: 'AWSLambda_FullAccess', cloud: 'aws' },
+    rationale: 'A esteira existe para que código só chegue a produção depois de teste, aprovação e registro. AWSCodePipeline_FullAccess permite criar e alterar pipelines, inclusive remover estágios de aprovação manual. AWSLambda_FullAccess permite publicar o código da função diretamente, sem pipeline nenhum. Com as duas, a esteira deixa de ser um controle e vira uma convenção: quem não quiser passar por ela, não passa.',
+    risk: 'Código não revisado em produção, ou alteração do pipeline para remover a aprovação — nos dois casos o artefato em execução deixa de corresponder ao que foi aprovado.',
+    mitigation: [
+      'Negar lambda:UpdateFunctionCode em produção para qualquer principal que não seja a role da esteira.',
+      'Segregar quem administra o pipeline de quem desenvolve a função.',
+      'Exigir aprovação manual no pipeline de produção e alertar sobre alteração da definição do pipeline.',
+      'Comparar periodicamente o hash do código publicado com o artefato do último build aprovado.',
+    ],
+    references: [
+      'https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html',
+      'https://docs.aws.amazon.com/lambda/latest/dg/security-iam.html',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  {
+    id: 'aws-codebuild-codedeploy',
+    name: 'AWSCodeBuildAdminAccess + AWSCodeDeployFullAccess',
+    description: 'Construir o artefato e implantá-lo — sem ninguém entre o build e a produção.',
+    severity: 'medium', category: 'application-management', cloud: 'aws',
+    roleA: { id: 'awscodebuildadminaccess', name: 'AWSCodeBuildAdminAccess', cloud: 'aws' },
+    roleB: { id: 'awscodedeployfullaccess', name: 'AWSCodeDeployFullAccess', cloud: 'aws' },
+    rationale: 'AWSCodeBuildAdminAccess permite criar e alterar projetos de build — inclusive o buildspec, que é o script executado com a service role do projeto. AWSCodeDeployFullAccess permite criar deployments e alterar grupos de implantação. Quem controla o que é construído e onde é implantado fecha o ciclo de entrega numa única pessoa, e o buildspec é um vetor de execução arbitrária com o privilégio da service role.',
+    risk: 'Artefato alterado no build e implantado em produção sem que a mudança apareça no repositório de código — a revisão de código não vê o buildspec, e a revisão de implantação não vê o conteúdo do artefato.',
+    mitigation: [
+      'Versionar o buildspec no repositório e negar sua definição inline no projeto de build.',
+      'Restringir a service role do CodeBuild ao mínimo, sem permissão de implantação.',
+      'Segregar a administração de build da administração de implantação.',
+      'Exigir aprovação para deployment em grupo de produção e registrar quem aprovou.',
+    ],
+    references: ['https://docs.aws.amazon.com/codebuild/latest/userguide/security.html'],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  // ═══════════════════════════════════════════════════════════════════════
+  // GCP IAM — predefined roles
+  //
+  // No GCP a concessão é (principal, role, recurso) numa allow policy, e a
+  // herança desce pela hierarquia organização → pasta → projeto → recurso.
+  // Uma regra abaixo trata do acúmulo de duas roles pelo MESMO principal;
+  // se as duas foram concedidas em escopos diferentes e o recurso de risco
+  // está sob apenas um deles, o conflito pode não se materializar. Escopo é
+  // ambiente, não catálogo.
+  //
+  // Duas particularidades do GCP aparecem várias vezes aqui e valem dito uma
+  // vez: (1) a service account é ao mesmo tempo identidade e recurso, então
+  // "quem pode usá-la" é uma concessão de IAM como outra qualquer — e é o
+  // principal caminho de escalonamento da plataforma; (2) as basic roles
+  // (Owner/Editor/Viewer) são anteriores ao IAM granular e o próprio Google
+  // desaconselha seu uso em produção.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // ── GCP: service accounts e escalonamento ──────────────────────────────
+  {
+    id: 'gcp-serviceaccountadmin-serviceaccountkeyadmin',
+    name: 'Service Account Admin + Service Account Key Admin',
+    description: 'Criar a service account e emitir para ela uma chave JSON de longa duração.',
+    severity: 'critical', category: 'identity-management', cloud: 'gcp',
+    roleA: { id: 'iam-serviceaccountadmin', name: 'Service Account Admin', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccountkeyadmin', name: 'Service Account Key Admin', cloud: 'gcp' },
+    rationale: 'Uma chave de service account é uma credencial que não expira, não tem MFA e vale fora do perímetro do Google. O Google separa as duas roles justamente porque criar a identidade e emitir a credencial dela são decisões distintas: a primeira é organização, a segunda é risco. Acumuladas, uma identidade produz do zero uma credencial permanente e a leva para onde quiser.',
+    risk: 'Persistência que sobrevive ao offboarding de quem a criou. A chave não aparece em revisão de acesso de usuários, não expira, e o uso dela nos logs é indistinguível do uso legítimo da service account.',
+    mitigation: [
+      'Aplicar a constraint de organização iam.disableServiceAccountKeyCreation e abrir exceção por projeto, com justificativa e validade.',
+      'Preferir Workload Identity Federation e impersonation de curta duração à chave JSON.',
+      'Segregar a criação de service accounts da emissão de chaves.',
+      'Inventariar chaves existentes e sua idade; alertar sobre CreateServiceAccountKey.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/best-practices-service-accounts',
+      'https://cloud.google.com/resource-manager/docs/organization-policy/restricting-service-accounts',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-serviceaccountadmin-serviceaccountuser',
+    name: 'Service Account Admin + Service Account User',
+    description: 'Criar uma service account privilegiada e poder agir como ela.',
+    severity: 'critical', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'iam-serviceaccountadmin', name: 'Service Account Admin', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccountuser', name: 'Service Account User', cloud: 'gcp' },
+    rationale: 'Service Account User concede iam.serviceAccounts.actAs — anexar a service account a um recurso e, com isso, executar código com o privilégio dela. Service Account Admin permite criar service accounts e gerir a política delas. Somadas, o privilégio efetivo da pessoa deixa de ser o das roles concedidas a ela: passa a ser o da service account mais forte que ela consiga criar ou alcançar.',
+    risk: 'Escalonamento sem alteração visível na allow policy do próprio usuário — a revisão de acesso continua mostrando um perfil modesto enquanto a execução acontece com privilégio de service account.',
+    mitigation: [
+      'Conceder Service Account User no escopo da service account específica, nunca no projeto inteiro.',
+      'Segregar quem cria service accounts de quem pode agir como elas.',
+      'Auditar com Policy Analyzer quem tem actAs sobre service accounts com role de Editor ou Owner.',
+      'Alertar sobre SetIamPolicy em service accounts adicionando roles/iam.serviceAccountUser.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/service-account-permissions',
+      'https://cloud.google.com/iam/docs/best-practices-service-accounts',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-securityadmin-serviceaccounttokencreator',
+    name: 'Security Admin + Service Account Token Creator',
+    description: 'Conceder a si mesmo o direito de personificar uma service account e depois gerar o token.',
+    severity: 'critical', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccounttokencreator', name: 'Service Account Token Creator', cloud: 'gcp' },
+    rationale: 'Security Admin concede setIamPolicy — pode alterar a allow policy de qualquer recurso do escopo, inclusive a de uma service account. Service Account Token Creator gera tokens de acesso e OpenID em nome da service account. O caminho fecha em duas chamadas: conceder a si mesmo Token Creator sobre a service account mais privilegiada, e emitir o token.',
+    risk: 'Privilégio de Owner obtido por impersonation, sem que nenhuma role privilegiada tenha sido concedida ao usuário — o log registra geração de token, não escalonamento.',
+    mitigation: [
+      'Restringir Security Admin a um escopo mínimo e usar Privileged Access Manager para concessão temporária.',
+      'Alertar sobre SetIamPolicy que adiciona serviceAccountTokenCreator ou serviceAccountUser.',
+      'Monitorar generateAccessToken nos Data Access logs, correlacionando com o principal de origem.',
+      'Segregar quem administra política de IAM de quem opera cargas que precisam de impersonation.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/service-account-impersonation',
+      'https://cloud.google.com/iam/docs/audit-logging',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-roleadmin-securityadmin',
+    name: 'Role Administrator + Security Admin',
+    description: 'Escrever o conteúdo da custom role e também concedê-la.',
+    severity: 'critical', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'iam-roleadmin', name: 'Role Administrator', cloud: 'gcp' },
+    roleB: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    rationale: 'Role Administrator define quais permissões uma custom role contém; Security Admin decide quem a recebe. A separação é o que faz uma revisão de acesso significar alguma coisa: o revisor olha o nome da role concedida e confia que o conteúdo dela foi definido por outra pessoa. Quem tem as duas pode adicionar uma permissão sensível a uma custom role de nome inocente e concedê-la sem que o nome mude.',
+    risk: 'Escalonamento que não aparece no diff da allow policy — a concessão é a mesma de sempre; o que mudou foi o que a role faz.',
+    mitigation: [
+      'Segregar a autoria de custom roles da concessão de acesso.',
+      'Versionar as definições de custom role fora do console e alertar sobre UpdateRole.',
+      'Preferir predefined roles; tratar cada custom role como artefato com dono e revisão.',
+      'Revisar periodicamente o conteúdo das custom roles, não só quem as tem.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/creating-custom-roles',
+      'https://cloud.google.com/iam/docs/roles-overview',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-orgpolicyadmin-securityadmin',
+    name: 'Organization Policy Administrator + Security Admin',
+    description: 'Remover a restrição de organização que limita a concessão e, em seguida, conceder.',
+    severity: 'critical', category: 'security-operations', cloud: 'gcp',
+    roleA: { id: 'orgpolicy-policyadmin', name: 'Organization Policy Administrator', cloud: 'gcp' },
+    roleB: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    rationale: 'As organization policies são o teto acima do IAM no GCP: constraints como iam.allowedPolicyMemberDomains (que impede conceder acesso a fora do domínio), iam.disableServiceAccountKeyCreation e as de rede. Organization Policy Administrator pode alterá-las; Security Admin concede o acesso que elas limitariam. Com as duas, o teto deixa de ser externo — quem esbarra nele o remove.',
+    risk: 'Concessão a um principal de fora do domínio corporativo, ou criação de chave de service account onde a política proibia — a violação some porque a política foi ajustada antes.',
+    mitigation: [
+      'Manter Organization Policy Administrator no nível da organização, com um punhado de identidades e MFA obrigatório.',
+      'Segregar a administração de organization policies da administração de IAM.',
+      'Alertar sobre qualquer alteração de organization policy, tratando-a como mudança de controle e não de configuração.',
+      'Revisar mensalmente as exceções (policies sobrescritas em pastas e projetos).',
+    ],
+    references: [
+      'https://cloud.google.com/resource-manager/docs/organization-policy/overview',
+      'https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-privilegedaccessmanager-securityadmin',
+    name: 'Privileged Access Manager Admin + Security Admin',
+    description: 'Definir as concessões elegíveis e os aprovadores — e poder conceder direto, contornando o próprio PAM.',
+    severity: 'critical', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'privilegedaccessmanager-admin', name: 'Privileged Access Manager Admin', cloud: 'gcp' },
+    roleB: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    rationale: 'O Privileged Access Manager existe para que acesso privilegiado seja temporário, justificado e aprovado por outra pessoa. PAM Admin define os direitos elegíveis, a duração e quem aprova. Security Admin concede acesso permanente direto na allow policy. Ter as duas anula o PAM duas vezes: dá para se colocar como aprovador e, se isso incomodar, dá para pular o PAM inteiro.',
+    risk: 'A organização acredita que o acesso privilegiado é just-in-time e aprovado, enquanto existe um caminho permanente ao lado — e o relatório do PAM não mostra o que foi concedido fora dele.',
+    mitigation: [
+      'Segregar quem administra o PAM de quem tem setIamPolicy no mesmo escopo.',
+      'Restringir Security Admin a escopos onde o PAM não seja o controle principal.',
+      'Reconciliar periodicamente as concessões da allow policy contra as concessões registradas no PAM.',
+      'Exigir que aprovadores do PAM sejam de área distinta do solicitante.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/pam-overview',
+      'https://cloud.google.com/iam/docs/roles-overview',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-workloadidentitypooladmin-serviceaccountadmin',
+    name: 'IAM Workload Identity Pool Admin + Service Account Admin',
+    description: 'Federar uma identidade externa e criar a service account que ela vai assumir.',
+    severity: 'critical', category: 'identity-management', cloud: 'gcp',
+    roleA: { id: 'iam-workloadidentitypooladmin', name: 'IAM Workload Identity Pool Admin Beta', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccountadmin', name: 'Service Account Admin', cloud: 'gcp' },
+    rationale: 'O Workload Identity Federation permite que uma carga de fora do Google — outra cloud, um runner de CI, um cluster — troque um token do provedor dela por credencial do GCP. Quem administra o pool define qual provedor é confiável e como os atributos externos são mapeados; quem administra service accounts define o que a identidade resultante pode fazer. Juntas, uma pessoa estabelece confiança num emissor externo e cria o destino privilegiado dessa confiança.',
+    risk: 'Uma identidade de fora da organização — inclusive de uma conta pessoal em outra cloud — obtém acesso ao GCP por um caminho que nenhuma revisão de usuários cobre, porque não existe usuário.',
+    mitigation: [
+      'Exigir condição de atributo restritiva em todo provedor de workload identity; nunca mapear o principal inteiro sem filtro.',
+      'Segregar a administração de federação da administração de service accounts.',
+      'Revisar periodicamente os pools e provedores existentes, e qual emissor externo cada um confia.',
+      'Alertar sobre CreateWorkloadIdentityPoolProvider e sobre alteração de attribute mapping.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/workload-identity-federation',
+      'https://cloud.google.com/iam/docs/best-practices-service-accounts',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+
+  // ── GCP: hierarquia, faturamento e supervisão ──────────────────────────
+  {
+    id: 'gcp-orgadmin-billingadmin',
+    name: 'Organization Administrator + Billing Account Administrator',
+    description: 'Criar projetos e vinculá-los a uma conta de faturamento — despesa aprovada por quem a cria.',
+    severity: 'critical', category: 'financial-control', cloud: 'gcp',
+    roleA: { id: 'resourcemanager-organizationadmin', name: 'Organization Administrator', cloud: 'gcp' },
+    roleB: { id: 'billing-admin', name: 'Billing Account Administrator', cloud: 'gcp' },
+    rationale: 'O Google separa a hierarquia de recursos da conta de faturamento justamente para que criar um projeto e fazê-lo gerar despesa sejam decisões de pessoas diferentes — é por isso que vincular projeto a billing account exige permissão nos dois lados. Organization Administrator administra a hierarquia inteira; Billing Account Administrator administra a conta que paga. Acumuladas, o freio financeiro deixa de existir.',
+    risk: 'Projetos criados e faturados sem passar por nenhuma aprovação — e, no limite, um projeto fora da hierarquia governada, com as organization policies não aplicadas.',
+    mitigation: [
+      'Manter a administração de faturamento numa equipe financeira, separada da administração da organização.',
+      'Usar Project Creator com escopo de pasta em vez de Organization Administrator para criação rotineira.',
+      'Definir budgets com alerta por pasta e revisar projetos novos no fechamento mensal.',
+      'Alertar sobre UpdateProjectBillingInfo e sobre criação de projeto fora das pastas aprovadas.',
+    ],
+    references: [
+      'https://cloud.google.com/billing/docs/how-to/billing-access',
+      'https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy',
+    ],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gcp-projectcreator-billingadmin',
+    name: 'Project Creator + Billing Account Administrator',
+    description: 'Criar o projeto e ligá-lo ao faturamento no mesmo ato.',
+    severity: 'high', category: 'financial-control', cloud: 'gcp',
+    roleA: { id: 'resourcemanager-projectcreator', name: 'Project Creator', cloud: 'gcp' },
+    roleB: { id: 'billing-admin', name: 'Billing Account Administrator', cloud: 'gcp' },
+    rationale: 'Project Creator é a role de rotina para quem abre projetos; ela deliberadamente não inclui vincular faturamento. Billing Account Administrator inclui. A soma cria o ciclo requisitar/aprovar dentro de uma pessoa: o projeto nasce, é vinculado e começa a consumir sem que ninguém tenha autorizado a despesa.',
+    risk: 'Consumo não orçado que só aparece na fatura consolidada, e projetos sem dono financeiro claro — o padrão mais comum de desperdício em GCP.',
+    mitigation: [
+      'Conceder Billing Account User (que permite vincular a uma conta específica) em vez de Billing Account Administrator para o fluxo de criação.',
+      'Exigir label de centro de custo em todo projeto novo, validado por organization policy.',
+      'Segregar criação de projeto de administração de faturamento.',
+      'Revisar mensalmente projetos criados e seu consumo contra o orçamento aprovado.',
+    ],
+    references: ['https://cloud.google.com/billing/docs/how-to/billing-access'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gcp-owner-securityreviewer',
+    name: 'Owner + Security Reviewer',
+    description: 'A role de revisão de acesso nas mãos de quem detém a basic role mais ampla do projeto.',
+    severity: 'high', category: 'compliance-audit', cloud: 'gcp',
+    roleA: { id: 'owner', name: 'Owner', cloud: 'gcp' },
+    roleB: { id: 'iam-securityreviewer', name: 'Security Reviewer', cloud: 'gcp' },
+    rationale: 'Security Reviewer existe para dar a auditores a leitura de todas as allow policies do escopo, sem poder alterá-las — é a role desenhada para revisão de acesso independente. Owner já lê tudo e ainda concede, então somá-la não adiciona permissão: adiciona apenas a aparência de um revisor. Um inventário que pergunte "quem revisa o IAM deste projeto" encontra o dono dele.',
+    risk: 'A revisão de acesso perde a independência que a torna evidência de controle — e a organização não procura por um revisor de verdade porque acredita já ter um.',
+    mitigation: [
+      'Reservar Security Reviewer para auditoria interna e times de risco, sem sobreposição com Owner ou Security Admin.',
+      'Abandonar as basic roles em produção: o próprio Google desaconselha Owner/Editor/Viewer fora de ambiente de teste.',
+      'Rodar a revisão com Policy Analyzer a partir de um principal sem permissão de escrita.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/roles-overview',
+      'https://cloud.google.com/policy-intelligence/docs/policy-analyzer-overview',
+    ],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gcp-securityadmin-logging-admin',
+    name: 'Security Admin + Logging Admin',
+    description: 'Alterar quem tem acesso e poder apagar o registro dessa alteração.',
+    severity: 'critical', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    roleB: { id: 'logging-admin', name: 'Logging Admin', cloud: 'gcp' },
+    rationale: 'Security Admin altera allow policies. Logging Admin administra sinks, exclusões e buckets de log — inclusive o _Required, que guarda os Admin Activity audit logs, e as exclusion rules, que descartam entradas antes de serem gravadas. Concentrar as duas dá o par completo: conceder e descartar o registro da concessão.',
+    risk: 'Escalonamento sem trilha recuperável. A exclusion rule é o caminho mais silencioso: nada é apagado, as entradas simplesmente nunca chegam — e a configuração dela raramente está sob monitoramento.',
+    mitigation: [
+      'Exportar audit logs para um projeto de log dedicado, com sink no nível da organização e acesso restrito.',
+      'Alertar sobre criação e alteração de exclusion rules e sobre DeleteSink e DeleteBucket em logging.',
+      'Segregar a administração de IAM da administração de observabilidade.',
+      'Ativar Data Access logs para os serviços críticos e proteger a configuração deles por organization policy.',
+    ],
+    references: [
+      'https://cloud.google.com/logging/docs/audit',
+      'https://cloud.google.com/logging/docs/routing/overview',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'gcp-securitycenter-logging-admin',
+    name: 'Security Center Admin + Logging Admin',
+    description: 'Silenciar o achado e apagar a fonte que o gerou.',
+    severity: 'high', category: 'security-operations', cloud: 'gcp',
+    roleA: { id: 'securitycenter-admin', name: 'Security Center Admin', cloud: 'gcp' },
+    roleB: { id: 'logging-admin', name: 'Logging Admin', cloud: 'gcp' },
+    rationale: 'O Security Command Center agrega achados de configuração e ameaça; Security Center Admin pode criar regras de silenciamento, marcar achados como resolvidos e alterar módulos de detecção. Logging Admin controla o log que alimenta boa parte dessas detecções. Duas formas independentes de fazer o mesmo sinal desaparecer, nas mãos de uma pessoa.',
+    risk: 'Postura de segurança reportada que não corresponde ao ambiente: achados silenciados na camada de apresentação e a fonte descartada na camada de coleta.',
+    mitigation: [
+      'Administrar o SCC no nível da organização, com as equipes de projeto sem permissão de silenciar achados.',
+      'Revisar mensalmente as mute rules ativas, com justificativa e validade em cada uma.',
+      'Segregar operação de segurança de administração de logging.',
+      'Alertar sobre criação de mute rule e sobre desativação de módulo de detecção.',
+    ],
+    references: [
+      'https://cloud.google.com/security-command-center/docs/how-to-mute-findings',
+      'https://cloud.google.com/logging/docs/audit',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-logging-admin-privatelogviewer',
+    name: 'Logging Admin + Private Logs Viewer',
+    description: 'Administrar a retenção dos logs e ler o conteúdo dos Data Access logs.',
+    severity: 'medium', category: 'compliance-audit', cloud: 'gcp',
+    roleA: { id: 'logging-admin', name: 'Logging Admin', cloud: 'gcp' },
+    roleB: { id: 'logging-privatelogviewer', name: 'Private Logs Viewer', cloud: 'gcp' },
+    rationale: 'Private Logs Viewer é a role que dá acesso aos Data Access logs — o registro de quem leu qual dado, que costuma conter identificadores e é tratado à parte justamente por isso. Logging Admin decide a retenção, os sinks e as exclusões. Quem administra o repositório e também lê o conteúdo sensível dele concentra a leitura mais delicada da plataforma sem nenhum contrapeso.',
+    risk: 'Consulta a quem acessou o quê sem supervisão, e possibilidade de encurtar a retenção depois — a evidência de acesso indevido some junto com o rastro de quem a consultou.',
+    mitigation: [
+      'Restringir Private Logs Viewer a investigação formal, com concessão temporária via PAM.',
+      'Manter a retenção dos buckets de audit log definida por organization policy, fora do alcance do operador.',
+      'Segregar leitura de Data Access logs da administração de logging.',
+      'Registrar e revisar quem consultou Data Access logs — a meta-auditoria vale.',
+    ],
+    references: ['https://cloud.google.com/logging/docs/audit#data-access'],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+
+  // ── GCP: dados e criptografia ──────────────────────────────────────────
+  {
+    id: 'gcp-cloudkms-secretmanager-admin',
+    name: 'Cloud KMS Admin + Secret Manager Admin',
+    description: 'Administrar os segredos e as chaves que os protegem — custódia única.',
+    severity: 'high', category: 'data-access', cloud: 'gcp',
+    roleA: { id: 'cloudkms-admin', name: 'Cloud KMS Admin', cloud: 'gcp' },
+    roleB: { id: 'secretmanager-admin', name: 'Secret Manager Admin', cloud: 'gcp' },
+    rationale: 'O Secret Manager pode usar CMEK do Cloud KMS, e é essa separação que faz a cifra ser um controle de acesso e não só armazenamento: o segredo é de um time, a chave é de outro, e ler exige as duas autorizações. Cloud KMS Admin administra chaves e políticas de chave; Secret Manager Admin administra segredos e quem os acessa. Juntas, a segunda autorização vira formalidade.',
+    risk: 'Extração de credenciais de produção por uma única identidade, sem que nenhuma outra equipe seja envolvida ou notificada.',
+    mitigation: [
+      'Manter as chaves KMS num projeto separado, com administração de chave fora da equipe que opera segredos.',
+      'Usar CMEK explícita nos segredos de produção, em vez da chave gerenciada pelo Google.',
+      'Ativar Data Access logs para Cloud KMS e Secret Manager e alertar sobre AccessSecretVersion atípico.',
+      'Alertar sobre DestroyCryptoKeyVersion e sobre alteração da IAM policy da chave.',
+    ],
+    references: [
+      'https://cloud.google.com/secret-manager/docs/cmek',
+      'https://cloud.google.com/kms/docs/separation-of-duties',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'PCI-DSS', 'LGPD'],
+  },
+  {
+    id: 'gcp-cloudkms-storage-admin',
+    name: 'Cloud KMS Admin + Storage Admin',
+    description: 'Controlar a chave CMEK e o bucket que ela cifra.',
+    severity: 'high', category: 'data-access', cloud: 'gcp',
+    roleA: { id: 'cloudkms-admin', name: 'Cloud KMS Admin', cloud: 'gcp' },
+    roleB: { id: 'storage-admin', name: 'Storage Admin', cloud: 'gcp' },
+    rationale: 'A separação de funções é o motivo explícito pelo qual o Google recomenda manter as chaves KMS num projeto distinto do dado que elas protegem: quem administra o bucket não deveria administrar a chave. Cloud KMS Admin controla a chave, incluindo destruí-la; Storage Admin controla o bucket e sua IAM policy. Com as duas, cifra e dado ficam sob a mesma decisão.',
+    risk: 'Acesso irrestrito a dado cifrado, e a possibilidade oposta — destruir a versão da chave e tornar o dado irrecuperável, que é um vetor de negação de serviço destrutivo e permanente.',
+    mitigation: [
+      'Manter chaves KMS em projeto próprio, com administração numa equipe de segurança.',
+      'Ativar a proteção contra destruição de chave e exigir aprovação de dois para desabilitar versão.',
+      'Segregar administração de storage de administração de chave.',
+      'Alertar sobre DestroyCryptoKeyVersion, UpdateCryptoKey e alteração de IAM policy de bucket com CMEK.',
+    ],
+    references: [
+      'https://cloud.google.com/kms/docs/separation-of-duties',
+      'https://cloud.google.com/storage/docs/encryption/customer-managed-keys',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'PCI-DSS', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'gcp-bigquery-admin-storage-admin',
+    name: 'BigQuery Admin + Storage Admin',
+    description: 'Administrar os datasets e também o storage para onde eles podem ser exportados.',
+    severity: 'medium', category: 'data-access', cloud: 'gcp',
+    roleA: { id: 'bigquery-admin', name: 'BigQuery Admin', cloud: 'gcp' },
+    roleB: { id: 'storage-admin', name: 'Storage Admin', cloud: 'gcp' },
+    rationale: 'BigQuery Admin administra datasets, tabelas e jobs, incluindo export jobs para o Cloud Storage. Storage Admin controla os buckets de destino e a política de acesso deles. A exportação é um caminho de saída de dado que não passa pelos controles de coluna e linha definidos dentro do BigQuery — e o destino, sob a mesma pessoa, pode ser aberto a quem ela quiser.',
+    risk: 'Cópia de dado analítico regulado para um bucket com política própria, escapando do mascaramento de coluna e das políticas de acesso a linha definidas no dataset de origem.',
+    mitigation: [
+      'Segregar administração de BigQuery de administração de storage.',
+      'Restringir buckets de destino de export por organization policy e por VPC Service Controls.',
+      'Ativar Data Access logs no BigQuery e alertar sobre export jobs de datasets classificados.',
+      'Usar column-level e row-level security e revisar quem consegue contorná-las por export.',
+    ],
+    references: [
+      'https://cloud.google.com/bigquery/docs/access-control',
+      'https://cloud.google.com/vpc-service-controls/docs/overview',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'gcp-dataproc-admin-storage-admin',
+    name: 'Dataproc Administrator + Storage Admin',
+    description: 'Rodar processamento distribuído com a service account do cluster e controlar o storage que ele lê e escreve.',
+    severity: 'medium', category: 'data-access', cloud: 'gcp',
+    roleA: { id: 'dataproc-admin', name: 'Dataproc Administrator', cloud: 'gcp' },
+    roleB: { id: 'storage-admin', name: 'Storage Admin', cloud: 'gcp' },
+    rationale: 'Dataproc Administrator cria clusters e submete jobs que executam com a service account do cluster — normalmente a service account padrão do Compute Engine, que costuma ter permissão ampla no projeto. Storage Admin controla os buckets. A combinação dá execução de código arbitrário com o privilégio da service account do cluster e controle sobre a origem e o destino do dado processado.',
+    risk: 'Leitura e cópia de dado em escala com o privilégio de uma service account, sob a aparência de um job analítico legítimo.',
+    mitigation: [
+      'Usar service account dedicada e mínima para os clusters, nunca a padrão do Compute Engine.',
+      'Segregar a operação de clusters de processamento da administração de storage.',
+      'Aplicar VPC Service Controls para conter a saída de dado do perímetro analítico.',
+      'Alertar sobre criação de cluster com service account de alto privilégio.',
+    ],
+    references: [
+      'https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/service-accounts',
+      'https://cloud.google.com/compute/docs/access/service-accounts',
+    ],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+
+  // ── GCP: infraestrutura, rede e entrega ────────────────────────────────
+  {
+    id: 'gcp-compute-admin-osadminlogin',
+    name: 'Compute Admin + Compute OS Admin Login',
+    description: 'Criar a VM com uma service account anexada e entrar nela como root.',
+    severity: 'high', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'compute-admin', name: 'Compute Admin', cloud: 'gcp' },
+    roleB: { id: 'compute-osadminlogin', name: 'Compute OS Admin Login', cloud: 'gcp' },
+    rationale: 'Compute Admin cria instâncias e define qual service account fica anexada a elas. Compute OS Admin Login dá acesso administrativo ao sistema operacional via OS Login. Dentro da VM, o metadata server entrega token da service account anexada sem pedir mais nada. Portanto as duas roles juntas equivalem ao privilégio da service account mais forte que a pessoa consiga anexar.',
+    risk: 'Escalonamento pela via da service account anexada: o privilégio efetivo deixa de ser o das roles do usuário e passa a ser o da identidade que ele consegue colocar numa máquina onde tem root.',
+    mitigation: [
+      'Restringir actAs por service account, controlando quais podem ser anexadas por quem.',
+      'Separar quem provisiona instâncias de quem tem acesso administrativo ao sistema operacional.',
+      'Não usar a service account padrão do Compute Engine; criar service accounts mínimas por carga.',
+      'Ativar OS Login com 2FA e registrar as sessões.',
+    ],
+    references: [
+      'https://cloud.google.com/compute/docs/access/service-accounts',
+      'https://cloud.google.com/compute/docs/oslogin',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'gcp-compute-networkadmin-securityadmin',
+    name: 'Compute Network Admin + Compute Security Admin',
+    description: 'Definir a topologia da rede e as regras de firewall que a protegem.',
+    severity: 'high', category: 'security-operations', cloud: 'gcp',
+    roleA: { id: 'compute-networkadmin', name: 'Compute Network Admin', cloud: 'gcp' },
+    roleB: { id: 'compute-securityadmin', name: 'Compute Security Admin', cloud: 'gcp' },
+    rationale: 'O Google separa as duas de propósito: Compute Network Admin cria redes, sub-redes, rotas e VPN, mas não pode alterar regras de firewall; Compute Security Admin faz o oposto. É essa separação que garante que abrir um caminho de rede e permitir tráfego nele exija duas pessoas. Acumuladas, a fronteira de rede vira decisão unilateral.',
+    risk: 'Rota de saída ou peering criado junto com a regra de firewall que o libera — um caminho de exfiltração completo, montado sem que nenhuma outra equipe veja qualquer das metades.',
+    mitigation: [
+      'Manter a separação que o Google já publica entre as duas roles.',
+      'Definir rede e firewall como código, com revisão obrigatória, e negar alteração manual em produção.',
+      'Aplicar VPC Service Controls como perímetro independente das regras de firewall.',
+      'Alertar sobre regra de firewall com origem 0.0.0.0/0 e sobre criação de peering ou rota customizada.',
+    ],
+    references: [
+      'https://cloud.google.com/vpc/docs/firewalls',
+      'https://cloud.google.com/iam/docs/roles-permissions/compute',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS', 'PCI-DSS'],
+  },
+  {
+    id: 'gcp-binaryauthorization-attestor-policy',
+    name: 'Binary Authorization Attestor Admin + Binary Authorization Policy Editor',
+    description: 'Emitir a atestação que libera a imagem e escrever a política que exige a atestação.',
+    severity: 'critical', category: 'application-management', cloud: 'gcp',
+    roleA: { id: 'binaryauthorization-attestorsadmin', name: 'Binary Authorization Attestor Admin', cloud: 'gcp' },
+    roleB: { id: 'binaryauthorization-policyeditor', name: 'Binary Authorization Policy Editor', cloud: 'gcp' },
+    rationale: 'O Binary Authorization só significa alguma coisa porque a política e a atestação vêm de origens distintas: a política diz "só implante imagem atestada por X" e o atestador X é uma autoridade separada. Attestor Admin administra os atestadores e suas chaves; Policy Editor escreve a política, inclusive adicionar exceções e mudar o modo de enforcement. Quem tem os dois pode atestar o que quiser — ou simplesmente dispensar a exigência.',
+    risk: 'Imagem não revisada em produção com o controle de cadeia de suprimentos formalmente ativo — o painel mostra Binary Authorization habilitado, e ele está: só não impede nada.',
+    mitigation: [
+      'Manter os atestadores sob custódia de uma equipe de segurança de aplicação, separada de quem edita a política.',
+      'Assinar atestações com chaves em Cloud KMS cuja IAM policy exclua o editor da política.',
+      'Alertar sobre alteração da política do Binary Authorization, especialmente inclusão de exceção por imagem.',
+      'Reconciliar periodicamente as imagens em execução contra as atestações emitidas.',
+    ],
+    references: [
+      'https://cloud.google.com/binary-authorization/docs/overview',
+      'https://cloud.google.com/binary-authorization/docs/creating-attestors-cli',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-container-admin-artifactregistry-admin',
+    name: 'Kubernetes Engine Admin + Artifact Registry Administrator',
+    description: 'Publicar a imagem no registro e implantá-la no cluster.',
+    severity: 'high', category: 'application-management', cloud: 'gcp',
+    roleA: { id: 'container-admin', name: 'Kubernetes Engine Admin', cloud: 'gcp' },
+    roleB: { id: 'artifactregistry-admin', name: 'Artifact Registry Administrator', cloud: 'gcp' },
+    rationale: 'Artifact Registry Administrator publica e sobrescreve imagens, inclusive reapontando uma tag existente para outro digest. Kubernetes Engine Admin administra os clusters e os workloads. Juntas, uma identidade pode substituir o conteúdo por trás de uma tag em uso e forçar a reimplantação — sem que o manifesto do cluster mude uma linha.',
+    risk: 'Código não revisado em produção com o manifesto intacto: a auditoria de configuração do cluster não acusa nada porque a tag é a mesma; só a comparação por digest revelaria a troca.',
+    mitigation: [
+      'Referenciar imagens por digest, não por tag, nos manifestos de produção.',
+      'Ativar tags imutáveis nos repositórios de produção do Artifact Registry.',
+      'Segregar quem publica imagem de quem opera cluster.',
+      'Exigir Binary Authorization com atestação de build para os clusters de produção.',
+    ],
+    references: [
+      'https://cloud.google.com/artifact-registry/docs/repositories/immutable-tags',
+      'https://cloud.google.com/kubernetes-engine/docs/concepts/access-control',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  {
+    id: 'gcp-cloudbuild-editor-serviceaccountuser',
+    name: 'Cloud Build Editor + Service Account User',
+    description: 'Escrever o passo de build e escolher a service account com que ele roda.',
+    severity: 'high', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'cloudbuild-editor', name: 'Cloud Build Editor', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccountuser', name: 'Service Account User', cloud: 'gcp' },
+    rationale: 'Um build do Cloud Build é código arbitrário executando com a service account indicada. Cloud Build Editor permite criar e disparar builds com definição inline; Service Account User permite anexar a service account. A esteira de CI vira, então, um interpretador de comandos rodando com o privilégio de uma identidade que a pessoa escolhe.',
+    risk: 'Execução com privilégio de service account por um caminho que a revisão de acesso não cobre — o registro mostra um build, não uma sessão administrativa.',
+    mitigation: [
+      'Restringir quais service accounts podem ser usadas pelo Cloud Build, por condição em actAs.',
+      'Exigir que builds de produção venham de configuração versionada no repositório, não de definição inline.',
+      'Usar service accounts de build mínimas, sem permissão de implantação nem de IAM.',
+      'Auditar builds cuja service account tenha role de Editor ou superior.',
+    ],
+    references: [
+      'https://cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts',
+      'https://cloud.google.com/iam/docs/service-account-permissions',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-cloudfunctions-admin-serviceaccountuser',
+    name: 'Cloud Functions Admin + Service Account User',
+    description: 'Publicar a função e escolher a identidade com que ela executa.',
+    severity: 'high', category: 'privileged-access', cloud: 'gcp',
+    roleA: { id: 'cloudfunctions-admin', name: 'Cloud Functions Admin', cloud: 'gcp' },
+    roleB: { id: 'iam-serviceaccountuser', name: 'Service Account User', cloud: 'gcp' },
+    rationale: 'Cloud Functions Admin implanta funções, define o gatilho e o código. Service Account User permite anexar a service account de runtime. O par produz o mesmo efeito do Cloud Build com actAs: código sob controle da pessoa executando com o privilégio de uma identidade escolhida por ela, sem que nenhuma role privilegiada tenha sido concedida ao usuário.',
+    risk: 'Persistência silenciosa — uma função com gatilho HTTP e service account privilegiada continua ativa e alcançável muito depois de o operador ter saído.',
+    mitigation: [
+      'Restringir actAs por service account e não conceder Service Account User no escopo do projeto.',
+      'Exigir que funções de produção venham do pipeline, negando deploy manual.',
+      'Inventariar funções com gatilho HTTP não autenticado e revisar a service account de cada uma.',
+      'Segregar implantação de função da permissão de escolher a identidade de runtime.',
+    ],
+    references: [
+      'https://cloud.google.com/functions/docs/securing/function-identity',
+      'https://cloud.google.com/iam/docs/service-account-permissions',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-iap-admin-accesscontextmanager',
+    name: 'IAP Policy Admin + Access Context Manager Admin',
+    description: 'Definir quem entra na aplicação e também o nível de acesso que a condição avalia.',
+    severity: 'high', category: 'security-operations', cloud: 'gcp',
+    roleA: { id: 'iap-admin', name: 'IAP Policy Admin', cloud: 'gcp' },
+    roleB: { id: 'accesscontextmanager-policyadmin', name: 'Access Context Manager Admin', cloud: 'gcp' },
+    rationale: 'O acesso contextual do GCP tem duas metades: o IAP decide quem alcança a aplicação, e o Access Context Manager define os access levels — dispositivo gerenciado, faixa de IP, região — que a decisão consulta. Somadas numa identidade, a condição deixa de ser um limite externo: quem não satisfaz o nível de acesso reescreve o nível de acesso.',
+    risk: 'Acesso a aplicação interna a partir de dispositivo ou rede não confiável, com o controle de acesso contextual formalmente ativo e sem nenhum alerta.',
+    mitigation: [
+      'Manter a definição dos access levels numa equipe de segurança corporativa, separada de quem administra o IAP das aplicações.',
+      'Versionar os access levels e exigir revisão de segundo par para qualquer alteração.',
+      'Alertar sobre alteração de access level e de perímetro do VPC Service Controls.',
+      'Revisar periodicamente quais aplicações estão atrás do IAP e com qual nível exigido.',
+    ],
+    references: [
+      'https://cloud.google.com/iap/docs/concepts-overview',
+      'https://cloud.google.com/access-context-manager/docs/overview',
+    ],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gcp-billing-admin-costsmanager',
+    name: 'Billing Account Administrator + Billing Account Costs Manager',
+    description: 'Administrar a conta de faturamento e também os orçamentos e alertas que a vigiam.',
+    severity: 'low', category: 'financial-control', cloud: 'gcp',
+    roleA: { id: 'billing-admin', name: 'Billing Account Administrator', cloud: 'gcp' },
+    roleB: { id: 'billing-costsmanager', name: 'Billing Account Costs Manager', cloud: 'gcp' },
+    rationale: 'Billing Account Costs Manager existe para que orçamentos, alertas e exportação de custo sejam geridos por quem acompanha a despesa, não necessariamente por quem administra a conta de faturamento. Somar as duas não amplia permissão relevante — Billing Account Administrator já cobre —, mas apaga a distinção: o orçamento deixa de ser um controle e vira um parâmetro de quem gasta.',
+    risk: 'Limite de orçamento ajustado para acomodar o consumo em vez de sinalizá-lo, sem que ninguém em finanças participe da decisão.',
+    mitigation: [
+      'Atribuir Billing Account Costs Manager a finanças ou FinOps, sem sobreposição com a administração da conta.',
+      'Exportar dados de faturamento para BigQuery num projeto sob controle de finanças.',
+      'Alertar sobre alteração de valor de budget e sobre remoção de destinatário de alerta.',
+    ],
+    references: ['https://cloud.google.com/billing/docs/how-to/billing-access'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  // ═══════════════════════════════════════════════════════════════════════
+  // Google Workspace — admin roles
+  //
+  // São catorze roles pré-construídas, e Super Admin abrange todas as outras.
+  // Isso muda o que uma regra pode dizer: no Workspace, quase nenhum par
+  // "acrescenta" permissão sobre Super Admin. O que os pares abaixo apontam é
+  // acúmulo de FUNÇÕES que deveriam ficar em pessoas diferentes — e, em dois
+  // casos (Multi-party approval, Directory Sync), a anulação de um controle
+  // que o Google desenhou exatamente para exigir uma segunda pessoa.
+  //
+  // O catálogo é proporcionalmente menor que o de GCP e AWS porque o conjunto
+  // de roles é menor. Inflá-lo com pares redundantes daria a impressão de
+  // cobertura sem acrescentar sinal.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'gws-superadmin-multipartyapproval',
+    name: 'Super Admin + Multi-party approval Admin',
+    description: 'Executar a ação sensível e aprovar a si mesmo — o controle de dupla pessoa anulado.',
+    severity: 'critical', category: 'privileged-access', cloud: 'google-workspace',
+    roleA: { id: 'super-admin', name: 'Super Admin', cloud: 'google-workspace' },
+    roleB: { id: 'multi-party-approval-admin', name: 'Multi-party approval Admin', cloud: 'google-workspace' },
+    rationale: 'A aprovação multi-party do Workspace existe por um motivo só: obrigar que ações sensíveis de um administrador — desligar a verificação em duas etapas, alterar configurações críticas — sejam aprovadas por outro. Super Admin é quem executa essas ações; Multi-party approval Admin é quem revisa e aprova ou nega os pedidos. Numa identidade só, o controle deixa de ser um segundo par de olhos e vira uma etapa de confirmação.',
+    risk: 'Desativação da 2SV ou de outra proteção do domínio inteiro, com o registro mostrando pedido aprovado e o processo aparentemente respeitado.',
+    mitigation: [
+      'Atribuir Multi-party approval Admin exclusivamente a administradores que não tenham Super Admin.',
+      'Manter no mínimo duas pessoas com o papel de aprovação, em áreas diferentes.',
+      'Revisar o log de auditoria de aprovações procurando pedido e aprovação do mesmo ator.',
+      'Alertar quando qualquer ação sensível for aprovada sem intervalo humano plausível entre pedido e aprovação.',
+    ],
+    references: [
+      'https://support.google.com/a/answer/13790448',
+      'https://support.google.com/a/answer/2405986',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gws-multipartyapproval-usermanagement',
+    name: 'Multi-party approval Admin + User Management Admin',
+    description: 'Aprovar ações sensíveis de outros admins e, ao mesmo tempo, controlar as contas deles.',
+    severity: 'high', category: 'privileged-access', cloud: 'google-workspace',
+    roleA: { id: 'multi-party-approval-admin', name: 'Multi-party approval Admin', cloud: 'google-workspace' },
+    roleB: { id: 'user-management-admin', name: 'User Management Admin', cloud: 'google-workspace' },
+    rationale: 'O aprovador multi-party precisa ser independente de quem pede — é a única propriedade que faz o controle funcionar. User Management Admin cria contas e altera credenciais de usuários não-administradores. Com as duas, a pessoa pode criar a conta que faz o pedido e aprová-lo, produzindo um par de atores formalmente distintos que, na prática, é uma pessoa.',
+    risk: 'O log de aprovação mostra dois participantes e satisfaz a exigência de dupla custódia, enquanto os dois estão sob o mesmo controle — é uma falha que a evidência de auditoria não revela por si.',
+    mitigation: [
+      'Reservar o papel de aprovação a administradores sem qualquer permissão de gestão de usuários.',
+      'Revisar as contas criadas nos dias anteriores a cada aprovação sensível.',
+      'Exigir que aprovador e solicitante estejam em unidades organizacionais e áreas distintas.',
+    ],
+    references: ['https://support.google.com/a/answer/13790448'],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF'],
+  },
+  {
+    id: 'gws-directorysync-superadmin',
+    name: 'Directory Sync Admin + Super Admin',
+    description: 'Controlar a sincronização que é a fonte de verdade das contas e também o destino dela.',
+    severity: 'critical', category: 'identity-management', cloud: 'google-workspace',
+    roleA: { id: 'directory-sync-admin', name: 'Directory Sync Admin', cloud: 'google-workspace' },
+    roleB: { id: 'super-admin', name: 'Super Admin', cloud: 'google-workspace' },
+    rationale: 'Quando o Workspace sincroniza com um diretório externo, a sincronização passa a ser a origem das contas — criar, suspender e remover deixam de ser atos no console e viram consequência do que existe do outro lado. Directory Sync Admin configura esse processo: qual origem, qual escopo, quais regras de mapeamento. Super Admin administra o destino. Uma identidade com as duas controla a fonte e o resultado, e não sobra nenhuma reconciliação independente.',
+    risk: 'Conta injetada pela sincronização com aparência de provisionamento legítimo, ou remoção em massa disfarçada de correção de escopo — nos dois casos o console mostra apenas o efeito, e a causa está numa configuração que ninguém mais lê.',
+    mitigation: [
+      'Segregar a configuração da sincronização da administração do tenant.',
+      'Alertar sobre alteração de escopo ou de regra de mapeamento do Directory Sync.',
+      'Reconciliar periodicamente o conjunto de contas do Workspace contra o diretório de origem, por um terceiro.',
+      'Exigir aprovação registrada para qualquer mudança na configuração de sincronização.',
+    ],
+    references: [
+      'https://support.google.com/a/answer/13718656',
+      'https://support.google.com/a/answer/2405986',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gws-directorysync-usermanagement',
+    name: 'Directory Sync Admin + User Management Admin',
+    description: 'Alterar contas pelo console e pela sincronização — dois caminhos, nenhuma reconciliação.',
+    severity: 'high', category: 'identity-management', cloud: 'google-workspace',
+    roleA: { id: 'directory-sync-admin', name: 'Directory Sync Admin', cloud: 'google-workspace' },
+    roleB: { id: 'user-management-admin', name: 'User Management Admin', cloud: 'google-workspace' },
+    rationale: 'User Management Admin cria contas, renomeia usuários e altera senhas diretamente. Directory Sync Admin controla o processo que faz a mesma coisa em massa, a partir de outra fonte. Ter os dois significa poder produzir o mesmo resultado por duas vias e escolher, para cada caso, a que gera menos rastro — e nenhuma equipe fica com a visão completa do ciclo de vida das contas.',
+    risk: 'Divergência entre o diretório de origem e o Workspace que ninguém detecta, porque quem faria a comparação é quem controla os dois lados.',
+    mitigation: [
+      'Definir uma única via autoritativa para o ciclo de vida das contas e desabilitar a criação manual onde a sincronização é a fonte.',
+      'Segregar a configuração da sincronização da operação de usuários.',
+      'Rodar reconciliação periódica origem-destino por uma equipe que não opera nenhum dos dois.',
+      'Alertar sobre criação manual de conta em unidades organizacionais cobertas pela sincronização.',
+    ],
+    references: ['https://support.google.com/a/answer/13718656'],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  {
+    id: 'gws-usermanagement-groupsadmin',
+    name: 'User Management Admin + Groups Admin',
+    description: 'Criar a conta e colocá-la no grupo que carrega o acesso.',
+    severity: 'high', category: 'access-provisioning', cloud: 'google-workspace',
+    roleA: { id: 'user-management-admin', name: 'User Management Admin', cloud: 'google-workspace' },
+    roleB: { id: 'groups-admin', name: 'Groups Admin', cloud: 'google-workspace' },
+    rationale: 'No Workspace o grupo é o veículo do acesso: compartilhamento de Drive, listas de distribuição, associação usada por aplicações e — quando há Cloud Identity — concessões de IAM no GCP. User Management Admin cria a conta; Groups Admin decide de que grupos ela participa e ainda gere o rótulo de segurança dos grupos. É o par criar-identidade / conceder-acesso, que separar é o caso de uso original de SoD.',
+    risk: 'Uma conta nova entra num grupo com acesso a dado sensível sem que ninguém além de quem a criou participe da decisão — e a associação de grupo não costuma estar sob revisão de acesso formal.',
+    mitigation: [
+      'Manter a criação de contas no fluxo de RH e a curadoria de grupos nos donos de cada grupo.',
+      'Usar rótulo de segurança nos grupos que carregam acesso e restringir quem pode alterá-lo.',
+      'Revisar periodicamente a associação dos grupos com acesso a dado sensível.',
+      'Alertar sobre criação de usuário seguida de inclusão em grupo rotulado como de segurança.',
+    ],
+    references: [
+      'https://support.google.com/a/answer/2405986',
+      'https://support.google.com/a/answer/13556234',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'CIS'],
+  },
+  {
+    id: 'gws-usermanagement-helpdesk',
+    name: 'User Management Admin + Help Desk Admin',
+    description: 'Concentrar todo o ciclo da credencial de um usuário numa pessoa só.',
+    severity: 'medium', category: 'identity-management', cloud: 'google-workspace',
+    roleA: { id: 'user-management-admin', name: 'User Management Admin', cloud: 'google-workspace' },
+    roleB: { id: 'help-desk-admin', name: 'Help Desk Admin', cloud: 'google-workspace' },
+    rationale: 'Help Desk Admin é, por desenho, um recorte estreito de User Management Admin: só reset de senha de não-administradores. Existe para que a operação de mesa de ajuda não precise da role ampla. Acumular as duas na mesma pessoa não acrescenta permissão, mas indica que o recorte não está sendo usado — e concentra criação de conta e reset de credencial onde a organização pretendia separar.',
+    risk: 'Uma conta criada e tida sob controle de credencial pela mesma pessoa, sem que exista um segundo operador capaz de notar o padrão.',
+    mitigation: [
+      'Atribuir Help Desk Admin à operação de suporte e User Management Admin à equipe de identidade, sem sobreposição.',
+      'Delimitar as duas por unidade organizacional, em vez de conceder no domínio inteiro.',
+      'Alertar sobre reset de senha em contas criadas nas últimas 48h pelo mesmo administrador.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['ISO27001', 'CIS'],
+  },
+  {
+    id: 'gws-helpdesk-mobileadmin',
+    name: 'Help Desk Admin + Mobile Admin',
+    description: 'Resetar a senha e controlar o dispositivo em que o segundo fator vive.',
+    severity: 'medium', category: 'identity-management', cloud: 'google-workspace',
+    roleA: { id: 'help-desk-admin', name: 'Help Desk Admin', cloud: 'google-workspace' },
+    roleB: { id: 'mobile-admin', name: 'Mobile Admin', cloud: 'google-workspace' },
+    rationale: 'Help Desk Admin reseta senhas de não-administradores. Mobile Admin provisiona e aprova dispositivos, define políticas e pode bloquear ou apagar aparelhos. Numa organização onde a verificação em duas etapas depende do celular gerenciado, quem controla a senha e quem controla o aparelho controla os dois fatores — a segunda barreira deixa de ser independente da primeira.',
+    risk: 'Takeover de conta de usuário final passando pelos dois fatores, com os eventos parecendo operações rotineiras de suporte.',
+    mitigation: [
+      'Separar a operação de credencial da operação de dispositivos.',
+      'Preferir chaves de segurança físicas às aprovações no celular para contas de maior risco.',
+      'Alertar sobre aprovação de dispositivo novo em seguida a um reset de senha do mesmo usuário.',
+      'Registrar e revisar bloqueios e limpezas remotas de dispositivo.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gws-groupsadmin-servicesadmin',
+    name: 'Groups Admin + Services Admin',
+    description: 'Criar o grupo que dá acesso e ligar o serviço a que ele dá acesso.',
+    severity: 'high', category: 'access-provisioning', cloud: 'google-workspace',
+    roleA: { id: 'groups-admin', name: 'Groups Admin', cloud: 'google-workspace' },
+    roleB: { id: 'services-admin', name: 'Services Admin', cloud: 'google-workspace' },
+    rationale: 'Services Admin liga e desliga serviços, altera suas configurações e permissões — inclusive as regras de compartilhamento do Drive e as políticas de classificação. Groups Admin decide quem está nos grupos que essas configurações usam como público-alvo. Juntas, uma identidade define tanto o que o serviço permite quanto quem se beneficia disso, sem que nenhum dono de serviço participe.',
+    risk: 'Compartilhamento externo habilitado para um grupo criado pela mesma pessoa — um caminho de saída de dado montado inteiramente dentro do console de administração, sem nenhuma etapa de aprovação.',
+    mitigation: [
+      'Segregar a curadoria de grupos da administração de serviços.',
+      'Delimitar Services Admin por unidade organizacional, e revisar as exceções de compartilhamento externo.',
+      'Alertar sobre alteração de política de compartilhamento do Drive e sobre habilitação de serviço para grupo.',
+      'Revisar trimestralmente os grupos usados como alvo de configuração de serviço.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR', 'CIS'],
+  },
+  {
+    id: 'gws-servicesadmin-storageadmin',
+    name: 'Services Admin + Storage Admin',
+    description: 'Definir as regras de compartilhamento do Drive e administrar o storage que elas governam.',
+    severity: 'medium', category: 'data-access', cloud: 'google-workspace',
+    roleA: { id: 'services-admin', name: 'Services Admin', cloud: 'google-workspace' },
+    roleB: { id: 'storage-admin', name: 'Storage Admin', cloud: 'google-workspace' },
+    rationale: 'Storage Admin dá acesso total às configurações de Drive e aos relatórios de uso, incluindo a lista de drives compartilhados e quem mais consome espaço. Services Admin define as regras de compartilhamento e as políticas de classificação. Concentradas, a pessoa que enxerga onde estão os dados é a mesma que decide quem pode compartilhá-los para fora.',
+    risk: 'Alteração de política de compartilhamento aplicada exatamente aos drives que a pessoa identificou como relevantes, sem que nenhum dono de dado participe.',
+    mitigation: [
+      'Segregar a administração de configuração de serviço da administração de storage e relatórios.',
+      'Definir a política de compartilhamento externo no nível do domínio e exigir aprovação para exceções por unidade organizacional.',
+      'Revisar os drives compartilhados com acesso externo como item recorrente.',
+      'Alertar sobre mudanças na política de compartilhamento do Drive.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['ISO27001', 'LGPD', 'GDPR'],
+  },
+  {
+    id: 'gws-servicesadmin-mobileadmin',
+    name: 'Services Admin + Mobile Admin',
+    description: 'Configurar os serviços e também as políticas dos dispositivos que os acessam.',
+    severity: 'medium', category: 'security-operations', cloud: 'google-workspace',
+    roleA: { id: 'services-admin', name: 'Services Admin', cloud: 'google-workspace' },
+    roleB: { id: 'mobile-admin', name: 'Mobile Admin', cloud: 'google-workspace' },
+    rationale: 'A postura de acesso móvel do Workspace tem duas camadas: o que o serviço permite (Services Admin) e em que dispositivos ele pode ser usado (Mobile Admin — política de tela de bloqueio, criptografia, aprovação de aparelho). Quem administra as duas pode afrouxar a exigência de dispositivo e ampliar o acesso ao serviço na mesma decisão, sem nenhum contrapeso.',
+    risk: 'Acesso a dado corporativo em aparelho não gerenciado ou sem criptografia, com a política de gerenciamento formalmente ativa mas relaxada para o caso.',
+    mitigation: [
+      'Separar a administração de endpoint da administração de serviços.',
+      'Definir o gerenciamento avançado de dispositivos no nível do domínio, com exceções aprovadas e temporárias.',
+      'Alertar sobre alteração de política de dispositivo e sobre aprovação de aparelho fora de conformidade.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gws-groupsadmin-groupseditor',
+    name: 'Groups Admin + Groups Editor',
+    description: 'As duas roles de grupo na mesma pessoa — a distinção que o Google criou some.',
+    severity: 'low', category: 'access-provisioning', cloud: 'google-workspace',
+    roleA: { id: 'groups-admin', name: 'Groups Admin', cloud: 'google-workspace' },
+    roleB: { id: 'groups-editor', name: 'Groups Editor', cloud: 'google-workspace' },
+    rationale: 'Groups Editor é Groups Admin menos uma coisa: o privilégio de adicionar ou remover o rótulo de segurança de um grupo. Essa exclusão é o ponto da role — o rótulo de segurança é o que marca um grupo como veículo de acesso, e alterá-lo muda o regime de controle. Ter as duas na mesma identidade devolve o privilégio excluído e apaga a distinção.',
+    risk: 'Remoção do rótulo de segurança de um grupo que concede acesso, tirando-o do escopo dos controles que dependem do rótulo — sem que nenhuma permissão apareça como alterada.',
+    mitigation: [
+      'Escolher uma das duas roles por pessoa; se o rótulo de segurança precisa ser gerido, é Groups Admin, e ela deve ser rara.',
+      'Alertar sobre remoção de rótulo de segurança de qualquer grupo.',
+      'Revisar periodicamente os grupos com acesso sensível e confirmar que estão rotulados.',
+    ],
+    references: [
+      'https://support.google.com/a/answer/13556234',
+      'https://support.google.com/a/answer/2405986',
+    ],
+    frameworks: ['ISO27001'],
+  },
+  {
+    id: 'gws-groupsadmin-groupsreader',
+    name: 'Groups Admin + Groups Reader',
+    description: 'A role de leitura dos grupos nas mãos de quem os edita.',
+    severity: 'low', category: 'compliance-audit', cloud: 'google-workspace',
+    roleA: { id: 'groups-admin', name: 'Groups Admin', cloud: 'google-workspace' },
+    roleB: { id: 'groups-reader', name: 'Groups Reader', cloud: 'google-workspace' },
+    rationale: 'Groups Reader existe para que auditoria e áreas de risco leiam a composição dos grupos sem poder alterá-la — é o ponto de observação sobre o principal veículo de acesso do Workspace. Somada a Groups Admin não acrescenta nenhuma permissão, e faz um inventário de "quem revisa os grupos" apontar para quem os administra.',
+    risk: 'A revisão de associação de grupo deixa de ser independente, e a organização não procura por um revisor real porque acredita já ter um.',
+    mitigation: [
+      'Reservar Groups Reader para auditoria interna, sem sobreposição com Groups Admin ou Groups Editor.',
+      'Incluir a sobreposição das duas roles no relatório periódico de revisão de acesso.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gws-resselleradmin-superadmin',
+    name: 'Reseller Admin + Super Admin',
+    description: 'Fazer os pedidos e administrar o tenant que os consome.',
+    severity: 'high', category: 'financial-control', cloud: 'google-workspace',
+    roleA: { id: 'reseller-admin', name: 'Reseller Admin', cloud: 'google-workspace' },
+    roleB: { id: 'super-admin', name: 'Super Admin', cloud: 'google-workspace' },
+    rationale: 'Reseller Admin coloca pedidos de Workspace e de outros serviços, transfere clientes revendidos, acessa faturas e altera métodos de pagamento — e ainda acessa o console de administração dos clientes. Super Admin administra o tenant. Concentradas, a compra e o consumo ficam na mesma pessoa, e o acesso administrativo que a relação de revenda concede não tem nenhum contrapeso do lado do cliente.',
+    risk: 'Licenças e serviços contratados sem passar por suprimentos, com a despesa e o acesso administrativo controlados pelo mesmo ator — e a relação de revenda é um caminho de acesso que vem de fora do tenant.',
+    mitigation: [
+      'Não acumular papel de revenda com administração do tenant; se o parceiro precisa de acesso, use conta nominal com validade.',
+      'Exigir aprovação de suprimentos registrada para qualquer pedido novo.',
+      'Revisar periodicamente quais parceiros têm acesso ao console e com qual escopo.',
+      'Conciliar mensalmente licenças contratadas contra licenças atribuídas e usuários ativos.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gws-resselleradmin-googlevoiceadmin',
+    name: 'Reseller Admin + Google Voice Admin',
+    description: 'Provisionar números e licenças e também colocar o pedido que os paga.',
+    severity: 'low', category: 'financial-control', cloud: 'google-workspace',
+    roleA: { id: 'reseller-admin', name: 'Reseller Admin', cloud: 'google-workspace' },
+    roleB: { id: 'google-voice-admin', name: 'Google Voice Admin', cloud: 'google-workspace' },
+    rationale: 'Google Voice Admin provisiona números, atribui licenças a usuários e gere portabilidade — cada operação com custo recorrente por licença. Reseller Admin coloca os pedidos e vê a fatura. Comprar e distribuir na mesma pessoa é o mesmo padrão de Billing somado a License Administrator no Entra ID: não há quem confronte a despesa contra o consumo real.',
+    risk: 'Licenças de voz provisionadas acima da necessidade, com o custo aparecendo diluído na fatura consolidada do parceiro.',
+    mitigation: [
+      'Segregar o provisionamento de licenças da colocação de pedidos.',
+      'Conciliar mensalmente números e licenças de Voice ativos contra usuários que de fato os usam.',
+      'Exigir aprovação para aumento de licenças acima de um limite definido.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['SOX', 'ISO27001'],
+  },
+  {
+    id: 'gws-resselleradmin-indirectresselleradmin',
+    name: 'Reseller Admin + Indirect Reseller Admin',
+    description: 'Os dois papéis da cadeia de revenda na mesma identidade.',
+    severity: 'low', category: 'financial-control', cloud: 'google-workspace',
+    roleA: { id: 'reseller-admin', name: 'Reseller Admin', cloud: 'google-workspace' },
+    roleB: { id: 'indirect-reseller-admin', name: 'Indirect Reseller Admin', cloud: 'google-workspace' },
+    rationale: 'O Google distingue o revendedor autorizado do revendedor indireto que trabalha sob um distribuidor, e as duas roles refletem posições diferentes na cadeia comercial. Acumulá-las numa identidade significa que a mesma pessoa opera os dois lados de uma transferência de cliente — a operação que move um tenant de uma carteira para outra.',
+    risk: 'Transferência de cliente entre carteiras sem contraparte independente, alterando quem fatura e quem tem acesso ao console do tenant.',
+    mitigation: [
+      'Separar os papéis conforme a posição real na cadeia; acumulação normalmente indica configuração legada.',
+      'Exigir confirmação do cliente, fora do console, para qualquer transferência.',
+      'Revisar periodicamente as relações de revenda ativas.',
+    ],
+    references: ['https://support.google.com/a/answer/2405986'],
+    frameworks: ['SOX'],
+  },
+
+  // ── Cruzamento Google: GCP ↔ Workspace ─────────────────────────────────
+  // O Cloud Identity é o mesmo dos dois lados: a conta que entra no Admin
+  // console do Workspace é a conta que aparece na allow policy do GCP. Por
+  // isso estes dois cruzamentos existem, e por isso não há equivalente entre
+  // provedores diferentes — lá não há plano de identidade compartilhado.
+  {
+    id: 'gws-superadmin-gcp-orgadmin-cross',
+    name: 'Super Admin + Organization Administrator',
+    description: 'Controlar a fonte de identidade da organização e a hierarquia inteira do GCP que confia nela.',
+    severity: 'critical', category: 'privileged-access', cloud: 'google-cross',
+    roleA: { id: 'super-admin', name: 'Super Admin', cloud: 'google-workspace' },
+    roleB: { id: 'resourcemanager-organizationadmin', name: 'Organization Administrator', cloud: 'gcp' },
+    rationale: 'A organização do GCP é ancorada no domínio do Cloud Identity ou do Workspace: os principals das allow policies são as contas administradas naquele console. Super Admin pode redefinir a senha e os métodos de recuperação de qualquer usuário do domínio — inclusive dos que detêm roles privilegiadas no GCP — e criar contas novas. Organization Administrator administra a hierarquia e as políticas do GCP. Somadas, a pessoa controla quem existe e o que essa existência pode fazer, dos dois lados da fronteira.',
+    risk: 'Assumir a conta de qualquer administrador do GCP a partir do console do Workspace, sem tocar em nenhuma allow policy — o log do GCP registra ação do titular legítimo, e a investigação começa pela pessoa errada.',
+    mitigation: [
+      'Manter as contas Super Admin do Workspace separadas das identidades com roles privilegiadas no GCP.',
+      'Exigir chave de segurança física em todas as contas Super Admin, e mantê-las em número mínimo.',
+      'Alertar no SIEM sobre reset de senha ou de método de recuperação de contas que detenham roles privilegiadas no GCP.',
+      'Usar Privileged Access Manager no GCP para que o privilégio seja temporário e aprovado, reduzindo a janela útil de um takeover.',
+    ],
+    references: [
+      'https://cloud.google.com/architecture/identity/overview-google-authentication',
+      'https://support.google.com/a/answer/9011373',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
+  {
+    id: 'gws-usermanagement-gcp-securityadmin-cross',
+    name: 'User Management Admin + Security Admin',
+    description: 'Criar a identidade no Workspace e conceder acesso a ela no GCP.',
+    severity: 'high', category: 'identity-management', cloud: 'google-cross',
+    roleA: { id: 'user-management-admin', name: 'User Management Admin', cloud: 'google-workspace' },
+    roleB: { id: 'iam-securityadmin', name: 'Security Admin', cloud: 'gcp' },
+    rationale: 'User Management Admin cria e administra contas no domínio — inclusive renomear e trocar credencial. Security Admin altera as allow policies do GCP, decidindo quais principals têm quais roles. É o par criar-identidade / conceder-acesso atravessando a fronteira entre o plano de identidade e o plano de recursos: a mesma pessoa produz o principal e o privilégio dele.',
+    risk: 'Uma conta criada no Workspace e imediatamente concedida em projetos do GCP, sem que nenhuma equipe de plataforma participe — e revisões de acesso que olham só um dos lados não veem o ciclo completo.',
+    mitigation: [
+      'Segregar a operação de identidade no Workspace da concessão de IAM no GCP.',
+      'Restringir concessões a grupos, e manter a curadoria dos grupos privilegiados fora da equipe de identidade.',
+      'Aplicar a constraint iam.allowedPolicyMemberDomains para limitar quem pode ser concedido.',
+      'Correlacionar criação de conta no Workspace com SetIamPolicy no GCP na mesma janela de tempo.',
+    ],
+    references: [
+      'https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys',
+      'https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains',
+    ],
+    frameworks: ['SOX', 'ISO27001', 'NIST-CSF', 'CIS'],
+  },
 ]
 
 export function getSoDRuleById(id: string): SoDRule | undefined {
   return SOD_RULES.find((r) => r.id === id)
 }
 
-/** Busca uma regra SoD para um par de roles (nome + cloud), em qualquer ordem. */
+/**
+ * Busca uma regra SoD para um par de roles (nome + plataforma), em qualquer ordem.
+ *
+ * Um par de plataformas de provedores diferentes nunca casa — não porque haja
+ * um teste explícito aqui, mas porque nenhuma regra do catálogo tem as duas
+ * pontas em provedores distintos. Ver o cabeçalho deste arquivo.
+ */
 export function findSoDRuleForPair(
-  nameA: string, cloudA: 'entra-id' | 'azure-rbac',
-  nameB: string, cloudB: 'entra-id' | 'azure-rbac',
+  nameA: string, cloudA: SoDPlatform,
+  nameB: string, cloudB: SoDPlatform,
 ): SoDRule | undefined {
   const an = nameA.trim().toLowerCase()
   const bn = nameB.trim().toLowerCase()

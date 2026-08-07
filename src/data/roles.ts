@@ -4049,13 +4049,16 @@ export const CATEGORY_META: Record<
   RoleCategory,
   { label: string; textColor: string; bgColor: string; darkText: string; darkBg: string }
 > = {
-  Identity: { label: 'Identity', textColor: '#0a4f8c', bgColor: '#e8f1fb', darkText: '#85b7eb', darkBg: '#0c2a47' },
-  Application: { label: 'Application', textColor: '#1a5c28', bgColor: '#e6f5e8', darkText: '#97c459', darkBg: '#1a2e10' },
-  Security: { label: 'Security', textColor: '#9a2020', bgColor: '#fde8e8', darkText: '#f09595', darkBg: '#3a1414' },
-  Compliance: { label: 'Compliance', textColor: '#7a4a00', bgColor: '#fef3e2', darkText: '#ef9f27', darkBg: '#3a2a0a' },
-  M365: { label: 'Microsoft 365', textColor: '#5a1a8a', bgColor: '#f0e8fb', darkText: '#af9aec', darkBg: '#241a3a' },
-  Device: { label: 'Device', textColor: '#004f62', bgColor: '#e0f3f7', darkText: '#5dcaa5', darkBg: '#0a2e2a' },
-  Other: { label: 'Other', textColor: '#444441', bgColor: '#f1f0f0', darkText: '#b4b2a9', darkBg: '#2a2a28' },
+  // Nível 3: categoria é rótulo, não risco. Sete matizes distinguiam sete
+  // palavras que já se distinguem sozinhas — e colidiam com a escada de tier
+  // na mesma linha do cabeçalho da role.
+  Identity: { label: 'Identity', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  Application: { label: 'Application', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  Security: { label: 'Security', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  Compliance: { label: 'Compliance', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  M365: { label: 'Microsoft 365', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  Device: { label: 'Device', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
+  Other: { label: 'Other', textColor: '#5a6370', bgColor: '#f2f4f7', darkText: '#b0b7c2', darkBg: '#232c3a' },
 }
 
 export { EAM_META } from './tierMeta'

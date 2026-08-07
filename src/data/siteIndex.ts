@@ -4,6 +4,7 @@ import {
   GCP_ROLES_COUNT, GCP_PERMISSIONS_COUNT, GCP_SERVICES_COUNT,
   GWS_ROLES_COUNT, GWS_PRIVILEGES_COUNT, GWS_SCOPES_COUNT,
   IBM_ROLES_COUNT, IBM_ACCESS_PRIMITIVES_COUNT, IBM_CLASSIC_PERMISSIONS_COUNT,
+  SOD_RULES_COUNT,
 } from './counts'
 import type { TranslationKey } from '@/i18n/dictionary'
 
@@ -88,7 +89,7 @@ export const SITE_TOOLS: SiteIndexEntry[] = [
   { href: '/search',           label: 'Busca global',        desc: 'idx.search',    count: 4603, noun: 'noun.roles' },
   { href: '/permission-scope', label: 'Permission Scope',    desc: 'idx.scope',     count: -1,   noun: 'noun.items' },
   { href: '/compare',          label: 'Multi-Cloud Compare', desc: 'idx.compare',   count: -1,   noun: 'noun.items' },
-  { href: '/sod',              label: 'SoD Analyzer',        desc: 'idx.sod',       count: 96,   noun: 'noun.rules' },
+  { href: '/sod',              label: 'SoD Analyzer',        desc: 'idx.sod',       count: SOD_RULES_COUNT,   noun: 'noun.rules' },
   { href: '/assessment',       label: 'Assessment',          desc: 'idx.assessment',count: -1,   noun: 'noun.items' },
   { href: '/evaluate',         label: 'Role Evaluator',      desc: 'idx.evaluate',  count: -1,   noun: 'noun.items' },
   { href: '/advisor',          label: 'Role Advisor',        desc: 'idx.advisor',   count: -1,   noun: 'noun.items' },

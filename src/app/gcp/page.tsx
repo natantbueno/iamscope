@@ -3,20 +3,13 @@
 import { themedText } from '@/lib/readableColor'
 import AppShell from '@/components/AppShell'
 import { useT } from '@/i18n/LanguageProvider'
+import { KPI_TONE } from '@/lib/kpiTone'
 import { Rich } from '@/i18n/Rich'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GCP_CATEGORIES } from '@/data/gcp'
 import Link from 'next/link'
 import { ShieldAlert, Cloud, Database, Server, Key, Shield, Network, Lock, HardDrive, Box, Zap, BrainCircuit, BarChart2, Activity, CreditCard, Settings, Code, Cpu, ChevronRight } from 'lucide-react'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
-
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
-  Kubernetes: '#326ce5', Database: '#7c3aed', Networking: '#0369a1',
-  Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  AI: '#8b5cf6', Analytics: '#14b8a6', Observability: '#ca8a04',
-  Billing: '#6b7280', Management: '#475569',
-}
 
 const CAT_ICONS: Record<string, React.ReactNode> = {
   IAM: <Shield size={15} />, Compute: <Server size={15} />, Storage: <HardDrive size={15} />,
@@ -54,17 +47,17 @@ export default function GcpDashboard() {
           {/* Stat Cards */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: 'Total Roles',   value: total,              href: '/gcp/roles',                color: '#4285f4' },
-              { label: 'Privilegiadas', value: privileged,         href: '/gcp/roles?filter=privileged', color: '#dc2626' },
-              { label: 'Admin/Owner',   value: adminRoles,         href: '/gcp/roles?tier=Admin',     color: '#ea580c' },
-              { label: 'Categorias',    value: GCP_CATEGORIES.length, href: '/gcp/roles',             color: '#7c3aed' },
+              { label: t('kpi.totalRoles'),   value: total,              href: '/gcp/roles',                tone: 'accent' as const },
+              { label: t('count.privileged'), value: privileged,         href: '/gcp/roles?filter=privileged', tone: 'danger' as const },
+              { label: t('kpi.adminOwner'),   value: adminRoles,         href: '/gcp/roles?tier=Admin',     tone: 'neutral' as const },
+              { label: t('count.categories'), value: GCP_CATEGORIES.length, href: '/gcp/roles',             tone: 'neutral' as const },
             ].map(s => (
               <Link key={s.label} href={s.href}
                 className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-lg p-4 shadow-sm hover:border-csp-gcp/40 dark:hover:border-csp-gcp/30 transition-colors group">
                 <p className="text-3xs text-fg-muted uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  {s.label}<ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {s.label}<ChevronRight size={10} className="reveal-on-hover" />
                 </p>
-                <p className="text-display font-bold leading-none themed-color" style={themedText(s.color, undefined, 3)}>{s.value}</p>
+                <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
               </Link>
             ))}
           </div>
@@ -116,7 +109,7 @@ export default function GcpDashboard() {
               {catCounts.map(({ cat, count }) => (
                 <Link key={cat} href={`/gcp/roles?category=${cat}`}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-[#e8f4f0] dark:hover:bg-success-soft hover:border-csp-gcp/40 transition-colors">
-                  <span className="shrink-0" style={{ color: CAT_COLORS[cat] || '#4285f4' }}>{CAT_ICONS[cat] ?? <Shield size={15} />}</span>
+                  <span className="shrink-0 text-fg-subtle">{CAT_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
                     <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
                     <p className="text-2xs text-fg-subtle">{count} roles</p>

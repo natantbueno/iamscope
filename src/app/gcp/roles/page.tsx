@@ -17,14 +17,6 @@ import DeprecatedBadge from '@/components/DeprecatedBadge'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
-const CAT_COLORS: Record<string, string> = {
-  IAM: '#dc2626', Compute: '#0891b2', Storage: '#16a34a', BigQuery: '#4285f4',
-  Kubernetes: '#326ce5', Database: '#7c3aed', Networking: '#0369a1',
-  Security: '#b91c1c', DevOps: '#ea580c', Serverless: '#f59e0b',
-  AI: '#8b5cf6', Analytics: '#14b8a6', Observability: '#ca8a04',
-  Billing: '#6b7280', Management: '#475569',
-}
-
 function GcpRolesContent() {
   const t = useT()
   const params = useSearchParams()
@@ -93,19 +85,18 @@ function GcpRolesContent() {
           <ClassificationBadge size="sm" className="mr-1" />
           {activeCategory && (
             <button onClick={() => setActiveCat(null)}
-              className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border font-medium"
-              style={{ background: (CAT_COLORS[activeCategory] || '#4285f4') + '18', color: CAT_COLORS[activeCategory] || '#4285f4', borderColor: (CAT_COLORS[activeCategory] || '#4285f4') + '60' }}>
+              className="inline-flex items-center gap-1 text-tiny px-3 py-1 rounded-full border font-medium bg-surface-alt text-fg border-line-strong font-medium">
               {activeCategory} ×
             </button>
           )}
-          {(['all', ...TIERS, 'privileged'] as const).map(t => (
-            <button key={t} onClick={() => setActiveTier(t)}
+          {(['all', ...TIERS, 'privileged'] as const).map(tier => (
+            <button key={tier} onClick={() => setActiveTier(tier)}
               className={`text-tiny px-3 py-1 rounded-full border transition-colors ${
-                activeTier === t
+                activeTier === tier
                   ? 'bg-csp-gcp/10 dark:bg-csp-gcp/20 text-csp-gcp-onLight dark:text-csp-gcp-onDark border-csp-gcp/40 font-medium'
                   : 'bg-white dark:bg-gray-900 text-fg-muted border-surface-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}>
-              {t === 'all' ? 'Todas' : t === 'privileged' ? 'Privilegiadas' : GCP_TIER_META[t].label}
+              {tier === 'all' ? t('filter.allFem') : tier === 'privileged' ? t('count.privileged') : GCP_TIER_META[tier].label}
             </button>
           ))}
           <span className="ml-auto text-tiny text-fg-muted">{filtered.length} roles</span>
@@ -116,9 +107,8 @@ function GcpRolesContent() {
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCat(activeCategory === cat ? null : cat)}
               className={`text-3xs px-2.5 py-0.5 rounded-full border transition-colors ${
-                activeCategory === cat ? 'font-medium' : 'bg-transparent text-fg-muted border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              style={activeCategory === cat ? { background: (CAT_COLORS[cat] || '#4285f4') + '18', color: CAT_COLORS[cat] || '#4285f4', borderColor: (CAT_COLORS[cat] || '#4285f4') + '60' } : {}}>
+                activeCategory === cat ? 'bg-surface-alt text-fg border-line-strong font-medium' : 'text-fg-muted border-line hover:bg-surface-hover'
+              }`}>
               {cat}
             </button>
           ))}
@@ -150,7 +140,6 @@ function GcpRolesContent() {
             <tbody>
               {paginated.map(role => {
                 const tier = GCP_TIER_META[role.tier]
-                const catColor = CAT_COLORS[role.category] || '#4285f4'
                 return (
                   <tr key={role.slug} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
                     <td className="px-4 py-3 align-top overflow-hidden">
@@ -172,8 +161,7 @@ function GcpRolesContent() {
                     </td>
                     <td className="px-4 py-3 align-top">
                       <button onClick={() => setActiveCat(activeCategory === role.category ? null : role.category)}>
-                        <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium themed-color"
-                          style={{ background: catColor + '18', ...themedText(catColor, catColor + '18') }}>
+                        <span className="inline-flex items-center text-3xs px-2 py-0.5 rounded-full font-medium border bg-surface-alt text-fg-muted border-line">
                           {role.category}
                         </span>
                       </button>
@@ -201,8 +189,7 @@ function GcpRolesContent() {
         </div>
         <Pagination
           total={filtered.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#4285f4" noun="noun.roles"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
         />
       </div>
     </AppShell>

@@ -172,8 +172,7 @@ function GwsPrivilegesContent() {
         </div>
         <Pagination
           total={filtered.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#34a853" noun="noun.privileges"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.privileges"
         />
       </div>
     </AppShell>

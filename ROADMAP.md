@@ -166,9 +166,80 @@ verificador. Vercel e Cloudflare Pages já tratam isso; a Opção C do DEPLOY.md
 O AzAdvertizer lista ~2.681 permissions no total contra nossas 854. Vale medir a
 diferença antes de decidir se é lacuna ou critério diferente de contagem.
 
-**5. SoD Analyzer cobre só Entra ID e Azure RBAC.**
-As 96 regras não tocam AWS, GCP, GWS nem IBM. Ou expandir, ou rotular o escopo na tela
-— hoje o nome sugere cobertura total.
+**5. SoD Analyzer cobre só Entra ID e Azure RBAC.** ✅ RESOLVIDO em 07/08/2026.
+
+Decisão: **rotular, não expandir.** O escopo fica em Microsoft (Entra ID + Azure RBAC);
+AWS, GCP, Google Workspace e IBM Cloud não entram por enquanto, e a comparação cross-cloud
+continua sendo só Entra ID ↔ Azure RBAC — dois modelos do mesmo provedor, que de fato se
+encontram no mesmo tenant. Comparar SoD entre CSPs diferentes seria outro produto.
+
+O que foi feito:
+
+- `SoDScopeNotice` acima das abas de `/sod`, visível nas três abas. Diz que "nenhum conflito"
+  na AWS significa ausência de regra, não ausência de risco — que era a leitura errada que
+  o nome da ferramenta induzia.
+- Auditoria de integridade das regras contra os datasets atuais: as 96 regras × 192
+  referências resolviam por nome **e** por slug, 0 quebras, 0 IDs duplicados, 0 pares
+  repetidos. A curadoria de 01/07 não envelheceu mal.
+- Auditoria de **cobertura**, que era o problema real: 38 roles ControlPlane do Entra e 8
+  AccessManagement do Azure não apareciam em nenhuma regra. Foram escritas **27 regras
+  novas** (96 → 123), fechando as duas lacunas privilegiadas: 0 roles `isPrivileged` do
+  Entra sem regra, 12/12 roles AccessManagement do Azure cobertas.
+- Cobertura ControlPlane do Entra: 27/65 → 44/65. O que sobra são roles não-privilegiadas
+  de escopo estreito (Knowledge, Attribute Definition, Organizational Branding, External ID
+  User Flow) — inventário, não lacuna de risco.
+
+**Segunda rodada, mesmo dia: AWS, GCP e Google Workspace entraram.** 123 → **190 regras**.
+O escopo agora é *cinco plataformas, três provedores*, e a decisão de modelagem que sustenta
+tudo é: **uma regra nunca cruza provedores.** Acumular `AdministratorAccess` na AWS e Global
+Administrator no Entra ID é fato de governança, não conflito de segregação — não há caminho
+técnico entre os dois e as mitigações não se encontram. Cruzamento só onde os planos de
+identidade realmente se tocam: Entra ID + Azure RBAC (mesmo tenant) e GCP + Google Workspace
+(mesmo Cloud Identity).
+
+- **25 regras AWS** sobre managed policies. As mais fortes são as que a AWS já separa por
+  desenho: `PowerUserAccess` + `IAMFullAccess` reconstrói `AdministratorAccess` sem que nenhum
+  inventário por nome perceba; `SystemAdministrator` + `NetworkAdministrator` junta subir a
+  carga e abrir a porta dela.
+- **25 regras GCP**. O eixo é a service account, que no GCP é identidade *e* recurso: criar a SA
+  e emitir chave, criar a SA e poder `actAs` sobre ela, conceder-se `Token Creator` e gerar o
+  token. Mais `Organization Policy Administrator` + `Security Admin`, que remove o teto antes
+  de conceder.
+- **15 regras Google Workspace** + 2 cruzando com o GCP. Catálogo proporcionalmente menor
+  porque são só 14 roles e Super Admin abrange as outras — inflar com pares redundantes daria
+  impressão de cobertura sem sinal. As duas que mais importam anulam controles que o Google
+  desenhou para exigir uma segunda pessoa: Super Admin + Multi-party approval Admin, e
+  Directory Sync Admin + Super Admin.
+- **IBM Cloud ficou de fora**, por decisão do Natan. O IAM da IBM tem sete roles genéricas e o
+  SoD real dela vive nas 71 permissões da infraestrutura clássica, que não são roles — forçá-las
+  no modelo "regra = par de roles" repetiria o erro do dataset IBM anterior.
+
+O que a expansão exigiu no código:
+
+- `SoDPlatform` (5) + `SoDProvider` (3) no lugar do par `'entra-id' | 'azure-rbac'`. O valor
+  `cloud: 'both'` virou `'microsoft-cross'` nas 15 regras que o usavam: com dois cruzamentos
+  possíveis, "both" deixou de ter referente. A UI passou a perguntar aos helpers
+  (`ruleProvider`, `rulePlatforms`, `isCrossPlatform`) em vez de comparar literais.
+- `src/data/sod/roleIndex.ts` — gerado por `scripts/build-sod-role-index.js`, com só
+  `[nome, slug]` das 4.596 roles. Sem ele, `lib/sod.ts` importaria `aws.ts` (871 KB) +
+  `gcp.ts` (762 KB) + `roles.ts` (392 KB) + `azureRbac.ts` (181 KB) para o bundle de `/sod`.
+  Resultado: **`/sod` fecha em 302 kB de First Load JS** com cinco plataformas.
+- O filtro de cloud passou a casar por **plataforma tocada**, não por igualdade com
+  `rule.cloud`. Antes, filtrar "Entra ID" escondia as regras cross — que envolvem Entra ID.
+- `build-sod-rules-json.js` agora exporta **só as 123 regras Microsoft**, e declara o corte no
+  console e no campo `scope` do JSON. O `.ps1` fala com o Graph e com o ARM: exportar regras de
+  AWS/GCP/Workspace faria o script reportar "0 conflitos" para plataformas que ele nem enumera.
+
+Verificação: `tsc` limpo, build de **7.719 páginas**, 380 referências de role resolvendo por
+nome **e** por slug (0 quebras), 0 IDs duplicados, 0 pares repetidos, 0 regras cruzando
+provedor, `cloud` coerente com as plataformas em todas as 190. Os cinco checadores do `scripts/`
+passam. Sondagem no DOM: 1 `<h1>` por rota, zero overflow horizontal no mobile, e o par
+cross-provedor na matriz mostra o aviso de modelagem em vez de "sem conflito".
+
+**Uma ambiguidade descoberta e registrada:** o GCP publica sete pares de roles com o mesmo nome
+de exibição (`roles/cloudbuild.editor` e `roles/cloudbuild.builds.editor` são os dois "Cloud
+Build Editor"). A resolução por nome devolve a primeira em ordem alfabética; as regras do
+catálogo apontam para o slug, que é inequívoco. Está documentado no cabeçalho do `roleIndex.ts`.
 
 **6. i18n — 52 strings em 10 arquivos.**
 Quase fechado. O que sobra são Server Components que precisam do split

@@ -27,22 +27,6 @@ const ALL_CATEGORIES: AzureRbacCategory[] = [
 ]
 
 
-const CATEGORY_COLORS: Record<AzureRbacCategory, { bg: string; text: string; border: string }> = {
-  General:     { bg: '#1f2937', text: '#9ca3af', border: '#374151' },
-  Security:    { bg: '#3b1a1a', text: '#f87171', border: '#7f1d1d' },
-  Compute:     { bg: '#1a2f4a', text: '#60a5fa', border: '#1d4ed8' },
-  Storage:     { bg: '#162a22', text: '#34d399', border: '#065f46' },
-  Networking:  { bg: '#251a40', text: '#a78bfa', border: '#5b21b6' },
-  Database:    { bg: '#1a2e1a', text: '#86efac', border: '#15803d' },
-  Identity:    { bg: '#1a2340', text: '#93c5fd', border: '#1e40af' },
-  Monitoring:  { bg: '#302010', text: '#fbbf24', border: '#b45309' },
-  Containers:  { bg: '#0f2a2e', text: '#22d3ee', border: '#0e7490' },
-  AppService:  { bg: '#301a0a', text: '#fb923c', border: '#c2410c' },
-  Integration: { bg: '#2a1a30', text: '#e879f9', border: '#a21caf' },
-  Management:  { bg: '#1e2a20', text: '#6ee7b7', border: '#047857' },
-  AI:          { bg: '#1a1a35', text: '#818cf8', border: '#3730a3' },
-}
-
 function AzureRbacRolesContent() {
   const t = useT()
   const searchParams = useSearchParams()
@@ -119,13 +103,13 @@ function AzureRbacRolesContent() {
     >
       <div className="flex flex-col flex-1 min-h-0">
         <StatsBar stats={[
-          { label: 'Total', value: AZURE_ROLES.length, color: 'blue', href: '/azure-rbac/roles' },
+          { label: t('count.total'), value: AZURE_ROLES.length, color: 'blue', href: '/azure-rbac/roles' },
           { label: 'Full Control', value: AZURE_ROLES.filter((r) => r.tier === 'FullControl').length, color: 'red', href: '/azure-rbac/roles?tier=FullControl' },
           { label: 'Access Mgmt', value: AZURE_ROLES.filter((r) => r.tier === 'AccessManagement').length, color: 'orange', href: '/azure-rbac/roles?tier=AccessManagement' },
           { label: 'Contributor', value: AZURE_ROLES.filter((r) => r.tier === 'Contributor').length, color: 'gray', href: '/azure-rbac/roles?tier=Contributor' },
           { label: 'Data Plane', value: AZURE_ROLES.filter((r) => r.tier === 'DataPlane').length, color: 'purple', href: '/azure-rbac/roles?tier=DataPlane' },
           { label: 'Reader', value: AZURE_ROLES.filter((r) => r.tier === 'Reader').length, color: 'green', href: '/azure-rbac/roles?tier=Reader' },
-          { label: 'Privilegiadas', value: AZURE_ROLES.filter((r) => r.isPrivileged).length, color: 'red', href: '/azure-rbac/roles?filter=privileged' },
+          { label: t('count.privileged'), value: AZURE_ROLES.filter((r) => r.isPrivileged).length, color: 'red', href: '/azure-rbac/roles?filter=privileged' },
         ]} />
 
         {/* Filter bar — row 1: search + tier chips */}
@@ -239,15 +223,9 @@ function AzureRbacRolesContent() {
                       <p className="text-3xs text-fg-subtle leading-snug line-clamp-2">{role.description}</p>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
-                      {(() => {
-                        const cc = CATEGORY_COLORS[role.category]
-                        return (
-                          <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
-                            style={{ backgroundColor: cc.bg, color: cc.text, borderColor: cc.border }}>
-                            {role.category}
-                          </span>
-                        )
-                      })()}
+                      <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap bg-surface-alt text-fg-muted border-line">
+                        {role.category}
+                      </span>
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       <span className="text-2xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap"
@@ -282,8 +260,7 @@ function AzureRbacRolesContent() {
         </div>
         <Pagination
           total={sorted.length} page={page} pageSize={pageSize}
-          onPageChange={setPage} onPageSizeChange={setPageSize}
-          accent="#0078d4" noun="noun.roles"
+          onPageChange={setPage} onPageSizeChange={setPageSize} noun="noun.roles"
         />
       </div>
     </AppShell>
