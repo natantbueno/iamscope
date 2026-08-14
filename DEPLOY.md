@@ -100,8 +100,15 @@ partir de `src/app/sitemap.ts` e `src/app/robots.ts`.
 A URL canônica vem de `src/lib/siteUrl.ts`, nesta ordem:
 
 1. `NEXT_PUBLIC_SITE_URL` — defina no ambiente de build para publicar em outro domínio
-2. `VERCEL_URL` — preenchido pela Vercel em previews de PR
-3. `https://iamscope.cloud` — padrão
+2. `VERCEL_URL` — **só quando `VERCEL_ENV === 'preview'`**, para que cada preview de PR
+   se anuncie no próprio endereço
+3. `VERCEL_PROJECT_PRODUCTION_URL` — o domínio de produção do projeto na Vercel
+4. `https://iamscope.cloud` — padrão
+
+> Corrigido em 13/08/2026. `VERCEL_URL` vinha em segundo lugar sem a checagem de
+> ambiente, e a Vercel também a define em produção — com a URL única do deploy.
+> O resultado no ar era `Host: https://entraid-permissions-<hash>-iamcloud1.vercel.app`
+> no robots.txt e 7.600 URLs do sitemap nesse host, que morre no push seguinte.
 
 Os quatro lugares que precisam concordar (canonical, sitemap, robots e Open Graph) leem
 dessa mesma fonte. Se divergirem, o buscador trata como conteúdo duplicado.

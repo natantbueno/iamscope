@@ -1,5 +1,5 @@
 // AUTO-GERADO por scripts/build-counts.js — não editar à mão.
-// Gerado em: 2026-08-05T02:58:30.944Z
+// Gerado em: 2026-08-07T17:49:23.251Z
 //
 // Só contagens. Existe para que Sidebar e AppShell — que envolvem todas as
 // páginas — possam exibir badges sem arrastar os 2,5 MB de src/data/*.ts para
@@ -14,8 +14,8 @@ export const AZURE_ROLES_COUNT = 504
 export const AWS_POLICIES_COUNT = 1553
 export const AWS_ACTIONS_COUNT = 16117
 export const AWS_SERVICES_COUNT = 448
-export const GCP_ROLES_COUNT = 2381
-export const GCP_PERMISSIONS_COUNT = 13590
+export const GCP_ROLES_COUNT = 2382
+export const GCP_PERMISSIONS_COUNT = 13612
 export const GCP_SERVICES_COUNT = 314
 export const GWS_ROLES_COUNT = 14
 export const GWS_SCOPES_COUNT = 60

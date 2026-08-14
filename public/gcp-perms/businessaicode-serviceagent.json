@@ -1,1 +1,1 @@
-["aiplatform.endpoints.predict","discoveryengine.devToolsConfigs.get","monitoring.timeSeries.list"]
+["aiplatform.endpoints.predict","discoveryengine.devToolsConfigs.get","discoveryengine.projectOverageConfigs.get","monitoring.timeSeries.list"]

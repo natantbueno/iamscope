@@ -3,6 +3,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
 import { SITE_URL } from '@/lib/siteUrl'
+import { Analytics } from '@vercel/analytics/next'
 
 const DESCRICAO =
   'IAM roles and permissions across 6 clouds — Microsoft Entra ID, Azure RBAC, AWS, GCP, Google Workspace and IBM Cloud — with risk classified by tier, following the Enterprise Access Model.'
@@ -97,6 +98,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>
+
+        {/*
+          Vercel Web Analytics.
+
+          Fica no fim do <body> de propósito: o script é `defer` e não deve
+          competir com a primeira pintura. O componente `/next` já trata a
+          navegação client-side — com `trailingSlash: true` cada rota é uma
+          pasta, e um script solto contaria só o primeiro pageview da sessão.
+
+          Sem cookie e sem identificador persistente, então não pede banner de
+          consentimento. Só coleta quando servido pela Vercel: em `next dev` e
+          em qualquer outro host o script não existe e o componente não faz nada.
+
+          Cota do plano Hobby: 50.000 eventos/mês, janela de 1 mês.
+        */}
+        <Analytics />
       </body>
     </html>
   )
