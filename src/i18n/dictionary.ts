@@ -37,6 +37,10 @@ const SHARED = {
   'count.iamRoles':         { pt: 'IAM Roles',          en: 'IAM Roles' },
   'count.policies':         { pt: 'Policies',           en: 'Policies' },
   'count.actions':          { pt: 'Actions',            en: 'Actions' },
+  // A home mostra este número ao lado de "Policies" e "Services", e "Actions"
+  // sozinho se lê como "a AWS tem 16.423 actions" — que é falso: são as
+  // actions CITADAS pelas managed policies. O universo da AWS é maior.
+  'count.policyActions':    { pt: 'Actions em policies', en: 'Actions in policies' },
   'count.roleActions':      { pt: 'Role Actions',       en: 'Role Actions' },
   'count.apiPermissions':   { pt: 'API Permissions',    en: 'API Permissions' },
   'count.permissions':      { pt: 'Permissões',         en: 'Permissions' },
@@ -432,6 +436,65 @@ const SHARED = {
   'section.adminTierDist':{ pt: 'Distribuição por Admin Tier', en: 'Distribution by admin tier' },
   'eval.cloudNotDetected':{ pt: 'Cloud ainda não detectada — cole um JSON válido, ou escolha na mão',
                             en: 'No cloud detected yet — paste valid JSON, or pick one by hand' },
+
+  // ── Concessão por wildcard (Permission Scope) ─────────────────────────────
+  // "wildcard" fica igual nos dois idiomas: é o termo que AWS, Azure e GCP
+  // usam na própria documentação, e traduzir por "curinga" obrigaria quem lê a
+  // fazer o caminho de volta antes de procurar na doc do provedor.
+  'perm.wildcardToggle':  { pt: 'Concessões por wildcard',
+                            en: 'Wildcard grants' },
+  'perm.wildcardHint':    { pt: 'Uma policy que concede `s3:*` concede `s3:GetObject` — inclusive as actions que a AWS criar depois.',
+                            en: 'A policy granting `s3:*` grants `s3:GetObject` — including actions the provider adds later.' },
+  'perm.viaWildcard':     { pt: 'via wildcard',              en: 'via wildcard' },
+
+  // Negação explícita. Cor é legítima aqui: é estado semântico, como o
+  // SOD_SEVERITY_META — e é a informação mais acionável da linha.
+  'perm.deniedBy':        { pt: 'Negam explicitamente:',     en: 'Explicitly denied by:' },
+  'perm.noneGrant':       { pt: 'Nenhuma role ou policy do catálogo concede este padrão.',
+                            en: 'No catalogued role or policy grants this pattern.' },
+  'perm.notGrantedByManaged': { pt: 'Esta action existe no catálogo oficial da AWS, e nenhuma managed policy a concede — só uma policy inline ou custom pode ter dado esse acesso.',
+                            en: 'This action exists in the official AWS catalogue, and no managed policy grants it — only an inline or custom policy could have.' },
+  'perm.excludedTitle':   { pt: 'Roles que excluem esta action',
+                            en: 'Roles that exclude this action' },
+  'perm.excludedBody':    { pt: 'Estas roles declaram a action em `NotActions`. A exclusão vence o `Actions` da própria role — por isso a Contributor, que concede `*`, mesmo assim não escreve em Microsoft.Authorization.',
+                            en: 'These roles declare the action under `NotActions`. The exclusion overrides the role\'s own `Actions` — which is why Contributor, despite granting `*`, still cannot write to Microsoft.Authorization.' },
+
+  // ── Ferramentas em Beta ───────────────────────────────────────────────────
+  'beta.label':           { pt: 'Beta',                      en: 'Beta' },
+  'beta.knownLimits':     { pt: 'Beta — limitações conhecidas',
+                            en: 'Beta — known limitations' },
+
+  'beta.evalOne':         { pt: 'Role custom: a lista de permissões aparece, mas o tier e os riscos ainda não são derivados delas — só roles do catálogo recebem classificação.',
+                            en: 'Custom roles: the permission list shows up, but tier and risk are not yet derived from it — only catalogued roles get a classification.' },
+  'beta.evalTwo':         { pt: 'Google Workspace: a role casa, mas os privilégios vêm do catálogo em texto ("Manage other admins") — o Google publica a lista com identificador de API para só duas das 14 roles.',
+                            en: 'Google Workspace: the role matches, but its privileges come from the catalogue as prose ("Manage other admins") — Google publishes API-identifier lists for only two of the 14 roles.' },
+  'beta.evalThree':       { pt: 'IBM Cloud: as roles casam, mas a IBM não publica a lista de ações por role — cada serviço mapeia as próprias.',
+                            en: 'IBM Cloud: roles match, but IBM does not publish an action list per role — each service maps its own.' },
+  'beta.evalFour':        { pt: 'Riscos e mitigações existem só para o conjunto curado de funções críticas cross-cloud; nas demais roles a seção fica vazia.',
+                            en: 'Risks and mitigations exist only for the curated set of critical cross-cloud functions; the section is empty for every other role.' },
+
+  'beta.scopeOne':        { pt: 'Uma action que NENHUMA policy gerenciada concede não aparece na busca, mesmo existindo na AWS — só dá para dizer isso depois de o catálogo oficial de actions ser coletado.',
+                            en: 'An action that NO managed policy grants does not show up in search, even when it exists in AWS — saying so requires the official action catalogue to be collected first.' },
+  'beta.scopeTwo':        { pt: 'Os privilégios do Google Workspace estão no catálogo em texto ("Manage other admins"), não com o identificador da API (`USERS_UPDATE`) — buscar pelo identificador não encontra.',
+                            en: 'Google Workspace privileges are catalogued as prose ("Manage other admins"), not by their API identifier (`USERS_UPDATE`) — searching by identifier finds nothing.' },
+  'beta.scopeThree':      { pt: 'A contagem da AWS são as actions REFERENCIADAS pelas policies gerenciadas, não o universo de actions do provedor — que é maior.',
+                            en: 'The AWS count covers actions REFERENCED by managed policies, not the provider\'s full action universe, which is larger.' },
+  'beta.scopeFour':       { pt: 'IBM Cloud fica fora do índice: o provedor não publica identificador de ação por role.',
+                            en: 'IBM Cloud is out of the index: the provider does not publish an action identifier per role.' },
+
+  'beta.advOne':          { pt: 'A busca é por termo, não semântica: não há modelo de linguagem por trás. Termo que não existe no catálogo não encontra nada, mesmo que o conceito exista.',
+                            en: 'This is term search, not semantic search: there is no language model behind it. A term absent from the catalogue finds nothing, even when the concept exists.' },
+  'beta.advTwo':          { pt: 'O léxico que traduz intenção ("terraform" → contributor/editor) é curadoria editorial do IAM Scope, e cobre o que já foi medido.',
+                            en: 'The lexicon that maps intent ("terraform" → contributor/editor) is IAM Scope editorial curation, and covers what has been measured so far.' },
+  'beta.advThree':        { pt: 'A busca é por ROLE. Permissão e action individuais não estão neste índice — para isso existe o Permission Scope.',
+                            en: 'This searches ROLES. Individual permissions and actions are not in this index — Permission Scope covers those.' },
+
+  'beta.sodOne':          { pt: 'Nenhuma regra cruza provedores: um conflito entre uma role da AWS e uma do Entra ID não é detectado.',
+                            en: 'No rule crosses providers: a conflict between an AWS role and an Entra ID role is not detected.' },
+  'beta.sodTwo':          { pt: 'As regras são de segregação por FUNÇÃO. Escopo, condição de atribuição e acesso just-in-time não entram no cálculo.',
+                            en: 'The rules cover segregation by FUNCTION. Scope, assignment conditions and just-in-time access are not part of the calculation.' },
+  'beta.sodThree':        { pt: 'O script PowerShell avalia só as plataformas Microsoft — é o alcance do Graph e do Azure Resource Manager, não do catálogo inteiro.',
+                            en: 'The PowerShell script only evaluates the Microsoft platforms — that is the reach of Graph and Azure Resource Manager, not of the whole catalogue.' },
 
   // ── Seletor de idioma ─────────────────────────────────────────────────────
   'lang.label':           { pt: 'Idioma',              en: 'Language' },

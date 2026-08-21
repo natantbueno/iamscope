@@ -42,6 +42,7 @@ const {
   slugify, esc,
 } = require('./lib/aws-classify')
 const { isDeprecated } = require('./lib/deprecation')
+const { splitByEffect } = require('./lib/aws-effects')
 
 const ROOT = path.join(__dirname, '..')
 const TS_OUT = path.join(ROOT, 'src', 'data', 'aws.ts')
@@ -124,16 +125,10 @@ function parsePolicy(html, name) {
     try { document = JSON.parse(raw) } catch (e) { parseError = e.message.slice(0, 80) }
   }
 
-  const actions = []
-  const notActions = []
-  if (document) {
-    const st = Array.isArray(document.Statement) ? document.Statement
-      : document.Statement ? [document.Statement] : []
-    for (const s of st) {
-      for (const a of [].concat(s.Action ?? [])) actions.push(a)
-      for (const a of [].concat(s.NotAction ?? [])) notActions.push(a)
-    }
-  }
+  // `Effect` IMPORTA. Ler `s.Action` de todo statement fazia a AWSDenyAll
+  // "conceder" `*` — e ser classificada como tier FullAccess e privilegiada.
+  // Ver scripts/lib/aws-effects.js para a medição completa do estrago.
+  const { allow, deny, notActions } = splitByEffect(document)
 
   return {
     name,
@@ -146,8 +141,11 @@ function parsePolicy(html, name) {
     deprecated,
     document,
     parseError,
-    actions: [...new Set(actions)].sort(),
-    notActions: [...new Set(notActions)].sort(),
+    // `actions` é o que a policy CONCEDE. Tudo que classifica (tier,
+    // category, isPrivileged, actionCount) lê daqui, e só daqui.
+    actions: allow,
+    denyActions: deny,
+    notActions,
   }
 }
 
@@ -201,8 +199,20 @@ function renderTs(policies) {
   const services = new Set([...allActions]
     .map((a) => { const i = a.indexOf(':'); return i > 0 ? a.slice(0, i) : a })
     .filter((s) => s && s !== '*'))
+  const concretas = [...allActions].filter((a) => !a.includes('*'))
+  const padroes = [...allActions].filter((a) => a.includes('*'))
   const counts = `\nexport const AWS_ACTION_COUNT = ${allActions.size}\n`
     + `export const AWS_SERVICE_COUNT = ${services.size}\n`
+    + `\n/**\n`
+    + ` * Recorte honesto do que AWS_ACTION_COUNT mede.\n`
+    + ` *\n`
+    + ` * AWS_ACTION_COUNT são as strings de action CONCEDIDAS pelas policies\n`
+    + ` * gerenciadas — e boa parte delas é padrão (\`s3:*\`), não action. O\n`
+    + ` * universo de actions da AWS é maior e mora no Service Authorization\n`
+    + ` * Reference; ver scripts/fetch-aws-actions-universe.js.\n`
+    + ` */\n`
+    + `export const AWS_CONCRETE_ACTION_COUNT = ${concretas.length}\n`
+    + `export const AWS_WILDCARD_PATTERN_COUNT = ${padroes.length}\n`
 
   return `${banner}${header}export const AWS_POLICIES: AwsPolicy[] = [\n${lines.join('\n')}\n]\n${counts}`
 }
@@ -303,7 +313,7 @@ if (require.main !== module) return
     wanted.add(`${slug}.json`)
     fs.writeFileSync(path.join(DOCS_DIR, `${slug}.json`), JSON.stringify({
       arn: p.arn, version: p.version, document: p.document,
-      actions: p.actions, notActions: p.notActions,
+      actions: p.actions, denyActions: p.denyActions, notActions: p.notActions,
     }))
   }
   let removedFiles = 0
@@ -313,16 +323,17 @@ if (require.main !== module) return
   console.log(`\nEscrito: public/aws-policy-docs/ (${wanted.size} arquivos`
     + `${removedFiles ? `, ${removedFiles} órfão(s) removido(s)` : ''})`)
 
-  const slugs = policies.map((p) => slugify(p.name))
-  const index = {}
-  policies.forEach((p, i) => { for (const a of p.actions) (index[a] ||= []).push(i) })
-  fs.writeFileSync(IDX_OUT, JSON.stringify({ slugs, index }))
-  console.log(`Escrito: public/aws-actions-index.json (${Object.keys(index).length} actions, `
-    + `${(fs.statSync(IDX_OUT).size / 1024 / 1024).toFixed(1)} MB)`)
-
+  // ORDEM IMPORTA: o índice lê a ordem dos slugs de src/data/aws.ts, então o
+  // dataset tem de estar gravado antes.
   fs.writeFileSync(TS_OUT, renderTs(policies))
   console.log(`Escrito: src/data/aws.ts (${policies.length} policies, `
     + `${(fs.statSync(TS_OUT).size / 1024).toFixed(0)} KB)`)
+
+  // O índice tem implementação única em build-aws-actions-index.js — ele roda
+  // offline sobre public/aws-policy-docs/, então dá para reconstruir sem
+  // recoletar. Duplicar a montagem aqui foi o que deixou o bug do Effect vivo.
+  console.log('')
+  require('./build-aws-actions-index').build()
   console.log('\nAgora rode:  node scripts/typecheck.cjs')
 })().catch((e) => {
   console.error('\nFALHOU:', e.message)

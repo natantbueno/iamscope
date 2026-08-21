@@ -15,6 +15,12 @@ import { lookupActionDoc } from './azureActionDocs'
 export interface AzurePermIndexFile {
   slugs: string[]
   index: Record<string, number[]>
+  /**
+   * Pares action->role vindos de `NotActions`/`NotDataActions` — o oposto de
+   * uma concessão. Ausente em índices gerados antes de 21/08/2026.
+   * Ver scripts/build-azure-perms-index.js.
+   */
+  denied?: Record<string, number[]>
 }
 
 export interface AzurePermissionEntry {
@@ -32,7 +38,17 @@ export interface AzurePermissionEntry {
   isWildcard: boolean
   /** Descrição oficial, quando já coletada de learn.microsoft.com. */
   description?: string
+  /** Roles que CONCEDEM esta action. */
   roles: AzureRbacRole[]
+  /**
+   * Roles que declaram esta action em `NotActions`/`NotDataActions` — ou seja,
+   * que explicitamente NÃO podem executá-la, mesmo quando o `Actions` delas é
+   * `*`. É o caso da Contributor com a escrita de Microsoft.Authorization.
+   *
+   * Até 21/08/2026 estas roles apareciam misturadas em `roles`, e a página de
+   * cada permissão afirmava o contrário do que a definição da role diz.
+   */
+  excludedBy: AzureRbacRole[]
 }
 
 /**
@@ -82,11 +98,17 @@ export function buildAzurePermissionCatalog(
   // critério aqui, a página gerada no build e a resolvida no cliente podem
   // apontar para actions diferentes sob a mesma URL.
   for (const action of Object.keys(idx.index).sort()) {
+    // Aqui a chave do índice É a action exata da página, então o desconto por
+    // entrada basta — não há expansão de wildcard nesta rota, ao contrário do
+    // Permission Scope, que precisa avaliar a exclusão por role.
+    const excluidas = new Set(idx.denied?.[action] ?? [])
     const roles: AzureRbacRole[] = []
+    const excludedBy: AzureRbacRole[] = []
     for (const i of idx.index[action]) {
       const s = idx.slugs[i]
       const role = s ? roleBySlug.get(s) : undefined
-      if (role) roles.push(role)
+      if (!role) continue
+      if (excluidas.has(i)) excludedBy.push(role); else roles.push(role)
     }
     const { provider, resource, verb } = parseAction(action)
 
@@ -103,6 +125,7 @@ export function buildAzurePermissionCatalog(
       // divergem em maiúsculas para a mesma action (ver azureActionDocs.ts).
       description: lookupActionDoc(descriptions, action),
       roles: roles.sort((a, b) => a.name.localeCompare(b.name)),
+      excludedBy: excludedBy.sort((a, b) => a.name.localeCompare(b.name)),
     })
   }
 

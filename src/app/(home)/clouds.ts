@@ -39,7 +39,7 @@ export function buildClouds(): CloudCard[] {
     },
     {
       name: 'AWS IAM', href: '/aws',
-      metrics: [{ n: AWS_POLICIES.length, label: 'count.policies' }, { n: AWS_ACTION_COUNT, label: 'count.actions' }, { n: AWS_SERVICE_COUNT, label: 'count.services' }],
+      metrics: [{ n: AWS_POLICIES.length, label: 'count.policies' }, { n: AWS_ACTION_COUNT, label: 'count.policyActions' }, { n: AWS_SERVICE_COUNT, label: 'count.services' }],
       dotClass: 'bg-csp-aws', hoverBorder: 'hover:border-csp-aws',
     },
     {

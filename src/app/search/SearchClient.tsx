@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { SEARCH_INDEX_TOTAL } from '@/data/siteIndex'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search, ShieldAlert, ChevronRight, AlertTriangle } from 'lucide-react'
@@ -154,9 +155,12 @@ export default function SearchClient() {
   const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtrados)
 
   const carregando = !!q.trim() && !indice && !erro
+  // O fallback só aparece enquanto o índice não chegou. Cravado, ele envelhece
+  // em silêncio a cada recoleta — e envelheceu: ficou em 4603 enquanto o real
+  // subia para 4633.
   const totalIndexado = indice
     ? Object.values(indice.clouds).reduce((a, c) => a + c.total, 0)
-    : 4603
+    : SEARCH_INDEX_TOTAL
 
   return (
     <AppShell

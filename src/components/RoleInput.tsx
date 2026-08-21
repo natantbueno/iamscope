@@ -3,7 +3,7 @@
 import { useMemo, useRef } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
 import { Play, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react'
-import { detectCloud, EvaluateCloud, EVALUATE_CLOUDS } from '@/lib/evaluate'
+import { previewInput, EvaluateCloud, EVALUATE_CLOUDS } from '@/lib/evaluate'
 import { CLOUD_META } from '@/data/compare/types'
 import { useTheme } from './ThemeProvider'
 
@@ -125,17 +125,19 @@ export default function RoleInput({
   const preRef = useRef<HTMLPreElement>(null)
   const taRef = useRef<HTMLTextAreaElement>(null)
 
-  const liveDetection = useMemo(() => {
-    if (!value.trim()) return null
-    try {
-      return detectCloud(JSON.parse(value))
-    } catch {
-      return null
-    }
-  }, [value])
+  // `previewInput`, e não `detectCloud` cru: a caixa precisa enxergar a MESMA
+  // entrada que o botão Avaliar vai processar. Com o desembrulho só do lado da
+  // avaliação, esta caixa diria "cloud não detectada" em amarelo para um JSON
+  // que o botão aceita sem reclamar — dois veredictos na mesma tela.
+  const liveDetection = useMemo(() => (value.trim() ? previewInput(value) : null), [value])
+  const candidateCount = liveDetection?.candidateCount ?? 0
 
   const exampleCloud: EvaluateCloud = manualCloud ?? 'entraId'
-  const showManualPicker = cloudNotDetected || (value.trim().length > 0 && !liveDetection?.cloud)
+  // Uma lista de N roles não é "cloud não detectada": a cloud de cada uma é
+  // decidida depois da escolha. Oferecer o seletor manual aqui empurraria a
+  // pessoa a classificar na mão um JSON que o site sabe ler.
+  const showManualPicker = cloudNotDetected
+    || (value.trim().length > 0 && !liveDetection?.cloud && candidateCount === 0)
 
   const syncScroll = () => {
     if (preRef.current && taRef.current) {
@@ -176,16 +178,23 @@ export default function RoleInput({
       {/* Feedback de detecção ao vivo */}
       {value.trim() && (
         <div className={`flex items-start gap-2 text-tiny px-3 py-2 rounded-lg ${
-          liveDetection?.cloud
+          liveDetection?.cloud || candidateCount > 0
             ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
             : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400'
         }`}>
-          {liveDetection?.cloud ? <CheckCircle2 size={14} className="shrink-0 mt-0.5" /> : <AlertTriangle size={14} className="shrink-0 mt-0.5" />}
+          {liveDetection?.cloud || candidateCount > 0
+            ? <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+            : <AlertTriangle size={14} className="shrink-0 mt-0.5" />}
           <span>
             {liveDetection?.cloud ? (
               <>{CLOUD_META[liveDetection.cloud].label} detectado ✓ <span className="opacity-70">— {liveDetection.reason}</span></>
+            ) : candidateCount > 0 ? (
+              <>{candidateCount} {t('eval.rolesInJson')}</>
             ) : (
               t('eval.cloudNotDetected')
+            )}
+            {liveDetection && liveDetection.notes.length > 0 && (
+              <span className="opacity-70"> · <code className="font-mono">{liveDetection.notes.join(' · ')}</code></span>
             )}
           </span>
         </div>

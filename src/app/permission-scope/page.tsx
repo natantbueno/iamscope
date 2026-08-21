@@ -17,10 +17,13 @@ import { useT } from '@/i18n/LanguageProvider'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-react'
+import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, ChevronsDown, ChevronsUp, Asterisk, ShieldOff } from 'lucide-react'
 
 import AppShell from '@/components/AppShell'
 import ExportButton from '@/components/ExportButton'
+import { BetaNotice } from '@/components/BetaBadge'
+import { looksLikeConcreteAction, wildcardMatches } from '@/lib/wildcardMatch'
+import { loadAwsUniverse, looksLikeAwsAction, isKnownAwsAction } from '@/lib/awsUniverse'
 import { CloudId, CLOUD_META, CLOUD_ORDER, getCloudUrl } from '@/data/compare/types'
 import {
   ScopeMatch, ScopeRoleRef, CLOUD_TERMS,
@@ -28,7 +31,17 @@ import {
   ensureLocalPermissionIndex,
 } from '@/lib/permissionScope'
 
-interface AzurePermIndex { slugs: string[]; index: Record<string, number[]> }
+interface AzurePermIndex {
+  slugs: string[]
+  index: Record<string, number[]>
+  /**
+   * Pares action->role que vêm de `NotActions`/`NotDataActions` — o oposto de
+   * uma concessão. `index` guarda o conjunto completo (é dele que saem as
+   * ~2.700 páginas de permissão e as URLs do sitemap); quem quer a relação
+   * correta subtrai isto. Ver scripts/build-azure-perms-index.js.
+   */
+  denied?: Record<string, number[]>
+}
 
 const PER_CLOUD_LIMIT = 40
 
@@ -40,6 +53,12 @@ function PermissionScopeContent() {
 
   const [query, setQuery] = useState(searchParams.get('q') ?? '')
   const [activeClouds, setActiveClouds] = useState<Set<CloudId>>(new Set(CLOUD_ORDER))
+
+  // Concessões por wildcard entram LIGADAS por padrão. A pergunta que a página
+  // faz é "quem concede esta permissão", e a AdministratorAccess concede — ela
+  // só não dizia isso porque a busca era textual. O botão existe para quem
+  // quer o casamento literal, não o contrário.
+  const [includeWildcard, setIncludeWildcard] = useState(true)
 
   // Recolher/expandir. Guardamos o que está RECOLHIDO — assim tudo nasce
   // expandido e um resultado novo não herda o estado do anterior.
@@ -105,6 +124,17 @@ function PermissionScopeContent() {
     return () => { alive = false }
   }, [query, gcpReady])
 
+  /**
+   * Universo de actions da AWS — só entra em cena no estado VAZIO.
+   *
+   * É o único momento em que ele muda a resposta: com resultado na tela, saber
+   * que a action existe na AWS não acrescenta nada; sem resultado, é a
+   * diferença entre "não existe" e "existe, e nenhuma policy gerenciada
+   * concede". O arquivo é opcional — enquanto não for gerado, este bloco
+   * inteiro é inerte.
+   */
+  const [universoPronto, setUniversoPronto] = useState(false)
+
   // Mantém ?q= na URL para o resultado ser compartilhável.
   useEffect(() => {
     const current = searchParams.get('q') ?? ''
@@ -119,37 +149,89 @@ function PermissionScopeContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
+  /**
+   * Padrões negativos por role, invertidos de `denied`.
+   *
+   * POR QUE PRECISA SER POR ROLE, E NÃO POR ENTRADA DO ÍNDICE
+   *   A Contributor concede a action `*` — isso é positivo e verdadeiro — e
+   *   exclui, em NotActions, o padrão de escrita de Microsoft.Authorization.
+   *   Descontar só a ENTRADA negativa não resolve: com a expansão de wildcard
+   *   ligada, a Contributor voltava a aparecer em
+   *   `Microsoft.Authorization/roleAssignments/write` pela via do `*`, que é o
+   *   pior falso positivo possível no Azure RBAC — dizer que a Contributor
+   *   atribui role é exatamente o contrário do que a Microsoft desenhou.
+   *
+   *   Então a regra certa é: a role concede a action procurada se algum padrão
+   *   POSITIVO dela casa E nenhum padrão NEGATIVO dela casa.
+   */
+  const azureNegByRole = useMemo(() => {
+    const m = new Map<number, string[]>()
+    for (const [pattern, idxs] of Object.entries(azureIndex?.denied ?? {})) {
+      for (const i of idxs) {
+        const arr = m.get(i)
+        if (arr) arr.push(pattern); else m.set(i, [pattern])
+      }
+    }
+    return m
+  }, [azureIndex])
+
   // Matches do Azure, no mesmo formato das demais clouds.
+  //
+  // As duas passadas de ./lib/permissionScope são repetidas aqui porque o
+  // índice do Azure não está no mesmo formato: vem de azure-perms-index.json,
+  // com os slugs numerados, e nunca passa pelo ScopeMatch[] em memória.
   const azureMatches = useMemo<ScopeMatch[]>(() => {
     const q = query.trim().toLowerCase()
     if (!q || !azureIndex) return []
+    const expand = includeWildcard && looksLikeConcreteAction(q)
     const out: ScopeMatch[] = []
     for (const action of Object.keys(azureIndex.index)) {
-      if (!action.toLowerCase().includes(q)) continue
+      const literal = action.toLowerCase().includes(q)
+      // 750 das 2.697 actions deste índice são padrão. Sem esta linha, Owner e
+      // Contributor (que concedem `*`) e Reader não aparecem em busca nenhuma
+      // por action concreta — nem na busca pela action que a própria página usa
+      // de exemplo no placeholder.
+      const viaWildcard = !literal && expand && action.includes('*') && wildcardMatches(action, q)
+      if (!literal && !viaWildcard) continue
+      // Contra o que a exclusão é medida: a action concreta que a pessoa
+      // digitou, quando ela digitou uma; senão a própria chave do índice, que
+      // no casamento literal é exata.
+      const target = (expand ? q : action).toLowerCase()
       const roles: ScopeRoleRef[] = []
+      const negam: ScopeRoleRef[] = []
       for (const i of azureIndex.index[action]) {
         const slug = azureIndex.slugs[i]
         const meta = slug ? azureBySlug.get(slug) : undefined
-        if (slug && meta) roles.push({ name: meta.name, slug, isPrivileged: meta.isPrivileged })
+        if (!slug || !meta) continue
+        const ref = { name: meta.name, slug, isPrivileged: meta.isPrivileged }
+        const neg = azureNegByRole.get(i)
+        if (neg && neg.some((pat) => pat.toLowerCase() === target || wildcardMatches(pat, target))) negam.push(ref)
+        else roles.push(ref)
       }
-      out.push({ cloud: 'azureRbac', permission: action, roles })
+      // Zero concessões E zero exclusões é ruído. Zero concessões com exclusão
+      // é resultado — e dos bons: "nenhuma role concede, e estas aqui proíbem".
+      if (roles.length === 0 && negam.length === 0) continue
+      out.push({ cloud: 'azureRbac', permission: action, roles, viaWildcard, deniedBy: negam })
     }
-    const rank = (p: string) => {
-      const s = p.toLowerCase()
+    const rank = (m: ScopeMatch) => {
+      if (m.viaWildcard) return 3
+      const s = m.permission.toLowerCase()
       return s === q ? 0 : s.startsWith(q) ? 1 : 2
     }
     out.sort((a, b) =>
-      rank(a.permission) - rank(b.permission) ||
+      rank(a) - rank(b) ||
       b.roles.length - a.roles.length ||
       a.permission.localeCompare(b.permission))
     return out
-  }, [query, azureIndex, azureBySlug])
+  }, [query, azureIndex, azureBySlug, includeWildcard, azureNegByRole])
 
   // gcpReady entra nas dependências de propósito: quando o índice do GCP
   // termina de carregar, a busca precisa ser refeita para incluí-lo.
   const localMatches = useMemo(
-    () => searchLocalPermissions(query, PER_CLOUD_LIMIT), [query, gcpReady])
-  const localCounts  = useMemo(() => countLocalMatches(query), [query, gcpReady])
+    () => searchLocalPermissions(query, PER_CLOUD_LIMIT, includeWildcard),
+    [query, gcpReady, includeWildcard])
+  const localCounts  = useMemo(
+    () => countLocalMatches(query, includeWildcard), [query, gcpReady, includeWildcard])
 
   // O índice das 6 clouds é construído na primeira vez que é tocado. Calcular o
   // total já na renderização inicial atrasaria o primeiro paint à toa, então
@@ -180,6 +262,18 @@ function PermissionScopeContent() {
     }
     return g
   }, [localMatches, azureMatches, activeClouds])
+
+  // Carrega o universo de actions só quando ele pode mudar a resposta: busca
+  // que parece uma action da AWS e que não achou nada. Não é um índice barato,
+  // e no caminho normal — busca com resultado — ele nunca é baixado.
+  useEffect(() => {
+    if (universoPronto || azureLoading) return
+    if (grouped.size > 0) return
+    if (!looksLikeAwsAction(query)) return
+    let vivo = true
+    loadAwsUniverse().finally(() => { if (vivo) setUniversoPronto(true) })
+    return () => { vivo = false }
+  }, [query, grouped, azureLoading, universoPronto])
 
   // Recolher tudo precisa conhecer o que está na tela agora.
   const collapseAll = () => {
@@ -225,6 +319,9 @@ function PermissionScopeContent() {
           rows.push({
             cloud: CLOUD_META[cloud].label,
             permission: m.permission,
+            // A origem vai junto no export: fora da tela, `*` ao lado de
+            // AdministratorAccess não se explica sozinho.
+            grantedVia: m.viaWildcard ? 'wildcard' : 'exact',
             role: r.name,
             isPrivileged: r.isPrivileged,
             url: getCloudUrl(cloud, r.slug),
@@ -247,6 +344,7 @@ function PermissionScopeContent() {
           : undefined
       }
       pageHasOwnHeading
+      beta
     >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl px-6 py-6 space-y-6">
@@ -258,9 +356,6 @@ function PermissionScopeContent() {
               <h1 className="text-sub font-semibold text-gray-800 dark:text-gray-100">
                 Busca reversa de permissão
               </h1>
-              <span className="text-micro font-bold uppercase tracking-wider text-teal-800 dark:text-teal-400 bg-teal-100 dark:bg-teal-900/60 px-1.5 py-0.5 rounded">
-                Beta
-              </span>
             </div>
             <p className="text-body text-fg-muted leading-relaxed mb-4">
               Cole uma permissão de qualquer plataforma e veja todas as roles e policies que a
@@ -313,6 +408,26 @@ function PermissionScopeContent() {
               })}
             </div>
 
+            {/* Concessões por wildcard */}
+            <div className="flex items-center gap-2 flex-wrap mt-2.5">
+              <button
+                onClick={() => setIncludeWildcard((v) => !v)}
+                aria-pressed={includeWildcard}
+                className={`inline-flex items-center gap-1.5 text-3xs px-2.5 py-1 rounded-full border transition-colors font-medium ${
+                  includeWildcard
+                    ? 'border-accent text-accent'
+                    : 'border-gray-300 dark:border-gray-700 text-fg-subtle hover:border-gray-500'
+                }`}
+              >
+                <Asterisk size={11} /> {t('perm.wildcardToggle')}
+              </button>
+              <span className="text-3xs text-fg-muted">{t('perm.wildcardHint')}</span>
+            </div>
+
+            <div className="mt-3">
+              <BetaNotice items={['beta.scopeOne', 'beta.scopeTwo', 'beta.scopeThree', 'beta.scopeFour']} />
+            </div>
+
             {/* Estado */}
             <div className="mt-3 text-tiny">
               {!hasQuery && (
@@ -344,7 +459,11 @@ function PermissionScopeContent() {
             <div className="flex flex-col items-center justify-center py-16 text-fg-muted">
               <Search size={28} className="mb-2 opacity-40" />
               <p className="text-body">Nenhuma permissão encontrada para “{query}”.</p>
-              <p className="text-tiny mt-1">{t('perm.scopeTryShorter')}</p>
+              {universoPronto && isKnownAwsAction(query.trim()) ? (
+                <p className="text-tiny mt-2 max-w-lg text-center text-fg">{t('perm.notGrantedByManaged')}</p>
+              ) : (
+                <p className="text-tiny mt-1">{t('perm.scopeTryShorter')}</p>
+              )}
             </div>
           )}
 
@@ -411,6 +530,11 @@ function PermissionScopeContent() {
                             <code className="flex-1 text-tiny font-mono break-all">
                               {m.permission}
                             </code>
+                            {m.viaWildcard && (
+                              <span className="inline-flex items-center gap-1 text-micro font-semibold uppercase tracking-wider text-fg-muted bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 mt-0.5">
+                                <Asterisk size={9} /> {t('perm.viaWildcard')}
+                              </span>
+                            )}
                             <span className="text-2xs text-fg-muted whitespace-nowrap shrink-0 mt-0.5">
                               {m.roles.length} {terms.principal}
                             </span>
@@ -419,6 +543,9 @@ function PermissionScopeContent() {
                           {/* Roles em tabela */}
                           {open && (
                             <div className="px-4 pb-3">
+                              {m.roles.length === 0 ? (
+                                <p className="text-2xs text-fg-muted italic">{t('perm.noneGrant')}</p>
+                              ) : (
                               <div className="border border-surface-border dark:border-gray-800 rounded-lg overflow-hidden">
                                 <table className="w-full text-tiny border-collapse">
                                   <thead>
@@ -462,6 +589,21 @@ function PermissionScopeContent() {
                                   </tbody>
                                 </table>
                               </div>
+                              )}
+                              {m.deniedBy && m.deniedBy.length > 0 && (
+                                <div className="mt-2 flex items-start gap-1.5 text-2xs text-danger">
+                                  <ShieldOff size={12} className="shrink-0 mt-0.5" />
+                                  <span>
+                                    <span className="font-semibold">{t('perm.deniedBy')}</span>{' '}
+                                    {m.deniedBy.map((r, i) => (
+                                      <span key={r.slug}>
+                                        {i > 0 && ', '}
+                                        <Link href={getCloudUrl(cloud, r.slug)} className="hover:underline">{r.name}</Link>
+                                      </span>
+                                    ))}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

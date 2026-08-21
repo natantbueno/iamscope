@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu } from 'lucide-react'
 import Sidebar, { Platform, View } from './Sidebar'
+import { BetaBadge } from './BetaBadge'
 import CloudNav from './CloudNav'
 import GlobalSearch from './GlobalSearch'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -36,6 +37,7 @@ export default function AppShell({
   headerActions,
   headerBack,
   pageHasOwnHeading = false,
+  beta = false,
 }: {
   children: React.ReactNode
   headerTitle: string
@@ -54,6 +56,15 @@ export default function AppShell({
    * corpo: para elas o título do header É o heading do documento.
    */
   pageHasOwnHeading?: boolean
+  /**
+   * Marca a rota como ferramenta em Beta — o selo sai ao lado do título.
+   *
+   * Fica no AppShell, e não em cada página, para o selo aparecer sempre no
+   * MESMO lugar nas quatro ferramentas. Antes o Permission Scope tinha um
+   * selo solto ao lado da própria `<h1>`, no corpo: duas posições diferentes
+   * para a mesma informação.
+   */
+  beta?: boolean
 }) {
   const t = useT()
   const router = useRouter()
@@ -232,9 +243,12 @@ export default function AppShell({
             <div className="shrink-0">{headerBack}</div>
              )}
           <div className="flex-1 min-w-0">
-            {pageHasOwnHeading
-              ? <p className="text-lead font-semibold text-fg truncate">{headerTitle}</p>
-              : <h1 className="text-lead font-semibold text-fg truncate">{headerTitle}</h1>}
+            <div className="flex items-center gap-2 min-w-0">
+              {pageHasOwnHeading
+                ? <p className="text-lead font-semibold text-fg truncate">{headerTitle}</p>
+                : <h1 className="text-lead font-semibold text-fg truncate">{headerTitle}</h1>}
+              {beta && <BetaBadge />}
+            </div>
             <p className="text-tiny text-fg-muted truncate">{headerSub}</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">

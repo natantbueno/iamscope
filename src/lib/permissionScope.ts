@@ -17,7 +17,8 @@
 // mescla o resultado com o que esta lib devolve.
 
 import { CloudId } from '@/data/compare/types'
-import { getAwsActions, getAwsActionsSync } from './awsActions'
+import { getAwsActions, getAwsActionsSync, getAwsDenyBySlug } from './awsActions'
+import { isWildcardPattern, looksLikeConcreteAction, wildcardMatches } from './wildcardMatch'
 import { getGcpPermissions, getGcpPermissionsSync } from './gcpPermissions'
 
 export interface ScopeRoleRef {
@@ -31,6 +32,22 @@ export interface ScopeMatch {
   /** A permissão exatamente como aparece na plataforma de origem. */
   permission: string
   roles: ScopeRoleRef[]
+  /**
+   * A entrada não casou com o texto digitado: ela é um PADRÃO (`s3:*`, `*\/read`,
+   * `*`) que cobre a action procurada. A interface precisa dizer isso — senão a
+   * pessoa lê "AdministratorAccess" numa busca por `iam:CreateUser` e conclui
+   * que existe uma action literal com esse nome na policy.
+   */
+  viaWildcard?: boolean
+  /**
+   * Roles/policies que NEGAM explicitamente esta permissão.
+   *
+   * Não some da tela: é o dado mais acionável que existe aqui. Uma policy de
+   * quarentena da AWS, ou uma role do Azure com a action em `NotActions`,
+   * responde à pergunta "quem pode fazer isso?" com um "esta aqui
+   * explicitamente não pode" — que vale tanto quanto a lista de quem pode.
+   */
+  deniedBy?: ScopeRoleRef[]
 }
 
 /** Rótulo do que a plataforma chama de "permissão" e de "role". */
@@ -145,32 +162,124 @@ export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
     // allSettled: se o índice de uma cloud falhar, as outras continuam valendo
     await Promise.allSettled(pending)
     _cache = null // rebuild, agora com o que tiver chegado
+    _wildcardCache = null
   }
   return getLocalPermissionIndex()
 }
 
 /**
- * Busca por substring, case-insensitive. Ordena priorizando o match mais
- * "exato" possível: igual > começa com > contém, e depois pelo número de roles
- * (mais roles = permissão mais difundida, normalmente mais relevante).
+ * Entradas do índice cujo identificador é um padrão wildcard.
+ *
+ * Separadas na construção porque a segunda passada da busca só olha para elas:
+ * varrer as ~32 mil entradas de novo a cada tecla, para achar as ~1,3 mil que
+ * têm `*`, seria trabalho jogado fora.
  */
-export function searchLocalPermissions(query: string, limitPerCloud = 40): ScopeMatch[] {
+let _wildcardCache: ScopeMatch[] | null = null
+
+function getWildcardEntries(): ScopeMatch[] {
+  if (_wildcardCache) return _wildcardCache
+  _wildcardCache = getLocalPermissionIndex().filter((m) => isWildcardPattern(m.permission))
+  return _wildcardCache
+}
+
+/**
+ * Casamento em duas passadas.
+ *
+ * 1. LITERAL — substring, case-insensitive. É o que a página promete ("aceita
+ *    busca parcial") e continua sendo a passada principal.
+ * 2. WILDCARD — só quando o que foi digitado parece o identificador COMPLETO de
+ *    uma action. Aí cada padrão com `*` é testado contra ela e entra marcado
+ *    com `viaWildcard`, para a interface poder dizer de onde veio.
+ *
+ * A passada 2 é condicionada porque `*` casa com tudo: aplicada a busca
+ * parcial, ela empurraria AdministratorAccess e Owner para cima de todo
+ * resultado. Ver `looksLikeConcreteAction` em ./wildcardMatch.
+ *
+ * Medido antes desta correção: `iam:CreateUser` devolvia 3 policies. Devolve 8,
+ * e a AdministratorAccess — que concede a action literal `*` — só aparece aqui.
+ */
+/**
+ * Tira da lista de concessão quem NEGA a action procurada, e guarda esses
+ * nomes em `deniedBy`.
+ *
+ * POR QUE PRECISA SER POR POLICY, E NÃO POR ENTRADA DO ÍNDICE
+ *   Descontar só os pares negativos do índice resolve o caso simples — a
+ *   `AWSCompromisedKeyQuarantine`, que não concede nada. Não resolve o caso
+ *   que a expansão de wildcard cria: uma policy que concede `*` num statement
+ *   e nega `iam:CreateUser` em outro passaria a aparecer em `iam:CreateUser`
+ *   pela via do `*`, afirmando exatamente o contrário do documento.
+ *
+ *   Então a regra é a mesma do Azure: concede se algum padrão positivo casa E
+ *   nenhum padrão negativo casa.
+ */
+function dropDenied(hits: ScopeMatch[], q: string): ScopeMatch[] {
+  const denyBySlug = getAwsDenyBySlug()
+  if (!denyBySlug || denyBySlug.size === 0) return hits
+
+  const concreta = looksLikeConcreteAction(q)
+  const out: ScopeMatch[] = []
+  for (const m of hits) {
+    if (m.cloud !== 'aws') { out.push(m); continue }
+    // Contra o que a negação é medida: a action concreta digitada, quando é
+    // uma; senão a própria permissão da entrada, exata no casamento literal.
+    const target = concreta ? q : m.permission.toLowerCase()
+    const nega = (slug: string) => {
+      const pats = denyBySlug.get(slug)
+      return !!pats && pats.some((p) => p.toLowerCase() === target || wildcardMatches(p, target))
+    }
+    const concedem = m.roles.filter((r) => !nega(r.slug))
+    if (concedem.length === m.roles.length) { out.push(m); continue }
+    const negam = m.roles.filter((r) => nega(r.slug))
+    // A entrada FICA mesmo sem ninguém concedendo, desde que alguém negue.
+    //
+    // Medido: `profile:*` é concedido por uma policy só — a mesma que nega
+    // `profile:CreateDomain`. Descartar a entrada por ter zero concessões
+    // apagaria justamente a informação mais forte da busca: "a única policy
+    // que cobriria esta action por wildcard a proíbe explicitamente".
+    if (concedem.length || negam.length) out.push({ ...m, roles: concedem, deniedBy: negam })
+  }
+  return out
+}
+
+function collectHits(q: string, includeWildcard: boolean): ScopeMatch[] {
+  const literal = getLocalPermissionIndex().filter((m) => m.permission.toLowerCase().includes(q))
+  if (!includeWildcard || !looksLikeConcreteAction(q)) return dropDenied(literal, q)
+
+  // Um padrão pode casar pelas duas vias (procurar `s3:` acha `s3:*` literal).
+  // A literal vence e a marcação não aparece — senão a mesma linha sairia duas
+  // vezes, uma delas dizendo "via wildcard" para um casamento que foi textual.
+  const seen = new Set(literal.map((m) => `${m.cloud}|${m.permission}`))
+  const out = literal.slice()
+  for (const m of getWildcardEntries()) {
+    if (seen.has(`${m.cloud}|${m.permission}`)) continue
+    if (wildcardMatches(m.permission, q)) out.push({ ...m, viaWildcard: true })
+  }
+  return dropDenied(out, q)
+}
+
+/** igual > começa com > contém > concedido por wildcard. */
+function rankOf(m: ScopeMatch, q: string): number {
+  if (m.viaWildcard) return 3
+  const s = m.permission.toLowerCase()
+  if (s === q) return 0
+  if (s.startsWith(q)) return 1
+  return 2
+}
+
+/**
+ * Ordena priorizando o match mais "exato" possível, e depois pelo número de
+ * roles (mais roles = permissão mais difundida, normalmente mais relevante).
+ */
+export function searchLocalPermissions(
+  query: string, limitPerCloud = 40, includeWildcard = true,
+): ScopeMatch[] {
   const q = query.trim().toLowerCase()
   if (!q) return []
 
-  const hits = getLocalPermissionIndex().filter((m) =>
-    m.permission.toLowerCase().includes(q),
-  )
-
-  const rank = (p: string) => {
-    const s = p.toLowerCase()
-    if (s === q) return 0
-    if (s.startsWith(q)) return 1
-    return 2
-  }
+  const hits = collectHits(q, includeWildcard)
 
   hits.sort((a, b) =>
-    rank(a.permission) - rank(b.permission) ||
+    rankOf(a, q) - rankOf(b, q) ||
     b.roles.length - a.roles.length ||
     a.permission.localeCompare(b.permission),
   )
@@ -188,14 +297,12 @@ export function searchLocalPermissions(query: string, limitPerCloud = 40): Scope
 }
 
 /** Quantos matches existem por cloud, antes de qualquer limite. */
-export function countLocalMatches(query: string): Record<string, number> {
+export function countLocalMatches(query: string, includeWildcard = true): Record<string, number> {
   const q = query.trim().toLowerCase()
   if (!q) return {}
   const counts: Record<string, number> = {}
-  for (const m of getLocalPermissionIndex()) {
-    if (m.permission.toLowerCase().includes(q)) {
-      counts[m.cloud] = (counts[m.cloud] ?? 0) + 1
-    }
+  for (const m of collectHits(q, includeWildcard)) {
+    counts[m.cloud] = (counts[m.cloud] ?? 0) + 1
   }
   return counts
 }

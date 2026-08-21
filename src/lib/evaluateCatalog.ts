@@ -25,7 +25,11 @@ import type {
   EvaluateCloud, EvaluateOutcome, EvaluatedPermission, EvaluationResultData,
   EvaluationRisk, EvaluationTier,
 } from './evaluate'
-import { detectCloud } from './evaluate'
+import { detectCloud, prepareRoleJson } from './evaluate'
+import {
+  ENTRA_TIER_LEVEL, AZURE_TIER_LEVEL, AWS_TIER_LEVEL,
+  GCP_TIER_LEVEL, GWS_TIER_LEVEL, IBM_TIER_LEVEL,
+} from './eamLevels'
 
 // ── Tipos auxiliares dos dados de comparação ────────────────────────────────
 
@@ -86,17 +90,19 @@ function extractIdentity(cloud: EvaluateCloud, j: Record<string, any>): { name: 
         id: j.name ?? null,
         description: j.description ?? null,
       }
-    case 'googleWorkspace':
+    case 'googleWorkspace': {
+      // `_SEED_ADMIN_ROLE` é identificador, não nome. Deixar o nome vazio faz
+      // o do catálogo prevalecer no resultado (ver `identity.name || record.name`
+      // adiante) em vez de imprimir o identificador interno como se fosse
+      // título de role.
+      const raw = j.roleName ?? j.name ?? ''
+      const interno = typeof raw === 'string' && /^_.+_ROLE$/i.test(raw.trim())
       return {
-        name: j.roleName ?? j.name ?? '',
-        id: j.roleId != null ? String(j.roleId) : null,
+        name: interno ? '' : raw,
+        id: j.roleId != null ? String(j.roleId) : (interno ? raw : null),
         description: j.roleDescription ?? j.description ?? null,
       }
-      return {
-        name: j.name ?? j.displayName ?? '',
-        id: typeof j.id === 'string' ? j.id : null,
-        description: j.description ?? null,
-      }
+    }
     case 'ibmCloud':
       return {
         name: j.display_name ?? j.displayName ?? j.name ?? '',
@@ -207,15 +213,78 @@ function matchGcp(j: Record<string, any>): { record: GcpRole; matchedBy: Matched
   return null
 }
 
-// Google Workspace e IBM Cloud: o dataset do site não guarda o
-// identificador nativo da plataforma (roleId numérico / CRN),
-// então o match só pode ser feito por nome (case-insensitive).
+// IBM Cloud: o dataset do site não guarda o CRN, então o match é por nome
+// (case-insensitive).
+
+// ── Google Workspace ────────────────────────────────────────────────────────
+//
+// O DEFEITO QUE ISTO CORRIGE
+//   O match do Workspace era por nome de exibição contra `roleName`. Só que a
+//   Directory API não devolve nome de exibição em `roleName`: devolve o
+//   identificador interno da role de sistema —
+//
+//     { "roleName": "_SEED_ADMIN_ROLE", "isSuperAdminRole": true, ... }
+//
+//   enquanto o catálogo guarda "Super Admin", que é como o Google escreve na
+//   documentação e no Admin console. Resultado medido em 20/08/2026: **nenhuma
+//   das 14 roles do Workspace conseguia casar** com um export real da API —
+//   nem as que estão catalogadas. Era o caso mais literal do "mesmo roles do
+//   site também não está trazendo" que veio no feedback.
+//
+// A ORDEM DAS TENTATIVAS, E POR QUE ELA É ESSA
+//   1. `isSuperAdminRole` — flag booleana documentada pelo Google. É o sinal
+//      mais forte que existe e não depende de string nenhuma.
+//   2. Alias explícito, para o que a normalização não resolve sozinha.
+//   3. Nome de exibição literal — cobre quem copiou do Admin console e a role
+//      custom que por acaso se chama igual a uma catalogada.
+//   4. Normalização do identificador interno: tira o `_` da frente, o `_ROLE`
+//      do fim e a pontuação. `_USER_MANAGEMENT_ADMIN_ROLE` vira
+//      `usermanagementadmin`, que é o que "User Management Admin" também vira.
+//
+//   Uma role CUSTOM continua não casando, e está certo: ela não está no
+//   catálogo. Quem trata esse caso é a avaliação por permissões (E3).
+
+const GWS_API_ALIASES: Record<string, string> = {
+  // Documentado pelo Google: `_SEED_ADMIN_ROLE` é o "Google Workspace
+  // Administrator Seed Role" — developers.google.com/workspace/admin/
+  // directory/v1/guides/manage-roles.
+  _SEED_ADMIN_ROLE: 'super-admin',
+  // INFERIDO, não documentado: a normalização produz "service admin" e o
+  // catálogo escreve "Services Admin". Único alias que não vem de fonte
+  // oficial — se um dia bater errado, é o primeiro lugar para olhar.
+  _SERVICE_ADMIN_ROLE: 'services-admin',
+}
+
+/** `_USER_MANAGEMENT_ADMIN_ROLE` e `User Management Admin` viram a mesma coisa. */
+function normalizeGwsName(s: string): string {
+  return s.replace(/^_+/, '').replace(/_ROLE$/i, '').replace(/[^a-z0-9]+/gi, '').toLowerCase()
+}
 
 function matchGws(j: Record<string, any>): { record: GwsAdminRole; matchedBy: MatchedBy } | null {
-  const nameCandidate = j.roleName ?? j.name
-  if (typeof nameCandidate === 'string' && nameCandidate.trim()) {
-    const byName = GWS_ROLES.find((r) => r.name.toLowerCase() === nameCandidate.trim().toLowerCase())
-    if (byName) return { record: byName, matchedBy: 'name' }
+  const bySlug = (slug: string) => GWS_ROLES.find((r) => r.slug === slug)
+
+  if (j.isSuperAdminRole === true) {
+    const r = bySlug('super-admin')
+    if (r) return { record: r, matchedBy: 'id' }
+  }
+
+  const raw = j.roleName ?? j.name
+  if (typeof raw !== 'string' || !raw.trim()) return null
+  const texto = raw.trim()
+
+  const alias = GWS_API_ALIASES[texto.toUpperCase()]
+  if (alias) {
+    const r = bySlug(alias)
+    if (r) return { record: r, matchedBy: 'id' }
+  }
+
+  const byName = GWS_ROLES.find((r) => r.name.toLowerCase() === texto.toLowerCase())
+  if (byName) return { record: byName, matchedBy: 'name' }
+
+  const alvo = normalizeGwsName(texto)
+  if (alvo) {
+    const byNorm = GWS_ROLES.find((r) => normalizeGwsName(r.name) === alvo)
+    if (byNorm) return { record: byNorm, matchedBy: 'name' }
   }
   return null
 }
@@ -238,24 +307,8 @@ function matchIbm(j: Record<string, any>): { record: IbmRole; matchedBy: Matched
 // própria do site (tier "FullAccess"/"ProjectOwner"/etc.), documentada nas
 // páginas /reference de cada cloud.
 
-const ENTRA_TIER_LEVEL: Record<EamTier, 0 | 1 | 2 | null> = {
-  ControlPlane: 0, ManagementPlane: 1, UserAccess: 2, Unclassified: null,
-}
-const AZURE_TIER_LEVEL: Record<AzureRbacTier, 0 | 1 | 2> = {
-  FullControl: 0, AccessManagement: 0, Contributor: 1, DataPlane: 1, Specialized: 1, Reader: 2,
-}
-const AWS_TIER_LEVEL: Record<AwsTier, 0 | 1 | 2> = {
-  FullAccess: 0, PowerUser: 1, Operator: 1, Specialized: 1, ReadOnly: 2,
-}
-const GCP_TIER_LEVEL: Record<GcpTier, 0 | 1 | 2> = {
-  ProjectOwner: 0, Admin: 0, Editor: 1, Operator: 1, Developer: 1, Specialized: 1, Viewer: 2,
-}
-const GWS_TIER_LEVEL: Record<GwsTier, 0 | 1 | 2> = {
-  SuperAdmin: 0, DelegatedAdmin: 1, ServiceAdmin: 1, SpecializedAdmin: 1, ReadOnly: 2,
-}
-const IBM_TIER_LEVEL: Record<IbmTier, 0 | 1 | 2> = {
-  AccountAdmin: 0, PlatformAdmin: 1, PlatformOperator: 1, ServiceManager: 1, ReadOnly: 2,
-}
+// Os seis mapas moram em ./eamLevels — a avaliação por permissões usa os
+// mesmos, e duas cópias divergiriam em silêncio.
 
 function getTierInfo(cloud: EvaluateCloud, record: any): { level: 0 | 1 | 2 | null; rawTier: string; rawLabel: string; rawDescription: string } {
   switch (cloud) {
@@ -403,16 +456,35 @@ export function evaluateRoleSync(rawText: string, manualCloud?: EvaluateCloud | 
   try {
     parsed = JSON.parse(rawText)
   } catch (e) {
-    return { ok: false, code: 'invalid_json', error: 'JSON inválido — verifique vírgulas, aspas e chaves. ' + (e instanceof Error ? e.message : '') }
+    return { status: 'error', code: 'invalid_json', error: 'JSON inválido — verifique vírgulas, aspas e chaves. ' + (e instanceof Error ? e.message : '') }
   }
-  if (parsed == null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { ok: false, code: 'not_object', error: 'O JSON precisa ser um objeto único (não uma lista). Cole o objeto de um único role/policy.' }
-  }
-  const j = parsed as Record<string, any>
 
+  // Desembrulha envelope, normaliza a caixa das chaves e separa lista de
+  // objeto único. Ver o bloco NORMALIZAÇÃO DA ENTRADA em ./evaluate.
+  const prep = prepareRoleJson(parsed)
+  if (prep.candidates) {
+    return { status: 'choose', candidates: prep.candidates, notes: prep.notes }
+  }
+  if (!prep.json) {
+    return { status: 'error', code: 'not_object', error: 'Não encontrei um objeto de role neste JSON. Cole o objeto de um role/policy, ou a resposta da API que o contém.' }
+  }
+  return evaluateObjectSync(prep.json, manualCloud, prep.notes)
+}
+
+/**
+ * O miolo da avaliação, já com um objeto pronto na mão.
+ *
+ * Separado de `evaluateRoleSync` porque a escolha na lista precisa entrar por
+ * aqui: quando a pessoa clica numa das N roles do JSON, o texto já foi
+ * parseado e normalizado — reparsear seria refazer trabalho e, pior, perder o
+ * `addAliases` que já foi aplicado àquele objeto.
+ */
+export function evaluateObjectSync(
+  j: Record<string, any>, manualCloud?: EvaluateCloud | null, notes: string[] = [],
+): EvaluateOutcome {
   const detection = manualCloud ? { cloud: manualCloud, reason: 'Selecionado manualmente' } : detectCloud(j)
   if (!detection.cloud) {
-    return { ok: false, code: 'cloud_not_detected', error: detection.reason }
+    return { status: 'error', code: 'cloud_not_detected', error: detection.reason }
   }
   const cloud = detection.cloud
   const identity = extractIdentity(cloud, j)
@@ -429,7 +501,8 @@ export function evaluateRoleSync(rawText: string, manualCloud?: EvaluateCloud | 
 
   if (!matchResult) {
     return {
-      ok: true,
+      status: 'ok',
+      notes,
       result: {
         cloud,
         matched: false,
@@ -465,7 +538,8 @@ export function evaluateRoleSync(rawText: string, manualCloud?: EvaluateCloud | 
   const risk = getRiskInfo(cloud, record.slug)
 
   return {
-    ok: true,
+    status: 'ok',
+    notes,
     result: {
       cloud,
       matched: true,

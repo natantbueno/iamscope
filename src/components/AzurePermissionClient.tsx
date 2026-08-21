@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { BackToList, formatarData } from './RoleDetailHeader'
 import { getPlatformSync } from '@/data/syncMeta'
 import { Copy, CheckCheck, ExternalLink, ShieldAlert, Hash, Tag, Layers, Asterisk,
-  CalendarCheck } from 'lucide-react'
+  CalendarCheck, ShieldOff } from 'lucide-react'
 
 import AppShell from '@/components/AppShell'
 import PermissionsTable from '@/components/PermissionsTable'
@@ -252,6 +252,38 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
               )}
             </div>
           </section>
+
+          {/*
+            Roles que EXCLUEM esta action.
+
+            Não é a ausência de uma concessão — é uma proibição escrita na
+            definição da role, em `NotActions`, que vence o `Actions` dela. A
+            Contributor concede `*` e mesmo assim não escreve em
+            Microsoft.Authorization: é assim que a Microsoft impede que quem
+            administra recurso se auto-promova.
+
+            Até 21/08/2026 estas roles vinham misturadas na lista de cima, e
+            esta página afirmava o contrário da definição oficial.
+          */}
+          {entry.excludedBy.length > 0 && (
+            <section className="bg-surface border border-line rounded-lg p-5 mb-6">
+              <h2 className="text-note font-semibold text-fg mb-1 flex items-center gap-2">
+                <ShieldOff size={15} className="text-danger shrink-0" />
+                {t('perm.excludedTitle')}
+                <span className="text-tiny font-normal text-fg-muted">({entry.excludedBy.length})</span>
+              </h2>
+              <p className="text-tiny text-fg-muted mb-3 max-w-3xl">{t('perm.excludedBody')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {entry.excludedBy.map((r) => (
+                  <Link key={r.slug} href={`/azure-rbac/roles/${r.slug}`}
+                    className="inline-flex items-center gap-1 text-3xs px-2 py-0.5 rounded border bg-surface-alt border-line-strong text-fg-muted hover:border-brand-onDark transition-colors">
+                    {r.isPrivileged && <ShieldAlert size={10} className="text-danger shrink-0" />}
+                    {r.name}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="pb-8" />
         </div>

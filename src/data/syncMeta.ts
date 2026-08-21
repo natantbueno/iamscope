@@ -70,19 +70,19 @@ export const DATA_SYNC: DataSourceSync[] = [
   },
   {
     id: 'aws-policies',
-    label: 'AWS IAM — Managed Policies / Service Roles (1.553)',
+    label: 'AWS IAM — Managed Policies / Service Roles (1.582)',
     platform: 'AWS IAM',
-    lastSynced: '2026-07-31',
+    lastSynced: '2026-08-21',
     sourceLabel: 'AWS Managed Policy Reference (via scripts/fetch-aws-policies-official.js)',
     sourceUrl: 'https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html',
-    notes: 'Recoletado em 31/07 da referência oficial: descrição, tipo, datas de criação/edição, '
-      + 'versão e o JSON real do documento de policy. As descrições anteriores eram fabricadas e o '
-      + '"Policy Document JSON" exibido era sintético — ambos substituídos pelo texto oficial. '
-      + '1.552/1.553 policies com actions.',
+    notes: 'Recoletado em 21/08 da referência oficial: descrição, tipo, datas de criação/edição, '
+      + 'versão e o JSON real do documento de policy. Nesta rodada o parser passou a respeitar o '
+      + '`Effect` de cada statement: as actions de statements `Deny` não contam mais como concessão, '
+      + 'o que corrigiu 42 policies — inclusive a AWSDenyAll, que aparecia como tier Full Access.',
   },
   {
     id: 'gcp-roles',
-    label: 'GCP IAM — Predefined Roles (2.381)',
+    label: 'GCP IAM — Predefined Roles (2.382)',
     platform: 'GCP IAM',
     lastSynced: '2026-07-31',
     sourceLabel: 'Google Cloud IAM — Roles and permissions (via scripts/fetch-gcp-roles-from-docs.js)',

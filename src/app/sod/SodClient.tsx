@@ -5,6 +5,7 @@ import { useT } from '@/i18n/LanguageProvider'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ShieldAlert, Cloud, LayoutGrid } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import { BetaNotice } from '@/components/BetaBadge'
 import SoDTabs, { SoDTab } from '@/components/SoDTabs'
 import SoDScopeNotice from '@/components/SoDScopeNotice'
 import SoDRulesCatalog from '@/components/SoDRulesCatalog'
@@ -63,6 +64,7 @@ export default function SodClient() {
     <AppShell
       headerTitle="SoD Analyzer"
       headerSub={t('sod.headerSub')}
+      beta
       headerActions={
         <div className="flex items-center gap-1.5 text-3xs text-fg-muted">
           <ShieldAlert size={14} />
@@ -114,6 +116,9 @@ export default function SodClient() {
           já sabe o que quer — nunca o veria.
         */}
         <SoDScopeNotice platformCount={SOD_PLATFORMS.length} crossCloudCount={metrics.crossCloud} />
+        <div className="px-4 pb-3">
+          <BetaNotice items={['beta.sodOne', 'beta.sodTwo', 'beta.sodThree']} />
+        </div>
         <SoDTabs active={activeTab} onChange={setTab} />
         {activeTab === 'catalog' && <SoDRulesCatalog />}
         {activeTab === 'matrix' && <SoDMatrix />}

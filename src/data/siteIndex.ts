@@ -85,8 +85,15 @@ export const SITE_INDEX: Record<string, SiteIndexEntry[]> = {
  * a nenhuma cloud — e porque são o que o site tem de próprio. Quem chega numa
  * página de referência por busca não tem outro caminho para descobri-las.
  */
+export const SEARCH_INDEX_TOTAL =
+  ENTRA_ROLES_COUNT + AZURE_ROLES_COUNT + AWS_POLICIES_COUNT
+  + GCP_ROLES_COUNT + GWS_ROLES_COUNT + IBM_ROLES_COUNT
+
 export const SITE_TOOLS: SiteIndexEntry[] = [
-  { href: '/search',           label: 'Busca global',        desc: 'idx.search',    count: 4603, noun: 'noun.roles' },
+  // Derivado, nunca cravado: o literal 4603 sobreviveu a duas recoletas e só
+  // foi pego pelo check-site-index. É a soma das seis clouds — o mesmo que o
+  // índice de busca indexa.
+  { href: '/search',           label: 'Busca global',        desc: 'idx.search',    count: SEARCH_INDEX_TOTAL, noun: 'noun.roles' },
   { href: '/permission-scope', label: 'Permission Scope',    desc: 'idx.scope',     count: -1,   noun: 'noun.items' },
   { href: '/compare',          label: 'Multi-Cloud Compare', desc: 'idx.compare',   count: -1,   noun: 'noun.items' },
   { href: '/sod',              label: 'SoD Analyzer',        desc: 'idx.sod',       count: SOD_RULES_COUNT,   noun: 'noun.rules' },

@@ -115,9 +115,22 @@ export interface EvaluationResultData {
   risk: EvaluationRisk
 }
 
+/**
+ * O resultado tem TRÊS saídas, não duas.
+ *
+ * A terceira ('choose') nasceu da medição: `az role definition list` e
+ * `aws iam list-policies` devolvem uma lista, e a versão anterior respondia
+ * "o JSON precisa ser um objeto único" — recusando a saída literal do comando
+ * mais comum de cada uma das duas plataformas. Agora a lista vira escolha.
+ *
+ * O discriminante é `status`, e não o antigo `ok`, porque com três saídas
+ * `if (!outcome.ok)` deixaria a terceira cair silenciosamente no ramo do
+ * sucesso — e o erro só apareceria como `undefined` na tela.
+ */
 export type EvaluateOutcome =
-  | { ok: true; result: EvaluationResultData }
-  | { ok: false; error: string; code: 'invalid_json' | 'not_object' | 'cloud_not_detected' }
+  | { status: 'ok'; result: EvaluationResultData; notes: string[] }
+  | { status: 'choose'; candidates: RoleCandidate[]; notes: string[] }
+  | { status: 'error'; error: string; code: 'invalid_json' | 'not_object' | 'cloud_not_detected' }
 
 // ── Detecção automática de cloud ────────────────────────────────────────────
 
@@ -220,10 +233,247 @@ export async function evaluateRole(
   return evaluateRoleSync(rawText, manualCloud)
 }
 
+/** Avalia uma das roles escolhidas na lista, sem reparsear o texto colado. */
+export async function evaluateRoleCandidate(
+  json: Record<string, any>, manualCloud?: EvaluateCloud | null,
+): Promise<EvaluateOutcome> {
+  const { evaluateObjectSync } = await import('./evaluateCatalog')
+  return evaluateObjectSync(json, manualCloud)
+}
+
 /** Reconstrói o resultado a partir de cloud+slug, para /evaluate?cloud=&role=. */
 export async function getResultForSlug(
   cloud: EvaluateCloud, slug: string,
 ): Promise<EvaluationResultData | null> {
   const { getResultForSlugSync } = await import('./evaluateCatalog')
   return getResultForSlugSync(cloud, slug)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NORMALIZAÇÃO DA ENTRADA — o que os primeiros usuários colaram de verdade
+// ═══════════════════════════════════════════════════════════════════════════
+// Medição de 20/08/2026, 19 payloads reais rodados contra o detector e os seis
+// catálogos: 4 deles não eram sequer DETECTADOS, e nenhum dos quatro tinha
+// nada de errado — eram a saída literal de um comando que qualquer pessoa que
+// administra IAM roda todo dia:
+//
+//   {"@odata.context":…,"value":[…]}        resposta de coleção do Graph
+//   {"Id":…,"DisplayName":…}                ConvertTo-Json do PowerShell
+//   {"PolicyVersion":{"Document":{…}}}      aws iam get-policy-version
+//   {"Role":{…}}                            aws iam get-role
+//   [ {…}, {…} ]                            az role definition list
+//
+// Três problemas distintos, e cada um tem um remédio próprio aqui:
+//
+//   1. EMBRULHO   O objeto certo está lá dentro, sob uma chave de envelope.
+//   2. CAIXA      O PowerShell serializa em PascalCase; o detector procurava
+//                 camelCase. `DisplayName` e `displayName` são a mesma coisa
+//                 para quem colou e coisas diferentes para o `??`.
+//   3. LISTA      Vieram N roles, não uma. Recusar é a resposta errada: a
+//                 pessoa escolhe qual quer avaliar.
+//
+// REGRA DE OURO DESTE ARQUIVO — desembrulhar só depois de falhar.
+//   `prepareRoleJson` tenta detectar o objeto como ele veio ANTES de mexer em
+//   qualquer envelope. Assim nenhum dos casos que já funcionavam muda de
+//   comportamento: o desembrulho só roda no caminho que hoje dá erro.
+
+/** Uma das roles encontradas quando o JSON colado tem mais de uma. */
+export interface RoleCandidate {
+  label: string
+  json: Record<string, any>
+}
+
+export interface PreparedInput {
+  /** O objeto pronto para detecção/matching, ou null se não houver um. */
+  json: Record<string, any> | null
+  /** Preenchido quando o JSON traz VÁRIAS roles — a pessoa escolhe. */
+  candidates: RoleCandidate[] | null
+  /**
+   * O que foi feito com a entrada, em forma TÉCNICA e sem prosa
+   * (`PolicyVersion.Document`, `"value" \u2192 3`).
+   *
+   * Sem prosa de propósito: o rótulo que introduz a lista vem do dicionário e
+   * troca de idioma; identificador de campo de API não troca — é dado, e o
+   * ADR-001 manda deixar em inglês nos dois idiomas.
+   */
+  notes: string[]
+}
+
+// ── Caixa das chaves ────────────────────────────────────────────────────────
+// Mapa `chave em minúsculas` -> grafias canônicas que precisam existir.
+//
+// POR QUE ADICIONA EM VEZ DE RENOMEAR
+//   `roleName` (Azure) e `RoleName` (AWS) são chaves DIFERENTES em plataformas
+//   diferentes e viram a mesma coisa em minúsculas. Renomear uma quebraria a
+//   outra. Como daqui em diante o objeto só é lido, nunca reescrito, deixar as
+//   duas grafias convivendo não custa nada e não tem ambiguidade.
+const KEY_ALIASES: Record<string, string[]> = {
+  displayname:            ['displayName'],
+  roletemplateid:         ['roleTemplateId'],
+  directoryroleid:        ['directoryRoleId'],
+  templateid:             ['templateId'],
+  id:                     ['id'],
+  description:            ['description'],
+  name:                   ['name'],
+  title:                  ['title'],
+  type:                   ['type'],
+  properties:             ['properties'],
+  rolename:               ['roleName', 'RoleName'],
+  policyname:             ['PolicyName'],
+  roledefinitionid:       ['roleDefinitionId'],
+  roledescription:        ['roleDescription'],
+  permissions:            ['permissions'],
+  rolepermissions:        ['rolePermissions'],
+  allowedresourceactions: ['allowedResourceActions'],
+  includedpermissions:    ['includedPermissions'],
+  actions:                ['actions'],
+  notactions:             ['notActions'],
+  dataactions:            ['dataActions'],
+  notdataactions:         ['notDataActions'],
+  roleid:                 ['roleId'],
+  issuperadminrole:       ['isSuperAdminRole'],
+  kind:                   ['kind'],
+  roleprivileges:         ['rolePrivileges'],
+  privilegename:          ['privilegeName'],
+  crn:                    ['crn'],
+  arn:                    ['Arn', 'arn'],
+  policydocument:         ['PolicyDocument'],
+  statement:              ['Statement'],
+  action:                 ['Action'],
+  effect:                 ['Effect'],
+}
+
+/** Profundidade 3 cobre `properties.permissions[0].actions`, que é o mais fundo que se lê. */
+function addAliases(node: any, depth = 0): void {
+  if (depth > 3 || node == null || typeof node !== 'object') return
+  if (Array.isArray(node)) {
+    for (const el of node) addAliases(el, depth + 1)
+    return
+  }
+  // Snapshot antes do laço: as chaves adicionadas aqui dentro não devem
+  // realimentar a iteração.
+  for (const k of Object.keys(node)) {
+    const canon = KEY_ALIASES[k.toLowerCase()]
+    if (canon) for (const c of canon) if (!(c in node)) node[c] = node[k]
+    addAliases(node[k], depth + 1)
+  }
+}
+
+// ── Envelopes ───────────────────────────────────────────────────────────────
+// `properties` NÃO entra: a detecção do Azure depende de `properties.roleName`
+// e o extractIdentity lê `properties.*`. Desembrulhar quebraria os dois.
+const WRAPPER_KEYS = ['Policy', 'PolicyVersion', 'Document', 'Role', 'RoleDefinition']
+
+/** Chaves sob as quais uma plataforma devolve VÁRIAS roles. */
+const LIST_KEYS = ['value', 'items', 'Policies', 'Roles', 'AttachedPolicies']
+
+function unwrap(node: any, depth: number): { json: Record<string, any>; path: string[] } | null {
+  if (depth > 3 || node == null || typeof node !== 'object') return null
+  for (const k of WRAPPER_KEYS) {
+    const v = node[k]
+    if (v == null || typeof v !== 'object' || Array.isArray(v)) continue
+    addAliases(v)
+    if (detectCloud(v).cloud) return { json: v, path: [k] }
+    const deeper = unwrap(v, depth + 1)
+    if (deeper) return { json: deeper.json, path: [k, ...deeper.path] }
+  }
+  return null
+}
+
+/** Como chamar esta role na lista de escolha. */
+export function describeCandidate(j: Record<string, any>): string {
+  const name = j.displayName ?? j.properties?.roleName ?? j.roleName ?? j.PolicyName
+    ?? j.RoleName ?? j.title ?? j.display_name ?? j.roleDescription ?? j.name ?? j.Arn ?? j.id
+  return typeof name === 'string' && name.trim() ? name.trim() : '(sem nome no JSON)'
+}
+
+/** Máximo de roles oferecidas na escolha — uma lista maior que isso não se lê. */
+const MAX_CANDIDATES = 50
+
+function fromList(list: any[], origin: string, notes: string[]): PreparedInput | null {
+  const objs = list.filter((e) => e != null && typeof e === 'object' && !Array.isArray(e))
+  if (objs.length === 0) return null
+  for (const o of objs) addAliases(o)
+
+  if (objs.length === 1) {
+    notes.push(`${origin} \u2192 1`)
+    const single = objs[0] as Record<string, any>
+    if (detectCloud(single).cloud) return { json: single, candidates: null, notes }
+    const un = unwrap(single, 0)
+    return { json: un ? un.json : single, candidates: null, notes }
+  }
+
+  notes.push(`${origin} \u2192 ${objs.length}`)
+  return {
+    json: null,
+    candidates: objs.slice(0, MAX_CANDIDATES).map((o) => ({ label: describeCandidate(o), json: o })),
+    notes,
+  }
+}
+
+/**
+ * Prepara o JSON já parseado para detecção e matching.
+ *
+ * Ordem, e ela importa: lista primeiro (para não desembrulhar o envelope de uma
+ * coleção como se fosse role), depois caixa das chaves, depois — só se a
+ * detecção falhar — envelope.
+ */
+export function prepareRoleJson(parsed: unknown): PreparedInput {
+  const notes: string[] = []
+
+  if (Array.isArray(parsed)) {
+    return fromList(parsed, 'array', notes) ?? { json: null, candidates: null, notes }
+  }
+  if (parsed == null || typeof parsed !== 'object') {
+    return { json: null, candidates: null, notes }
+  }
+
+  const node = parsed as Record<string, any>
+  addAliases(node)
+
+  for (const k of LIST_KEYS) {
+    if (Array.isArray(node[k])) {
+      const r = fromList(node[k], `"${k}"`, notes)
+      if (r) return r
+    }
+  }
+
+  if (detectCloud(node).cloud) return { json: node, candidates: null, notes }
+
+  const un = unwrap(node, 0)
+  if (un) {
+    notes.push(un.path.join('.'))
+    return { json: un.json, candidates: null, notes }
+  }
+  return { json: node, candidates: null, notes }
+}
+
+/** O que a caixa de entrada mostra enquanto a pessoa digita. */
+export interface InputPreview {
+  cloud: EvaluateCloud | null
+  reason: string
+  notes: string[]
+  candidateCount: number
+}
+
+/**
+ * Detecção ao vivo, com a MESMA normalização da avaliação.
+ *
+ * Antes o RoleInput chamava `detectCloud(JSON.parse(value))` cru. Com o
+ * desembrulho só do lado da avaliação, a caixa diria "cloud não detectada" em
+ * amarelo para um JSON que o botão Avaliar processaria sem reclamar — dois
+ * veredictos diferentes para a mesma entrada, na mesma tela.
+ */
+export function previewInput(rawText: string): InputPreview | null {
+  let parsed: unknown
+  try { parsed = JSON.parse(rawText) } catch { return null }
+  const prep = prepareRoleJson(parsed)
+  if (prep.candidates) {
+    return { cloud: null, reason: '', notes: prep.notes, candidateCount: prep.candidates.length }
+  }
+  if (!prep.json) {
+    return { cloud: null, reason: 'Nenhuma assinatura de cloud reconhecida', notes: prep.notes, candidateCount: 0 }
+  }
+  const d = detectCloud(prep.json)
+  return { cloud: d.cloud, reason: d.reason, notes: prep.notes, candidateCount: 0 }
 }
