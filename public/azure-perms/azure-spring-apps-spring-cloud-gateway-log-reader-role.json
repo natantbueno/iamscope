@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AppPlatform/Spring/read","type":"Actions"},{"action":"Microsoft.AppPlatform/Spring/gateways/read","type":"Actions"},{"action":"Microsoft.AppPlatform/Spring/SpringCloudGateway/logstream/action","type":"DataActions"}]

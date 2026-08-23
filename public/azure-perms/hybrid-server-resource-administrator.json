@@ -1,0 +1,1 @@
+[{"action":"Microsoft.HybridCompute/machines/*","type":"Actions"},{"action":"Microsoft.HybridCompute/*/read","type":"Actions"}]

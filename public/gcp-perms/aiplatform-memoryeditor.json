@@ -1,0 +1,1 @@
+["aiplatform.memories.create","aiplatform.memories.delete","aiplatform.memories.generate","aiplatform.memories.update","aiplatform.memoryRevisions.rollback"]

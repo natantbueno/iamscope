@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Insights/components/*/read","type":"Actions"},{"action":"Microsoft.Insights/components/purge/action","type":"Actions"},{"action":"Microsoft.OperationalInsights/workspaces/*/read","type":"Actions"},{"action":"Microsoft.OperationalInsights/workspaces/purge/action","type":"Actions"}]

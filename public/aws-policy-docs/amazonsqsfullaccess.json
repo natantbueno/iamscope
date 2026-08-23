@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonSQSFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["sqs:*"],"Effect":"Allow","Resource":"*"}]},"actions":["sqs:*"],"notActions":[]}

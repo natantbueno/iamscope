@@ -1,0 +1,1 @@
+[{"action":"Microsoft.EventHub/namespaces/schemagroups/*","type":"Actions"},{"action":"Microsoft.EventHub/namespaces/schemas/*","type":"DataActions"}]

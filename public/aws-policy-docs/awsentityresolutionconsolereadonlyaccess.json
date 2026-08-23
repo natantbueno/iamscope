@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSEntityResolutionConsoleReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"EntityResolutionRead","Effect":"Allow","Action":["entityresolution:Get*","entityresolution:List*"],"Resource":"*"}]},"actions":["entityresolution:Get*","entityresolution:List*"],"notActions":[]}

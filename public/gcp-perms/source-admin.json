@@ -1,0 +1,1 @@
+["source.repos.create","source.repos.delete","source.repos.get","source.repos.getIamPolicy","source.repos.getProjectConfig","source.repos.list","source.repos.setIamPolicy","source.repos.update","source.repos.updateProjectConfig","source.repos.updateRepoConfig"]

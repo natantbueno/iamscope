@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true, "skipLibCheck": true },
+  "include": ["next-env.d.ts", "src/lib/permissionScope.ts", "src/lib/evaluate.ts", "src/lib/roleAdvisor.ts"]
+}

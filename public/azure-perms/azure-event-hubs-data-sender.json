@@ -1,0 +1,1 @@
+[{"action":"Microsoft.EventHub/*/eventhubs/read","type":"Actions"},{"action":"Microsoft.EventHub/*/send/action","type":"DataActions"}]

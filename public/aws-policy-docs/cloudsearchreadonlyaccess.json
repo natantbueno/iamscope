@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/CloudSearchReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["cloudsearch:Describe*","cloudsearch:List*"],"Effect":"Allow","Resource":"*"}]},"actions":["cloudsearch:Describe*","cloudsearch:List*"],"notActions":[]}

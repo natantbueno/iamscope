@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ServiceBus/*/queues/read","type":"Actions"},{"action":"Microsoft.ServiceBus/*/topics/read","type":"Actions"},{"action":"Microsoft.ServiceBus/*/topics/subscriptions/read","type":"Actions"},{"action":"Microsoft.ServiceBus/*/send/action","type":"DataActions"}]

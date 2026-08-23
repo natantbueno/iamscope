@@ -1,0 +1,91 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
+        { "key": "Access-Control-Max-Age", "value": "86400" },
+        { "key": "X-IAMScope-License", "value": "CC-BY-4.0" }
+      ]
+    },
+    {
+      "source": "/api/v1/(.*)",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "public-v1" }]
+    },
+    {
+      "source": "/api/v1/index.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, stale-while-revalidate=3600" }
+      ]
+    },
+    {
+      "source": "/api/v1/roles/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/api/v1/permissions/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/api/v1/meta/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
+      ]
+    },
+
+    {
+      "source": "/azure-perms/(.*)",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/gcp-perms/(.*)",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/aws-policy-docs/(.*)",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/aws-actions-index.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/aws-actions-universe.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/azure-action-descriptions.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/azure-perms-index.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/gcp-perms-index.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/gcp-roles-official.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/search-index.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/sod-rules.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/iamscope-catalog.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    }
+  ]
+}

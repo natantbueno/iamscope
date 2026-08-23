@@ -1,0 +1,1 @@
+["firebasevertexai.configs.get","firebasevertexai.configs.update","firebasevertexai.promptTemplates.create","firebasevertexai.promptTemplates.delete","firebasevertexai.promptTemplates.get","firebasevertexai.promptTemplates.list","firebasevertexai.promptTemplates.update","firebasevertexai.promptTemplates.updateLock","resourcemanager.projects.get","resourcemanager.projects.list"]

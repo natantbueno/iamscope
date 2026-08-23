@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Resource":"*","Action":["sqs:SendMessage","sqs:GetQueueUrl","sns:Publish"]}]},"actions":["sns:Publish","sqs:GetQueueUrl","sqs:SendMessage"],"notActions":[]}

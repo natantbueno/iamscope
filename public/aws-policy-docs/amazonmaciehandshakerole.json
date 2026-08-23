@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/service-role/AmazonMacieHandshakeRole","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"iam:CreateServiceLinkedRole","Resource":"*","Condition":{"ForAnyValue:StringEquals":{"iam:AWSServiceName":"macie.amazonaws.com"}}}]},"actions":["iam:CreateServiceLinkedRole"],"notActions":[]}

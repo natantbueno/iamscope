@@ -1,0 +1,1 @@
+["container.clusters.connect","iam.serviceAccounts.get","iam.serviceAccounts.getAccessToken","iam.serviceAccounts.getOpenIdToken","serviceusage.services.use"]

@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonRoute53AutoNamingReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["servicediscovery:Get*","servicediscovery:List*"],"Resource":["*"]}]},"actions":["servicediscovery:Get*","servicediscovery:List*"],"notActions":[]}

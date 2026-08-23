@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/aws-service-role/AWSBillingServiceRolePolicy","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["billing:GetBillingViewData"],"Resource":"arn:aws:billing::*:billingview/*"}]},"actions":["billing:GetBillingViewData"],"notActions":[]}

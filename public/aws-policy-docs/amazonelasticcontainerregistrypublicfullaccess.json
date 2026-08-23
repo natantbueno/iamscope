@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["ecr-public:*","sts:GetServiceBearerToken"],"Resource":"*"}]},"actions":["ecr-public:*","sts:GetServiceBearerToken"],"notActions":[]}

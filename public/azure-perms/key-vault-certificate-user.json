@@ -1,0 +1,1 @@
+[{"action":"Microsoft.KeyVault/vaults/certificates/read","type":"DataActions"},{"action":"Microsoft.KeyVault/vaults/secrets/getSecret/action","type":"DataActions"},{"action":"Microsoft.KeyVault/vaults/secrets/readMetadata/action","type":"DataActions"},{"action":"Microsoft.KeyVault/vaults/keys/read","type":"DataActions"}]

@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/service-role/AWSIoTOTAUpdate","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":["iot:CreateJob","signer:DescribeSigningJob"],"Resource":"*"}},"actions":["iot:CreateJob","signer:DescribeSigningJob"],"notActions":[]}

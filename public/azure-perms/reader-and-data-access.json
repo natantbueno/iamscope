@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Storage/storageAccounts/listKeys/action","type":"Actions"},{"action":"Microsoft.Storage/storageAccounts/ListAccountSas/action","type":"Actions"},{"action":"Microsoft.Storage/storageAccounts/read","type":"Actions"}]

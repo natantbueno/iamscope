@@ -1,0 +1,1 @@
+["orgpolicy.policy.get","resourcemanager.projects.get","resourcemanager.projects.list","storage.folders.create","storage.managedFolders.create","storage.multipartUploads.abort","storage.multipartUploads.create","storage.multipartUploads.listParts","storage.objects.create","storage.objects.createContext"]

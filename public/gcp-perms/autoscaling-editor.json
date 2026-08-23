@@ -1,0 +1,1 @@
+["autoscaling.sites.getIamPolicy","autoscaling.sites.readRecommendations","autoscaling.sites.writeMetrics","autoscaling.sites.writeState","resourcemanager.projects.get","resourcemanager.projects.list"]

@@ -1,0 +1,1 @@
+["dataprocrm.locations.get","dataprocrm.locations.list","dataprocrm.nodePools.get","dataprocrm.nodePools.list","dataprocrm.nodes.get","dataprocrm.nodes.list","dataprocrm.nodes.mintOAuthToken","dataprocrm.operations.get","dataprocrm.operations.list","dataprocrm.workloads.get","dataprocrm.workloads.list","resourcemanager.projects.get","resourcemanager.projects.list"]

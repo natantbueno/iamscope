@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonCodeCatalystReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["codecatalyst:Get*","codecatalyst:List*"],"Resource":"*"}]},"actions":["codecatalyst:Get*","codecatalyst:List*"],"notActions":[]}

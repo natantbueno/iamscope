@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonOneEnterpriseFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"FullAccessStatementID","Effect":"Allow","Action":["one:*"],"Resource":"*"}]},"actions":["one:*"],"notActions":[]}

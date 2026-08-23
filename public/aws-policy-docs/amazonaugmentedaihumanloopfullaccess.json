@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonAugmentedAIHumanLoopFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["sagemaker:*HumanLoop","sagemaker:*HumanLoops"],"Resource":"*"}]},"actions":["sagemaker:*HumanLoop","sagemaker:*HumanLoops"],"notActions":[]}

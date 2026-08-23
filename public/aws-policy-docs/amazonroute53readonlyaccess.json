@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonRoute53ReadOnlyAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["route53:Get*","route53:List*","route53:TestDNSAnswer"],"Resource":["*"]}]},"actions":["route53:Get*","route53:List*","route53:TestDNSAnswer"],"notActions":[]}

@@ -1,0 +1,1 @@
+["resourcemanager.projects.get","resourcemanager.projects.list","stream.streamContents.get","stream.streamContents.list","stream.streamInstances.create","stream.streamInstances.delete","stream.streamInstances.get","stream.streamInstances.list","stream.streamInstances.rollout","stream.streamInstances.update"]

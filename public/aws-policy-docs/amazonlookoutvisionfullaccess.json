@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonLookoutVisionFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"LookoutVisionFullAccess","Effect":"Allow","Action":["lookoutvision:*"],"Resource":"*"}]},"actions":["lookoutvision:*"],"notActions":[]}

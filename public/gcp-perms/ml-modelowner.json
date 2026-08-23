@@ -1,0 +1,1 @@
+["ml.models.create","ml.models.delete","ml.models.get","ml.models.getIamPolicy","ml.models.list","ml.models.predict","ml.models.setIamPolicy","ml.models.update","ml.versions.create","ml.versions.delete","ml.versions.get","ml.versions.list","ml.versions.predict","ml.versions.update"]

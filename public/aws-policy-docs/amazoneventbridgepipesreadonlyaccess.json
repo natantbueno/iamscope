@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonEventBridgePipesReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["pipes:DescribePipe","pipes:ListPipes","pipes:ListTagsForResource"],"Resource":"*"}]},"actions":["pipes:DescribePipe","pipes:ListPipes","pipes:ListTagsForResource"],"notActions":[]}

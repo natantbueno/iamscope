@@ -1,0 +1,1 @@
+["pubsub.subscriptions.consume","pubsub.subscriptions.create","pubsub.subscriptions.delete","pubsub.subscriptions.get","pubsub.subscriptions.update","pubsub.topics.attachSubscription","pubsub.topics.create","pubsub.topics.delete","pubsub.topics.get","pubsub.topics.publish","pubsub.topics.update"]

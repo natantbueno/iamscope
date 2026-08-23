@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonKinesisFirehoseReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["firehose:Describe*","firehose:List*"],"Effect":"Allow","Resource":"*"}]},"actions":["firehose:Describe*","firehose:List*"],"notActions":[]}

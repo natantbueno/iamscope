@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSDenyAll","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"DenyAll","Effect":"Deny","Action":["*"],"Resource":"*"}]},"actions":["*"],"notActions":[]}

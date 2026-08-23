@@ -1,0 +1,1 @@
+[{"action":"Microsoft.HealthDataAIServices/DeidServices/Batch/read","type":"DataActions"},{"action":"Microsoft.HealthDataAIServices/DeidServices/Batch/write","type":"NotDataActions"},{"action":"Microsoft.HealthDataAIServices/DeidServices/Batch/delete","type":"NotDataActions"}]

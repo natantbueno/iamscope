@@ -1,0 +1,1 @@
+["autoscaling.sites.writeMetrics","logging.logEntries.create","monitoring.metricDescriptors.create","monitoring.metricDescriptors.list","monitoring.timeSeries.create","monitoring.timeSeries.list","resourcemanager.projects.get","resourcemanager.projects.list","serviceusage.services.use","storage.objects.get","storage.objects.list"]

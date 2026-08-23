@@ -1,0 +1,1 @@
+[{"action":"Microsoft.ApiCenter/services/*/read","type":"Actions"},{"action":"Microsoft.ApiCenter/services/workspaces/apis/versions/definitions/updateAnalysisState/action","type":"Actions"},{"action":"Microsoft.ApiCenter/services/workspaces/apis/versions/definitions/exportSpecification/action","type":"Actions"}]

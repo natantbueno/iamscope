@@ -1,0 +1,1 @@
+["domains.locations.get","domains.locations.list","domains.operations.get","domains.operations.list","domains.registrations.get","domains.registrations.getIamPolicy","domains.registrations.list","domains.registrations.listEffectiveTags","domains.registrations.listTagBindings","resourcemanager.projects.get","resourcemanager.projects.list"]

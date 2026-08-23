@@ -1,0 +1,1 @@
+[{"action":"Microsoft.AAD/*/read","type":"Actions"},{"action":"Microsoft.AAD/domainServices/*/read","type":"Actions"},{"action":"Microsoft.AAD/domainServices/oucontainer/*","type":"Actions"}]

@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/aws-service-role/AmazonHoneycodeServiceRolePolicy","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["sso:GetManagedApplicationInstance"],"Resource":"*","Effect":"Allow"}]},"actions":["sso:GetManagedApplicationInstance"],"notActions":[]}

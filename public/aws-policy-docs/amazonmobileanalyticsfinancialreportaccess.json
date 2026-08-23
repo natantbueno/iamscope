@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonMobileAnalyticsFinancialReportAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["mobileanalytics:GetReports","mobileanalytics:GetFinancialReports"],"Resource":"*"}]},"actions":["mobileanalytics:GetFinancialReports","mobileanalytics:GetReports"],"notActions":[]}

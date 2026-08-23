@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonSESReadOnlyAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"SESReadOnlyAccess","Effect":"Allow","Action":["ses:Get*","ses:List*","ses:BatchGetMetricData"],"Resource":"*"}]},"actions":["ses:BatchGetMetricData","ses:Get*","ses:List*"],"notActions":[]}

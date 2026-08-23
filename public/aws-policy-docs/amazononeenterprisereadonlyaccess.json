@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonOneEnterpriseReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"ReadOnlyAccessStatementID","Effect":"Allow","Action":["one:Get*","one:List*"],"Resource":"*"}]},"actions":["one:Get*","one:List*"],"notActions":[]}

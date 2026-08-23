@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Attestation/attestationProviders/attestation/read","type":"Actions"},{"action":"Microsoft.Attestation/attestationProviders/attestation/write","type":"Actions"},{"action":"Microsoft.Attestation/attestationProviders/attestation/delete","type":"Actions"}]

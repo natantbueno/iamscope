@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/aws-service-role/QAppsServiceRolePolicy","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"QAppsPutMetricDataPermission","Effect":"Allow","Action":["cloudwatch:PutMetricData"],"Resource":"*","Condition":{"StringEquals":{"cloudwatch:namespace":"AWS/QApps"}}}]},"actions":["cloudwatch:PutMetricData"],"notActions":[]}

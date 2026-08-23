@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonCodeGuruSecurityFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"AmazonCodeGuruSecurityFullAccess","Effect":"Allow","Action":["codeguru-security:*"],"Resource":"*"}]},"actions":["codeguru-security:*"],"notActions":[]}

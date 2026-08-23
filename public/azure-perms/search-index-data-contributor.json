@@ -1,0 +1,1 @@
+[{"action":"Microsoft.Search/searchServices/indexes/documents/*","type":"DataActions"},{"action":"Microsoft.Search/searchServices/indexes/contentSecurity/elevatedOperations/read","type":"DataActions"}]

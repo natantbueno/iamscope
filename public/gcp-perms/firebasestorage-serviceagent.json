@@ -1,0 +1,1 @@
+["storage.buckets.get","storage.buckets.getIamPolicy","storage.objects.create","storage.objects.delete","storage.objects.get","storage.objects.getIamPolicy","storage.objects.list","storage.objects.update"]

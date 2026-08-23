@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonS3FilesClientFullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"S3FilesPermissions","Effect":"Allow","Action":["s3files:ClientMount","s3files:ClientWrite","s3files:ClientRootAccess"],"Resource":"*"}]},"actions":["s3files:ClientMount","s3files:ClientRootAccess","s3files:ClientWrite"],"notActions":[]}

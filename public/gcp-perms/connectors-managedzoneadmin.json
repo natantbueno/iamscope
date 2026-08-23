@@ -1,0 +1,1 @@
+["connectors.locations.get","connectors.locations.list","connectors.managedZones.create","connectors.managedZones.delete","connectors.managedZones.get","connectors.managedZones.getIamPolicy","connectors.managedZones.list","connectors.managedZones.setIamPolicy","connectors.managedZones.update"]

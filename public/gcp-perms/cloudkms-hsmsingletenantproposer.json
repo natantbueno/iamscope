@@ -1,0 +1,1 @@
+["cloudkms.operations.get","cloudkms.singleTenantHsmInstanceProposals.create","cloudkms.singleTenantHsmInstanceProposals.delete","cloudkms.singleTenantHsmInstanceProposals.get","cloudkms.singleTenantHsmInstanceProposals.list","cloudkms.singleTenantHsmInstances.create","cloudkms.singleTenantHsmInstances.get","cloudkms.singleTenantHsmInstances.list"]

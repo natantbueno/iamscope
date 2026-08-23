@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AWSElementalMediaPackageV2FullAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"mediapackagev2:*","Resource":"*"}},"actions":["mediapackagev2:*"],"notActions":[]}

@@ -1,0 +1,1 @@
+["resourcemanager.projects.get","resourcemanager.projects.list","securesourcemanager.instances.access","securesourcemanager.instances.createRepository","securesourcemanager.sshkeys.create","securesourcemanager.sshkeys.delete","securesourcemanager.sshkeys.get","securesourcemanager.sshkeys.list"]

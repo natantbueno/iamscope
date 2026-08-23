@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonESReadOnlyAccess","version":"v2 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["es:Describe*","es:List*","es:Get*"],"Effect":"Allow","Resource":"*"}]},"actions":["es:Describe*","es:Get*","es:List*"],"notActions":[]}

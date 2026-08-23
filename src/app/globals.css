@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Tokens semânticos de cor.
+
+   Valores em triplete RGB (sem `rgb()`) porque o tailwind.config os consome
+   como `rgb(var(--c-fg) / <alpha-value>)` — é isso que mantém funcionando os
+   modificadores de opacidade (`text-fg/70`).
+
+   `:root` = tema claro, `.dark` = tema escuro. Hoje o <html> entra com a classe
+   `dark` fixa, mas os dois temas são mantidos em par (regra `dark-mode-pairing`)
+   para que voltar a oferecer o tema claro seja trocar uma classe, não reescrever
+   140 componentes.
+
+   Todos os pares foreground/background abaixo foram verificados contra WCAG:
+   fg >= 7:1, fg-muted >= 4.5:1 (texto corrido), fg-subtle >= 3:1 (metadado,
+   nunca corpo de texto).
+--------------------------------------------------------------------------- */
+:root {
+  --c-bg-app: 238 241 245;          /* #eef1f5 */
+  --c-bg-surface: 255 255 255;      /* #ffffff */
+  --c-bg-surface-alt: 246 248 251;  /* #f6f8fb */
+  --c-bg-surface-hover: 240 243 247;/* #f0f3f7 */
+  --c-line: 221 227 236;            /* #dde3ec */
+  --c-line-strong: 197 206 219;     /* #c5cedb */
+  --c-fg: 31 41 55;                 /* #1f2937 — 14.7:1 sobre branco */
+  --c-fg-muted: 90 99 112;          /* #5a6370 — 6.1:1  sobre branco */
+  --c-fg-subtle: 102 110 123;       /* #666e7b — 5.2:1 sobre branco, 4.5:1 sobre o fundo da app */
+  --c-fg-on-accent: 255 255 255;
+  --c-accent: 0 108 190;            /* #006cbe — 5.4:1 sobre branco */
+  --c-danger: 180 35 24;            /* #b42318 — 6.6:1 sobre branco */
+  --c-ring: 0 120 212;              /* #0078d4 */
+}
+
+.dark {
+  --c-bg-app: 3 7 18;               /* #030712 */
+  --c-bg-surface: 17 24 39;         /* #111827 */
+  --c-bg-surface-alt: 31 41 55;     /* #1f2937 */
+  --c-bg-surface-hover: 31 41 55;   /* #1f2937 */
+  --c-line: 42 52 68;               /* #2a3444 — visível sobre surface (regra
+                                       border-and-divider-visibility) */
+  --c-line-strong: 64 76 94;        /* #404c5e */
+  --c-fg: 243 244 246;              /* #f3f4f6 — 16.1:1 sobre surface */
+  --c-fg-muted: 176 183 194;        /* #b0b7c2 — 8.8:1  sobre surface */
+  --c-fg-subtle: 138 146 158;       /* #8a929e — 5.7:1  sobre surface */
+  --c-fg-on-accent: 255 255 255;
+  --c-accent: 133 183 235;          /* #85b7eb — 8.4:1 sobre surface */
+  --c-danger: 248 113 113;          /* #f87171 — 6.4:1 sobre surface */
+  --c-ring: 133 183 235;            /* anel de foco precisa ser visível no escuro */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Foco visível — garantia global.
+
+   O produto tem 22 controles que zeram o outline com `focus:outline-none` sem
+   devolver nada no lugar; para quem navega por teclado isso é navegação às
+   cegas. Esta regra devolve o anel em qualquer elemento focado por teclado.
+
+   `!important` é deliberado: `focus:outline-none` do Tailwind tem
+   especificidade maior (.classe:focus) que `:focus-visible`, então sem ele a
+   garantia não vale. Componentes que já desenham o próprio anel usam `ring-*`
+   (box-shadow), que convive com o outline sem conflito.
+--------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-ring)) !important;
+  outline-offset: 2px;
+}
+
+/* Só remove o anel quando o foco veio do mouse — nunca do teclado. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Alvo do skip-link: âncora "pular para o conteúdo" no topo de cada página. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 60;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background: rgb(var(--c-bg-surface));
+  color: rgb(var(--c-fg));
+  box-shadow: 0 10px 24px -6px rgb(0 0 0 / 0.35);
+}
+
+/* ---------------------------------------------------------------------------
+   Cor vinda do dado, legível nos dois temas.
+
+   Companheira de src/lib/readableColor.ts: o componente publica as duas
+   variantes como custom properties e o CSS escolhe. Fica no CSS, e não no
+   React, porque o HTML estático sempre sai com o tema escuro — decidir isso em
+   JavaScript custaria um quadro com a cor errada a cada carregamento.
+--------------------------------------------------------------------------- */
+.themed-color {
+  color: var(--themed-light);
+}
+.dark .themed-color {
+  color: var(--themed-dark);
+}
+
+/* ---------------------------------------------------------------------------
+   Números tabulares.
+
+   O produto inteiro é contagem em coluna (permission count, nº de roles,
+   paginação). Com figuras proporcionais os dígitos têm larguras diferentes e a
+   coluna "dança" a cada troca de página. `tnum` trava a largura do dígito.
+--------------------------------------------------------------------------- */
+table,
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+html {
+  transition: background-color 0.2s ease;
+}
+
+/* CloudNav — hover & active state driven by per-item CSS custom property */
+/* ---------------------------------------------------------------------------
+   Controle que aparece no hover.
+
+   `opacity-0 group-hover:opacity-100` parece inofensivo e não é: num aparelho
+   de toque NÃO EXISTE hover, então o elemento fica em opacidade 0 para sempre.
+   Na página de uma role do Entra isso eram 254 botões "Copiar" — um por
+   permissão — invisíveis e inalcançáveis exatamente para quem veio copiar
+   identificador, que é a persona primária do site (ver PRODUCT.md).
+
+   A regra inverte o padrão: visível por padrão, e só se esconde onde existe
+   ponteiro de verdade. O `:focus-visible` e o `:focus-within` garantem que
+   quem navega por teclado também alcança.
+--------------------------------------------------------------------------- */
+.reveal-on-hover {
+  opacity: 1;
+  transition: opacity 150ms ease;
+}
+@media (hover: hover) {
+  .reveal-on-hover { opacity: 0; }
+  .group:hover .reveal-on-hover,
+  .group:focus-within .reveal-on-hover,
+  .reveal-on-hover:focus-visible { opacity: 1; }
+}
+
+/* Esmaecimento na borda direita da barra de clouds enquanto há item fora da
+   tela. `mask-image` some sozinho quando a barra chega ao fim da rolagem em
+   navegadores com scroll-driven animations; onde não há, o esmaecimento fica
+   fixo — é degradação aceitável, já que o custo é um item levemente esmaecido
+   na borda, não conteúdo escondido. */
+.cloud-nav-scroll {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+}
+.cloud-nav-scroll::-webkit-scrollbar { display: none; }
+@media (min-width: 1280px) {
+  /* Onde os sete itens cabem: sem rolagem, sem esmaecimento.
+     Era 1024px, de quando a barra tinha a linha inteira. Desde que tema,
+     idioma e "sobre" subiram para ca, os controles comem ~258px — entre
+     1024 e 1279 a barra voltou a rolar, e o esmaecimento sumia justamente
+     onde ele ainda era necessario. Medido: em 1150px a barra mostra 652 de
+     751px de itens. */
+  .cloud-nav-scroll { mask-image: none; }
+}
+
+.cloud-nav-item {
+  transition: color 150ms ease, border-bottom-color 150ms ease;
+}
+/* O hover fica GRUDADO depois do toque num dispositivo sem mouse: o item tocado
+   continua sublinhado até você tocar em outro lugar, e aí a barra mostra DOIS
+   itens ativos. `@media (hover: hover)` restringe a regra a quem tem ponteiro
+   de verdade. Encontrado medindo `borderBottomColor` no DOM: `aria-current`
+   estava certo num item só, mas dois tinham borda. */
+.cloud-nav-item[aria-current='page'] {
+  color: rgb(var(--c-fg));
+  border-bottom-color: rgb(var(--c-accent));
+}
+@media (hover: hover) {
+  .cloud-nav-item:hover {
+  /* Nível 3: o item ativo usa o acento único, o mesmo da sidebar — não a cor
+     da cloud. Antes cada aba trazia a própria marca, e três das seis não
+     alcançavam 3:1 contra o fundo em um dos temas. O acento resolve de
+     --c-accent, que já está verificado nos dois (5.4:1 e 8.4:1). */
+    color: rgb(var(--c-fg));
+    border-bottom-color: rgb(var(--c-accent));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   prefers-reduced-motion.
+
+   Não havia nenhum tratamento: as 262 transições e os hovers com
+   `-translate-y`/`scale` rodavam igual para quem marcou "reduzir movimento" no
+   sistema — desconforto real para quem tem sensibilidade vestibular, e falha
+   de WCAG 2.3.3.
+
+   O movimento é anulado, não a mudança de estado: hover e foco continuam
+   mudando cor, só param de deslizar.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Neutraliza os deslocamentos/zoom de hover (cards da home, pontos de cloud). */
+  .group:hover .group-hover\:scale-125,
+  .hover\:-translate-y-0\.5:hover,
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
+}
+
+/* mobile: um ARN ou um "Microsoft.Compute/virtualMachines/read" e uma palavra
+   so para o navegador — sem isto ele estica a tabela ate a palavra caber e o
+   resto da tela some.
+
+   `break-word`, nao `anywhere`: `anywhere` tambem entra no calculo da largura
+   min-content, e ai o navegador aceita espremer a coluna ate UM caractere por
+   linha. Foi o que aconteceu com o catalogo de SoD — a coluna do nome da regra
+   caiu para 44px e cada linha da tabela ficou com 800px de altura. */
+@media (max-width: 767px) {
+  td, th { overflow-wrap: break-word; }
+}
+
+/* Barras de filtro no celular: uma linha que rola no eixo X em vez de quatro
+   linhas empilhadas. Em 390px os chips de tier + categoria da lista de roles
+   ocupavam 420px de altura — metade da tela antes da primeira linha da tabela. */
+@media (max-width: 767px) {
+  .rolagem-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Mesmo esmaecimento da barra de clouds: o ultimo chip visivel some na
+       borda em vez de terminar em corte seco — e o corte seco e exatamente o
+       que faz a pessoa achar que aquilo e tudo o que existe. */
+    mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+  }
+  .rolagem-chips::-webkit-scrollbar { display: none; }
+  .rolagem-chips > * { flex: none; }
+}

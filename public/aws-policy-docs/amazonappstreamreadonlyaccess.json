@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonAppStreamReadOnlyAccess","version":"v5 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["appstream:List*","appstream:Describe*"],"Resource":"*"}]},"actions":["appstream:Describe*","appstream:List*"],"notActions":[]}

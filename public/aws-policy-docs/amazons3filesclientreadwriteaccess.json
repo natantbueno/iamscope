@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonS3FilesClientReadWriteAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Sid":"S3FilesPermissions","Effect":"Allow","Action":["s3files:ClientMount","s3files:ClientWrite"],"Resource":"*"}]},"actions":["s3files:ClientMount","s3files:ClientWrite"],"notActions":[]}

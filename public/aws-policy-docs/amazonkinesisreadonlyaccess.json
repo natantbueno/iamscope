@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonKinesisReadOnlyAccess","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["kinesis:Get*","kinesis:List*","kinesis:Describe*"],"Resource":"*"}]},"actions":["kinesis:Describe*","kinesis:Get*","kinesis:List*"],"notActions":[]}

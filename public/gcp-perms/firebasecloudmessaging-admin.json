@@ -1,0 +1,1 @@
+["cloudmessaging.messages.create","cloudmessaging.topicSubscriptions.create","cloudmessaging.topicSubscriptions.delete","cloudmessaging.topicSubscriptions.get","cloudmessaging.topicSubscriptions.list","cloudmessaging.topicSubscriptions.update","fcmdata.deliverydata.list","resourcemanager.projects.get","resourcemanager.projects.list"]

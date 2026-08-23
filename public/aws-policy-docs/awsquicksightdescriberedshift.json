@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/service-role/AWSQuickSightDescribeRedshift","version":"v1 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["redshift:Describe*"],"Effect":"Allow","Resource":"*"}]},"actions":["redshift:Describe*"],"notActions":[]}

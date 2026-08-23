@@ -1,0 +1,1 @@
+{"arn":"arn:aws:iam::aws:policy/AmazonChimeReadOnly","version":"v10 (default)","document":{"Version":"2012-10-17","Statement":[{"Action":["chime:List*","chime:Get*","chime:Describe*","chime:SearchAvailablePhoneNumbers"],"Effect":"Allow","Resource":"*"}]},"actions":["chime:Describe*","chime:Get*","chime:List*","chime:SearchAvailablePhoneNumbers"],"notActions":[]}
