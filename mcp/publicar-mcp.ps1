@@ -36,7 +36,11 @@ param(
   [string]$Tag = 'latest',
   # Codigo do seu autenticador. A conta do Natan exige 2FA no publish: sem isto
   # o registry devolve E403 depois de ja ter rodado build e smoke.
-  [string]$Otp
+  [string]$Otp,
+  # Sobe a versao antes de publicar, a partir da que esta NO REGISTRY (nao da
+  # local). Ver o bloco "de onde sai a proxima versao" mais abaixo.
+  [ValidateSet('patch', 'minor', 'major')]
+  [string]$Bump
 )
 
 trap {
@@ -130,6 +134,43 @@ function Invoke-Externo {
   }
 }
 
+<#
+  Compara duas versoes x.y.z. Devolve -1, 0 ou 1.
+
+  Nao usa [version] do .NET de proposito: ela aceita 4 componentes e trata
+  "0.2" como 0.2.-1, o que daria comparacao errada em silencio. Aqui o que nao
+  for exatamente x.y.z devolve $null, e quem chama decide.
+#>
+function Comparar-Versao($a, $b) {
+  $rx = '^\d+\.\d+\.\d+$'
+  if ($a -notmatch $rx -or $b -notmatch $rx) { return $null }
+  $x = @($a -split '\.' | ForEach-Object { [int]$_ })
+  $y = @($b -split '\.' | ForEach-Object { [int]$_ })
+  for ($i = 0; $i -lt 3; $i++) {
+    if ($x[$i] -gt $y[$i]) { return 1 }
+    if ($x[$i] -lt $y[$i]) { return -1 }
+  }
+  return 0
+}
+
+<#
+  A proxima versao, a partir de uma base.
+
+  A BASE E A PUBLICADA, nao a local. Se o package.json ficou para tras - o que
+  acontece toda vez que alguem publica e esquece de commitar o bump - somar em
+  cima da local produziria um numero que JA EXISTE no registry, e o publish
+  falharia de novo pelo mesmo motivo.
+#>
+function Proxima-Versao($base, $tipo) {
+  if ($base -notmatch '^\d+\.\d+\.\d+$') { return $null }
+  $p = @($base -split '\.' | ForEach-Object { [int]$_ })
+  switch ($tipo) {
+    'major' { return "$($p[0] + 1).0.0" }
+    'minor' { return "$($p[0]).$($p[1] + 1).0" }
+    default { return "$($p[0]).$($p[1]).$($p[2] + 1)" }
+  }
+}
+
 $falhas = 0
 
 Titulo 'Pre-voo'
@@ -201,16 +242,79 @@ $naoExiste = 'E404|404 Not Found|is not in this registry|npm ERR! 404'
 
 if ($r.Code -eq 0 -and $publicada -and $publicada -notmatch $naoExiste) {
   Aviso "$PKG ja existe no npm, versao publicada: $publicada"
-  if ($publicada -eq $pj.version) {
-    Erro "A versao $($pj.version) ja esta publicada. Suba antes: npm version patch"
-    $falhas++
+
+  $cmp = Comparar-Versao $pj.version $publicada
+  if ($null -eq $cmp) {
+    Aviso "nao consegui comparar '$($pj.version)' com '$publicada' (formato fora de x.y.z). O publish dira."
+  } elseif ($cmp -gt 0) {
+    Ok "versao local $($pj.version) e MAIOR que a publicada $publicada"
   } else {
-    Ok "versao local $($pj.version) difere da publicada $publicada"
+    # DE ONDE SAI A PROXIMA VERSAO
+    #
+    #   Sempre da PUBLICADA. Somar em cima da local produz um numero que ja
+    #   existe sempre que o package.json ficou para tras - que e exatamente o
+    #   estado em que se cai depois de publicar sem commitar o bump.
+    $prox = @{
+      patch = Proxima-Versao $publicada 'patch'
+      minor = Proxima-Versao $publicada 'minor'
+      major = Proxima-Versao $publicada 'major'
+    }
+    $situacao = if ($cmp -eq 0) {
+      "A versao $($pj.version) ja esta publicada - o registry recusa republicar a mesma versao."
+    } else {
+      "A versao local $($pj.version) e MENOR que a publicada $publicada - o registry so aceita subir."
+    }
+
+    if ($Bump) {
+      # Com -Bump isto nao e falha: e a situacao que o bump existe para resolver,
+      # e ele acontece logo abaixo. Reportar como erro faria procurar problema
+      # onde ja ha solucao em curso.
+      Aviso $situacao
+    } else {
+      Erro $situacao
+      Write-Host ''
+      Write-Host '          A proxima versao sai da PUBLICADA, nao da local:' -ForegroundColor Gray
+      Write-Host "            correcao       $publicada -> $($prox.patch)" -ForegroundColor White
+      Write-Host "            recurso novo   $publicada -> $($prox.minor)" -ForegroundColor White
+      Write-Host "            quebra         $publicada -> $($prox.major)" -ForegroundColor White
+      Write-Host ''
+      Write-Host '          Suba a mao e rode de novo:' -ForegroundColor Gray
+      Write-Host "            npm version $($prox.patch) --no-git-tag-version" -ForegroundColor White
+      Write-Host ''
+      Write-Host '          Ou deixe o script subir:' -ForegroundColor Gray
+      Write-Host "            .\publicar-mcp.ps1 -Bump patch -Publicar -Otp <codigo>" -ForegroundColor White
+      Write-Host ''
+      $falhas++
+    }
   }
 } elseif ($r.Texto -match $naoExiste) {
   Ok "$PKG esta livre no npm - este sera o primeiro publish"
+  $publicada = $null
 } else {
   Aviso "nao consegui consultar o registry (codigo $($r.Code)). O publish dira se o nome esta tomado."
+  $publicada = $null
+}
+
+# -- O bump, quando pedido ----------------------------------------------------
+#
+# Roda AQUI, antes do build: as contagens e o `npm pack --dry-run` que voce le
+# para decidir precisam ser da versao que vai mesmo ser publicada.
+if ($Bump) {
+  $base = if ($publicada) { $publicada } else { $pj.version }
+  $alvo = Proxima-Versao $base $Bump
+  if (-not $alvo) {
+    Erro "nao consegui calcular a proxima versao a partir de '$base'."
+    exit 1
+  }
+  Titulo "Bump: $($pj.version) -> $alvo  (base: $base $(if ($publicada) { 'do registry' } else { 'local' }))"
+  $r = Invoke-Externo -Comando 'npm' -Argumentos @('version', $alvo, '--no-git-tag-version')
+  if ($r.Code -ne 0) { Erro "npm version falhou:`n$($r.Texto)"; exit 1 }
+
+  $pj = Get-Content '.\package.json' -Raw | ConvertFrom-Json
+  if ($pj.version -ne $alvo) { Erro "o bump nao pegou: package.json esta em $($pj.version)"; exit 1 }
+  Ok "package.json e package-lock.json em $alvo"
+  Aviso 'ISTO ALTEROU ARQUIVOS RASTREADOS. Commite depois de publicar, ou o repositorio'
+  Aviso 'fica dizendo uma versao e o npm outra - que e como se chega neste erro.'
 }
 
 # 6. Build. As contagens sao geradas do dado e o README e conferido contra elas.
@@ -281,6 +385,13 @@ Write-Host '  1. Confira que o npx resolve, numa pasta qualquer:' -ForegroundCol
 Write-Host "       npx -y $PKG" -ForegroundColor White
 Write-Host '     (deve imprimir "pronto - 7 ferramentas" no stderr e ficar esperando; Ctrl+C sai)' -ForegroundColor DarkGray
 Write-Host ''
+if ($Bump) {
+  Write-Host '  0. O BUMP MEXEU EM package.json E package-lock.json. Commite:' -ForegroundColor Yellow
+  Write-Host "       git add package.json package-lock.json" -ForegroundColor White
+  Write-Host "       git commit -m `"chore(mcp): $($pj.version)`"" -ForegroundColor White
+  Write-Host '       git push' -ForegroundColor White
+  Write-Host ''
+}
 Write-Host '  2. Marque a linha de base da medicao daqui a uma semana:' -ForegroundColor Gray
 Write-Host '       node scripts\metrics.mjs --json >> metrics.jsonl' -ForegroundColor White
 Write-Host '     A contagem do npm leva algumas horas para aparecer. Ver MEDICAO.md.' -ForegroundColor DarkGray
