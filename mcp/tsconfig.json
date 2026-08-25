@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "target": "ES2022",
+    "types": ["node"],
+    "paths": { "@/lib/*": ["../src/lib/*"], "@/data/*": ["../src/data/*"] }
+  },
+  "//": "Este pacote mora dentro do repositorio do site e le src/ de ../. O corpo desses arquivos e typechecado no tsconfig do site, nao aqui; o que importa aqui e que AS CHAMADAS a eles fechem.",
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -39,7 +39,7 @@ function derivar(pathname) {
   const isHome = pathname === '/'
   // Espelha GLOBAL_HREFS de src/components/Sidebar.tsx.
   const GLOBAIS = ['/permission-scope', '/advisor', '/compare', '/evaluate', '/sod',
-    '/assessment', '/tier-comparison', '/info', '/search']
+    '/assessment', '/tier-comparison', '/stats', '/changelog', '/info', '/search']
   const isGlobal = GLOBAIS.some((href) => pathname === href || pathname.startsWith(`${href}/`))
 
   const platform = isGlobal ? 'global'
@@ -56,6 +56,7 @@ function derivar(pathname) {
   let view
   if (['/', '/entraid', '/azure-rbac', '/google-workspace', '/ibm-cloud', '/gcp', '/aws'].includes(rota)) view = 'dashboard'
   else if (rota.startsWith('/entraid/api-permissions') || rota.startsWith('/google-workspace/api-permissions') || rota.startsWith('/azure-rbac/permissions')) view = 'apiPermissions'
+  else if (rota.startsWith('/azure-rbac/providers')) view = 'providers'
   else if (rota.startsWith('/entraid/role-actions')) view = 'roleActions'
   else if (rota.startsWith('/entraid/pim')) view = 'pim'
   else if (['/entraid/reference', '/azure-rbac/reference', '/google-workspace/reference', '/ibm-cloud/reference', '/gcp/reference', '/aws/reference'].some((p) => rota.startsWith(p))) view = 'reference'
@@ -79,7 +80,7 @@ const ITEM = {
   // por pathname — não por `view`.
   global: {},
   entraId: { dashboard: 'Dashboard', roles: 'Built-in Roles', roleActions: 'Role Actions', apiPermissions: 'API Permissions', pim: 'PIM', reference: 'Reference', info: '(nenhum)', actions: '(nenhum)' },
-  azureRbac: { dashboard: 'Dashboard', roles: 'Built-in Roles', apiPermissions: 'Permissões', reference: 'Reference', actions: '(nenhum)', info: '(nenhum)', roleActions: '(nenhum)', pim: '(nenhum)' },
+  azureRbac: { dashboard: 'Dashboard', roles: 'Built-in Roles', apiPermissions: 'Permissões', providers: 'Providers', reference: 'Reference', actions: '(nenhum)', info: '(nenhum)', roleActions: '(nenhum)', pim: '(nenhum)' },
   aws: { dashboard: 'Dashboard', roles: 'IAM Policies', actions: 'IAM Actions', reference: 'Reference', scp: 'SCP vs Policies', apiPermissions: '(nenhum)', info: '(nenhum)', roleActions: '(nenhum)', pim: '(nenhum)' },
   gcp: { dashboard: 'Dashboard', roles: 'IAM Roles', actions: 'IAM Permissions', reference: 'Reference', apiPermissions: '(nenhum)', info: '(nenhum)', roleActions: '(nenhum)', pim: '(nenhum)' },
   googleWorkspace: { dashboard: 'Dashboard', roles: 'Admin Roles', apiPermissions: 'OAuth Scopes', actions: 'Admin Privileges', reference: 'Reference', info: '(nenhum)', roleActions: '(nenhum)', pim: '(nenhum)' },
@@ -151,6 +152,17 @@ const ESPERADO = [
   ['/tier-comparison/', 'global', 'roles'],
   ['/info/', 'global', 'info'],
   ['/search/', 'global', 'roles'],
+  // O changelog é multi-cloud: nenhum menu de plataforma se aplica. Sem
+  // '/changelog' em GLOBAL_HREFS estas quatro cairiam em 'entraId' e a sidebar
+  // mostraria Built-in Roles e PIM do Entra ID ao lado das seis nuvens.
+  // /stats e /azure-rbac/providers, entregues em 24/08 pelo P2 e pelo P3.
+  ['/stats/', 'global', 'roles'],
+  ['/azure-rbac/providers/', 'azureRbac', 'providers'],
+  ['/azure-rbac/providers/microsoft-compute/', 'azureRbac', 'providers'],
+  ['/changelog/', 'global', 'roles'],
+  ['/changelog/gcp/', 'global', 'roles'],
+  ['/changelog/azure-rbac/', 'global', 'roles'],
+  ['/changelog/ibm-cloud/', 'global', 'roles'],
 ]
 
 let falhas = 0

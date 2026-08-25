@@ -8,6 +8,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { KPI_TONE_VALUE } from '@/lib/kpiTone'
 import ClassificationBadge from '@/components/ClassificationBadge'
+import { useFloorNote } from '@/components/AzureEffectiveCount'
+import { AZURE_EFFECTIVE } from '@/data/azureEffective'
 import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { BackToList, formatarData } from './RoleDetailHeader'
@@ -31,6 +33,8 @@ import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 export default function AzurePermissionClient({ slug }: { slug: string }) {
   const t = useT()
+  const fmtNum = useNumberFormat()
+  const floorNote = useFloorNote()
   // As permissions do Azure vêm de dois datasets (roles e actions); o
   // getPlatformSync devolve a verificação mais antiga entre eles.
   const sync = getPlatformSync('Azure RBAC')
@@ -225,13 +229,16 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
                 categoria: r.category,
                 privilegiada: r.isPrivileged ? t('label.yes') : t('label.no'),
                 totalPermissoes: String(r.permissionCount),
+                // `≥` porque o efetivo é piso — ver o rodapé desta seção.
+                efetivas: AZURE_EFFECTIVE[r.slug] ? `≥ ${fmtNum(AZURE_EFFECTIVE[r.slug].effectiveActions)}` : '—',
               }))}
               columns={[
                 { key: 'permission',      label: 'Role' },
                 { key: 'tier',            label: 'Risk Tier', badge: true, width: 'w-40' },
                 { key: 'categoria',       label: t('table.category'), width: 'w-32' },
                 { key: 'privilegiada',    label: t('label.privilegedAdj'), badge: true, width: 'w-28' },
-                { key: 'totalPermissoes', label: t('table.permissions'), width: 'w-24' },
+                { key: 'totalPermissoes', label: t('azeff.nativeLabel'), width: 'w-24' },
+                { key: 'efetivas',        label: t('azeff.label'), width: 'w-24' },
               ]}
               filterKey="tier"
               riskValues={[t('label.yes'), 'Full Control']}
@@ -239,6 +246,9 @@ export default function AzurePermissionClient({ slug }: { slug: string }) {
               noun="noun.roles"
               searchPlaceholder="ph.filterRoles"
             />
+            <p className="text-3xs text-fg-muted mt-2 leading-relaxed">
+              <span className="font-semibold">{t('azeff.label')}:</span> {floorNote('azeff.floor')}
+            </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {entry.roles.slice(0, 40).map((r) => (
                 <Link key={r.slug} href={`/azure-rbac/roles/${r.slug}`}

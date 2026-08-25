@@ -12,6 +12,9 @@ import JsonActions from './JsonActions'
 import { AZURE_ROLES, AZURE_TIER_META, AzureRbacPermission, AzurePermType } from '@/data/azureRbac'
 import AppShell from '@/components/AppShell'
 import PermissionsTable from '@/components/PermissionsTable'
+import { AzureEffectivePanel } from '@/components/AzureEffectiveCount'
+import { AZURE_EFFECTIVE } from '@/data/azureEffective'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 
 const TYPE_COLORS: Record<AzurePermType, { bg: string; text: string; label: string }> = {
   // Nível 3: o tipo da permission é categoria, não risco — a cor não distinguia
@@ -25,6 +28,7 @@ const TYPE_COLORS: Record<AzurePermType, { bg: string; text: string; label: stri
 
 export default function AzureRbacRoleClient({ slug }: { slug: string }) {
   const t = useT()
+  const fmt = useNumberFormat()
   const role = AZURE_ROLES.find((r) => r.slug === slug)
   const [perms, setPerms] = useState<AzureRbacPermission[]>([])
   const [loadingPerms, setLoadingPerms] = useState(true)
@@ -100,16 +104,30 @@ export default function AzureRbacRoleClient({ slug }: { slug: string }) {
                     darkColor: meta.darkText, darkBg: meta.darkBg, description: meta.description }}
             category={role.category}
             isPrivileged={role.isPrivileged}
-            extra={`${role.permissionCount} ${t('table.permissions').toLowerCase()}`}
+            extra={
+              AZURE_EFFECTIVE[role.slug]
+                ? t('azeff.headerExtra')
+                    .replace('{d}', fmt(role.permissionCount))
+                    .replace('{e}', fmt(AZURE_EFFECTIVE[role.slug].effectiveActions))
+                : `${role.permissionCount} ${t('table.permissions').toLowerCase()}`
+            }
           />
 
           {/* Stat blocks */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3">
-            <StatCard label={t('label.totalPerms')} value={role.permissionCount} accent={KPI_TONE_VALUE.accent} />
+            {/*
+              Continua sendo o `permissionCount` nativo — quantas ENTRADAS a
+              definição tem. O que ele significa em ações concedidas está no
+              painel de alcance efetivo, logo abaixo.
+            */}
+            <StatCard label={t('azeff.nativeLabel')} value={role.permissionCount} accent={KPI_TONE_VALUE.accent} />
             <StatCard label="Actions"     value={permsByType['Actions']?.length ?? 0}     accent={KPI_TONE_VALUE.neutral} />
             <StatCard label="NotActions"  value={permsByType['NotActions']?.length ?? 0}  accent={KPI_TONE_VALUE.danger} />
             <StatCard label="DataActions" value={(permsByType['DataActions']?.length ?? 0) + (permsByType['NotDataActions']?.length ?? 0)} accent={KPI_TONE_VALUE.neutral} />
           </div>
+
+          {/* Alcance efetivo — os wildcards expandidos, com a ressalva do piso */}
+          <AzureEffectivePanel slug={slug} accent={meta.darkText} nativeCount={role.permissionCount} />
 
           {/* Fact cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-6">

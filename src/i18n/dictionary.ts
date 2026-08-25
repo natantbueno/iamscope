@@ -502,6 +502,176 @@ const SHARED = {
   'beta.sodThree':        { pt: 'O script PowerShell avalia só as plataformas Microsoft — é o alcance do Graph e do Azure Resource Manager, não do catálogo inteiro.',
                             en: 'The PowerShell script only evaluates the Microsoft platforms — that is the reach of Graph and Azure Resource Manager, not of the whole catalogue.' },
 
+  // ── Permissões EFETIVAS do Azure ──────────────────────────────────────────
+  //
+  // `permissionCount` conta ENTRADAS DA DEFINIÇÃO: a Owner é uma linha só
+  // (`{"action":"*"}`) e por isso aparecia com 1, empatada com a AcrPull. O
+  // efetivo expande o wildcard. Os dois convivem na tela — o nativo é o que a
+  // Microsoft publica, o efetivo é o que ele significa.
+  //
+  // NENHUM NÚMERO AQUI DENTRO. `{n}` e `{p}` são preenchidos em runtime a
+  // partir de AZURE_EFFECTIVE_UNIVERSE — é a regra que check-stale-numbers.js
+  // protege, e a razão de a frase ter placeholder em vez de "17.591".
+  'azeff.label':          { pt: 'Efetivas',            en: 'Effective' },
+  'azeff.atLeast':        { pt: 'pelo menos',          en: 'at least' },
+  'azeff.panelTitle':     { pt: 'Alcance efetivo',     en: 'Effective reach' },
+  'azeff.floorBadge':     { pt: 'piso, não total',     en: 'a floor, not a total' },
+  'azeff.controlPlane':   { pt: 'Control plane',       en: 'Control plane' },
+  'azeff.dataPlane':      { pt: 'Data plane',          en: 'Data plane' },
+  'azeff.nativeLabel':    { pt: 'Entradas na definição', en: 'Entries in the definition' },
+  'azeff.noDenominator':  { pt: 'Sem denominador',     en: 'No denominator' },
+  'azeff.definitionLabel': { pt: 'Na definição (nativo)', en: 'In the definition (native)' },
+  // Subtítulo da página de detalhe: os dois números na mesma linha, porque é
+  // a contradição entre eles que explica o campo. {d} = entradas da definição,
+  // {e} = efetivas. Frase própria para não concordar plural com "1 entries".
+  'azeff.headerExtra':    { pt: '{d} na definição · ≥ {e} efetivas',
+                            en: '{d} in the definition · ≥ {e} effective' },
+  'azeff.tip':            { pt: 'Ações concedidas com os wildcards expandidos contra {n} ações de {p} providers, e as NotActions subtraídas. É um PISO: esse universo vem da documentação da Microsoft, e a Azure Management API expõe mais ações do que a documentação publica.',
+                            en: 'Actions granted, with wildcards expanded against {n} actions across {p} providers and NotActions subtracted. This is a FLOOR: that universe comes from Microsoft\u2019s documentation, and the Azure Management API exposes more actions than the docs publish.' },
+  'azeff.floor':          { pt: 'Piso, não total: expandido contra {n} ações de {p} providers colhidas da documentação da Microsoft. A Azure Management API expõe mais — o número real é maior, nunca menor.',
+                            en: 'A floor, not a total: expanded against {n} actions across {p} providers collected from Microsoft\u2019s documentation. The Azure Management API exposes more — the real number is higher, never lower.' },
+  'azeff.dataTip':        { pt: 'O universo de ações mistura control plane e data plane sem marcar qual é qual, então não há denominador contra o qual expandir um wildcard de DataActions. Preferimos deixar em branco a publicar um número inventado.',
+                            en: 'The action universe mixes control plane and data plane without marking which is which, so there is no denominator to expand a DataActions wildcard against. We leave it blank rather than publish a made-up number.' },
+  'azeff.nativeTip':      { pt: 'Quantas linhas a definição da role tem — o número nativo da Microsoft. `{"action":"*"}` conta 1, por mais que conceda o catálogo inteiro.',
+                            en: 'How many lines the role definition has — Microsoft\u2019s native number. `{"action":"*"}` counts as 1, however much it grants.' },
+
+  // ── Índice de providers do Azure (/azure-rbac/providers) ──────────────────
+  //
+  // Nome de provider (`Microsoft.Storage`) NÃO entra aqui: é nome próprio e
+  // fica em inglês nos dois idiomas, como manda o ADR-001. Só rótulo e
+  // contador passam pelo dicionário.
+  //
+  // Nenhum número dentro das frases: `{keys}`, `{actions}`, `{raw}` e
+  // `{providers}` são preenchidos em runtime a partir do `_meta` do índice —
+  // mesma regra que check-stale-numbers.js protege no bloco azeff.*.
+  'sub.azureProviders':   { pt: 'As ações do Azure agrupadas por resource provider',
+                            en: 'Azure actions grouped by resource provider' },
+  'sub.azureProvider':    { pt: 'Ações do provider, com a descrição oficial e as roles que concedem cada uma',
+                            en: 'The provider\u2019s actions, with the official description and the roles that grant each one' },
+  'noun.providers':       { pt: 'providers',           en: 'providers' },
+  'nav.providers':        { pt: 'Providers',           en: 'Providers' },
+  'label.planeDeclared':  { pt: 'Plano declarado',     en: 'Plane declared' },
+  'label.sortBy':         { pt: 'Ordenar por',         en: 'Sort by' },
+  'sort.bySize':          { pt: 'Tamanho',             en: 'Size' },
+  'sort.byRoles':         { pt: 'Roles',               en: 'Roles' },
+  'sort.byName':          { pt: 'Nome',                en: 'Name' },
+  'table.plane':          { pt: 'Plano',               en: 'Plane' },
+  'plane.control':        { pt: 'Control plane',       en: 'Control plane' },
+  'plane.data':           { pt: 'Data plane',          en: 'Data plane' },
+  'plane.both':           { pt: 'Os dois',             en: 'Both' },
+  'plane.undeclared':     { pt: 'não declarado',       en: 'undeclared' },
+  'azp.loading':          { pt: 'Carregando o índice de providers…',
+                            en: 'Loading the provider index\u2026' },
+  'azp.loadFailed':       { pt: 'Não foi possível carregar o índice de providers do Azure',
+                            en: 'Could not load the Azure provider index' },
+  'azp.searchPlaceholder':{ pt: 'Buscar provider…',    en: 'Search for a provider\u2026' },
+  'azp.searchAria':       { pt: 'Buscar resource provider do Azure',
+                            en: 'Search Azure resource providers' },
+  'azp.searchAction':     { pt: 'Buscar action ou descrição…',
+                            en: 'Search an action or description\u2026' },
+  'azp.emptyProviders':   { pt: 'Nenhum provider encontrado',  en: 'No provider found' },
+  'azp.emptyActions':     { pt: 'Nenhuma action encontrada',   en: 'No action found' },
+  'azp.openProvider':     { pt: 'Abrir',               en: 'Open' },
+  'azp.notFound':         { pt: 'Provider não encontrado',     en: 'Provider not found' },
+  'azp.backToProviders':  { pt: 'Voltar para providers',       en: 'Back to providers' },
+  'azp.grantedControl':   { pt: 'Concedida por (control plane)',
+                            en: 'Granted by (control plane)' },
+  'azp.grantedData':      { pt: 'Concedida por (data plane)',
+                            en: 'Granted by (data plane)' },
+  'azp.deniedBy':         { pt: 'Negada explicitamente por',
+                            en: 'Explicitly denied by' },
+  'azp.grantedByLabel':   { pt: 'Concedida por',       en: 'Granted by' },
+  'azp.anyRole':          { pt: 'Qualquer role',       en: 'Any role' },
+  'azp.noRole':           { pt: 'Nenhuma role built-in concede esta ação.',
+                            en: 'No built-in role grants this action.' },
+  'azp.priv':             { pt: 'priv',                en: 'priv' },
+  'azp.floorNote':        { pt: 'Os números são PISO: o universo de ações vem da documentação da Microsoft, e a Azure Management API expõe mais operações do que a documentação publica.',
+                            en: 'These numbers are a FLOOR: the action universe comes from Microsoft\u2019s documentation, and the Azure Management API exposes more operations than the docs publish.' },
+  'azp.caseNote':         { pt: 'O arquivo de descrições tem {keys} chaves; {actions} são ações distintas, porque algumas aparecem em dois cases. Pelo mesmo motivo, o prefixo cru dá {raw} providers e os distintos são {providers} — são estes que viram rota.',
+                            en: 'The description file holds {keys} keys; {actions} are distinct actions, because some appear in two casings. For the same reason the raw prefix yields {raw} providers while the distinct count is {providers} — and it is the distinct ones that become routes.' },
+  'azp.planeNote':        { pt: 'O arquivo de descrições da Microsoft mistura control plane e data plane e não marca qual é qual. Por isso o plano só é afirmado quando alguma definição de role cita a ação por extenso, em Actions ou em DataActions; nas demais fica "não declarado", que não é o mesmo que control plane.',
+                            en: 'Microsoft\u2019s description file mixes control plane and data plane without marking which is which. The plane is therefore stated only when some role definition names the action in full, under Actions or DataActions; the rest read \u201cundeclared\u201d, which is not the same as control plane.' },
+
+  // ── Changelog ─────────────────────────────────────────────────────────────
+  // A prosa longa da ressalva NÃO está aqui: ela vem do próprio changelog.json,
+  // já nos dois idiomas. Se morasse no dicionário, a página diria uma coisa e o
+  // feed e a API diriam outra na primeira vez que alguém editasse só um lado.
+  'chg.title':            { pt: 'Changelog',            en: 'Changelog' },
+  'chg.sub':              { pt: 'O que mudou nos catálogos de IAM das seis nuvens',
+                            en: 'What changed in the IAM catalogues of all six clouds' },
+  'chg.subCloud':         { pt: 'O que mudou neste catálogo, desde que passamos a observar',
+                            en: 'What changed in this catalogue since we started observing it' },
+  'chg.disclosureTitle':  { pt: 'Onde este histórico começa',
+                            en: 'Where this history begins' },
+
+  'chg.statEvents':       { pt: 'Eventos',              en: 'Events' },
+  'chg.statSince':        { pt: 'Observando desde',     en: 'Observing since' },
+  'chg.statSinceNote':    { pt: 'primeiro snapshot gravado',
+                            en: 'first snapshot recorded' },
+  'chg.statAttested':     { pt: 'Atestados',            en: 'Attested' },
+  'chg.statAttestedNote': { pt: 'de registro datado, não de comparação',
+                            en: 'from dated records, not from comparison' },
+  'chg.statQuarantine':   { pt: 'Em quarentena',        en: 'In quarantine' },
+  'chg.statQuarantineNote': { pt: 'remoções retidas para revisão',
+                              en: 'removals held for review' },
+
+  'chg.feedTitle':        { pt: 'Ser avisado',          en: 'Get notified' },
+  'chg.feedHint':         { pt: 'Feeds Atom, um por nuvem, mais um recorte só de roles privilegiadas. Assinar é o que traz você de volta sem precisar ter um problema primeiro. Os feeds saem em inglês: leitor de feed não tem seletor de idioma.',
+                            en: 'Atom feeds, one per cloud, plus a privileged-only cut. Subscribing is what brings you back without needing a problem first. Feeds are in English: a feed reader has no language switch.' },
+  'chg.feedAll':          { pt: 'Todas as nuvens',      en: 'All clouds' },
+  'chg.feedPriv':         { pt: 'Só privilegiadas',     en: 'Privileged only' },
+  'chg.feedPrivShort':    { pt: 'privilegiadas',        en: 'privileged' },
+  'chg.feedLink':         { pt: 'Feed',                 en: 'Feed' },
+  'chg.apiLink':          { pt: 'Histórico completo em JSON',
+                            en: 'Full history as JSON' },
+
+  'chg.filters':          { pt: 'Filtros',              en: 'Filters' },
+  'chg.filterCloud':      { pt: 'Nuvem',                en: 'Cloud' },
+  'chg.filterType':       { pt: 'Tipo de evento',       en: 'Event type' },
+  'chg.filterPeriod':     { pt: 'Período',              en: 'Period' },
+  'chg.filterOrigin':     { pt: 'Procedência',          en: 'Provenance' },
+  'chg.periodAll':        { pt: 'Tudo',                 en: 'All time' },
+  'chg.periodThirty':     { pt: '30 dias',              en: '30 days' },
+  'chg.periodNinety':     { pt: '90 dias',              en: '90 days' },
+  'chg.periodYear':       { pt: '1 ano',                en: '1 year' },
+  'chg.originAll':        { pt: 'Tudo',                 en: 'All' },
+  'chg.originDerived':    { pt: 'Derivado',             en: 'Derived' },
+  'chg.originAttested':   { pt: 'Atestado',             en: 'Attested' },
+
+  'chg.showing':          { pt: 'Mostrando {n} de {total}',
+                            en: 'Showing {n} of {total}' },
+  // O corte de período é ancorado no evento mais novo, não no relógio de quem
+  // lê: com HTML estático, um corte por Date.now() esvaziaria a lista sozinho
+  // com o passar dos meses e o filtro pareceria quebrado.
+  'chg.periodAnchor':     { pt: 'contado a partir de {d}, o evento mais recente',
+                            en: 'counted from {d}, the most recent event' },
+
+  'chg.emptyBuild':       { pt: 'O changelog ainda não foi gerado neste build. Rode scripts/build-snapshot.js e scripts/build-changelog.js antes de npm run build.',
+                            en: 'The changelog has not been generated in this build. Run scripts/build-snapshot.js and scripts/build-changelog.js before npm run build.' },
+  'chg.noResults':        { pt: 'Nenhum evento com esses filtros.',
+                            en: 'No events match these filters.' },
+  'chg.truncated':        { pt: 'Mais {n} eventos não cabem nesta página. O histórico completo está em',
+                            en: '{n} more events do not fit on this page. The full history is at' },
+  'chg.backToCloud':      { pt: 'Ver o catálogo de {c}',
+                            en: 'See the {c} catalogue' },
+  'chg.allClouds':        { pt: 'Changelog das seis nuvens',
+                            en: 'Changelog across all six clouds' },
+
+  // ── Procedência de cada linha ─────────────────────────────────────────────
+  // Três marcas porque são três coisas diferentes, e misturá-las seria o mesmo
+  // defeito que o ClassificationBadge existe para corrigir nas páginas de
+  // detalhe: exibir classificação nossa ao lado de nome oficial, sem qualificar.
+  'chg.editorialTag':     { pt: 'curadoria',            en: 'curation' },
+  'chg.editorialTip':     { pt: 'Mudança na classificação do IAM Scope — tier, categoria, privilégio ou regra de SoD. Derivada das permissões oficiais; nenhum provedor publica essa classificação. É o tipo de evento que só nós temos como emitir.',
+                            en: 'A change in IAM Scope classification — tier, category, privilege or SoD rule. Derived from the official permissions; no provider publishes this classification. It is the kind of event only we can emit.' },
+  'chg.processTag':       { pt: 'processo',             en: 'process' },
+  'chg.processTip':       { pt: 'Fato sobre a coleta em si, não sobre o catálogo: quando começamos a observar, quando a coleta enxergou menos do que a fonte tem, ou quando não dá para saber se um item foi removido.',
+                            en: 'A fact about the collection itself, not about the catalogue: when we started observing, when the collection saw less than the source holds, or when there is no way to tell whether an item was removed.' },
+  'chg.attestedTag':      { pt: 'atestado',             en: 'attested' },
+  'chg.attestedTip':      { pt: 'Este evento não veio de comparar dois snapshots: veio de um registro datado que já existia no repositório antes de a captura ser ligada. É informação de qualidade diferente, e por isso vem marcada.',
+                            en: 'This event did not come from comparing two snapshots: it comes from a dated record that already existed in the repository before capture was switched on. It is information of a different quality, which is why it is marked.' },
+  'chg.sourceLabel':      { pt: 'Fonte',                en: 'Source' },
+
   // ── Seletor de idioma ─────────────────────────────────────────────────────
   'lang.label':           { pt: 'Idioma',              en: 'Language' },
   'theme.label':          { pt: 'Tema',                en: 'Theme' },

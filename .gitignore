@@ -9,6 +9,15 @@
 *.tsbuildinfo
 next-env.d.ts
 
+# Saídas DERIVADAS do changelog. Os snapshots em data/snapshots/ e o
+# data/changelog/attested.json SÃO versionados — eles são o histórico, e sem
+# eles não há changelog nenhum. O que está abaixo é reconstruível a partir
+# deles a qualquer momento por scripts/build-changelog.js, e versionar derivado
+# só produz conflito de merge em arquivo que ninguém lê.
+/public/changelog.json
+/public/feeds
+/public/api
+
 # Debug / scratch files gerados pelos scripts de fetch (não publicar)
 scripts/debug-*.html
 scripts/*-raw.json

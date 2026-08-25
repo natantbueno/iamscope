@@ -122,6 +122,47 @@ function parseDefs(md) {
   if (failed.length) console.log('\nPáginas que falharam:', failed.join(', '))
   console.log(`\nTotal de roles oficiais: ${all.size}`)
 
+  // ── Declara a cobertura desta coleta ──────────────────────────────────────
+  //
+  // POR QUE ESTE SCRIPT ESCREVE UM SEGUNDO ARQUIVO
+  //   Três páginas vêm dando HTTP 404 há semanas (mixed-reality,
+  //   virtual-desktop-infrastructure, other) e o script segue reescrevendo o
+  //   dataset assim mesmo — o que é certo, porque o total ainda bate em 504 e
+  //   as roles dessas categorias aparecem em outras páginas.
+  //
+  //   O problema aparece no dia em que NÃO aparecerem. O dataset encolhe, o
+  //   snapshot registra o encolhimento, e o changelog anuncia uma exclusão em
+  //   massa que a Microsoft nunca fez. Uma página que falhou é indistinguível
+  //   de uma página esvaziada — a menos que alguém DIGA que ela falhou.
+  //
+  //   É o que este arquivo faz. scripts/build-changelog.js lê a cobertura e
+  //   recusa emitir 'removida' a partir de uma coleção incompleta; emite
+  //   'desconhecido', com a lista de páginas que faltaram, e retém as remoções
+  //   em quarentena para revisão humana.
+  //
+  //   Escrito mesmo no --dry-run: a cobertura é fato da COLETA, e a coleta
+  //   aconteceu de verdade nos dois modos. Suprimir isso no dry-run faria o
+  //   dry-run mentir sobre exatamente o que ele existe para revelar.
+  const healthPath = path.join(ROOT, 'data', 'collector-health.json')
+  let health = {}
+  try { health = JSON.parse(fs.readFileSync(healthPath, 'utf8')) } catch { /* primeira vez */ }
+  health['azure-rbac'] = {
+    ...(health['azure-rbac'] ?? {}),
+    roles: failed.length
+      ? {
+          complete: false,
+          missing: failed.map((f) => f.split(' ')[0]),
+          reason: 'http-error',
+          detail: failed,
+          at: new Date().toISOString(),
+        }
+      : { complete: true, at: new Date().toISOString() },
+  }
+  fs.mkdirSync(path.dirname(healthPath), { recursive: true })
+  fs.writeFileSync(healthPath, `${JSON.stringify(health, null, 2)}\n`)
+  console.log(`Cobertura declarada em data/collector-health.json: `
+    + (failed.length ? `PARCIAL (faltou ${failed.length} página(s))` : 'completa'))
+
   // ── Diff contra o dataset atual ────────────────────────────────────────────
   const cur = fs.readFileSync(DATA, 'utf8')
   const curRows = [...cur.matchAll(/\{ name: '((?:[^'\\]|\\.)*)', slug: '([^']*)', id: '([^']*)'/g)]

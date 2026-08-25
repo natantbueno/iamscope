@@ -1,0 +1,10 @@
+# O que vai para o npm é decidido por "files" no package.json.
+# Este arquivo existe só para o caso de "files" ser removido um dia.
+src/
+scripts/
+build.mjs
+tsconfig.json
+publicar-mcp.ps1
+MEDICAO.md
+*.tgz
+.stats-tmp/

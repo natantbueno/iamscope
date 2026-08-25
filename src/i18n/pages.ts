@@ -79,6 +79,8 @@ export const PAGES_DICTIONARY = {
                         en: 'Azure built-in roles, with the definition JSON and assignable scopes.' },
   'idx.azurePerms':   { pt: 'Catálogo de actions com a descrição oficial e as roles que concedem cada uma.',
                         en: 'Action catalogue with the official description and the roles granting each one.' },
+  'idx.azureProviders': { pt: 'As ações documentadas do Azure por resource provider, com as roles que concedem cada uma.',
+                          en: 'Azure\u2019s documented actions by resource provider, with the roles that grant each one.' },
   'idx.awsPolicies':  { pt: 'Managed policies com descrição oficial, datas, versão e o documento real.',
                         en: 'Managed policies with official description, dates, version and the real document.' },
   'idx.awsActions':   { pt: 'Actions por serviço, com as policies que concedem cada uma.',
@@ -116,8 +118,12 @@ export const PAGES_DICTIONARY = {
                       en: 'Paste a role and see the detected cloud and the classification.' },
   'idx.advisor':    { pt: 'Descreva a tarefa e receba candidatas de menor privilégio.',
                       en: 'Describe the task and get least-privilege candidates.' },
+  'idx.stats':      { pt: 'O catálogo das seis clouds em números, com a base de contagem declarada em cada recorte.',
+                      en: 'The six-cloud catalogue in numbers, with the counting basis stated for every cut.' },
   'idx.tierZero':   { pt: 'O que conta como Tier 0 em cada cloud, lado a lado.',
                       en: 'What counts as Tier 0 in each cloud, side by side.' },
+  'idx.changelog':  { pt: 'O que mudou nos catálogos das seis nuvens, com feed por nuvem.',
+                      en: 'What changed in the catalogues of all six clouds, with a feed per cloud.' },
 
   'ibm.platformDesc':  { pt: 'Valem para qualquer recurso: Viewer, Operator, Editor e Administrator.',
                          en: 'Apply to any resource: Viewer, Operator, Editor and Administrator.' },
@@ -1069,6 +1075,8 @@ export const PAGES_DICTIONARY = {
                         en: 'Paste a role definition from any cloud and get a risk analysis back — the platform is inferred from the shape of the JSON.' },
   'info.toolSod':     { pt: 'Catálogo de regras de Segregation of Duties e verificação de conflito entre duas roles. Cobertura: Entra ID, Azure RBAC, AWS IAM, GCP IAM e Google Workspace. IBM Cloud fica de fora, e nenhuma regra cruza provedores diferentes.',
                         en: 'A catalogue of segregation-of-duties rules and a conflict check between two roles. Coverage today: Entra ID and Azure RBAC.' },
+  'info.toolStats':   { pt: 'O catálogo inteiro em números: distribuição por tier, quanto de cada plataforma é privilegiado, as permissões concedidas por mais roles, tamanho de role e o frescor de cada conjunto de dados.',
+                        en: 'The whole catalogue in numbers: tier distribution, how much of each platform is privileged, the permissions granted by the most roles, role size, and how fresh each dataset is.' },
   'info.toolTierZero':{ pt: 'Onde está o verdadeiro Tier 0 em cada plataforma — root, org admin e as armadilhas de equivalência entre clouds.',
                         en: 'Where the real Tier 0 sits in each platform — root, org admin, and the equivalences that look right and are not.' },
 
@@ -1144,4 +1152,109 @@ export const PAGES_DICTIONARY = {
                               en: 'Azure RBAC — 3 missing roles added' },
   'chlog.azureMissingBody': { pt: 'Container Apps SandboxGroup Contributor e Storage File Backup/Restore Contributor, conferidas contra export autoritativo.',
                               en: 'Container Apps SandboxGroup Contributor and Storage File Backup/Restore Contributor, checked against an authoritative export.' },
+
+  // ── /stats — panorama cross-cloud ─────────────────────────────────────────
+  //
+  // NENHUM NÚMERO AQUI. Toda contagem chega por {n}/{a}/{b} e é preenchida pelo
+  // chamador a partir de src/data/stats.ts — que é gerado, não escrito. Foi
+  // assim que "mais de 1.700 roles" ficou meses na tela do Role Advisor com o
+  // índice já em 4.603: a prosa do dicionário também é tela.
+  'stats.headerTitle': { pt: 'Estatísticas', en: 'Statistics' },
+  'stats.headerSub':   { pt: 'O catálogo inteiro em números, das seis clouds',
+                         en: 'The whole catalogue in numbers, across all six clouds' },
+  'stats.lead':        { pt: 'Tudo nesta página é **calculado no build** a partir dos mesmos datasets que alimentam as páginas de detalhe. Nenhum número é escrito à mão, e cada recorte diz de onde vem e o que não cobre.',
+                         en: 'Everything on this page is **computed at build time** from the same datasets that feed the detail pages. No number is hand-written, and every cut says where it comes from and what it leaves out.' },
+  'stats.leadCaveat':  { pt: 'A classificação de tier e o marcador de privilegiada são editoriais do IAM Scope em cinco das seis plataformas — não são publicados pelos provedores. As bases de contagem **não são a mesma coisa entre as clouds**: cada seção declara a sua.',
+                         en: 'Tier classification and the privileged flag are IAM Scope editorial judgements on five of the six platforms — the providers do not publish them. Counting bases **are not the same across clouds**: each section states its own.' },
+
+  // Panorama
+  'stats.overviewTitle': { pt: 'Panorama', en: 'Overview' },
+  'stats.kpiClouds':     { pt: 'Plataformas', en: 'Platforms' },
+  'stats.kpiCatalog':    { pt: 'Roles e policies', en: 'Roles and policies' },
+  'stats.kpiPrivileged': { pt: 'Privilegiadas', en: 'Privileged' },
+  'stats.kpiTierZero':   { pt: 'Em Tier 0', en: 'At tier 0' },
+  'stats.kpiSod':        { pt: 'Regras de SoD', en: 'SoD rules' },
+
+  // Enterprise Access Model
+  'stats.eamTitle': { pt: 'As seis lado a lado, pelo Enterprise Access Model',
+                      en: 'All six side by side, through the Enterprise Access Model' },
+  'stats.eamIntro': { pt: 'Cada plataforma tem a própria escada de tiers, e elas não se comparam diretamente — "Contributor" no Azure e "Power User" na AWS não querem dizer a mesma coisa. O que compara é a normalização para os três níveis do Enterprise Access Model, que o site já usa em {compare}.',
+                      en: 'Each platform has its own tier ladder, and they do not compare directly — Azure\u2019s "Contributor" and AWS\u2019s "Power User" do not mean the same thing. What does compare is the normalisation to the three Enterprise Access Model levels the site already uses in {compare}.' },
+  'stats.eamCaveat': { pt: 'A normalização é nossa e mora em `src/lib/eamLevels.ts`. Ela agrupa: uma proporção alta de Tier 0 diz que a plataforma concentra poder em poucas roles, não que ela é mais insegura.',
+                       en: 'The normalisation is ours and lives in `src/lib/eamLevels.ts`. It groups: a high share of tier 0 says the platform concentrates power in few roles, not that it is less secure.' },
+
+  // Tiers nativos
+  'stats.tierTitle': { pt: 'Distribuição pelos tiers de cada plataforma',
+                       en: 'Distribution across each platform\u2019s own tiers' },
+  'stats.tierIntro': { pt: 'A escada nativa de cada uma, na ordem de severidade. O tier de topo é o único com marcação de risco — a ordem vem da posição na lista e do rótulo, não da cor.',
+                       en: 'Each platform\u2019s own ladder, in severity order. Only the top tier carries a risk mark — the ordering comes from position and label, not from colour.' },
+
+  // Privilegiadas
+  'stats.privTitle': { pt: 'Quantas são privilegiadas', en: 'How many are privileged' },
+  'stats.privIntro': { pt: 'Em número e em proporção do catálogo de cada plataforma. As duas leituras contam histórias diferentes: a proporção responde "quanto do catálogo eu preciso vigiar", o número absoluto responde "quantas páginas isso é".',
+                       en: 'As a count and as a share of each platform\u2019s catalogue. The two readings tell different stories: the share answers "how much of the catalogue must I watch", the absolute count answers "how many pages is that".' },
+
+  // Top de permissões
+  'stats.topTitle': { pt: 'As permissões concedidas por mais roles', en: 'The permissions granted by the most roles' },
+  'stats.topIntro': { pt: 'Busca reversa aplicada ao catálogo inteiro: para cada permissão, quantas roles a concedem. É o inverso do que uma página de role mostra, e o que revela onde o acesso se concentra — a permissão do topo de uma lista aparece em quase todo desenho de acesso daquela plataforma.',
+                      en: 'Reverse lookup applied to the whole catalogue: for each permission, how many roles grant it. It is the inverse of what a role page shows, and it reveals where access concentrates — the permission at the top of a list turns up in nearly every access design on that platform.' },
+  'stats.topPattern': { pt: 'padrão', en: 'pattern' },
+  'stats.topPatternNote': { pt: 'Entrada marcada como **padrão** é um wildcard (`Microsoft.Support/*`), não uma operação: ela cobre um conjunto de ações, e por isso aparece em mais roles do que qualquer ação literal.',
+                            en: 'An entry marked **pattern** is a wildcard (`Microsoft.Support/*`), not an operation: it covers a set of actions, which is why it shows up in more roles than any literal action does.' },
+  'stats.topBasisDeclared': { pt: 'O Google publica o mapa de privilégio legível por máquina para {n} das {a} admin roles. O que entra aqui é a lista de capacidades em prosa, que é o que existe para as demais.',
+                              en: 'Google publishes the machine-readable privilege map for {n} of the {a} admin roles. What is counted here is the plain-text capability list, which is what exists for the rest.' },
+  'stats.topBasisNone':     { pt: 'A IBM não publica ação por role: as ações são mapeadas por cada serviço, não pelo catálogo de IAM. É a mesma lacuna que mantém a IBM Cloud fora do {scope}.',
+                              en: 'IBM does not publish actions per role: actions are mapped by each service, not by the IAM catalogue. It is the same gap that keeps IBM Cloud out of {scope}.' },
+
+  // Tamanho de role
+  'stats.sizeTitle': { pt: 'Tamanho de role', en: 'Role size' },
+  'stats.sizeIntro': { pt: 'Mediana e máximo de permissões por role. A mediana, e não a média: em toda plataforma aqui um punhado de roles gigantes puxaria a média para longe do que uma role típica realmente concede.',
+                       en: 'Median and maximum permissions per role. The median, not the mean: on every platform here a handful of giant roles would drag the mean far from what a typical role actually grants.' },
+  'stats.sizeWarn':  { pt: 'Compare estas seis colunas com cuidado — a **base** de cada uma está declarada ao lado, e três delas contam coisas diferentes.',
+                       en: 'Compare these six columns with care — each one\u2019s **basis** is declared beside it, and three of them count different things.' },
+  'stats.basisExact':     { pt: 'Contagem literal: não há wildcard neste dataset.',
+                            en: 'Literal count: there is no wildcard in this dataset.' },
+  'stats.basisEffective': { pt: 'Efetivo — wildcards expandidos. É um piso.',
+                            en: 'Effective — wildcards expanded. This is a floor.' },
+  'stats.basisEntries':   { pt: 'Entradas do documento de policy: `"*"` conta 1.',
+                            en: 'Entries in the policy document: `"*"` counts as 1.' },
+  'stats.basisDeclared':  { pt: 'Capacidades publicadas pelo provedor, não permissões de API.',
+                            en: 'Capabilities published by the provider, not API permissions.' },
+  'stats.basisNone':      { pt: 'O provedor não publica permissão por role.',
+                            en: 'The provider does not publish permissions per role.' },
+  'stats.sizeEffective': { pt: 'Este número é **efetivo**: os wildcards da definição foram expandidos contra {n} ações de {p} providers, e as NotActions subtraídas. É um piso — o universo vem da documentação da Microsoft, e a Management API expõe mais. Por isso o `≥`.',
+                           en: 'This number is **effective**: the definition\u2019s wildcards were expanded against {n} actions across {p} providers, with NotActions subtracted. It is a floor — the universe comes from Microsoft\u2019s documentation and the Management API exposes more. Hence the `≥`.' },
+  'stats.sizeEntries':   { pt: 'Atenção: aqui o número conta **entradas do documento de policy**, e um wildcard conta 1. A `AdministratorAccess` é `["*"]` — uma entrada, o account inteiro. {n} das {a} policies têm ao menos um padrão, então a mediana e o máximo desta linha são um piso frouxo, não a permissão concedida.',
+                           en: 'Careful: this number counts **entries in the policy document**, and a wildcard counts as one. `AdministratorAccess` is `["*"]` — one entry, the entire account. {n} of the {a} policies carry at least one pattern, so this row\u2019s median and maximum are a loose floor, not the access granted.' },
+  'stats.sizeExcluded':  { pt: '{n} roles ficaram de fora da conta: o provedor não publica a lista de permissões delas.',
+                           en: '{n} roles are excluded from this count: the provider does not publish their permission list.' },
+  'stats.colMedian': { pt: 'Mediana', en: 'Median' },
+  'stats.colMax':    { pt: 'Máximo',  en: 'Maximum' },
+  'stats.colBasis':  { pt: 'Base',    en: 'Basis' },
+  'stats.colCloud':  { pt: 'Plataforma', en: 'Platform' },
+
+  // SoD
+  'stats.sodTitle': { pt: 'Cobertura de SoD por plataforma', en: 'SoD coverage by platform' },
+  'stats.sodIntro': { pt: 'Como as regras do catálogo se distribuem. Uma regra que cruza duas plataformas conta nas **duas** — filtrar por igualdade esconderia justamente as regras de cruzamento, que envolvem as duas pontas.',
+                      en: 'How the catalogue\u2019s rules spread out. A rule that spans two platforms counts on **both** — filtering by equality would hide exactly the cross-platform rules, which involve both ends.' },
+  'stats.sodCross': { pt: 'de cruzamento', en: 'cross-platform' },
+  'stats.sodRolesCovered': { pt: 'roles citadas', en: 'roles referenced' },
+  'stats.sodSample': { pt: 'A cobertura de AWS e GCP é por **amostra curada dos tiers privilegiados**, não exaustiva — são milhares de policies e roles. Entra ID e Azure RBAC têm cobertura fechada nas privilegiadas.',
+                        en: 'AWS and GCP coverage is a **curated sample of the privileged tiers**, not exhaustive — there are thousands of policies and roles. Entra ID and Azure RBAC have complete coverage of their privileged roles.' },
+  'stats.sodNoCross': { pt: 'Nenhuma regra cruza provedores, por decisão de produto: acumular acesso na AWS e no Entra ID é fato de governança, não conflito de segregação — não existe caminho técnico entre os dois e as mitigações não se encontram. Só há cruzamento onde os planos de identidade se tocam.',
+                         en: 'No rule spans providers, by product decision: holding access in both AWS and Entra ID is a governance fact, not a segregation conflict — there is no technical path between them and the mitigations do not meet. Crossing exists only where the identity planes actually touch.' },
+  'stats.sodUncovered': { pt: 'Fora do catálogo de SoD: {n}. O IAM da IBM tem sete roles genéricas, e a segregação real dela vive nas permissões da infraestrutura clássica, que não são roles — o modelo "regra = par de roles" não as representa sem distorcer o dado.',
+                           en: 'Outside the SoD catalogue: {n}. IBM\u2019s IAM has seven generic roles, and its real segregation lives in the classic infrastructure permissions, which are not roles — the "rule = pair of roles" model cannot represent them without distorting the data.' },
+
+  // Frescor
+  'stats.freshTitle': { pt: 'Frescor por dataset', en: 'Freshness by dataset' },
+  'stats.freshIntro': { pt: 'Quando cada conjunto de dados foi conferido pela última vez contra a fonte oficial. Aparece por plataforma nas páginas de referência; esta é a lista inteira, que é o que permite ver qual dataset está mais atrasado.',
+                        en: 'When each dataset was last checked against its official source. It appears per platform on the reference pages; this is the full list, which is what lets you see which dataset is furthest behind.' },
+  'stats.freshOldest': { pt: 'Verificação mais antiga', en: 'Oldest check' },
+  'stats.freshNewest': { pt: 'Verificação mais recente', en: 'Most recent check' },
+  'stats.colDataset': { pt: 'Conjunto de dados', en: 'Dataset' },
+  'stats.colChecked': { pt: 'Última verificação', en: 'Last checked' },
+  'stats.colSource':  { pt: 'Fonte', en: 'Source' },
+
+  'stats.noData': { pt: 'sem dado publicado', en: 'not published' },
 } as const

@@ -1,6 +1,6 @@
 import {
   ENTRA_ROLES_COUNT, ENTRA_ACTIONS_COUNT, ENTRA_API_PERMISSIONS_COUNT,
-  AZURE_ROLES_COUNT, AWS_POLICIES_COUNT, AWS_ACTIONS_COUNT, AWS_SERVICES_COUNT,
+  AZURE_ROLES_COUNT, AZURE_PROVIDERS_COUNT, AWS_POLICIES_COUNT, AWS_ACTIONS_COUNT, AWS_SERVICES_COUNT,
   GCP_ROLES_COUNT, GCP_PERMISSIONS_COUNT, GCP_SERVICES_COUNT,
   GWS_ROLES_COUNT, GWS_PRIVILEGES_COUNT, GWS_SCOPES_COUNT,
   IBM_ROLES_COUNT, IBM_ACCESS_PRIMITIVES_COUNT, IBM_CLASSIC_PERMISSIONS_COUNT,
@@ -54,6 +54,7 @@ export const SITE_INDEX: Record<string, SiteIndexEntry[]> = {
     { href: '/azure-rbac',             label: 'Dashboard',      desc: 'idx.dashboard',  count: -1,                noun: 'noun.items' },
     { href: '/azure-rbac/roles',       label: 'Built-in Roles', desc: 'idx.azureRoles', count: AZURE_ROLES_COUNT, noun: 'noun.roles' },
     { href: '/azure-rbac/permissions', label: 'Actions',        desc: 'idx.azurePerms', count: 2697,              noun: 'noun.actions' },
+    { href: '/azure-rbac/providers',   label: 'Providers',      desc: 'idx.azureProviders', count: AZURE_PROVIDERS_COUNT, noun: 'noun.providers' },
   ],
   aws: [
     { href: '/aws',                          label: 'Dashboard',     desc: 'idx.dashboard', count: -1,                noun: 'noun.items' },
@@ -101,6 +102,15 @@ export const SITE_TOOLS: SiteIndexEntry[] = [
   { href: '/evaluate',         label: 'Role Evaluator',      desc: 'idx.evaluate',  count: -1,   noun: 'noun.items' },
   { href: '/advisor',          label: 'Role Advisor',        desc: 'idx.advisor',   count: -1,   noun: 'noun.items' },
   { href: '/tier-comparison',  label: 'Tier 0 Comparison',   desc: 'idx.tierZero',  count: -1,   noun: 'noun.items' },
+  // count: -1 de propósito. A página não LISTA itens: ela agrega seis
+  // catálogos cujas bases de contagem são diferentes, e qualquer número
+  // único aqui seria a soma de coisas que não são a mesma coisa.
+  { href: '/stats',            label: 'Statistics',          desc: 'idx.stats',     count: -1,   noun: 'noun.items' },
+  // count: -1 e nao o total de eventos. O numero do changelog cresce a cada
+  // coleta e nao vem de counts.ts — crava-lo aqui repetiria exatamente o erro
+  // que este arquivo existe para impedir (o "GCP (232)" que sobreviveu a duas
+  // recoletas). A pagina mostra o numero dela, sempre atual.
+  { href: '/changelog',        label: 'Changelog',           desc: 'idx.changelog', count: -1,   noun: 'noun.items' },
 ]
 
 /** Contagem total de serviços, exibida como contexto onde faz sentido. */

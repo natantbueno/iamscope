@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/build-changelog.js && next build",
     "start": "next start"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.10",
+    "sucrase": "^3.35.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   },

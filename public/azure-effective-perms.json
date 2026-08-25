@@ -1,0 +1,3077 @@
+{
+  "_meta": {
+    "generatedAt": "2026-08-23T23:01:29.082Z",
+    "generatedBy": "scripts/build-effective-perms.js",
+    "classification": "iamscope-derived",
+    "universeKeys": 17605,
+    "universeActions": 17591,
+    "universeProviders": 151,
+    "universeProviderKeys": 158,
+    "universeNote": "universeKeys conta as chaves do arquivo; universeActions desconta 14 pares que são a mesma ação em dois cases. A expansão usa o distinto.",
+    "universeSource": "public/azure-action-descriptions.json (MicrosoftDocs/azure-docs → role-based-access-control/permissions/*.md)",
+    "isFloor": true,
+    "floorNote": "Limite INFERIOR. O universo vem da documentação; a Azure Management API (providerOperations) expõe mais ações e mais providers. Nenhum número daqui é o total real.",
+    "planeAnswer": "O store MISTURA control plane e data plane — e NÃO marca qual é qual.\n\nProva, não leitura: das 450 DataActions literais declaradas pelas 504 definições\nde role, 448 estão no store (99.6%) — inclusive\nMICROSOFT.STORAGE/STORAGEACCOUNTS/BLOBSERVICES/CONTAINERS/BLOBS/READ, que é data plane puro.\nAo mesmo tempo 1279 das 1347 Actions literais também estão lá. E 0 chaves\ncarregam marcador de tipo: a fonte (learn.microsoft.com/.../permissions/*.md) publica as duas\nfamílias na mesma tabela, sem coluna que as separe.\n\nCONSEQUÊNCIA: não existe subconjunto que sirva de denominador para o data plane.\nExpandir `DataActions: *` contra as 17591 contaria operação de control plane como se\nfosse de dados — seria número inventado. Pior: a cobertura de data plane no store é\nreconhecidamente parcial (os itens de Cosmos DB, .../SQLDATABASES/CONTAINERS/ITEMS/*,\ntêm exatamente 0 entradas no store), então nem heurística por prefixo salvaria.\n\nPOR ISSO: `effectiveDataActions` é `null` sempre que a role tem wildcard em DataActions\n(85 das 504 roles), com `dataBasis: \"unbounded\"`. Quando toda DataActions é literal,\no conjunto é EXATO e não precisa de universo nenhum — aí o campo traz o número, com\n`dataBasis: \"exact\"`. Nenhum número é estimado.",
+    "dataPlaneDenominator": null,
+    "rolesWithoutDataDenominator": 85,
+    "note": "permissionCount (nativo: entradas da definição) continua em src/data/azureRbac.ts e não é alterado por este script.",
+    "checks": [
+      {
+        "label": "Owner > Contributor > Reader",
+        "ok": true,
+        "detail": "17591 > 17546 > 8006"
+      },
+      {
+        "label": "Contributor = Owner − NotActions da contributor.json",
+        "ok": true,
+        "detail": "17591 − 45 = 17546 (calculado: 17546; 11 padrões de NotActions)"
+      },
+      {
+        "label": "Reader ≈ subconjunto terminado em /read",
+        "ok": true,
+        "detail": "8006 de 8006 ações /read do universo; 0 fora do padrão"
+      },
+      {
+        "label": "AcrPull continua 1",
+        "ok": true,
+        "detail": "effectiveActions=1, permissionCount=1"
+      },
+      {
+        "label": "As roles de permissionCount 1 não continuam todas em 1",
+        "ok": true,
+        "detail": "56 com permissionCount 1 → 13 continuam com effectiveActions 1 (43 mudaram)"
+      },
+      {
+        "label": "Motor: `*` casa o universo inteiro e atravessa `/`",
+        "ok": true,
+        "detail": "Owner=17591 de 17591 ações distintas; Microsoft.Authorization/*​/read casa roleAssignments/read: true"
+      }
+    ]
+  },
+  "roles": {
+    "acrdelete": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "acrimagesigner": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "acrpull": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "acrpush": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "acrquarantinereader": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "acrquarantinewriter": {
+      "permissionCount": 4,
+      "effectiveActions": 2,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "advisor-recommendations-contributor-assessments-and-reviews": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "advisor-reviews-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "advisor-reviews-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-developer-portal-content-editor": {
+      "permissionCount": 8,
+      "effectiveActions": 8,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-service-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 558,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-service-operator-role": {
+      "permissionCount": 15,
+      "effectiveActions": 236,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-service-reader-role": {
+      "permissionCount": 8,
+      "effectiveActions": 221,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-service-workspace-api-developer": {
+      "permissionCount": 9,
+      "effectiveActions": 45,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-service-workspace-api-product-manager": {
+      "permissionCount": 12,
+      "effectiveActions": 50,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-workspace-api-developer": {
+      "permissionCount": 17,
+      "effectiveActions": 145,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-workspace-api-product-manager": {
+      "permissionCount": 10,
+      "effectiveActions": 115,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-workspace-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 176,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "api-management-workspace-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 78,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "app-compliance-automation-administrator": {
+      "permissionCount": 28,
+      "effectiveActions": 8046,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "app-compliance-automation-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 8006,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "app-configuration-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 98,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "app-configuration-data-owner": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "app-configuration-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "app-configuration-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "application-insights-component-contributor": {
+      "permissionCount": 13,
+      "effectiveActions": 141,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "application-insights-snapshot-debugger": {
+      "permissionCount": 7,
+      "effectiveActions": 90,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "arc-gateway-manager": {
+      "permissionCount": 9,
+      "effectiveActions": 51,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "attestation-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "attestation-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "automation-contributor": {
+      "permissionCount": 11,
+      "effectiveActions": 212,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "automation-job-operator": {
+      "permissionCount": 13,
+      "effectiveActions": 66,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "automation-operator": {
+      "permissionCount": 21,
+      "effectiveActions": 74,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "automation-runbook-operator": {
+      "permissionCount": 6,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "avere-contributor": {
+      "permissionCount": 23,
+      "effectiveActions": 765,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "avere-operator": {
+      "permissionCount": 14,
+      "effectiveActions": 11,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "azure-ai-administrator": {
+      "permissionCount": 39,
+      "effectiveActions": 2945,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-ai-developer": {
+      "permissionCount": 11,
+      "effectiveActions": 323,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-ai-enterprise-network-connection-approver": {
+      "permissionCount": 90,
+      "effectiveActions": 89,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-ai-inference-deployment-operator": {
+      "permissionCount": 3,
+      "effectiveActions": 39,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-api-center-compliance-manager": {
+      "permissionCount": 3,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-api-center-data-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-api-center-service-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 148,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-api-center-service-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 73,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-enabled-kubernetes-cluster-user-role": {
+      "permissionCount": 9,
+      "effectiveActions": 54,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-kubernetes-admin": {
+      "permissionCount": 40,
+      "effectiveActions": 52,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-arc-kubernetes-cluster-admin": {
+      "permissionCount": 8,
+      "effectiveActions": 52,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-arc-kubernetes-viewer": {
+      "permissionCount": 36,
+      "effectiveActions": 52,
+      "effectiveDataActions": 28,
+      "dataBasis": "exact"
+    },
+    "azure-arc-kubernetes-writer": {
+      "permissionCount": 37,
+      "effectiveActions": 52,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-arc-scvmm-administrator-role": {
+      "permissionCount": 57,
+      "effectiveActions": 126,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-scvmm-private-cloud-user": {
+      "permissionCount": 34,
+      "effectiveActions": 62,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-scvmm-private-clouds-onboarding": {
+      "permissionCount": 30,
+      "effectiveActions": 58,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-scvmm-vm-contributor": {
+      "permissionCount": 58,
+      "effectiveActions": 98,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-arc-vmware-vm-contributor": {
+      "permissionCount": 56,
+      "effectiveActions": 107,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-batch-account-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 115,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-batch-account-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 30,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-batch-data-contributor": {
+      "permissionCount": 13,
+      "effectiveActions": 63,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-batch-job-submitter": {
+      "permissionCount": 7,
+      "effectiveActions": 11,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-center-for-sap-solutions-administrator": {
+      "permissionCount": 58,
+      "effectiveActions": 117,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-center-for-sap-solutions-reader": {
+      "permissionCount": 43,
+      "effectiveActions": 72,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-center-for-sap-solutions-service-role": {
+      "permissionCount": 55,
+      "effectiveActions": 66,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-connected-machine-onboarding": {
+      "permissionCount": 11,
+      "effectiveActions": 11,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-connected-machine-resource-administrator": {
+      "permissionCount": 12,
+      "effectiveActions": 76,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-connected-machine-resource-manager": {
+      "permissionCount": 34,
+      "effectiveActions": 86,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-connected-sql-server-onboarding": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-container-instances-contributor-role": {
+      "permissionCount": 5,
+      "effectiveActions": 63,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-container-storage-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 57,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-container-storage-operator": {
+      "permissionCount": 18,
+      "effectiveActions": 28,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-container-storage-owner": {
+      "permissionCount": 15,
+      "effectiveActions": 69,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-customer-lockbox-approver-for-subscription": {
+      "permissionCount": 6,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-device-registry-administrator": {
+      "permissionCount": 1,
+      "effectiveActions": 64,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-device-registry-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 16,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-device-registry-credentials-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-device-registry-onboarding": {
+      "permissionCount": 10,
+      "effectiveActions": 117,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-digital-twins-data-owner": {
+      "permissionCount": 7,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-digital-twins-data-reader": {
+      "permissionCount": 8,
+      "effectiveActions": 0,
+      "effectiveDataActions": 8,
+      "dataBasis": "exact"
+    },
+    "azure-event-hubs-data-owner": {
+      "permissionCount": 2,
+      "effectiveActions": 96,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-event-hubs-data-receiver": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-event-hubs-data-sender": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-file-sync-administrator": {
+      "permissionCount": 15,
+      "effectiveActions": 106,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-file-sync-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 18,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-front-door-domain-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-front-door-domain-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-front-door-profile-reader": {
+      "permissionCount": 17,
+      "effectiveActions": 51,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-front-door-secret-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-front-door-secret-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-iot-operations-administrator": {
+      "permissionCount": 13,
+      "effectiveActions": 75,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-iot-operations-onboarding": {
+      "permissionCount": 10,
+      "effectiveActions": 51,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-contributor-role": {
+      "permissionCount": 3,
+      "effectiveActions": 714,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-hub-agent-role": {
+      "permissionCount": 7,
+      "effectiveActions": 7,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-hub-cluster-user-role": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-rbac-admin": {
+      "permissionCount": 40,
+      "effectiveActions": 34,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-fleet-manager-rbac-admin-for-member-clusters": {
+      "permissionCount": 5,
+      "effectiveActions": 32,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-fleet-manager-rbac-cluster-admin": {
+      "permissionCount": 7,
+      "effectiveActions": 34,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-fleet-manager-rbac-cluster-admin-for-member-clusters": {
+      "permissionCount": 5,
+      "effectiveActions": 32,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-fleet-manager-rbac-reader": {
+      "permissionCount": 36,
+      "effectiveActions": 34,
+      "effectiveDataActions": 29,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-rbac-reader-for-member-clusters": {
+      "permissionCount": 35,
+      "effectiveActions": 32,
+      "effectiveDataActions": 31,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-rbac-writer": {
+      "permissionCount": 57,
+      "effectiveActions": 34,
+      "effectiveDataActions": 51,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-fleet-manager-rbac-writer-for-member-clusters": {
+      "permissionCount": 39,
+      "effectiveActions": 32,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-service-arc-cluster-admin-role": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-arc-cluster-user-role": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-arc-contributor-role": {
+      "permissionCount": 37,
+      "effectiveActions": 37,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-cluster-admin-role": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-cluster-monitoring-user": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-cluster-user-role": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-contributor-role": {
+      "permissionCount": 9,
+      "effectiveActions": 519,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-namespace-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 50,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-namespace-user": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-rbac-admin": {
+      "permissionCount": 6,
+      "effectiveActions": 33,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-service-rbac-cluster-admin": {
+      "permissionCount": 6,
+      "effectiveActions": 33,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-kubernetes-service-rbac-reader": {
+      "permissionCount": 35,
+      "effectiveActions": 32,
+      "effectiveDataActions": 31,
+      "dataBasis": "exact"
+    },
+    "azure-kubernetes-service-rbac-writer": {
+      "permissionCount": 39,
+      "effectiveActions": 32,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-local-migrate-execute-expert": {
+      "permissionCount": 38,
+      "effectiveActions": 431,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-local-migrate-owner": {
+      "permissionCount": 62,
+      "effectiveActions": 1130,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-managed-grafana-workspace-contributor": {
+      "permissionCount": 35,
+      "effectiveActions": 63,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-managed-redis-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 79,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-managed-redis-reader": {
+      "permissionCount": 9,
+      "effectiveActions": 45,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-maps-data-contributor": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-maps-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-maps-search-and-render-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "azure-migrate-decide-and-plan-expert": {
+      "permissionCount": 51,
+      "effectiveActions": 999,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-migrate-execute-expert": {
+      "permissionCount": 43,
+      "effectiveActions": 631,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-migrate-owner": {
+      "permissionCount": 66,
+      "effectiveActions": 1083,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-migrate-service-reader": {
+      "permissionCount": 11,
+      "effectiveActions": 287,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-cloud-controller-manager": {
+      "permissionCount": 29,
+      "effectiveActions": 28,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-cluster-ingress-operator": {
+      "permissionCount": 6,
+      "effectiveActions": 6,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-disk-storage-operator": {
+      "permissionCount": 16,
+      "effectiveActions": 16,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-federated-credential": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-file-storage-operator": {
+      "permissionCount": 30,
+      "effectiveActions": 30,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-image-registry-operator": {
+      "permissionCount": 30,
+      "effectiveActions": 25,
+      "effectiveDataActions": 5,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-machine-api-operator": {
+      "permissionCount": 35,
+      "effectiveActions": 35,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-network-operator": {
+      "permissionCount": 7,
+      "effectiveActions": 7,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-red-hat-openshift-service-operator": {
+      "permissionCount": 10,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-relay-listener": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-relay-owner": {
+      "permissionCount": 2,
+      "effectiveActions": 64,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-relay-sender": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-resource-bridge-deployment-role": {
+      "permissionCount": 36,
+      "effectiveActions": 36,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-resource-notifications-system-topics-subscriber": {
+      "permissionCount": 10,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-service-bus-data-owner": {
+      "permissionCount": 2,
+      "effectiveActions": 103,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-service-bus-data-receiver": {
+      "permissionCount": 4,
+      "effectiveActions": 3,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-service-bus-data-sender": {
+      "permissionCount": 4,
+      "effectiveActions": 3,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-spring-apps-application-configuration-service-config-file-pattern-reader-role": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-apps-application-configuration-service-log-reader-role": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-apps-connect-role": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-apps-job-log-reader-role": {
+      "permissionCount": 5,
+      "effectiveActions": 3,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "azure-spring-apps-remote-debugging-role": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-apps-spring-cloud-gateway-log-reader-role": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-cloud-config-server-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "azure-spring-cloud-config-server-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-spring-cloud-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "azure-spring-cloud-service-registry-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "azure-spring-cloud-service-registry-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "azure-stack-hci-administrator": {
+      "permissionCount": 103,
+      "effectiveActions": 300,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-stack-hci-connected-infravms": {
+      "permissionCount": 7,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-stack-hci-device-management-role": {
+      "permissionCount": 38,
+      "effectiveActions": 83,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-stack-hci-vm-contributor": {
+      "permissionCount": 75,
+      "effectiveActions": 131,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-stack-hci-vm-reader": {
+      "permissionCount": 42,
+      "effectiveActions": 70,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azure-stack-registration-owner": {
+      "permissionCount": 4,
+      "effectiveActions": 6,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azureml-compute-operator": {
+      "permissionCount": 2,
+      "effectiveActions": 18,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azureml-data-scientist": {
+      "permissionCount": 4,
+      "effectiveActions": 277,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azureml-metrics-writer-preview": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "azureml-registry-user": {
+      "permissionCount": 2,
+      "effectiveActions": 5,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "backup-contributor": {
+      "permissionCount": 89,
+      "effectiveActions": 184,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "backup-mua-admin": {
+      "permissionCount": 26,
+      "effectiveActions": 74,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "backup-mua-operator": {
+      "permissionCount": 3,
+      "effectiveActions": 72,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "backup-operator": {
+      "permissionCount": 103,
+      "effectiveActions": 151,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "backup-reader": {
+      "permissionCount": 64,
+      "effectiveActions": 89,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "billing-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 189,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "biztalk-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "blueprint-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 61,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "blueprint-operator": {
+      "permissionCount": 5,
+      "effectiveActions": 56,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "carbon-optimization-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cdn-endpoint-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 61,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cdn-endpoint-reader": {
+      "permissionCount": 9,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cdn-profile-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 65,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cdn-profile-reader": {
+      "permissionCount": 11,
+      "effectiveActions": 55,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "chaos-studio-experiment-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 84,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "chaos-studio-operator": {
+      "permissionCount": 10,
+      "effectiveActions": 66,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "chaos-studio-reader": {
+      "permissionCount": 6,
+      "effectiveActions": 64,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "chaos-studio-target-contributor": {
+      "permissionCount": 12,
+      "effectiveActions": 54,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "classic-network-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "classic-storage-account-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "classic-storage-account-key-operator-service-role": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "classic-virtual-machine-contributor": {
+      "permissionCount": 17,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-contributor": {
+      "permissionCount": 18,
+      "effectiveActions": 1769,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-custom-vision-contributor": {
+      "permissionCount": 2,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-custom-vision-deployment": {
+      "permissionCount": 8,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-custom-vision-labeler": {
+      "permissionCount": 7,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-custom-vision-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-custom-vision-trainer": {
+      "permissionCount": 2,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-face-recognizer": {
+      "permissionCount": 12,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-immersive-reader-user": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-language-owner": {
+      "permissionCount": 8,
+      "effectiveActions": 676,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-language-reader": {
+      "permissionCount": 19,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-language-writer": {
+      "permissionCount": 7,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-luis-owner": {
+      "permissionCount": 5,
+      "effectiveActions": 676,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-luis-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-luis-writer": {
+      "permissionCount": 4,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-metrics-advisor-administrator": {
+      "permissionCount": 2,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-metrics-advisor-user": {
+      "permissionCount": 2,
+      "effectiveActions": 673,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-openai-contributor": {
+      "permissionCount": 12,
+      "effectiveActions": 681,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-openai-user": {
+      "permissionCount": 19,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-qna-maker-editor": {
+      "permissionCount": 42,
+      "effectiveActions": 675,
+      "effectiveDataActions": 39,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-qna-maker-reader": {
+      "permissionCount": 21,
+      "effectiveActions": 675,
+      "effectiveDataActions": 18,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-speech-contributor": {
+      "permissionCount": 11,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-speech-user": {
+      "permissionCount": 22,
+      "effectiveActions": 675,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "cognitive-services-usages-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cognitive-services-user": {
+      "permissionCount": 14,
+      "effectiveActions": 696,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "compute-fleet-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 50,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "compute-gallery-artifacts-publisher": {
+      "permissionCount": 11,
+      "effectiveActions": 87,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "compute-gallery-image-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "compute-gallery-sharing-admin": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "compute-limit-operator": {
+      "permissionCount": 10,
+      "effectiveActions": 24,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "connected-cluster-managed-identity-checkaccess-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 29,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-connectedenvironments-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 60,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-connectedenvironments-reader": {
+      "permissionCount": 6,
+      "effectiveActions": 42,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-contributor": {
+      "permissionCount": 14,
+      "effectiveActions": 104,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-jobs-contributor": {
+      "permissionCount": 16,
+      "effectiveActions": 89,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-jobs-operator": {
+      "permissionCount": 15,
+      "effectiveActions": 78,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "container-apps-jobs-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 5,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-managedenvironments-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 94,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-managedenvironments-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 54,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-operator": {
+      "permissionCount": 15,
+      "effectiveActions": 91,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "container-apps-sessionpools-contributor": {
+      "permissionCount": 15,
+      "effectiveActions": 79,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-apps-sessionpools-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 39,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-cache-rule-administrator": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-cache-rule-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-configuration-reader-and-data-access-configuration-reader": {
+      "permissionCount": 33,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-contributor-and-data-access-configuration-administrator": {
+      "permissionCount": 58,
+      "effectiveActions": 105,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-credential-set-administrator": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-credential-set-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-data-importer-and-data-reader": {
+      "permissionCount": 6,
+      "effectiveActions": 3,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "container-registry-repository-catalog-lister": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "container-registry-repository-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 0,
+      "effectiveDataActions": 6,
+      "dataBasis": "exact"
+    },
+    "container-registry-repository-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "container-registry-repository-writer": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "container-registry-tasks-contributor": {
+      "permissionCount": 24,
+      "effectiveActions": 32,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "container-registry-transfer-pipeline-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 17546,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cosmos-db-account-reader-role": {
+      "permissionCount": 7,
+      "effectiveActions": 281,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cosmos-db-operator": {
+      "permissionCount": 8,
+      "effectiveActions": 318,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cosmosbackupoperator": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cosmosrestoreoperator": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cost-management-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 101,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "cost-management-reader": {
+      "permissionCount": 10,
+      "effectiveActions": 68,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "data-box-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 73,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "data-box-reader": {
+      "permissionCount": 10,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "data-factory-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 223,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "data-lake-analytics-developer": {
+      "permissionCount": 8,
+      "effectiveActions": 80,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "data-operator-for-managed-disks": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "data-purger": {
+      "permissionCount": 4,
+      "effectiveActions": 995,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "defender-for-storage-data-scanner": {
+      "permissionCount": 9,
+      "effectiveActions": 3,
+      "effectiveDataActions": 6,
+      "dataBasis": "exact"
+    },
+    "defender-kubernetes-api-access": {
+      "permissionCount": 11,
+      "effectiveActions": 11,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "deid-batch-data-owner": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "deid-batch-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "deid-data-owner": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "deid-realtime-data-user": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "deployment-environments-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 41,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "deployment-environments-user": {
+      "permissionCount": 9,
+      "effectiveActions": 41,
+      "effectiveDataActions": 5,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-application-group-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 75,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-application-group-reader": {
+      "permissionCount": 9,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 175,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-host-pool-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 109,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-host-pool-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 66,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-power-on-contributor": {
+      "permissionCount": 14,
+      "effectiveActions": 56,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-power-on-off-contributor": {
+      "permissionCount": 37,
+      "effectiveActions": 79,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-reader": {
+      "permissionCount": 6,
+      "effectiveActions": 92,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-session-host-operator": {
+      "permissionCount": 7,
+      "effectiveActions": 68,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-user": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-user-session-operator": {
+      "permissionCount": 8,
+      "effectiveActions": 65,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-virtual-machine-contributor": {
+      "permissionCount": 59,
+      "effectiveActions": 100,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-workspace-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 75,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "desktop-virtualization-workspace-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 46,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "devcenter-dev-box-user": {
+      "permissionCount": 15,
+      "effectiveActions": 43,
+      "effectiveDataActions": 11,
+      "dataBasis": "exact"
+    },
+    "devcenter-owner": {
+      "permissionCount": 6,
+      "effectiveActions": 159,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "devcenter-project-admin": {
+      "permissionCount": 31,
+      "effectiveActions": 108,
+      "effectiveDataActions": 27,
+      "dataBasis": "exact"
+    },
+    "device-provisioning-service-data-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "device-provisioning-service-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "device-update-administrator": {
+      "permissionCount": 12,
+      "effectiveActions": 51,
+      "effectiveDataActions": 6,
+      "dataBasis": "exact"
+    },
+    "device-update-content-administrator": {
+      "permissionCount": 9,
+      "effectiveActions": 51,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "device-update-content-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 51,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "device-update-deployments-administrator": {
+      "permissionCount": 10,
+      "effectiveActions": 51,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "device-update-deployments-reader": {
+      "permissionCount": 8,
+      "effectiveActions": 51,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "device-update-reader": {
+      "permissionCount": 8,
+      "effectiveActions": 51,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "devops-infrastructure-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 58,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "devtest-labs-user": {
+      "permissionCount": 32,
+      "effectiveActions": 104,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "dicom-data-owner": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "dicom-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "disk-backup-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 31,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "disk-pool-operator": {
+      "permissionCount": 6,
+      "effectiveActions": 48,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "disk-restore-operator": {
+      "permissionCount": 6,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "disk-snapshot-contributor": {
+      "permissionCount": 12,
+      "effectiveActions": 40,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "dns-zone-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 105,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "documentdb-account-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 343,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "domain-services-contributor": {
+      "permissionCount": 69,
+      "effectiveActions": 122,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "domain-services-reader": {
+      "permissionCount": 28,
+      "effectiveActions": 72,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "durable-task-data-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "durable-task-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "durable-task-worker": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "elastic-san-network-admin": {
+      "permissionCount": 5,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "elastic-san-owner": {
+      "permissionCount": 6,
+      "effectiveActions": 52,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "elastic-san-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 7,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "elastic-san-volume-group-owner": {
+      "permissionCount": 4,
+      "effectiveActions": 11,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "essential-machine-management-administrator": {
+      "permissionCount": 19,
+      "effectiveActions": 27,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "eventgrid-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 259,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "eventgrid-data-sender": {
+      "permissionCount": 7,
+      "effectiveActions": 34,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "eventgrid-eventsubscription-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 69,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "eventgrid-eventsubscription-reader": {
+      "permissionCount": 6,
+      "effectiveActions": 34,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "eventgrid-topicspaces-publisher": {
+      "permissionCount": 6,
+      "effectiveActions": 111,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "eventgrid-topicspaces-subscriber": {
+      "permissionCount": 6,
+      "effectiveActions": 111,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "fhir-data-bulk-operator": {
+      "permissionCount": 16,
+      "effectiveActions": 0,
+      "effectiveDataActions": 16,
+      "dataBasis": "exact"
+    },
+    "fhir-data-contributor": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "fhir-data-converter": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "fhir-data-exporter": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "fhir-data-importer": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "fhir-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "fhir-data-writer": {
+      "permissionCount": 18,
+      "effectiveActions": 0,
+      "effectiveDataActions": 18,
+      "dataBasis": "exact"
+    },
+    "fhir-smart-user": {
+      "permissionCount": 8,
+      "effectiveActions": 0,
+      "effectiveDataActions": 8,
+      "dataBasis": "exact"
+    },
+    "firmware-analysis-admin": {
+      "permissionCount": 4,
+      "effectiveActions": 93,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "firmware-analysis-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 58,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "firmware-analysis-user": {
+      "permissionCount": 4,
+      "effectiveActions": 62,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "foundry-account-owner": {
+      "permissionCount": 20,
+      "effectiveActions": 1772,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "foundry-owner": {
+      "permissionCount": 21,
+      "effectiveActions": 1793,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "foundry-project-manager": {
+      "permissionCount": 10,
+      "effectiveActions": 721,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "foundry-user": {
+      "permissionCount": 15,
+      "effectiveActions": 733,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "grafana-admin": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "grafana-editor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "grafana-limited-viewer": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "grafana-viewer": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "hdinsight-cluster-operator": {
+      "permissionCount": 9,
+      "effectiveActions": 91,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "hdinsight-domain-services-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 8,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "hdinsight-on-aks-cluster-admin": {
+      "permissionCount": 35,
+      "effectiveActions": 63,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "hdinsight-on-aks-cluster-pool-admin": {
+      "permissionCount": 30,
+      "effectiveActions": 57,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "healthcare-agent-admin": {
+      "permissionCount": 19,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "healthcare-agent-editor": {
+      "permissionCount": 18,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "healthcare-agent-reader": {
+      "permissionCount": 17,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "hierarchy-settings-administrator": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "hybrid-server-resource-administrator": {
+      "permissionCount": 2,
+      "effectiveActions": 47,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "integration-service-environment-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 53,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "integration-service-environment-developer": {
+      "permissionCount": 4,
+      "effectiveActions": 43,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "intelligent-systems-account-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "iot-hub-data-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "iot-hub-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "iot-hub-registry-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "iot-hub-twin-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-administrator": {
+      "permissionCount": 11,
+      "effectiveActions": 82,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-certificate-user": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "key-vault-certificates-officer": {
+      "permissionCount": 13,
+      "effectiveActions": 82,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 156,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "key-vault-crypto-officer": {
+      "permissionCount": 12,
+      "effectiveActions": 82,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-crypto-service-encryption-user": {
+      "permissionCount": 6,
+      "effectiveActions": 3,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "key-vault-crypto-service-release-user": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "key-vault-crypto-user": {
+      "permissionCount": 9,
+      "effectiveActions": 0,
+      "effectiveDataActions": 9,
+      "dataBasis": "exact"
+    },
+    "key-vault-data-access-administrator": {
+      "permissionCount": 10,
+      "effectiveActions": 72,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "key-vault-reader": {
+      "permissionCount": 11,
+      "effectiveActions": 73,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-secrets-officer": {
+      "permissionCount": 11,
+      "effectiveActions": 82,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "key-vault-secrets-user": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "kubernetes-cluster-azure-arc-onboarding": {
+      "permissionCount": 13,
+      "effectiveActions": 58,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "kubernetes-extension-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 51,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "lab-assistant": {
+      "permissionCount": 17,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "lab-contributor": {
+      "permissionCount": 28,
+      "effectiveActions": 69,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "lab-creator": {
+      "permissionCount": 19,
+      "effectiveActions": 78,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "lab-operator": {
+      "permissionCount": 24,
+      "effectiveActions": 66,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "lab-services-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 125,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "lab-services-reader": {
+      "permissionCount": 4,
+      "effectiveActions": 58,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "load-test-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 56,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "load-test-owner": {
+      "permissionCount": 6,
+      "effectiveActions": 77,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "load-test-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 47,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "locks-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "log-analytics-contributor": {
+      "permissionCount": 14,
+      "effectiveActions": 8105,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "log-analytics-data-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "log-analytics-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 8013,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "logic-app-contributor": {
+      "permissionCount": 21,
+      "effectiveActions": 239,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "logic-app-operator": {
+      "permissionCount": 17,
+      "effectiveActions": 103,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "logic-apps-standard-contributor": {
+      "permissionCount": 13,
+      "effectiveActions": 598,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "logic-apps-standard-developer": {
+      "permissionCount": 25,
+      "effectiveActions": 386,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "logic-apps-standard-operator": {
+      "permissionCount": 19,
+      "effectiveActions": 365,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "logic-apps-standard-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 353,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-application-contributor-role": {
+      "permissionCount": 5,
+      "effectiveActions": 8024,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-application-operator-role": {
+      "permissionCount": 3,
+      "effectiveActions": 8013,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-application-publisher-operator": {
+      "permissionCount": 3,
+      "effectiveActions": 8014,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-hsm-contributor": {
+      "permissionCount": 5,
+      "effectiveActions": 23,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-identity-contributor": {
+      "permissionCount": 12,
+      "effectiveActions": 65,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-identity-operator": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "managed-services-registration-assignment-delete-role": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "management-group-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 35,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "management-group-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 31,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "microsoft-sentinel-automation-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 35,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "microsoft-sentinel-contributor": {
+      "permissionCount": 16,
+      "effectiveActions": 1180,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "microsoft-sentinel-playbook-operator": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "microsoft-sentinel-reader": {
+      "permissionCount": 21,
+      "effectiveActions": 1077,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "microsoft-sentinel-responder": {
+      "permissionCount": 29,
+      "effectiveActions": 1093,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "migrate-arc-discovery-reader-preview": {
+      "permissionCount": 8,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "monitoring-contributor": {
+      "permissionCount": 46,
+      "effectiveActions": 8160,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "monitoring-metrics-publisher": {
+      "permissionCount": 5,
+      "effectiveActions": 14,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "monitoring-policy-contributor": {
+      "permissionCount": 47,
+      "effectiveActions": 8166,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "monitoring-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 8013,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "network-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 1162,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "new-relic-apm-account-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "owner": {
+      "permissionCount": 1,
+      "effectiveActions": 17591,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "playwright-workspace-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 44,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "playwright-workspace-owner": {
+      "permissionCount": 5,
+      "effectiveActions": 46,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "playwright-workspace-reader": {
+      "permissionCount": 4,
+      "effectiveActions": 32,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "policy-insights-data-writer-preview": {
+      "permissionCount": 6,
+      "effectiveActions": 4,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "postgresql-flexible-server-long-term-retention-backup-role": {
+      "permissionCount": 14,
+      "effectiveActions": 14,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "private-dns-zone-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 97,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "quantum-workspace-data-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 48,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "quota-request-operator": {
+      "permissionCount": 14,
+      "effectiveActions": 67,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "reader": {
+      "permissionCount": 1,
+      "effectiveActions": 8006,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "reader-and-data-access": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "redis-cache-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 100,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "reservation-purchaser": {
+      "permissionCount": 11,
+      "effectiveActions": 11,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "reservations-administrator": {
+      "permissionCount": 7,
+      "effectiveActions": 42,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "reservations-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 13,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "resource-policy-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 8057,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "role-based-access-control-administrator": {
+      "permissionCount": 4,
+      "effectiveActions": 8014,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "savings-plan-purchaser": {
+      "permissionCount": 10,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "scheduled-patching-contributor": {
+      "permissionCount": 14,
+      "effectiveActions": 14,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "scheduler-job-collections-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 59,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "schema-registry-contributor": {
+      "permissionCount": 2,
+      "effectiveActions": 3,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "schema-registry-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "search-index-data-contributor": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "search-index-data-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "search-service-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 125,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "security-admin": {
+      "permissionCount": 14,
+      "effectiveActions": 1334,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "security-assessment-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "security-manager-legacy": {
+      "permissionCount": 10,
+      "effectiveActions": 251,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "security-reader": {
+      "permissionCount": 14,
+      "effectiveActions": 1103,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "semantic-reranker-user": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "service-fabric-cluster-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 71,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "service-fabric-managed-cluster-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 70,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "service-group-administrator": {
+      "permissionCount": 1,
+      "effectiveActions": 17589,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "service-group-contributor": {
+      "permissionCount": 1,
+      "effectiveActions": 17589,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "service-group-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 8006,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "service-health-security-reader": {
+      "permissionCount": 11,
+      "effectiveActions": 11,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "services-hub-operator": {
+      "permissionCount": 12,
+      "effectiveActions": 46,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "signalr-accesskey-reader": {
+      "permissionCount": 5,
+      "effectiveActions": 94,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "signalr-app-server": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "signalr-rest-api-owner": {
+      "permissionCount": 5,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "signalr-rest-api-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "signalr-service-owner": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "signalr-web-pubsub-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 177,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "site-recovery-contributor": {
+      "permissionCount": 29,
+      "effectiveActions": 177,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "site-recovery-operator": {
+      "permissionCount": 59,
+      "effectiveActions": 113,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "site-recovery-reader": {
+      "permissionCount": 32,
+      "effectiveActions": 67,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "sql-db-contributor": {
+      "permissionCount": 11,
+      "effectiveActions": 297,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "sql-managed-instance-contributor": {
+      "permissionCount": 15,
+      "effectiveActions": 402,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "sql-security-manager": {
+      "permissionCount": 73,
+      "effectiveActions": 206,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "sql-server-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 448,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "sre-agent-administrator": {
+      "permissionCount": 10,
+      "effectiveActions": 44,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "sre-agent-reader": {
+      "permissionCount": 7,
+      "effectiveActions": 37,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "sre-agent-standard-user": {
+      "permissionCount": 13,
+      "effectiveActions": 31,
+      "effectiveDataActions": 10,
+      "dataBasis": "exact"
+    },
+    "storage-account-backup-contributor": {
+      "permissionCount": 18,
+      "effectiveActions": 45,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-account-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 199,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-account-key-operator-service-role": {
+      "permissionCount": 2,
+      "effectiveActions": 2,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-actions-blob-data-operator": {
+      "permissionCount": 14,
+      "effectiveActions": 48,
+      "effectiveDataActions": 8,
+      "dataBasis": "exact"
+    },
+    "storage-actions-contributor": {
+      "permissionCount": 10,
+      "effectiveActions": 46,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-actions-task-assignment-contributor": {
+      "permissionCount": 11,
+      "effectiveActions": 48,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-blob-data-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 4,
+      "effectiveDataActions": 5,
+      "dataBasis": "exact"
+    },
+    "storage-blob-data-owner": {
+      "permissionCount": 3,
+      "effectiveActions": 24,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "storage-blob-data-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 2,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-blob-delegator": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-connector-contributor": {
+      "permissionCount": 17,
+      "effectiveActions": 57,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "storage-datashare-contributor": {
+      "permissionCount": 14,
+      "effectiveActions": 55,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-privileged-contributor": {
+      "permissionCount": 6,
+      "effectiveActions": 0,
+      "effectiveDataActions": 6,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-privileged-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-admin": {
+      "permissionCount": 7,
+      "effectiveActions": 0,
+      "effectiveDataActions": 7,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-mi-admin": {
+      "permissionCount": 8,
+      "effectiveActions": 0,
+      "effectiveDataActions": 8,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-share-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 0,
+      "effectiveDataActions": 3,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-share-elevated-contributor": {
+      "permissionCount": 4,
+      "effectiveActions": 0,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-share-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-file-data-smb-take-ownership": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-file-delegator": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-queue-data-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 3,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "storage-queue-data-message-processor": {
+      "permissionCount": 2,
+      "effectiveActions": 0,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "storage-queue-data-message-sender": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-queue-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-queue-delegator": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "storage-table-data-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 3,
+      "effectiveDataActions": 5,
+      "dataBasis": "exact"
+    },
+    "storage-table-data-reader": {
+      "permissionCount": 2,
+      "effectiveActions": 1,
+      "effectiveDataActions": 1,
+      "dataBasis": "exact"
+    },
+    "storage-table-delegator": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "stream-analytics-query-tester": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "support-request-contributor": {
+      "permissionCount": 3,
+      "effectiveActions": 42,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "tag-contributor": {
+      "permissionCount": 8,
+      "effectiveActions": 63,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "template-spec-contributor": {
+      "permissionCount": 4,
+      "effectiveActions": 45,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "template-spec-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 1,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "traffic-manager-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 77,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "user-access-administrator": {
+      "permissionCount": 3,
+      "effectiveActions": 8058,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "virtual-machine-administrator-login": {
+      "permissionCount": 11,
+      "effectiveActions": 26,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "virtual-machine-contributor": {
+      "permissionCount": 45,
+      "effectiveActions": 389,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "virtual-machine-data-access-administrator-preview": {
+      "permissionCount": 14,
+      "effectiveActions": 80,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "virtual-machine-local-user-login": {
+      "permissionCount": 2,
+      "effectiveActions": 10,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "virtual-machine-user-login": {
+      "permissionCount": 9,
+      "effectiveActions": 26,
+      "effectiveDataActions": 2,
+      "dataBasis": "exact"
+    },
+    "vm-restore-operator": {
+      "permissionCount": 45,
+      "effectiveActions": 83,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "web-plan-contributor": {
+      "permissionCount": 9,
+      "effectiveActions": 105,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "web-pubsub-service-owner": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "web-pubsub-service-reader": {
+      "permissionCount": 1,
+      "effectiveActions": 0,
+      "effectiveDataActions": null,
+      "dataBasis": "unbounded"
+    },
+    "website-contributor": {
+      "permissionCount": 13,
+      "effectiveActions": 507,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "windows-365-network-interface-contributor": {
+      "permissionCount": 15,
+      "effectiveActions": 15,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "windows-365-network-user": {
+      "permissionCount": 4,
+      "effectiveActions": 4,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "windows-admin-center-administrator-login": {
+      "permissionCount": 45,
+      "effectiveActions": 50,
+      "effectiveDataActions": 4,
+      "dataBasis": "exact"
+    },
+    "workbook-contributor": {
+      "permissionCount": 7,
+      "effectiveActions": 7,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    },
+    "workbook-reader": {
+      "permissionCount": 3,
+      "effectiveActions": 3,
+      "effectiveDataActions": 0,
+      "dataBasis": "exact"
+    }
+  }
+}

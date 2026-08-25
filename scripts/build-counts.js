@@ -45,11 +45,22 @@ const entraActions = new Set(ROLES.flatMap((r) => (r.permissions ?? []).map((p) 
 // derivar daqui daria um número que reflete a lacuna, não o catálogo.
 const { GWS_PRIVILEGES } = loadTs('src/data/googleWorkspace.ts')
 
+// Providers do Azure: não sai de src/data — vem do _meta do índice gerado por
+// scripts/build-azure-providers.js. É o número DISTINTO (case-insensitive),
+// que é o que vira rota; o cru (158) fica só no _meta.
+let azureProviders = 0
+try {
+  azureProviders = JSON.parse(
+    fs.readFileSync(path.join(ROOT, 'public', 'azure-providers', 'index.json'), 'utf8'),
+  )._meta.providers
+} catch { /* rode scripts/build-azure-providers.js antes */ }
+
 const counts = {
   ENTRA_ROLES_COUNT: ROLES.length,
   ENTRA_ACTIONS_COUNT: entraActions.size,
   ENTRA_API_PERMISSIONS_COUNT: API_PERMISSIONS.length,
   AZURE_ROLES_COUNT: AZURE_ROLES.length,
+  AZURE_PROVIDERS_COUNT: azureProviders,
   AWS_POLICIES_COUNT: AWS_POLICIES.length,
   AWS_ACTIONS_COUNT: AWS_ACTION_COUNT ?? 0,
   AWS_SERVICES_COUNT: AWS_SERVICE_COUNT ?? 0,

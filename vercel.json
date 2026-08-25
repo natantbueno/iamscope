@@ -38,6 +38,22 @@
         { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
       ]
     },
+    {
+      "source": "/api/v1/changes.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=1800, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/feeds/(.*).xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/atom+xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=1800, stale-while-revalidate=86400" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "X-IAMScope-Contract", "value": "public-v1" },
+        { "key": "X-IAMScope-License", "value": "CC-BY-4.0" }
+      ]
+    },
 
     {
       "source": "/azure-perms/(.*)",
@@ -65,6 +81,10 @@
     },
     {
       "source": "/azure-perms-index.json",
+      "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
+    },
+    {
+      "source": "/azure-effective-perms.json",
       "headers": [{ "key": "X-IAMScope-Contract", "value": "internal-unstable" }]
     },
     {

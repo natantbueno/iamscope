@@ -205,8 +205,13 @@ export function exportApiPermissionsJSON(perms: ApiPermission[]) {
 
 // ---------- Azure RBAC ----------
 import type { AzureRbacRole } from '@/data/azureRbac'
+import { AZURE_EFFECTIVE } from '@/data/azureEffective'
 
 export function exportAzureRbacCSV(roles: AzureRbacRole[]) {
+  // permissionCount (entradas da definição) E o efetivo, lado a lado. Quem
+  // exporta para auditar precisa dos dois: o nativo é o que a Microsoft
+  // publica, o efetivo é o que ele concede — e `effectiveActions` é um PISO,
+  // ver src/data/azureEffective.ts.
   const rows = roles.map((r) => ({
     name: r.name,
     id: r.id,
@@ -214,13 +219,21 @@ export function exportAzureRbacCSV(roles: AzureRbacRole[]) {
     tier: r.tier,
     isPrivileged: r.isPrivileged,
     permissionCount: r.permissionCount,
+    effectiveActionsAtLeast: AZURE_EFFECTIVE[r.slug]?.effectiveActions ?? '',
+    effectiveDataActions: AZURE_EFFECTIVE[r.slug]?.effectiveDataActions ?? '',
     description: r.description,
   }))
   download('azure-rbac-roles.csv', toCSV(rows), 'text/csv;charset=utf-8')
 }
 
 export function exportAzureRbacJSON(roles: AzureRbacRole[]) {
-  download('azure-rbac-roles.json', JSON.stringify(roles, null, 2), 'application/json')
+  const rows = roles.map((r) => ({
+    ...r,
+    effectiveActions: AZURE_EFFECTIVE[r.slug]?.effectiveActions ?? null,
+    effectiveDataActions: AZURE_EFFECTIVE[r.slug]?.effectiveDataActions ?? null,
+    effectiveIsFloor: true,
+  }))
+  download('azure-rbac-roles.json', JSON.stringify(rows, null, 2), 'application/json')
 }
 
 /**

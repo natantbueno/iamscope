@@ -62,14 +62,24 @@ const ESTATICAS: [string, number][] = [
 
   // Ferramentas — o que diferencia o site
   ['/search', 0.7],
+
+  // Changelog. As sete URLs a mao porque sao poucas e a intencao difere: a
+  // global e a porta de entrada, as seis por nuvem sao o que casa com busca do
+  // tipo "azure rbac changelog". Os feeds Atom NAO entram: sitemap e para
+  // paginas, e um .xml listado aqui gasta orcamento de rastreio sem nunca
+  // virar resultado.
+  ['/changelog', 0.9],
+  ['/changelog/entraid', 0.7], ['/changelog/azure-rbac', 0.7], ['/changelog/aws', 0.7],
+  ['/changelog/gcp', 0.7], ['/changelog/google-workspace', 0.7], ['/changelog/ibm-cloud', 0.7],
   ['/sod', 0.9], ['/sod/rules', 0.7], ['/assessment', 0.9],
   ['/permission-scope', 0.9], ['/compare', 0.9], ['/evaluate', 0.8],
-  ['/advisor', 0.8], ['/tier-comparison', 0.8],
+  ['/advisor', 0.8], ['/tier-comparison', 0.8], ['/stats', 0.8],
 
   // Listagens
   ['/entraid/roles', 0.8], ['/entraid/role-actions', 0.7], ['/entraid/api-permissions', 0.7],
   ['/entraid/pim', 0.6],
   ['/azure-rbac/roles', 0.8], ['/azure-rbac/permissions', 0.8],
+  ['/azure-rbac/providers', 0.8],
   ['/aws/policies', 0.8], ['/aws/actions', 0.8], ['/aws/scp-vs-identity-policies', 0.6],
   ['/gcp/roles', 0.8], ['/gcp/permissions', 0.8],
   ['/google-workspace/roles', 0.8], ['/google-workspace/privileges', 0.7],
@@ -107,6 +117,21 @@ function slugsDePermissaoAzure(): string[] {
   }
 }
 
+/**
+ * Slugs dos resource providers do Azure. Vêm do índice em public/, o mesmo que
+ * generateStaticParams lê — sem desambiguação, porque os 151 nomes distintos
+ * não colidem no slug (o gerador aborta se um dia colidirem).
+ */
+function slugsDeProviderAzure(): string[] {
+  try {
+    const p = path.join(process.cwd(), 'public', 'azure-providers', 'index.json')
+    const idx = JSON.parse(fs.readFileSync(p, 'utf8')) as { providers: { slug: string }[] }
+    return idx.providers.map((x) => x.slug)
+  } catch {
+    return []
+  }
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const entradas: MetadataRoute.Sitemap = []
   const push = (caminho: string, priority: number) => {
@@ -123,6 +148,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const r of ROLES) push(`/entraid/roles/${r.slug}`, 0.7)
   for (const r of AZURE_ROLES) push(`/azure-rbac/roles/${r.slug}`, 0.7)
   for (const s of slugsDePermissaoAzure()) push(`/azure-rbac/permissions/${s}`, 0.5)
+  for (const s of slugsDeProviderAzure()) push(`/azure-rbac/providers/${s}`, 0.6)
   for (const p of AWS_POLICIES) push(`/aws/policies/${p.slug}`, 0.7)
   for (const r of GCP_ROLES) push(`/gcp/roles/${r.slug}`, 0.6)
   for (const r of GWS_ROLES) push(`/google-workspace/roles/${r.slug}`, 0.7)

@@ -24,7 +24,7 @@ const ROUTES: Record<Platform, Partial<Record<View, string>>> = {
   // clouds, e navegar é ir direto para a rota da cloud.
   global:          {},
   entraId:         { dashboard: '/entraid',          roles: '/entraid/roles',                  apiPermissions: '/entraid/api-permissions',         roleActions: '/entraid/role-actions', reference: '/entraid/reference', info: '/info', pim: '/entraid/pim' },
-  azureRbac:       { dashboard: '/azure-rbac',       roles: '/azure-rbac/roles',       apiPermissions: '/azure-rbac/permissions',                                                                                                  reference: '/azure-rbac/reference' },
+  azureRbac:       { dashboard: '/azure-rbac',       roles: '/azure-rbac/roles',       apiPermissions: '/azure-rbac/permissions', providers: '/azure-rbac/providers',                                                                                                  reference: '/azure-rbac/reference' },
   googleWorkspace: { dashboard: '/google-workspace', roles: '/google-workspace/roles',          apiPermissions: '/google-workspace/api-permissions', actions: '/google-workspace/privileges', reference: '/google-workspace/reference' },
   ibmCloud:        { dashboard: '/ibm-cloud',        roles: '/ibm-cloud/roles',       classic: '/ibm-cloud/classic',       reference: '/ibm-cloud/reference', accessGroups: '/ibm-cloud/access-groups' },
   gcp:             { dashboard: '/gcp',              roles: '/gcp/roles',             actions: '/gcp/permissions',         reference: '/gcp/reference' },
@@ -132,6 +132,10 @@ export default function AppShell({
       return 'dashboard' as const
     }
     if (rota.startsWith('/entraid/api-permissions') || rota.startsWith('/google-workspace/api-permissions') || rota.startsWith('/azure-rbac/permissions')) return 'apiPermissions' as const
+    // Antes do teste genérico lá embaixo: `/azure-rbac/providers` não termina
+    // em /permissions nem em /actions, então cairia no `return 'roles'` do fim
+    // e acenderia "Built-in Roles" com a pessoa na página de providers.
+    if (rota.startsWith('/azure-rbac/providers')) return 'providers' as const
     if (rota.startsWith('/entraid/role-actions')) return 'roleActions' as const
     if (rota.startsWith('/entraid/pim')) return 'pim' as const
     if (

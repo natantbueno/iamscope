@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IAM Scope — antes e depois</title>
+<style>
+:root{
+  --c-bg-app:238 241 245; --c-bg-surface:255 255 255; --c-bg-surface-alt:246 248 251;
+  --c-line:221 227 236; --c-line-strong:197 206 219;
+  --c-fg:31 41 55; --c-fg-muted:90 99 112; --c-fg-subtle:102 110 123;
+  --c-accent:0 108 190; --c-danger:180 35 24;
+  --csp-azure:#0078d4; --csp-rbac:#5c2d91; --csp-aws:#ff9900;
+  --csp-gcp:#4285f4; --csp-gws:#34a853; --csp-ibm:#08bdba;
+}
+html.dark{
+  --c-bg-app:3 7 18; --c-bg-surface:17 24 39; --c-bg-surface-alt:31 41 55;
+  --c-line:42 52 68; --c-line-strong:64 76 94;
+  --c-fg:243 244 246; --c-fg-muted:176 183 194; --c-fg-subtle:138 146 158;
+  --c-accent:133 183 235; --c-danger:248 113 113;
+  --csp-rbac:#a479d5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:rgb(var(--c-bg-app)); color:rgb(var(--c-fg));
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;
+  font-size:14px; line-height:1.5;
+}
+.wrap{max-width:1400px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:24px;letter-spacing:-.01em;margin:0 0 6px}
+.sub{color:rgb(var(--c-fg-muted));font-size:13px;margin:0 0 28px;max-width:70ch}
+.bar{position:sticky;top:0;z-index:5;background:rgb(var(--c-bg-app));padding:12px 0 16px;
+  border-bottom:1px solid rgb(var(--c-line));margin-bottom:28px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button.t{font:inherit;font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;
+  border:1px solid rgb(var(--c-line-strong));background:rgb(var(--c-bg-surface));color:rgb(var(--c-fg))}
+button.t:hover{background:rgb(var(--c-bg-surface-alt))}
+button.t:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px}
+
+section{margin:0 0 44px}
+.shead{display:flex;align-items:baseline;gap:12px;margin:0 0 4px}
+.shead h2{font-size:16px;margin:0}
+.tag{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:rgb(var(--c-fg-subtle))}
+.why{color:rgb(var(--c-fg-muted));font-size:13px;margin:0 0 16px;max-width:80ch}
+.why b{color:rgb(var(--c-fg));font-weight:600}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:1000px){.pair{grid-template-columns:1fr}}
+.panel{border:1px solid rgb(var(--c-line));border-radius:10px;overflow:hidden;background:rgb(var(--c-bg-surface))}
+.plabel{font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:7px 12px;
+  border-bottom:1px solid rgb(var(--c-line));color:rgb(var(--c-fg-subtle));background:rgb(var(--c-bg-surface-alt))}
+.plabel.a{color:#b42318}
+html.dark .plabel.a{color:#f87171}
+.plabel.b{color:#166534}
+html.dark .plabel.b{color:#6ee7b7}
+.body{padding:16px;background:rgb(var(--c-bg-app))}
+
+/* ---- sidebar mock ---- */
+.sb{width:100%;background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:8px;padding:10px}
+.sbh{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgb(var(--c-fg-subtle));margin:0 0 8px;padding:0 2px}
+.tool{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;margin-bottom:5px;font-size:12.5px}
+.tool .ic{width:14px;height:14px;flex:none;display:block}
+.tool .nm{flex:1;font-weight:500}
+.beta{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 5px;border-radius:4px}
+/* antes: arco-íris */
+.r1{background:#f5f3ff;border:1px solid #ddd6fe;color:#6d28d9}
+.r2{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
+.r3{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857}
+.r4{background:#fffbeb;border:1px solid #fde68a;color:#b45309}
+.r5{background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1}
+.r6{background:#f0fdfa;border:1px solid #99f6e4;color:#0f766e}
+.r7{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c}
+html.dark .r1{background:rgba(76,29,149,.6);border-color:rgba(91,33,182,.5);color:#c4b5fd}
+html.dark .r2{background:rgba(30,58,138,.6);border-color:rgba(30,64,175,.5);color:#93c5fd}
+html.dark .r3{background:rgba(6,78,59,.6);border-color:rgba(6,95,70,.5);color:#6ee7b7}
+html.dark .r4{background:rgba(120,53,15,.6);border-color:rgba(146,64,14,.5);color:#fcd34d}
+html.dark .r5{background:rgba(12,74,110,.6);border-color:rgba(7,89,133,.5);color:#7dd3fc}
+html.dark .r6{background:rgba(19,78,74,.6);border-color:rgba(17,94,89,.5);color:#5eead4}
+html.dark .r7{background:rgba(127,29,29,.6);border-color:rgba(153,27,27,.5);color:#fca5a5}
+.r1 .beta{background:#ede9fe;color:#5b21b6}.r2 .beta{background:#dbeafe;color:#1e40af}
+.r3 .beta{background:#d1fae5;color:#065f46}.r4 .beta{background:#fef3c7;color:#92400e}
+.r5 .beta{background:#e0f2fe;color:#075985}.r6 .beta{background:#ccfbf1;color:#115e59}
+html.dark .r1 .beta,html.dark .r2 .beta,html.dark .r3 .beta,
+html.dark .r4 .beta,html.dark .r5 .beta,html.dark .r6 .beta{background:rgba(255,255,255,.1);color:inherit}
+/* depois: neutro */
+.tn{color:rgb(var(--c-fg));border:1px solid transparent}
+.tn .ic{color:rgb(var(--c-fg-subtle))}
+.tn:hover{background:rgb(var(--c-bg-surface-alt))}
+.tn.on{background:rgb(var(--c-bg-surface-alt));box-shadow:inset 2px 0 0 rgb(var(--c-accent))}
+.beta-n{font-size:10px;color:rgb(var(--c-fg-subtle));font-weight:400;letter-spacing:0;text-transform:none}
+
+/* ---- home mock ---- */
+.hero{text-align:center;padding:30px 12px 22px;
+  background:linear-gradient(135deg,rgba(0,120,212,.10),transparent 60%),linear-gradient(315deg,rgba(66,133,244,.05),transparent 60%)}
+.hero h3{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:0 0 8px}
+.hero p{font-size:13px;color:rgb(var(--c-fg-muted));margin:0 auto;max-width:44ch}
+.searchbig{display:flex;align-items:center;gap:9px;background:rgb(var(--c-bg-surface));
+  border:1px solid rgb(var(--c-line-strong));border-radius:8px;padding:11px 13px;font-size:13.5px;
+  color:rgb(var(--c-fg-subtle))}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:11.5px;padding:4px 9px;border-radius:999px;border:1px solid rgb(var(--c-line));
+  color:rgb(var(--c-fg-muted));background:rgb(var(--c-bg-surface))}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ccard{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:10px;padding:13px}
+.ccard .top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.ccard .nm{font-size:13px;font-weight:600}
+.ccard .mt{font-size:11.5px;color:rgb(var(--c-fg-muted))}
+
+/* tabela de clouds (depois) */
+table.cl{width:100%;border-collapse:collapse;background:rgb(var(--c-bg-surface));
+  border:1px solid rgb(var(--c-line));border-radius:10px;overflow:hidden;font-variant-numeric:tabular-nums}
+table.cl th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:rgb(var(--c-fg-subtle));
+  text-align:right;padding:8px 12px;border-bottom:1px solid rgb(var(--c-line));font-weight:600}
+table.cl th:first-child{text-align:left}
+table.cl td{padding:8px 12px;font-size:12.5px;text-align:right;border-bottom:1px solid rgb(var(--c-line))}
+table.cl tr:last-child td{border-bottom:0}
+table.cl td:first-child{text-align:left}
+table.cl .nmcell{display:flex;align-items:center;gap:8px;font-weight:500}
+.pct{color:rgb(var(--c-danger));font-weight:600}
+
+/* barras */
+.barrow{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:11.5px}
+.barrow .lb{width:112px;text-align:right;color:rgb(var(--c-fg-muted));flex:none}
+.track{flex:1;height:14px;background:rgb(var(--c-bg-surface-alt));border-radius:3px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:3px}
+.barrow .vl{width:44px;font-size:11.5px;color:rgb(var(--c-fg-muted));font-variant-numeric:tabular-nums}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.kpi{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:8px;padding:11px 12px}
+.kpi .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:rgb(var(--c-fg-subtle));margin-bottom:5px}
+.kpi .v{font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .v.sm{font-size:21px;font-weight:600}
+.kpi .n{font-size:10.5px;color:rgb(var(--c-fg-subtle));margin-top:5px}
+
+/* cards de ferramenta */
+.grid3t{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tc{border-radius:10px;padding:12px}
+.tc .h{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:13px;font-weight:600}
+.tc p{margin:0;font-size:11.5px;line-height:1.45}
+.tcn{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line))}
+.tcn p{color:rgb(var(--c-fg-muted))}
+
+/* grid de categorias */
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:8px;
+  padding:9px 11px;display:flex;align-items:center;gap:9px}
+.cat .ic{color:rgb(var(--c-fg-subtle));flex:none}
+.cat .t{font-size:12px;font-weight:500}
+.cat .c{font-size:10.5px;color:rgb(var(--c-fg-subtle))}
+.catlist{background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:8px;
+  padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}
+.catline{display:flex;align-items:center;gap:9px;padding:4px 0;font-size:12px}
+.catline .nm{width:82px;flex:none}
+.catline .tk{flex:1;height:4px;background:rgb(var(--c-bg-surface-alt));border-radius:2px;overflow:hidden}
+.catline .tk i{display:block;height:100%;background:rgb(var(--c-fg-subtle));opacity:.55;border-radius:2px}
+.catline .n{width:30px;text-align:right;color:rgb(var(--c-fg-muted));font-variant-numeric:tabular-nums;font-size:11.5px}
+
+.note{margin-top:12px;font-size:12px;color:rgb(var(--c-fg-muted));
+  border-left:2px solid rgb(var(--c-line-strong));padding-left:11px;max-width:80ch}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid rgb(var(--c-line));
+  font-size:12px;color:rgb(var(--c-fg-subtle))}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>IAM Scope — antes e depois</h1>
+  <p class="sub">Protótipo de comparação para o roteiro cirúrgico. Nada aqui toca o projeto:
+  são mocks em HTML puro, com os mesmos tokens de cor do <code>globals.css</code>, para você
+  decidir olhando em vez de imaginando. Alterne o tema — as duas colunas respondem juntas.</p>
+
+  <div class="bar">
+    <button class="t" onclick="document.documentElement.classList.toggle('dark')">Alternar tema</button>
+    <span class="tag" id="th"></span>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <div class="shead"><h2>1. Ferramentas na sidebar</h2><span class="tag">Fase 1 · Sidebar.tsx:216–300</span></div>
+    <p class="why">Sete itens, sete matizes. A cor não distingue nada — todos são a mesma
+    coisa (uma ferramenta) e levam ao mesmo tipo de página. <b>À direita, a cor volta a
+    significar: só o item ativo a recebe.</b> São ~85 classes de cor trocadas por uma regra.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes</div><div class="body">
+        <div class="sb">
+          <p class="sbh">Ferramentas</p>
+          <div class="tool r1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/></svg><span class="nm">Role Advisor</span><span class="beta">Beta</span></div>
+          <div class="tool r2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"/></svg><span class="nm">Multi-Cloud Compare</span><span class="beta">Beta</span></div>
+          <div class="tool r3"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span class="nm">Role Evaluator</span><span class="beta">Beta</span></div>
+          <div class="tool r4"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="nm">SoD Analyzer</span><span class="beta">Beta</span></div>
+          <div class="tool r5"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-3"/></svg><span class="nm">Assessment</span><span class="beta">Beta</span></div>
+          <div class="tool r6"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V5h3M20 8V5h-3M4 16v3h3M20 16v3h-3"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nm">Permission Scope</span><span class="beta">Beta</span></div>
+          <div class="tool r7"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="nm">Tier 0 Comparison</span></div>
+        </div>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois</div><div class="body">
+        <div class="sb">
+          <p class="sbh">Ferramentas</p>
+          <div class="tool tn on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span class="nm">Role Advisor</span><span class="beta-n">beta</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"/></svg><span class="nm">Multi-Cloud Compare</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span class="nm">Role Evaluator</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8v4M12 15h.01"/></svg><span class="nm">SoD Analyzer</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-3"/></svg><span class="nm">Assessment</span><span class="beta-n">beta</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V5h3M20 8V5h-3M4 16v3h3M20 16v3h-3"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nm">Permission Scope</span></div>
+          <div class="tool tn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="nm">Tier 0 Comparison</span></div>
+        </div>
+      </div></div>
+    </div>
+    <p class="note">O ✨ do Role Advisor virou uma bússola. É a mesma família lucide
+    (<code>Compass</code>), e diz o que a ferramenta faz — orientar — em vez de prometer geração.</p>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <div class="shead"><h2>2. Primeira dobra da home</h2><span class="tag">Fase 3 · HomeClient.tsx:24–39</span></div>
+    <p class="why">O <code>&lt;h1&gt;</code> repete palavra por palavra o título que o AppShell
+    já mostra 40px acima, e dois gradientes de <code>h-72</code> ocupam o resto.
+    <b>À direita, o mesmo espaço abre com a busca</b> — que é o que a pessoa veio fazer —
+    e com quatro atalhos de consulta frequente.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes — ~260px antes do primeiro dado</div><div class="body" style="padding:0">
+        <div class="hero">
+          <h3>Multi-Cloud IAM Reference</h3>
+          <p>Roles, permissions and policies for 6 cloud providers — with EAM classification, SoD analysis and risk evaluation</p>
+        </div>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois — o dado começa em 96px</div><div class="body">
+        <div class="searchbig">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <span>Buscar role, permissão, action ou policy…</span>
+        </div>
+        <div class="chips">
+          <span class="chip">Global Administrator</span>
+          <span class="chip">roles privilegiadas</span>
+          <span class="chip">AdministratorAccess</span>
+          <span class="chip">Tier 0</span>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <div class="shead"><h2>3. As seis clouds</h2><span class="tag">Fase 3 · HomeClient.tsx:41–88</span></div>
+    <p class="why">Seis caixas idênticas mais um gráfico de barras em escala linear — com AWS
+    em 1.553 e IBM em 7, quatro das seis barras viram um traço. <b>À direita os mesmos números
+    viram uma tabela alinhada</b>, que é o que permite comparar de fato, e o gráfico dá lugar
+    a uma coluna que responde a uma pergunta de IAM: quanto de cada catálogo é privilegiado.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes</div><div class="body">
+        <div class="grid3">
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-azure)"></span><span class="nm">Entra ID</span></div><div class="mt">144 Roles · 1.504 API Permissions · 670 Role Actions</div></div>
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-rbac)"></span><span class="nm">Azure RBAC</span></div><div class="mt">504 Roles · 58 Privilegiadas · 13 Categoria</div></div>
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-aws)"></span><span class="nm">AWS IAM</span></div><div class="mt">1.553 Policies · 16.117 Actions · 448 Services</div></div>
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-gcp)"></span><span class="nm">GCP IAM</span></div><div class="mt">2.381 Roles · 13.590 Permissions · 314 Services</div></div>
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-gws)"></span><span class="nm">Google Workspace</span></div><div class="mt">14 Roles · 4 Privilegiadas · 60 OAuth Scopes</div></div>
+          <div class="ccard"><div class="top"><span class="dot" style="background:var(--csp-ibm)"></span><span class="nm">IBM Cloud</span></div><div class="mt">7 IAM Roles · 1 Privilegiadas · 2 Access Primitives</div></div>
+        </div>
+        <div style="margin-top:12px;background:rgb(var(--c-bg-surface));border:1px solid rgb(var(--c-line));border-radius:10px;padding:13px">
+          <div style="font-size:12.5px;font-weight:600;margin-bottom:10px">Itens catalogados por cloud</div>
+          <div class="barrow"><span class="lb">Entra ID</span><span class="track"><i style="width:6.1%;background:var(--csp-azure)"></i></span><span class="vl">144</span></div>
+          <div class="barrow"><span class="lb">Azure RBAC</span><span class="track"><i style="width:21.2%;background:var(--csp-rbac)"></i></span><span class="vl">504</span></div>
+          <div class="barrow"><span class="lb">AWS IAM</span><span class="track"><i style="width:65.2%;background:var(--csp-aws)"></i></span><span class="vl">1.553</span></div>
+          <div class="barrow"><span class="lb">GCP IAM</span><span class="track"><i style="width:100%;background:var(--csp-gcp)"></i></span><span class="vl">2.381</span></div>
+          <div class="barrow"><span class="lb">Google Workspace</span><span class="track"><i style="width:2%;background:var(--csp-gws)"></i></span><span class="vl">14</span></div>
+          <div class="barrow"><span class="lb">IBM Cloud</span><span class="track"><i style="width:2%;background:var(--csp-ibm)"></i></span><span class="vl">7</span></div>
+        </div>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois</div><div class="body">
+        <table class="cl">
+          <thead><tr><th>Cloud</th><th>Roles</th><th>Permissões</th><th>Privileg.</th><th>% priv.</th></tr></thead>
+          <tbody>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-azure)"></span>Entra ID</span></td><td>144</td><td>1.504</td><td>—</td><td class="pct">—</td></tr>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-rbac)"></span>Azure RBAC</span></td><td>504</td><td>—</td><td>58</td><td class="pct">11,5%</td></tr>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-aws)"></span>AWS IAM</span></td><td>1.553</td><td>16.117</td><td>408</td><td class="pct">26,3%</td></tr>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-gcp)"></span>GCP IAM</span></td><td>2.381</td><td>13.590</td><td>—</td><td class="pct">—</td></tr>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-gws)"></span>Google Workspace</span></td><td>14</td><td>60</td><td>4</td><td class="pct">28,6%</td></tr>
+            <tr><td><span class="nmcell"><span class="dot" style="background:var(--csp-ibm)"></span>IBM Cloud</span></td><td>7</td><td>—</td><td>1</td><td class="pct">14,3%</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="margin-top:10px">Ordenável por qualquer coluna, números
+        tabulares, e traço onde não há dado — em vez de um zero que pareceria medição.
+        Os traços de Entra e GCP são só o que a home mostra hoje: as contagens existem
+        nos datasets (<code>Dashboard.tsx</code> calcula a de Entra), mas os cards não
+        as trazem. Ao virar tabela, a lacuna fica visível — que é a vantagem.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <div class="shead"><h2>4. Cards de ferramenta na home</h2><span class="tag">Fase 1 · HomeClient.tsx:93–133, 184–191</span></div>
+    <p class="why">O arco-íris de novo, na mesma tela em que ele já apareceu na sidebar —
+    a mesma navegação, duas vezes. <b>À direita, a superfície é a mesma dos cards de cloud</b>,
+    que já existe e já está tokenizada, e as descrições saem do registro de marketing.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes</div><div class="body">
+        <div class="grid3t">
+          <div class="tc r1"><div class="h">Role Advisor <span class="beta">Beta</span></div><p>Get role recommendations based on job function and access needs</p></div>
+          <div class="tc r2"><div class="h">Multi-Cloud Compare <span class="beta">Beta</span></div><p>Side-by-side tier equivalences across all clouds</p></div>
+          <div class="tc r3"><div class="h">Role Evaluator <span class="beta">Beta</span></div><p>Paste any role JSON and get instant risk analysis</p></div>
+          <div class="tc r4"><div class="h">SoD Analyzer <span class="beta">Beta</span></div><p>96 conflict rules across Entra ID and Azure RBAC</p></div>
+          <div class="tc r6"><div class="h">Permission Scope <span class="beta">Beta</span></div><p>Find every role that grants a given permission, across all 6 clouds</p></div>
+          <div class="tc r7"><div class="h">Tier 0 Comparison</div><p>Compare Tier 0 privileged access across all cloud platforms</p></div>
+        </div>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois</div><div class="body">
+        <div class="grid3t">
+          <div class="tc tcn"><div class="h">Role Advisor</div><p>Sugere roles a partir da função e do acesso necessário</p></div>
+          <div class="tc tcn"><div class="h">Multi-Cloud Compare</div><p>Equivalências de tier lado a lado entre as seis clouds</p></div>
+          <div class="tc tcn"><div class="h">Role Evaluator</div><p>Cole o JSON de uma role e receba a análise de risco</p></div>
+          <div class="tc tcn"><div class="h">SoD Analyzer</div><p>96 regras de conflito em Entra ID e Azure RBAC</p></div>
+          <div class="tc tcn"><div class="h">Permission Scope</div><p>Toda role que concede uma permissão, nas seis clouds</p></div>
+          <div class="tc tcn"><div class="h">Tier 0 Comparison</div><p>Acesso privilegiado Tier 0 comparado entre plataformas</p></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <div class="shead"><h2>5. KPI da landing</h2><span class="tag">Fase 4 · aws/page.tsx:51–54 e 5 irmãs</span></div>
+    <p class="why">Quatro números, quatro cores, sem regra: laranja porque é AWS, vermelho
+    porque é risco, verde porque é o tier, roxo porque <b>sobrou</b>. E "Categorias" em
+    português no meio de três rótulos em inglês. À direita: neutro por padrão, vermelho só
+    onde é risco, e o total da página no acento da marca — <b>um vermelho e um azul, no máximo</b>.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes</div><div class="body">
+        <div class="kpis">
+          <div class="kpi"><div class="k">Total Policies</div><div class="v" style="color:#ff9900">1553</div></div>
+          <div class="kpi"><div class="k">Privileged</div><div class="v" style="color:#dc2626">408</div></div>
+          <div class="kpi"><div class="k">FullAccess</div><div class="v" style="color:#16a34a">328</div></div>
+          <div class="kpi"><div class="k">Categorias</div><div class="v" style="color:#7c3aed">15</div></div>
+        </div>
+        <p class="note" style="margin-top:11px">Nas outras cinco landings, "Privilegiadas"
+        é <b>cinza</b> em três delas e vermelha em duas. Mesma métrica, cores diferentes,
+        porque cada arquivo escreveu o hex à mão.</p>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois</div><div class="body">
+        <div class="kpis">
+          <div class="kpi"><div class="k">Policies</div><div class="v sm" style="color:rgb(var(--c-accent))">1.553</div><div class="n">total no catálogo</div></div>
+          <div class="kpi"><div class="k">Privilegiadas</div><div class="v sm" style="color:rgb(var(--c-danger))">408</div><div class="n">26,3% do total</div></div>
+          <div class="kpi"><div class="k">Full access</div><div class="v sm">328</div><div class="n">tier mais alto</div></div>
+          <div class="kpi"><div class="k">Categorias</div><div class="v sm">15</div><div class="n">de serviço</div></div>
+        </div>
+        <p class="note" style="margin-top:11px">O token <code>danger</code> já existe em
+        <code>tailwind.config.js:60</code> e nunca foi usado — nenhuma ocorrência no código.
+        A linha extra dá contexto ao número, que é o que o tamanho gigante tentava fazer.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <div class="shead"><h2>6. Categorias na página da AWS</h2><span class="tag">Fase 4 · aws/page.tsx, seção "Por Categoria"</span></div>
+    <p class="why">Quinze caixas com um ícone decorativo cada — cadeado para Security, raio
+    para Serverless. Nenhum ajuda a escanear: a leitura é pelo nome e pela contagem.
+    <b>À direita, a mesma informação em metade da altura</b>, ordenada por contagem, com a
+    barra dando a magnitude que o ícone não dava.</p>
+    <div class="pair">
+      <div class="panel"><div class="plabel a">Antes — 15 ícones, 3 linhas</div><div class="body">
+        <div class="catgrid">
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span><span class="t">Management</span><br><span class="c">352 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg><span><span class="t">Compute</span><br><span class="c">188 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span><span class="t">AI</span><br><span class="c">161 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span><span class="t">IAM</span><br><span class="c">147 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-8M22 20h-20"/></svg><span><span class="t">Analytics</span><br><span class="c">100 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg><span><span class="t">Storage</span><br><span class="c">93 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span><span class="t">Security</span><br><span class="c">90 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v7M12 15v7M2 12h7M15 12h7"/></svg><span><span class="t">Networking</span><br><span class="c">83 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg><span><span class="t">Containers</span><br><span class="c">70 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg><span><span class="t">Database</span><br><span class="c">69 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg><span><span class="t">DevOps</span><br><span class="c">58 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 11-3-6.2L21 8"/></svg><span><span class="t">Messaging</span><br><span class="c">42 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span><span class="t">Serverless</span><br><span class="c">39 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="2"/><circle cx="12" cy="12" r="2"/></svg><span><span class="t">IoT</span><br><span class="c">35 policies</span></span></div>
+          <div class="cat"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg><span><span class="t">Billing</span><br><span class="c">26 policies</span></span></div>
+        </div>
+      </div></div>
+      <div class="panel"><div class="plabel b">Depois — mesma informação, metade da altura</div><div class="body">
+        <div class="catlist">
+          <div class="catline"><span class="nm">Management</span><span class="tk"><i style="width:100%"></i></span><span class="n">352</span></div>
+          <div class="catline"><span class="nm">Storage</span><span class="tk"><i style="width:26%"></i></span><span class="n">93</span></div>
+          <div class="catline"><span class="nm">Compute</span><span class="tk"><i style="width:53%"></i></span><span class="n">188</span></div>
+          <div class="catline"><span class="nm">Security</span><span class="tk"><i style="width:26%"></i></span><span class="n">90</span></div>
+          <div class="catline"><span class="nm">AI</span><span class="tk"><i style="width:46%"></i></span><span class="n">161</span></div>
+          <div class="catline"><span class="nm">Networking</span><span class="tk"><i style="width:24%"></i></span><span class="n">83</span></div>
+          <div class="catline"><span class="nm">IAM</span><span class="tk"><i style="width:42%"></i></span><span class="n">147</span></div>
+          <div class="catline"><span class="nm">Containers</span><span class="tk"><i style="width:20%"></i></span><span class="n">70</span></div>
+          <div class="catline"><span class="nm">Analytics</span><span class="tk"><i style="width:28%"></i></span><span class="n">100</span></div>
+          <div class="catline"><span class="nm">Database</span><span class="tk"><i style="width:20%"></i></span><span class="n">69</span></div>
+          <div class="catline"><span class="nm">DevOps</span><span class="tk"><i style="width:16%"></i></span><span class="n">58</span></div>
+          <div class="catline"><span class="nm">Serverless</span><span class="tk"><i style="width:11%"></i></span><span class="n">39</span></div>
+          <div class="catline"><span class="nm">Messaging</span><span class="tk"><i style="width:12%"></i></span><span class="n">42</span></div>
+          <div class="catline"><span class="nm">IoT</span><span class="tk"><i style="width:10%"></i></span><span class="n">35</span></div>
+          <div class="catline"><span class="nm">Billing</span><span class="tk"><i style="width:7%"></i></span><span class="n">26</span></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <footer>
+    Protótipo estático — nenhuma linha do projeto foi alterada. Os números vieram do build
+    de <code>out/</code> presente na pasta. As cores usam os mesmos tokens de
+    <code>src/app/globals.css</code>, então o que você vê aqui é o que sai lá.
+    Detalhamento, esforço e riscos em <code>ROTEIRO-UI-ANTI-IA.md</code>.
+  </footer>
+</div>
+<script>
+  const th = document.getElementById('th');
+  const upd = () => th.textContent = document.documentElement.classList.contains('dark') ? 'tema escuro' : 'tema claro';
+  upd();
+  new MutationObserver(upd).observe(document.documentElement, {attributes:true, attributeFilter:['class']});
+</script>
+</body>
+</html>

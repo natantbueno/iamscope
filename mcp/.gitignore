@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# data/ e materializado pelo build a partir de ../public — ver build.mjs.
+data/
+*.tgz
+metrics.jsonl

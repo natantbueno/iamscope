@@ -230,6 +230,7 @@ Ferramentas de apoio:
 |---|---|
 | `build-counts.js` | Regenera `src/data/counts.ts`. **Rode depois de qualquer coleta.** |
 | `build-azure-perms-index.js` | Índice invertido action → roles do Azure |
+| `build-effective-perms.js` | Expande os wildcards das roles do Azure e gera `src/data/azureEffective.ts` + `public/azure-effective-perms.json`. `permissionCount` conta ENTRADAS da definição (a Owner é `{"action":"*"}` e contava 1); o efetivo é o que aquilo concede. **É um piso** — o universo vem da documentação, não da Management API. |
 | `build-assessment-catalog.js` | Gera `public/iamscope-catalog.json` para os scripts PowerShell |
 | `build-sod-rules-json.js` | Exporta as 123 regras Microsoft do SoD para consumo externo — o `.ps1` não alcança AWS/GCP/Workspace |
 | `build-sod-role-index.js` | Gera `src/data/sod/roleIndex.ts` (nome+slug das 4.596 roles) para o SoD não arrastar 2,2 MB de datasets |
@@ -250,6 +251,8 @@ Ferramentas de apoio:
 node scripts/fetch-gcp-roles-from-docs.js --write-ts   # (ou outro coletor)
 node scripts/build-counts.js                            # sempre depois
 node scripts/build-azure-perms-index.js                 # se mexeu no Azure
+node scripts/build-effective-perms.js                   # idem — depende do índice acima
+node scripts/build-effective-perms.js --verify          # as 6 verificações, sem gravar
 node scripts/build-assessment-catalog.js                # se mexeu em roles ou SoD
 node scripts/build-search-index.js                      # sempre que roles mudarem
 node scripts/check-imports.js                           # segundos; pega import faltando
@@ -257,10 +260,52 @@ node scripts/check-static-export.js                      # regras do output: exp
 node scripts/check-sidebar-focus.js                      # destaque da sidebar por rota
 node scripts/check-stale-numbers.js                      # números e conteúdo desatualizados
 node scripts/check-site-index.js                         # índice das páginas de Reference
+node scripts/build-snapshot.js                           # grava o estado, para o changelog
+node scripts/build-changelog.js                          # deriva os eventos, feeds e a API
+node scripts/check-changelog.js                          # barra quarentena aberta e cadeia quebrada
 npm run build
 ```
 
 Todo coletor aceita `--dry-run`: imprime o que encontrou sem escrever nada. Use antes de sobrescrever um dataset.
+
+### Changelog e snapshots
+
+`build-snapshot.js` grava `data/snapshots/{cloud}/{AAAA-MM-DD}.json` com **id e hash por item**, nunca o dataset inteiro. Ele lê os datasets, não a rede — assim AWS e GCP têm histórico mesmo quando os coletores deles só rodam na máquina do Natan.
+
+O hash de cada item cobre **sete campos**, e só eles: `name`, `description`, a lista **ordenada** de permissões, `tier`, `category`, `isPrivileged` e as regras de SoD que citam o item. A ordenação da lista não é detalhe: o parser do Azure emite na ordem do bloco JSON da doc e o da AWS na ordem do documento de policy, então sem o `sort` um reordenamento publicaria "permissões alteradas" no catálogo inteiro. O `slug` fica fora do hash porque **é** a identidade do item.
+
+**Só grava quando muda.** Toda execução acrescenta uma linha a `data/snapshots/{cloud}/runs.jsonl` (~100 bytes) — é a evidência de que o catálogo foi olhado e estava igual. Um `{data}.json` só nasce quando o hash agregado difere, e dentro dele uma coleção que não mudou vira `{ unchanged, since }` apontando para o snapshot que a guarda por extenso. Sem isso o repositório cresceria ~500 KB por dia de conteúdo quase idêntico.
+
+**O que é versionado e o que não é:** `data/snapshots/` e `data/changelog/attested.json` entram no git — são o histórico, e sem eles não há changelog. `public/changelog.json`, `public/feeds/` e `public/api/` são derivados, estão no `.gitignore`, e o `npm run build` os regenera.
+
+**A defesa contra a exclusão em massa que não aconteceu.** `fetch-azure-roles-official.js` reporta HTTP 404 em três páginas (`mixed-reality`, `virtual-desktop-infrastructure`, `other`) e reescreve o dataset assim mesmo. No dia em que essas páginas guardarem roles que só elas listam, o dataset encolhe — e um changelog ingênuo anunciaria uma exclusão em massa. Duas defesas, independentes de propósito:
+
+1. **Cobertura declarada.** O coletor escreve em `data/collector-health.json` o que não conseguiu ler. `build-changelog.js` recusa emitir `removida` a partir de uma coleção incompleta e emite `desconhecido`, nomeando as páginas que faltaram.
+2. **Limiar de remoção em massa.** Remoções acima de `max(5, 2% do catálogo)` numa única transição são retidas em `data/changelog/quarantine.json` e **não** são publicadas. Não depende de coletor nenhum — é a defesa que funciona hoje, com os oito como estão.
+
+`check-changelog.js` falha enquanto houver quarentena aberta. Para liberar, acrescente a chave `{cloud}:{collection}:{data}` a `data/changelog/confirmed-removals.json`.
+
+Testes do diff: `node scripts/test-changelog.cjs` — 22 casos, cada um uma forma conhecida de o changelog mentir.
+
+### O que o changelog publica
+
+Quatorze tipos de evento, em três procedências, marcadas na página, no feed e na API:
+
+| Procedência | Tipos |
+|---|---|
+| `provider-fact` | `created` · `removed` · `renamed` · `description-changed` · `permissions-changed` |
+| `iamscope-editorial` | `tier-changed` · `category-changed` · `privilege-changed` · `sod-changed` · `dataset-recollected` · `dataset-corrected` |
+| `iamscope-process` | `genesis` · `coverage-changed` · `unknown` |
+
+Os quatro do meio são o que **só nós** temos como emitir: nenhum provedor publica tier nem regra de segregação de funções.
+
+Cada evento também carrega `origin`: `derived` quando saiu da comparação de dois snapshots, `attested` quando veio de um registro datado que já existia no repositório antes de a captura ser ligada (esses estão em `data/changelog/attested.json`, cada um com a fonte no próprio repo).
+
+**Páginas:** `/changelog` e `/changelog/{cloud}`, com filtro por tipo, período e procedência.
+
+**Feeds Atom:** 13 arquivos em `public/feeds/` — `all.xml`, um por nuvem, e um `{cloud}-privileged.xml` por nuvem. Saem em inglês: leitor de feed não tem seletor de idioma.
+
+**API:** `/api/v1/changes.json`, no envelope de `scripts/lib/api-envelope.js` — o mesmo que a Fase 1 vai usar nos outros 14 arquivos.
 
 ## Modelos de tier por cloud
 

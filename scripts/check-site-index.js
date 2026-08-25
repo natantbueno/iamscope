@@ -79,7 +79,7 @@ for (const [cloud, prefixo] of Object.entries(PREFIXO)) {
 {
   const sidebar = fs.readFileSync(path.join(ROOT, 'src', 'components', 'Sidebar.tsx'), 'utf8')
   const naSidebar = new Set(
-    [...sidebar.matchAll(/router\.push\('(\/(?:advisor|compare|evaluate|sod|assessment|permission-scope|tier-comparison|search))'\)/g)]
+    [...sidebar.matchAll(/router\.push\('(\/(?:advisor|compare|evaluate|sod|assessment|permission-scope|tier-comparison|stats|search))'\)/g)]
       .map((m) => m[1]),
   )
   const nasTools = new Set(SITE_TOOLS.map((e) => e.href))

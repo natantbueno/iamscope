@@ -112,6 +112,20 @@ const PREFIX_CLASSIFICATION = {
   // RSC: ler quais permissões específicas de recurso um app recebeu em chat/team.
   // É leitura de concessão de acesso, não configuração de Teams.
   ResourceSpecificPermissionGrant: ['Application and Workload Identity', 'ControlPlane'],
+  // Adicionado em 24/08/2026 para destravar a coleta do Entra ID, que estava
+  // parada em 1.504 de 1.505 permissões por falta desta entrada.
+  //
+  // Mesma classificação do vizinho direto acima, e pelo mesmo motivo: os dois
+  // leem QUE CONCESSÃO DE ACESSO um app recebeu. Pré-autorização é o mecanismo
+  // que dispensa consentimento para um cliente chamar uma API — enumerar quem
+  // está pré-autorizado é reconhecimento do plano de controle de identidade de
+  // aplicação, não leitura de recurso.
+  //
+  // ControlPlane apesar de ser permissão só de leitura: a escada do EAM
+  // classifica por PLANO, não por verbo. RoleManagement.Read.Directory também
+  // é leitura e também é ControlPlane — quem enumera o caminho para o
+  // privilégio já está no plano de controle.
+  PreAuthorizationGrant: ['Application and Workload Identity', 'ControlPlane'],
   TeamTemplates: ['Microsoft Teams', 'ManagementPlane'],
   TeamsActivity: ['Microsoft Teams', 'ManagementPlane'],
   TeamsAppInstallation: ['Microsoft Teams', 'ManagementPlane'],

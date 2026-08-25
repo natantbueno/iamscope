@@ -13,8 +13,10 @@ import { usePagination } from '@/hooks/usePagination'
 import ExportMenu from '@/components/ExportMenu'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
+import AzureEffectiveCount, { useFloorNote } from '@/components/AzureEffectiveCount'
+import { AZURE_EFFECTIVE } from '@/data/azureEffective'
 
-type SortCol = 'name' | 'category' | 'tier' | 'permissionCount'
+type SortCol = 'name' | 'category' | 'tier' | 'permissionCount' | 'effectiveActions'
 type SortDir = 'asc' | 'desc'
 
 const TIER_ORDER: Record<AzureRbacTier, number> = {
@@ -29,6 +31,7 @@ const ALL_CATEGORIES: AzureRbacCategory[] = [
 
 function AzureRbacRolesContent() {
   const t = useT()
+  const floor = useFloorNote()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -39,7 +42,7 @@ function AzureRbacRolesContent() {
   const [sortCol, setSortCol]         = useState<SortCol>('name')
   const [sortDir, setSortDir]         = useState<SortDir>('asc')
 
-  const { widths, onMouseDown } = useColumnResize([200, 240, 100, 150, 80, 60])
+  const { widths, onMouseDown } = useColumnResize([200, 220, 100, 140, 80, 90, 60])
 
   // Sync state from URL params — fires on every navigation (sidebar clicks)
   useEffect(() => {
@@ -70,6 +73,10 @@ function AzureRbacRolesContent() {
     else if (sortCol === 'category')        cmp = a.category.localeCompare(b.category)
     else if (sortCol === 'tier')            cmp = (TIER_ORDER[a.tier] ?? 99) - (TIER_ORDER[b.tier] ?? 99)
     else if (sortCol === 'permissionCount') cmp = a.permissionCount - b.permissionCount
+    // Ordenar por "menor privilégio" só faz sentido no efetivo: no nativo a
+    // Owner empata com a AcrPull em 1. Slug sem efetivo cai para -1 e some
+    // para o fim da lista crescente, em vez de fingir zero permissões.
+    else if (sortCol === 'effectiveActions') cmp = (AZURE_EFFECTIVE[a.slug]?.effectiveActions ?? -1) - (AZURE_EFFECTIVE[b.slug]?.effectiveActions ?? -1)
     return sortDir === 'asc' ? cmp : -cmp
   }), [filtered, sortCol, sortDir])
 
@@ -181,6 +188,15 @@ function AzureRbacRolesContent() {
 
         </div>
 
+        {/*
+          A ressalva do piso em TEXTO VISÍVEL, não só no tooltip da coluna.
+          Um número com ar de exato numa tabela é lido como exato; o `≥` sozinho
+          é fácil de não ver. Os valores de {n} e {p} vêm do dataset em runtime.
+        */}
+        <p className="px-4 py-1.5 text-3xs text-fg-muted border-b border-line bg-surface">
+          <span className="font-semibold text-fg-muted">{t('azeff.label')}:</span> {floor('azeff.floor')}
+        </p>
+
         {/* Table */}
         <div className="flex-1 overflow-auto">
           <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
@@ -191,6 +207,7 @@ function AzureRbacRolesContent() {
               <col style={{ width: widths[3] }} />
               <col style={{ width: widths[4] }} />
               <col style={{ width: widths[5] }} />
+              <col style={{ width: widths[6] }} />
               <col />
             </colgroup>
             <thead className="sticky top-0 z-10">
@@ -204,7 +221,8 @@ function AzureRbacRolesContent() {
                 <RszTh col="category"        active={sortCol} dir={sortDir} onSort={toggleSort} idx={2} onMD={onMouseDown}>{t('table.category')}</RszTh>
                 <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={3} onMD={onMouseDown}>Risk Tier</RszTh>
                 <RszTh col="permissionCount" active={sortCol} dir={sortDir} onSort={toggleSort} idx={4} onMD={onMouseDown} right>{t('table.permissions')}</RszTh>
-                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown}>Priv.</RszTh>
+                <RszTh col="effectiveActions" active={sortCol} dir={sortDir} onSort={toggleSort} idx={5} onMD={onMouseDown} right title={floor('azeff.tip')}>{t('azeff.label')}</RszTh>
+                <RszTh col="tier"            active={sortCol} dir={sortDir} onSort={toggleSort} idx={6} onMD={onMouseDown}>Priv.</RszTh>
                 <th className="px-4 py-2.5 text-2xs font-semibold text-fg-muted uppercase tracking-wider w-10"></th>
               </tr>
             </thead>
@@ -234,7 +252,10 @@ function AzureRbacRolesContent() {
                       </span>
                     </td>
                     <td className="px-4 py-2.5 align-middle text-right">
-                      <span className="text-tiny font-semibold tabular-nums" style={{ color: meta.darkText }}>{role.permissionCount}</span>
+                      <span className="text-tiny tabular-nums text-fg-muted">{role.permissionCount}</span>
+                    </td>
+                    <td className="px-4 py-2.5 align-middle text-right">
+                      <AzureEffectiveCount slug={role.slug} color={meta.darkText} />
                     </td>
                     <td className="px-4 py-2.5 align-middle">
                       {role.isPrivileged
@@ -275,13 +296,16 @@ export default function AzureRbacRolesPage() {
   )
 }
 
-function RszTh({ col, active, dir, onSort, idx, onMD, children, right }: {
+function RszTh({ col, active, dir, onSort, idx, onMD, children, right, title }: {
   col: SortCol; active: SortCol; dir: SortDir; onSort: (c: SortCol) => void
   idx: number; onMD: (i: number) => (e: React.MouseEvent) => void
   children: React.ReactNode; right?: boolean
+  /** Tooltip nativo do cabeçalho — usado pela coluna de efetivas para carregar a ressalva do piso. */
+  title?: string
 }) {
   return (
-    <th className={`relative ${right ? 'text-right' : 'text-left'} text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden`}>
+    <th title={title}
+      className={`relative ${right ? 'text-right' : 'text-left'} text-2xs font-semibold text-fg-muted uppercase tracking-wider px-4 py-2.5 select-none overflow-hidden ${title ? 'cursor-help' : ''}`}>
       <button onClick={() => onSort(col)} className="inline-flex items-center gap-1 hover:text-fg-muted">
         {children}
         {active === col ? (dir === 'asc' ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : <ChevronsUpDown size={11} className="opacity-30" />}

@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { Info } from 'lucide-react'
 import { type CloudId } from '@/lib/cloudColors'
+import { GLOBAL_HREFS } from './Sidebar'
 import { useT } from '@/i18n/LanguageProvider'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeToggle from './ThemeToggle'
@@ -24,24 +25,40 @@ const CLOUDS: { id: CloudId; label: string; href: string }[] = [
   { id: 'ibmCloud',        label: 'IBM Cloud',    href: '/ibm-cloud' },
 ]
 
-/** Derives active platform from pathname — same logic as AppShell.tsx */
+/**
+ * Qual cloud fica acesa no menu de cima.
+ *
+ * A LISTA DE ROTAS GLOBAIS VEM DE `GLOBAL_HREFS`, e não de uma cópia local.
+ *
+ *   Até 24/08/2026 este arquivo mantinha a própria lista de "ferramentas
+ *   multi-cloud" e terminava num `return 'entraId'`. Ela nasceu com seis
+ *   rotas e nunca acompanhou as que vieram depois: `/assessment`, `/search` e
+ *   `/stats` não estavam ali, então as três acendiam **Entra ID** no menu
+ *   superior — a mesma falha que o AppShell teve, corrigida em 21/08, e pelo
+ *   mesmo motivo (uma segunda lista da mesma coisa, que envelhece sozinha).
+ *
+ *   Agora as duas derivações leem a mesma fonte. Rota global nova entra no
+ *   `TOOLS` da Sidebar e as três telas passam a concordar sem edição aqui.
+ *
+ * A BARRA DO FIM É NORMALIZADA ANTES DE COMPARAR. Com `trailingSlash: true` no
+ * next.config o pathname real é `/stats/`; comparar cru contra `/stats` é o
+ * defeito que já custou o destaque da ferramenta ativa na sidebar.
+ */
 function getActivePlatform(pathname: string): CloudId | null {
-  if (pathname === '/')                         return 'home'
-  if (pathname.startsWith('/azure-rbac'))       return 'azureRbac'
-  if (pathname.startsWith('/google-workspace')) return 'googleWorkspace'
-  if (pathname.startsWith('/ibm-cloud'))        return 'ibmCloud'
-  if (pathname.startsWith('/gcp'))              return 'gcp'
-  if (pathname.startsWith('/aws'))              return 'aws'
-  // Ferramentas multi-cloud — nenhuma cloud fica ativa no menu superior
-  if (
-    pathname.startsWith('/compare') ||
-    pathname.startsWith('/advisor') ||
-    pathname.startsWith('/permission-scope') ||
-    pathname.startsWith('/tier-comparison') ||
-    pathname.startsWith('/evaluate') ||
-    pathname.startsWith('/sod') ||
-    pathname.startsWith('/info')
-  ) return null
+  const rota = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/'
+
+  if (rota === '/') return 'home'
+
+  // Antes dos testes de cloud, como no AppShell. É seguro: nenhuma rota de
+  // cloud começa com um prefixo global (`/aws/reference` não começa com
+  // `/reference`).
+  if (GLOBAL_HREFS.some((href) => rota === href || rota.startsWith(`${href}/`))) return null
+
+  if (rota.startsWith('/azure-rbac'))       return 'azureRbac'
+  if (rota.startsWith('/google-workspace')) return 'googleWorkspace'
+  if (rota.startsWith('/ibm-cloud'))        return 'ibmCloud'
+  if (rota.startsWith('/gcp'))              return 'gcp'
+  if (rota.startsWith('/aws'))              return 'aws'
   return 'entraId'
 }
 

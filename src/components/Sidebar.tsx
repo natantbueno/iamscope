@@ -5,7 +5,7 @@ import {
   LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
   FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
   ChevronDown, Shield, ChevronRight, Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Compass, FileJson,
-  GitCompare, Timer, ShieldAlert, ScanSearch, Gauge, Server,
+  GitCompare, Timer, ShieldAlert, ScanSearch, Gauge, Server, BarChart3, History,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { RoleCategory, EamTier } from '@/data/roles'
@@ -16,7 +16,7 @@ import {
   GWS_ROLES_COUNT, GWS_SCOPES_COUNT, GWS_PRIVILEGES_COUNT,
   IBM_ROLES_COUNT, IBM_ACCESS_PRIMITIVES_COUNT, IBM_CLASSIC_PERMISSIONS_COUNT,
   GCP_ROLES_COUNT, GCP_PERMISSIONS_COUNT,
-  AWS_POLICIES_COUNT, AWS_ACTIONS_COUNT,
+  AWS_POLICIES_COUNT, AWS_ACTIONS_COUNT, AZURE_PROVIDERS_COUNT,
 } from '@/data/counts'
 import type { AzureRbacTier, AzureRbacCategory } from '@/data/azureRbac'
 import type { GwsTier } from '@/data/googleWorkspace'
@@ -37,7 +37,7 @@ export type Platform = 'home' | 'global' | 'entraId' | 'azureRbac' | 'aws' | 'gc
 // SEM prop `active`: além de nunca acenderem, deixavam "IAM Policies" / "IAM
 // Roles" destacado enquanto a pessoa estava nelas — o mesmo defeito relatado
 // em /aws/actions, só que em outro lugar.
-export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info' | 'actions' | 'pim' | 'scp' | 'accessGroups' | 'classic'
+export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'reference' | 'info' | 'actions' | 'pim' | 'scp' | 'accessGroups' | 'classic' | 'providers'
 
 interface SidebarProps {
   platform: Platform
@@ -149,6 +149,17 @@ const TOOLS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/sod',              label: 'SoD Analyzer',        icon: ShieldAlert },
   { href: '/assessment',       label: 'Assessment',          icon: Gauge },
   { href: '/tier-comparison',  label: 'Tier 0 Comparison',   icon: ShieldCheck },
+  // /stats é panorama, não ferramenta interativa — entra aqui mesmo assim
+  // porque este bloco é o único lugar da navegação onde uma rota GLOBAL
+  // aparece. Fora dele a página existiria sem porta de entrada.
+  { href: '/stats',            label: 'Statistics',          icon: BarChart3 },
+  // O Changelog nao e uma ferramenta — e uma secao. Entra nesta lista pelo
+  // mesmo motivo que o /stats: este bloco e o unico lugar da navegacao onde
+  // uma rota GLOBAL aparece, e e ele que alimenta o GLOBAL_HREFS. Sem estar
+  // aqui, /changelog cairia no fallback 'entraId' do AppShell e a sidebar
+  // mostraria PIM e Built-in Roles ao lado de uma tela das seis nuvens.
+  // O `startsWith` do destaque ja cobre /changelog/gcp de graca.
+  { href: '/changelog',        label: 'Changelog',           icon: History },
 ]
 
 /**
@@ -160,9 +171,12 @@ const TOOLS: { href: string; label: string; icon: LucideIcon }[] = [
  * Enterprise Access Model" ao lado de uma tela multi-cloud — menu de uma
  * plataforma numa página que não é de plataforma nenhuma.
  *
- * As sete ferramentas, mais o /info (sobre o site) e a busca global. O
- * /reference NÃO entra: é um stub de redirect em (legacy), sem AppShell e sem
- * sidebar.
+ * O bloco TOOLS inteiro (as sete ferramentas mais o /stats), o /info (sobre o
+ * site) e a busca global. Deriva de TOOLS de propósito: uma rota nova no menu
+ * entra aqui sozinha, e não cai no fallback `entraId` por esquecimento.
+ *
+ * O /reference NÃO entra: é um stub de redirect em (legacy), sem AppShell e
+ * sem sidebar.
  */
 export const GLOBAL_HREFS: readonly string[] = [
   ...TOOLS.map((tool) => tool.href),
@@ -458,6 +472,7 @@ export default function Sidebar({
             <NavItem icon={<LayoutDashboard size={15} />} label="Dashboard"      active={view === 'dashboard'} onClick={() => router.push('/azure-rbac')} />
             <NavItem icon={<Shield size={15} />}          label="Built-in Roles" active={view === 'roles'}     badge={String(totalAzureRoles)} onClick={() => router.push('/azure-rbac/roles')} />
             <NavItem icon={<KeyRound size={15} />}        label={t('nav.permissions')}     active={view === 'apiPermissions'} badge={String(AZURE_ACTIONS_COUNT)} onClick={() => router.push('/azure-rbac/permissions')} />
+            <NavItem icon={<Boxes size={15} />}           label={t('nav.providers')}       active={view === 'providers'}      badge={String(AZURE_PROVIDERS_COUNT)} onClick={() => router.push('/azure-rbac/providers')} />
             <NavItem icon={<HelpCircle size={15} />}      label="Reference"      active={view === 'reference'} badge="2" onClick={() => router.push('/azure-rbac/reference')} />
           </div>
 

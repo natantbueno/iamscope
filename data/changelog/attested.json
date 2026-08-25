@@ -1,0 +1,212 @@
+{
+  "_readme": [
+    "Eventos ATESTADOS — o histórico que existia antes de haver snapshot.",
+    "",
+    "Cada linha aqui é um fato datado que já estava escrito e versionado no",
+    "repositório antes de 2026-08-24, dia em que a captura de snapshots foi",
+    "ligada. A fonte de cada um é um arquivo do próprio repo, citado em",
+    "`source` — não é reconstrução de memória nem estimativa.",
+    "",
+    "POR QUE ELES NÃO SÃO 'derived'",
+    "  Um evento derivado é a diferença medida entre dois estados gravados. Um",
+    "  atestado é o registro de uma mudança que ninguém mediu: sabemos que",
+    "  aconteceu porque quem a fez escreveu a nota, com a data e o número. É",
+    "  informação de qualidade diferente, e o changelog marca a diferença em",
+    "  vez de escondê-la — `origin: 'attested'` sai no evento, no feed e na API.",
+    "",
+    "  Só entra aqui o que tem data e número verificáveis num arquivo do repo.",
+    "  Se a única evidência for lembrança, não entra.",
+    "",
+    "Cada `summary` tem `pt` e `en`: a prosa do evento é interface, não dado",
+    "oficial, e interface é traduzida (ver docs/ADR-001-idioma-dos-dados.md)."
+  ],
+  "events": [
+    {
+      "date": "2026-06-30",
+      "cloud": "entraid",
+      "collection": "roles",
+      "collectionLabel": "Directory Roles",
+      "type": "dataset-recollected",
+      "itemId": "baseline-2026-06-30",
+      "itemName": "Baseline de verificação",
+      "summary": {
+        "pt": "Primeira verificação registrada dos datasets contra as fontes oficiais. Antes desta data não havia rastreamento de versão ou commit por fonte. As 144 directory roles foram conferidas linha a linha contra a tabela do Microsoft Learn: 1 rename e 1 correção de grafia aplicados.",
+        "en": "First recorded verification of the datasets against their official sources. Before this date there was no per-source version or commit tracking. The 144 directory roles were checked line by line against the Microsoft Learn table: 1 rename and 1 spelling fix applied."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — entra-directory-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-07-29",
+      "cloud": "aws",
+      "collection": "policies",
+      "collectionLabel": "Managed Policies",
+      "type": "dataset-corrected",
+      "itemId": "descricoes-oficiais",
+      "itemName": "Descrições das managed policies",
+      "summary": {
+        "pt": "Até 29/07 o campo `description` continha o template inventado \"<Nome> — AWS managed policy\" em 100% das policies. Substituído pelo texto literal da referência oficial da AWS. Era dado nosso apresentado como se fosse da AWS — o pior tipo de erro num site de referência.",
+        "en": "Until 29/07 the `description` field held the invented template \"<Name> — AWS managed policy\" for 100% of policies. Replaced with the literal text from the official AWS reference. It was our own text presented as if it came from AWS — the worst kind of error on a reference site."
+      },
+      "source": {
+        "label": "src/data/aws.ts — comentário do campo description",
+        "path": "src/data/aws.ts"
+      }
+    },
+    {
+      "date": "2026-07-31",
+      "cloud": "azure-rbac",
+      "collection": "roles",
+      "collectionLabel": "Built-in Roles",
+      "type": "dataset-recollected",
+      "itemId": "recontagem-504",
+      "itemName": "Recontagem das built-in roles",
+      "summary": {
+        "pt": "504 confirmado como o número oficial: 504 blocos \"roleName\" e 504 GUIDs únicos nos 19 arquivos built-in-roles/*.md da Microsoft. O critério do catálogo é o que a documentação descreve hoje — role descontinuada, que já saiu de lá, não entra na conta.",
+        "en": "504 confirmed as the official number: 504 \"roleName\" blocks and 504 unique GUIDs across Microsoft's 19 built-in-roles/*.md files. The catalogue's criterion is what the documentation describes today — a discontinued role, already gone from there, does not count."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — azure-rbac-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-07-31",
+      "cloud": "gcp",
+      "collection": "roles",
+      "collectionLabel": "Predefined Roles",
+      "type": "dataset-recollected",
+      "itemId": "232-para-2389",
+      "itemName": "Predefined roles do GCP",
+      "summary": {
+        "pt": "De 232 roles com 6% de cobertura de permissões para 2.389 roles com as listas completas. Coletado das páginas públicas por serviço, sem credencial: a IAM API responde 403 sem autenticação, mas as páginas da documentação são renderizadas no servidor.",
+        "en": "From 232 roles with 6% permission coverage to 2,389 roles with complete lists. Collected from the public per-service pages, without credentials: the IAM API returns 403 unauthenticated, but the documentation pages are server-rendered."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — gcp-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-03",
+      "cloud": "google-workspace",
+      "collection": "roles",
+      "collectionLabel": "Admin Roles",
+      "type": "dataset-corrected",
+      "itemId": "44-para-14",
+      "itemName": "Prebuilt admin roles",
+      "summary": {
+        "pt": "De 44 roles para 14. Das 44 anteriores, 30 não constavam da documentação do Google, e 79 dos 84 nomes de privilégio não existiam na API. Tudo substituído pelo catálogo oficial. O mapa role→privilegeName só é publicado para 2 das 14 roles; para as demais exige OAuth no tenant e ficou declarado como lacuna, em vez de preenchido por inferência.",
+        "en": "From 44 roles to 14. Of the previous 44, 30 did not appear in Google's documentation, and 79 of 84 privilege names did not exist in the API. All replaced with the official catalogue. The role→privilegeName map is published for only 2 of the 14 roles; for the rest it requires OAuth in the tenant and was declared a gap rather than filled by inference."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — gws-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-03",
+      "cloud": "azure-rbac",
+      "collection": "actions",
+      "collectionLabel": "Resource Provider Actions",
+      "type": "dataset-recollected",
+      "itemId": "descricoes-de-action",
+      "itemName": "Descrições das actions",
+      "summary": {
+        "pt": "Descrição oficial em 95,2% das 1.947 actions concretas referenciadas por roles. As outras 750 do índice são wildcards (Microsoft.Foo/*), que são padrão de correspondência e não operação — a Microsoft não as documenta, e por isso ficam fora do denominador em vez de contarem como lacuna.",
+        "en": "Official description for 95.2% of the 1,947 concrete actions referenced by roles. The other 750 in the index are wildcards (Microsoft.Foo/*), which are match patterns rather than operations — Microsoft does not document them, so they stay out of the denominator instead of counting as a gap."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — azure-rbac-actions",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-04",
+      "cloud": "entraid",
+      "collection": "api-permissions",
+      "collectionLabel": "API Permissions do Microsoft Graph",
+      "type": "dataset-recollected",
+      "itemId": "854-para-1504",
+      "itemName": "API permissions do Microsoft Graph",
+      "summary": {
+        "pt": "De 854 para 1.504 permissões. O dataset anterior tinha 692 das 707 Application e só 162 dos 797 escopos delegados, porque a coleta de 30/06 parseava a permissions-reference.md em vez de ler o inventário do service principal. Faltavam famílias inteiras de ControlPlane em delegated: Policy (29), RoleManagement (9), PrivilegedAccess (6). As 854 antigas foram preservadas verbatim — 0 órfãos, 0 IDs divergentes.",
+        "en": "From 854 to 1,504 permissions. The previous dataset had 692 of the 707 Application permissions and only 162 of the 797 delegated scopes, because the 30/06 collection parsed permissions-reference.md instead of reading the service principal inventory. Whole ControlPlane families were missing from delegated: Policy (29), RoleManagement (9), PrivilegedAccess (6). The old 854 were preserved verbatim — 0 orphans, 0 diverging IDs."
+      },
+      "source": {
+        "label": "docs/AUDITORIA-api-permissions-2026-08-04.md",
+        "path": "docs/AUDITORIA-api-permissions-2026-08-04.md"
+      }
+    },
+    {
+      "date": "2026-08-05",
+      "cloud": "ibm-cloud",
+      "collection": "roles",
+      "collectionLabel": "Platform e Service Roles",
+      "type": "dataset-corrected",
+      "itemId": "157-para-7",
+      "itemName": "Modelo de acesso da IBM Cloud",
+      "summary": {
+        "pt": "De 157 \"roles\" e 619 \"actions\" para 7 roles de IAM (4 de plataforma, 3 de serviço). Das 619 actions, 502 eram prosa em português escrita por nós — nas 83 roles clássicas, 243 de 243. O modelo real da IBM não tem role na infraestrutura clássica: tem permissão individual.",
+        "en": "From 157 \"roles\" and 619 \"actions\" to 7 IAM roles (4 platform, 3 service). Of the 619 actions, 502 were Portuguese prose written by us — in the 83 classic roles, 243 out of 243. IBM's real model has no roles in classic infrastructure: it has individual permissions."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — ibm-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-05",
+      "cloud": "ibm-cloud",
+      "collection": "classic-permissions",
+      "collectionLabel": "Permissões da infraestrutura clássica",
+      "type": "dataset-recollected",
+      "itemId": "71-permissoes-classicas",
+      "itemName": "Permissões da infraestrutura clássica",
+      "summary": {
+        "pt": "Lacuna do clássico fechada com 71 permissões verbatim da IBM. Os docs de IAM saíram do repo ibm-cloud-docs/account e passaram a viver em ibm-cloud-docs/iam, onde iam-mnginfra.md publica as seis tabelas. As categorias passaram de quatro declaradas por nós — Account, Devices, Network, Services — para as seis reais: Administrative, Devices, Network, Sales, Security e Software.",
+        "en": "The classic-infrastructure gap closed with 71 verbatim IBM permissions. The IAM docs moved out of the ibm-cloud-docs/account repo and now live in ibm-cloud-docs/iam, where iam-mnginfra.md publishes the six permission tables. Categories went from four declared by us — Account, Devices, Network, Services — to the six real ones: Administrative, Devices, Network, Sales, Security and Software."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — ibm-roles",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-21",
+      "cloud": "aws",
+      "collection": "policies",
+      "collectionLabel": "Managed Policies",
+      "type": "dataset-corrected",
+      "itemId": "effect-deny",
+      "itemName": "Parser de Effect nas policies",
+      "summary": {
+        "pt": "O parser passou a respeitar o `Effect` de cada statement: actions em statements `Deny` não contam mais como concessão. Corrigiu 42 policies — inclusive a AWSDenyAll, que aparecia com tier Full Access por ter o universo inteiro num Deny.",
+        "en": "The parser now respects the `Effect` of each statement: actions inside `Deny` statements no longer count as a grant. This corrected 42 policies — including AWSDenyAll, which showed up as Full Access tier because it had the whole universe inside a Deny."
+      },
+      "source": {
+        "label": "src/data/syncMeta.ts — aws-policies",
+        "path": "src/data/syncMeta.ts"
+      }
+    },
+    {
+      "date": "2026-08-23",
+      "cloud": "azure-rbac",
+      "collection": "roles",
+      "collectionLabel": "Built-in Roles",
+      "type": "dataset-corrected",
+      "itemId": "permissoes-efetivas",
+      "itemName": "Permissões efetivas (wildcards expandidos)",
+      "summary": {
+        "pt": "`permissionCount` conta entradas da definição, não permissões concedidas: owner.json é uma linha só (`\"*\"`), então Owner, Contributor e Reader apareciam com 1 permissão, empatadas com a AcrPull. 56 das 504 roles marcavam 1, e o máximo do dataset era 103 — qualquer ordenação por \"menor privilégio\" estava invertida. build-effective-perms.js passou a emitir `effectiveActions` AO LADO, sem substituir o número nativo da Microsoft. Com wildcards expandidos, a Owner concede 17.591 ações.",
+        "en": "`permissionCount` counts definition entries, not granted permissions: owner.json is a single line (`\"*\"`), so Owner, Contributor and Reader showed 1 permission, tied with AcrPull. 56 of the 504 roles showed 1, and the dataset maximum was 103 — any \"least privilege\" ordering was inverted. build-effective-perms.js now emits `effectiveActions` ALONGSIDE, without replacing Microsoft's native number. With wildcards expanded, Owner grants 17,591 actions."
+      },
+      "source": {
+        "label": "scripts/build-effective-perms.js",
+        "path": "scripts/build-effective-perms.js"
+      }
+    }
+  ]
+}

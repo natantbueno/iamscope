@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import AppShell from '@/components/AppShell'
 import EntraScopeIcon from '@/components/EntraScopeIcon'
-import { Globe, Search, BookOpen, ExternalLink, Linkedin, ShieldCheck, GitCompare, Compass, Shield, RefreshCw, ScanSearch, FileJson, ShieldAlert, Gauge } from 'lucide-react'
+import { Globe, Search, BookOpen, ExternalLink, Linkedin, ShieldCheck, GitCompare, Compass, Shield, RefreshCw, ScanSearch, FileJson, ShieldAlert, Gauge, BarChart3 } from 'lucide-react'
 import { CLOUD_MARK } from '@/lib/cloudColors'
 import { DATA_SYNC, getLatestSync } from '@/data/syncMeta'
 import ExportButton from '@/components/ExportButton'
@@ -68,6 +68,7 @@ export default function InfoClient() {
     { icon: <FileJson size={14} />,    title: 'Role Evaluator',      href: '/evaluate', desc: 'info.toolEval' },
     { icon: <ShieldAlert size={14} />, title: 'SoD Analyzer',        href: '/sod', desc: 'info.toolSod' },
     { icon: <ShieldCheck size={14} />, title: 'Tier 0 Comparison',   href: '/tier-comparison',                 desc: 'info.toolTierZero' },
+    { icon: <BarChart3 size={14} />,   title: 'Statistics',          href: '/stats',                           desc: 'info.toolStats' },
   ]
 
   return (

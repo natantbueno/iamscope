@@ -259,7 +259,7 @@ const SYNC_ESPERADO = {
   const info = fs.readFileSync(path.join(ROOT, 'src', 'app', 'info', 'InfoClient.tsx'), 'utf8')
 
   const naSidebar = new Set(
-    [...sidebar.matchAll(/router\.push\('(\/(?:advisor|compare|evaluate|sod|assessment|permission-scope|tier-comparison|search))'\)/g)]
+    [...sidebar.matchAll(/router\.push\('(\/(?:advisor|compare|evaluate|sod|assessment|permission-scope|tier-comparison|stats|search))'\)/g)]
       .map((m) => m[1]),
   )
   const noInfo = new Set([...info.matchAll(/href: '([^']+)'/g)].map((m) => m[1]))
