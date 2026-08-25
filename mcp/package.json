@@ -1,7 +1,7 @@
 {
   "name": "iamscope-mcp",
-  "version": "0.1.1",
-  "description": "MCP server com o catálogo do IAM Scope: 4.640 roles e 30.865 permissões de seis nuvens (Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace, IBM Cloud), respondendo na sua máquina, sem rede.",
+  "version": "0.2.0",
+  "description": "MCP server com o catalogo do IAM Scope: 4.640 roles e 30.865 permissoes de seis nuvens (Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace, IBM Cloud), mais as 17.591 acoes do Azure para escrever custom roles, respondendo na sua maquina.",
   "type": "module",
   "bin": {
     "iamscope-mcp": "dist/server.mjs"
@@ -37,7 +37,10 @@
     "least-privilege",
     "segregation-of-duties",
     "sod",
-    "cloud-security"
+    "cloud-security",
+    "azure-custom-role",
+    "custom-role",
+    "azure-actions"
   ],
   "author": "IAM Scope (https://iamscope.cloud)",
   "license": "SEE LICENSE IN DATA-LICENSE.md",
@@ -57,8 +60,5 @@
   "devDependencies": {
     "esbuild": "^0.28.2",
     "typescript": "^5.9.0"
-  },
-  "allowScripts": {
-    "esbuild@0.28.2": true
   }
 }

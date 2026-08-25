@@ -35,6 +35,7 @@ import { getCloudUrl, type CloudId } from '@/data/compare/types'
 import { envelope } from './provenance'
 import { CATALOG_STATS, CATALOG_TEXT } from './catalogStats'
 import { verifyNames, catalogSize, type VerifyPlatform } from './verify'
+import { universo, buscarAcoes, expandir, verificarCustomRole, ESCALADA_CURADA } from './azure'
 
 const PLATFORMS = ['entraId', 'azureRbac', 'aws', 'gcp', 'googleWorkspace', 'ibmCloud'] as const
 const SOD_PLATFORMS = ['entra-id', 'azure-rbac', 'aws', 'gcp', 'google-workspace'] as const
@@ -494,6 +495,15 @@ const verifyTool: ToolDef = {
 
 // ── Metadados de tier, disponíveis como recurso ─────────────────────────────
 
+export const ESCALADA_REFERENCE = {
+  classification: 'iamscope-editorial',
+  note:
+    'Acoes do Azure cuja concessao permite ESCALAR privilegio. Nao e lista de "acao perigosa" em geral — ' +
+    'e a lista curta do que deixa quem tem a role conceder mais acesso a si mesmo, que e o defeito que ' +
+    'uma custom role introduz sem querer. Curadoria do IAM Scope, nao classificacao da Microsoft.',
+  actions: ESCALADA_CURADA,
+}
+
 export const TIER_REFERENCE = {
   classification: 'iamscope-editorial',
   note: 'Nenhum provedor publica estas escadas. São classificação editorial do IAM Scope, CC BY 4.0.',
@@ -505,6 +515,187 @@ export const TIER_REFERENCE = {
   ibmCloud: IBM_TIER_META,
 }
 
+
+// ── 8-11. As acoes do Azure: escrever custom role ───────────────────────────
+//
+// O `search_permissions` cobre AWS, GCP, Entra ID e Google Workspace, e nao o
+// Azure — as permissoes dele nao vivem num indice invertido, vivem nas 504
+// definicoes de role e num universo de 17.591 acoes documentadas.
+//
+// Para PERGUNTAR "quem concede X" a lacuna era aceitavel. Para ESCREVER uma
+// custom role e o dado principal, e e por isso que estas quatro existem.
+//
+// Nenhuma delas ESCREVE a role. O modelo escreve — ele e bom nisso. O que ele
+// nao pode fazer e saber se a acao existe e o que o wildcard alcanca.
+
+const listarProvidersTool: ToolDef = {
+  name: 'list_azure_providers',
+  title: 'Resource providers do Azure',
+  description:
+    'Lista os 151 resource providers do Azure com quantas acoes cada um tem, quebradas por verbo ' +
+    '(read/write/delete/action). E o ponto de partida para escrever uma custom role: primeiro se ' +
+    'descobre em que provider a capacidade mora, depois se busca a acao dentro dele. ' +
+    'Sao 151 e nao 158 porque 14 chaves sao a mesma acao escrita em dois cases.',
+  schema: {
+    contains: z.string().optional().describe('Filtra por trecho do nome. Ex.: "storage", "compute", "authorization".'),
+    limit: z.number().int().min(1).max(151).default(30).describe('Maximo de providers.'),
+  },
+  async run({ contains, limit = 30 }, version) {
+    const { providers, meta } = await universo()
+    const q = contains?.trim().toLowerCase()
+    const lista = providers.filter((p) => !q || p.name.toLowerCase().includes(q))
+    return wrap(version, ['azureRbac'], {
+      totalProviders: providers.length,
+      matched: lista.length,
+      providers: lista.slice(0, limit).map((p) => ({
+        provider: p.name,
+        actions: p.actions,
+        read: p.read, write: p.write, delete: p.delete, action: p.action,
+        builtInRolesThatTouchIt: p.roles,
+      })),
+      universeActions: meta.universeActions,
+      note:
+        'O universo vem da DOCUMENTACAO da Microsoft. A Azure Management API expoe mais operacoes, ' +
+        'entao toda contagem aqui e piso, nunca teto.',
+    })
+  },
+}
+
+const buscarAcoesTool: ToolDef = {
+  name: 'search_azure_actions',
+  title: 'Buscar acao do Azure pelo nome ou pelo que ela faz',
+  description:
+    'Busca nas 17.591 acoes documentadas do Azure, por trecho do identificador ou pela descricao. ' +
+    'Aceita filtro por provider e por verbo. Devolve a descricao oficial, o plano (control/data) e ' +
+    'QUAIS ROLES BUILT-IN ja concedem a acao. ' +
+    'Use antes de escrever qualquer Actions[] de custom role: e assim que se descobre que a acao de ' +
+    'reiniciar VM e Microsoft.Compute/virtualMachines/restart/action, em vez de adivinhar. ' +
+    'O campo grantedBy responde "ja existe built-in que faz isso?" antes de a custom role existir.',
+  schema: {
+    query: z.string().describe('Trecho do identificador ou da descricao. Ex.: "restart", "listKeys", "reiniciar maquina virtual".'),
+    provider: z.string().optional().describe('Restringe a um provider. Ex.: "Microsoft.Compute".'),
+    verb: z.enum(['read', 'write', 'delete', 'action']).optional().describe('Ultimo segmento da acao.'),
+    limit: z.number().int().min(1).max(60).default(20),
+  },
+  async run({ query, provider, verb, limit = 20 }, version) {
+    const r = await buscarAcoes(query, { provider, verbo: verb, limite: limit })
+    return wrap(version, ['azureRbac'], {
+      query, provider: provider ?? null, verb: verb ?? null,
+      totalMatches: r.total,
+      actions: r.acoes.map((a) => ({
+        action: a.action,
+        description: a.description,
+        provider: a.provider,
+        plane: a.plane,
+        grantedByBuiltIn: a.grantedBy.map((x) => x.name),
+        deniedByBuiltIn: a.deniedBy.map((x) => x.name),
+      })),
+      note: r.total === 0
+        ? 'Nenhuma acao casou. NAO invente o identificador — tente outro termo, ou use list_azure_providers para achar o provider primeiro.'
+        : 'plane so e afirmado quando alguma definicao de role declara a acao por extenso; "nao-declarado" e o caso da maioria e NAO significa control plane.',
+    })
+  },
+}
+
+const expandirWildcardTool: ToolDef = {
+  name: 'expand_azure_wildcard',
+  title: 'O que este padrao REALMENTE concede',
+  description:
+    'Dado um ou mais padroes do Azure (com ou sem `*`), diz exatamente quantas e quais acoes eles ' +
+    'cobrem contra o universo de 17.591. ' +
+    'CHAME ANTES de colocar um wildcard numa custom role. Ninguem expande `Microsoft.Compute/*/read` ' +
+    'de cabeca, e o erro aqui e sempre na direcao de conceder demais. ' +
+    'Atencao a semantica: no Azure o `*` ATRAVESSA a barra — `Microsoft.Storage/*` cobre tambem ' +
+    '`Microsoft.Storage/a/b/c/read`, nao so um nivel. ' +
+    'Padrao literal que nao existe no universo volta em "inexistentes": e o erro que so apareceria ' +
+    'no `az role definition create`, com uma mensagem que nao diz qual linha esta errada.',
+  schema: {
+    patterns: z.array(z.string().min(1)).min(1).max(50).describe('Os padroes. Ex.: ["Microsoft.Compute/*/read", "Microsoft.Storage/storageAccounts/listKeys/action"].'),
+    sample: z.number().int().min(0).max(200).default(15).describe('Quantas acoes cobertas listar por inteiro.'),
+  },
+  async run({ patterns, sample = 15 }, version) {
+    const r = await expandir(patterns)
+    const { meta } = await universo()
+    return wrap(version, ['azureRbac'], {
+      totalCovered: r.cobertas.length,
+      universeActions: meta.universeActions,
+      perPattern: r.porPadrao.map((p) => ({ pattern: p.padrao, covers: p.cobre, examples: p.exemplos })),
+      nonExistent: r.inexistentes,
+      sample: r.cobertas.slice(0, sample).map((a) => ({ action: a.action, description: a.description })),
+      note: r.inexistentes.length
+        ? `ATENCAO: ${r.inexistentes.length} padrao(oes) literal(is) NAO existem no universo documentado: ${r.inexistentes.join(', ')}. Nao os inclua numa role definition.`
+        : undefined,
+    })
+  },
+}
+
+const checarCustomRoleTool: ToolDef = {
+  name: 'check_azure_custom_role',
+  title: 'Conferir uma custom role antes de criar',
+  description:
+    'Recebe o JSON de uma role definition do Azure (Actions, NotActions, DataActions, NotDataActions) ' +
+    'e responde cinco coisas que so se descobrem contra o universo: ' +
+    '(1) acoes que NAO EXISTEM; (2) quantas acoes o conjunto realmente concede depois de subtrair ' +
+    'NotActions; (3) NotActions que nao subtraem nada — quase sempre erro de digitacao, e a pessoa ' +
+    'acha que fechou um buraco que continua aberto; (4) se o efetivo inclui acao de ESCALADA DE ' +
+    'PRIVILEGIO, como roleAssignments/write, que faz a role parecer estreita sendo equivalente a ' +
+    'Owner; (5) se algum built-in ja cobre tudo isso, caso em que a custom role nao precisa existir. ' +
+    'CHAME DEPOIS de rascunhar a role e ANTES de mostra-la a quem pediu. Aceita o formato do Portal, ' +
+    'do Azure CLI e do ARM/Bicep (properties.permissions[0]).',
+  schema: {
+    roleDefinition: z.string().min(2).describe('O JSON da role definition, como texto.'),
+  },
+  async run({ roleDefinition }, version) {
+    let def: unknown
+    try {
+      def = JSON.parse(roleDefinition)
+    } catch (e) {
+      return wrap(version, ['azureRbac'], {
+        error: 'INVALID_JSON',
+        message: 'JSON invalido — confira virgulas, aspas e chaves. ' + (e instanceof Error ? e.message : ''),
+      })
+    }
+    // O ARM embrulha em properties; o resto vem no topo.
+    const alvo = (def as Record<string, any>)?.properties ?? def
+    const r = await verificarCustomRole(alvo as any)
+
+    const problemas: string[] = []
+    if (r.inexistentes.length) problemas.push(`${r.inexistentes.length} acao(oes) inexistente(s)`)
+    if (r.escaladaDePrivilegio.length) problemas.push(`${r.escaladaDePrivilegio.length} acao(oes) de escalada de privilegio`)
+    if (r.notActionsInocuas.length) problemas.push(`${r.notActionsInocuas.length} NotActions que nao subtraem nada`)
+
+    return wrap(version, ['azureRbac'], {
+      roleName: r.nome,
+      verdict: r.inexistentes.length ? 'NAO_CRIAR' : problemas.length ? 'REVISAR' : 'OK',
+      problems: problemas,
+      nonExistentActions: r.inexistentes,
+      effective: r.efetivo,
+      perPattern: r.porPadrao.map((p) => ({ pattern: p.padrao, covers: p.cobre })),
+      ineffectiveNotActions: r.notActionsInocuas,
+      privilegeEscalation: r.escaladaDePrivilegio.map((e) => ({ action: e.padrao, why: e.porque })),
+      builtInRolesThatAlreadyCover: {
+        total: r.builtInQueJaCobrem.total,
+        narrowest: r.builtInQueJaCobrem.narrowest,
+      },
+      assignableScopes: r.assignableScopes,
+      actionsWithUndeclaredPlane: r._naoDeclarado,
+      note: [
+        r.inexistentes.length
+          ? 'As acoes inexistentes fazem o `az role definition create` falhar. Corrija antes de entregar o JSON.'
+          : null,
+        r.builtInQueJaCobrem.total
+          ? `${r.builtInQueJaCobrem.total} role(s) built-in ja concedem TUDO que esta custom concede. As mais estreitas: ` +
+            `${r.builtInQueJaCobrem.narrowest.map((b) => `${b.name} (${b.grantsInTotal} acoes)`).join(', ')}. ` +
+            `Custom role tem custo permanente — versionamento, revisao, e mais um lugar onde privilegio cresce sem ninguem olhar. Diga isso antes de recomendar criar.`
+          : null,
+        r.escaladaDePrivilegio.length
+          ? 'A lista de escalada de privilegio e curadoria do IAM Scope, nao classificacao da Microsoft.'
+          : null,
+      ].filter(Boolean).join(' '),
+    })
+  },
+}
+
 export const TOOLS: ToolDef[] = [
   searchRolesTool,
   searchPermissionsTool,
@@ -513,4 +704,8 @@ export const TOOLS: ToolDef[] = [
   evaluateUserRolesTool,
   evaluateRoleJsonTool,
   verifyTool,
+  listarProvidersTool,
+  buscarAcoesTool,
+  expandirWildcardTool,
+  checarCustomRoleTool,
 ]

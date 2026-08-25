@@ -1,8 +1,9 @@
 # iamscope-mcp
 
 Um servidor MCP com o catálogo do [IAM Scope](https://iamscope.cloud): **4.640 roles** e
-**30.865 permissões** de seis nuvens, **190 regras de segregação de funções** e
-**29 equivalências entre plataformas** — respondendo na sua máquina.
+**30.865 permissões** de seis nuvens, **190 regras de segregação de funções**,
+**29 equivalências entre plataformas** e o universo de **17.591 ações** do Azure em
+**151 resource providers** — respondendo na sua máquina.
 
 | Plataforma | Roles |
 |---|--:|
@@ -108,8 +109,47 @@ Para fixar a versão e não depender do registry a cada início:
 | `evaluate_user_roles` | "este conjunto de roles viola segregação de funções?" |
 | `evaluate_role_json` | cole o JSON exportado de uma role e receba a classificação de risco |
 | `verify_role_names` | "esta role existe mesmo?" — o guardrail contra nome inventado |
+| `list_azure_providers` | os 151 resource providers, com quantas ações cada um tem |
+| `search_azure_actions` | "qual a ação para reiniciar uma VM?" — busca nas 17.591 ações |
+| `expand_azure_wildcard` | "quanto `Microsoft.Compute/*/read` realmente concede?" |
+| `check_azure_custom_role` | confere uma custom role antes de você criá-la |
 
-Mais dois recursos legíveis: `iamscope://license` e `iamscope://tiers`.
+Mais três recursos legíveis: `iamscope://license`, `iamscope://tiers` e
+`iamscope://azure/privilege-escalation`.
+
+## Escrever custom role do Azure
+
+As quatro últimas ferramentas existem juntas porque resolvem um problema que nenhuma resolve
+sozinha. O caminho é: descubra o provider, ache a ação, confira o que o wildcard cobre, e passe o
+rascunho pela verificação **antes** de mostrá-lo a quem pediu.
+
+O que a verificação encontra, e que só aparece contra o universo de 17.591 ações:
+
+**Ação que não existe.** `Microsoft.Compute/virtualMachines/reboot/action` é plausível — o verbo do
+Azure é `restart`. Escrita numa role definition, ela só falha no `az role definition create`, com
+uma mensagem que não diz qual das trinta linhas está errada.
+
+**O que o wildcard realmente alcança.** No Azure o `*` **atravessa a barra**:
+`Microsoft.Storage/*` cobre também `Microsoft.Storage/a/b/c/read`. Ninguém expande isso de cabeça,
+e o erro é sempre na direção de conceder demais.
+
+**NotActions que não subtrai nada.** Negar `Microsoft.Compute/virtualMachines/delete` numa role que
+nunca concedeu essa ação não fecha buraco nenhum — mas parece que fecha. A ferramenta lista as que
+não subtraíram.
+
+**Escalada de privilégio.** `Microsoft.Authorization/roleAssignments/write` faz uma role parecer
+estreita sendo equivalente a Owner: quem a tem pode se dar Owner. A lista é curta e é curadoria do
+IAM Scope, não classificação da Microsoft.
+
+**Built-in que já cobre tudo.** Ordenado pela role mais **estreita**, não alfabeticamente — para
+`Microsoft.Storage/storageAccounts/read` a resposta útil é `Reader and Data Access` (3 ações), não
+a primeira do alfabeto. Custom role tem custo permanente: versionamento, revisão, e mais um lugar
+onde privilégio cresce sem ninguém olhar.
+
+Aceita o formato do Portal, do Azure CLI e do ARM/Bicep (`properties.permissions[0]`).
+
+O universo vem da **documentação** da Microsoft, e a Management API expõe mais operações — então
+toda contagem é piso, nunca teto. É o mesmo `≥` que o site usa.
 
 ### `search_roles` não é busca semântica
 

@@ -51,6 +51,8 @@ import { SOD_RULES } from '@/lib/sod'
 import { ensureLocalPermissionIndex, getLocalIndexStats } from '@/lib/permissionScope'
 import equivalences from '@/data/compare/equivalences.json'
 import { installLocalFetch } from './runtime'
+import { readFile as lerArquivo } from 'node:fs/promises'
+import caminho from 'node:path'
 
 installLocalFetch()
 const rolesByPlatform = {
@@ -60,8 +62,13 @@ const rolesByPlatform = {
 await ensureLocalPermissionIndex()
 const permissionsByCloud = getLocalIndexStats()
 const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0)
+// O universo do Azure vem do _meta do proprio indice, nao de um numero escrito
+// aqui. Este passo roda ANTES de o build materializar data/, entao le da fonte.
+const azMeta = JSON.parse(await lerArquivo(caminho.join(process.env.IAMSCOPE_MCP_DATA_DIR, 'azure-providers', 'index.json'), 'utf8'))._meta
 process.stdout.write(JSON.stringify({
   rolesByPlatform,
+  azureActions: azMeta.universeActions,
+  azureProviders: azMeta.providers,
   roles: sum(rolesByPlatform),
   permissionsByCloud,
   permissions: sum(permissionsByCloud),
@@ -104,6 +111,8 @@ export const CATALOG_STATS = ${JSON.stringify(stats, null, 2)} as const
 export const CATALOG_TEXT = {
   roles: '${br(stats.roles)}',
   permissions: '${br(stats.permissions)}',
+  azureActions: '${br(stats.azureActions)}',
+  azureProviders: '${br(stats.azureProviders)}',
   sodRules: '${br(stats.sodRules)}',
   equivalences: '${br(stats.equivalences)}',
 } as const
@@ -120,6 +129,8 @@ export const CATALOG_TEXT = {
       [`**${br(stats.permissions)} permissões**`, 'total de permissões'],
       [`**${br(stats.sodRules)} regras`, 'regras de SoD'],
       [`**${br(stats.equivalences)} equivalências`, 'equivalências'],
+      [`**${br(stats.azureActions)} ações`, 'universo de ações do Azure'],
+      [`${br(stats.azureProviders)} resource providers`, 'providers do Azure'],
       ...Object.entries(stats.rolesByPlatform).map(([k, v]) => [`| ${br(v)} |`, `contagem de ${k}`]),
     ]
     const faltando = esperado.filter(([frag]) => !readme.includes(frag))
@@ -132,6 +143,7 @@ export const CATALOG_TEXT = {
   }
 
   console.log(`catálogo medido: ${br(stats.roles)} roles · ${br(stats.permissions)} permissões · ${stats.sodRules} regras SoD · ${stats.equivalences} equivalências`)
+  console.log(`  azure: ${br(stats.azureActions)} ações em ${stats.azureProviders} providers`)
   console.log(`  por plataforma: ${Object.entries(stats.rolesByPlatform).map(([k, v]) => `${k} ${v}`).join(' · ')}`)
 } finally {
   // A pasta é do sistema, fora do pacote. Se a remoção falhar, o SO limpa depois

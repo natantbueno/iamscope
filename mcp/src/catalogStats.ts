@@ -10,6 +10,8 @@ export const CATALOG_STATS = {
     "googleWorkspace": 14,
     "ibmCloud": 7
   },
+  "azureActions": 17591,
+  "azureProviders": 151,
   "roles": 4640,
   "permissionsByCloud": {
     "entraId": 670,
@@ -26,6 +28,8 @@ export const CATALOG_STATS = {
 export const CATALOG_TEXT = {
   roles: '4.640',
   permissions: '30.865',
+  azureActions: '17.591',
+  azureProviders: '151',
   sodRules: '190',
   equivalences: '29',
 } as const

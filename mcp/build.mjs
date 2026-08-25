@@ -78,7 +78,41 @@ for (const nome of ['aws-actions-index.json', 'gcp-perms-index.json']) {
     throw e
   }
 }
-console.log(`data/ materializado de ../public (2 indices)`)
+
+// As acoes do Azure: os 152 arquivos de public/azure-providers/ viram UM.
+//
+// Sao 3,2 MB crus e 0,30 MB no tarball (medido). O que eles trazem que um indice
+// so de nome+descricao nao traria e QUEM CONCEDE cada acao — e e isso que permite
+// responder "voce nao precisa desta custom role, a Reader ja faz isso".
+//
+// Um arquivo so em vez de 152: o servidor le uma vez e cacheia. Abrir 152
+// arquivos a cada arranque para depois juntar tudo seria o mesmo dado por um
+// caminho mais caro.
+{
+  const DIR = path.join(ROOT, '..', 'public', 'azure-providers')
+  const indice = JSON.parse(await readFile(path.join(DIR, 'index.json'), 'utf8'))
+  const porProvider = {}
+  let acoes = 0
+  for (const p of indice.providers) {
+    const d = JSON.parse(await readFile(path.join(DIR, `${p.slug}.json`), 'utf8'))
+    porProvider[p.slug] = d
+    acoes += d.actions.length
+  }
+  // O gerador afirma que a soma das acoes por provider e o universo. Se um dia
+  // deixar de bater, o dado esta truncado — e um indice truncado responde
+  // "essa acao nao existe" para acao que existe, que e a pior mentira possivel
+  // numa ferramenta de escrever custom role.
+  if (acoes !== indice._meta.universeActions) {
+    console.error(`\nazure-providers: somei ${acoes} acoes, mas o _meta declara ${indice._meta.universeActions}.`)
+    console.error('O indice esta incompleto. Rode scripts/build-azure-providers.js de novo.\n')
+    process.exit(1)
+  }
+  const saida = { _meta: indice._meta, providers: indice.providers, porProvider }
+  await writeFile(path.join(DATA_OUT, 'azure-actions.json'), JSON.stringify(saida))
+  console.log(`azure: ${acoes.toLocaleString('pt-BR')} acoes em ${indice.providers.length} providers`)
+}
+
+console.log(`data/ materializado de ../public (3 indices)`)
 
 const result = await esbuild.build({
   entryPoints: [path.join(ROOT, 'src/server.ts')],

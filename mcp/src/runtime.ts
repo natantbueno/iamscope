@@ -63,6 +63,9 @@ function localResponse(body: unknown, status = 200) {
   }
 }
 
+/** Onde os indices embutidos vivem. O azure.ts le direto daqui, sem passar pelo shim. */
+export function dataDir(): string { return DATA_DIR }
+
 export function installLocalFetch(): void {
   if (installed) return
   installed = true

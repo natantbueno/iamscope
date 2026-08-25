@@ -17,7 +17,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { installLocalFetch, packageVersion } from './runtime'
 import { SERVER_INSTRUCTIONS, LICENSE, THIRD_PARTY } from './provenance'
-import { TOOLS, TIER_REFERENCE } from './tools'
+import { TOOLS, TIER_REFERENCE, ESCALADA_REFERENCE } from './tools'
 
 installLocalFetch()
 
@@ -78,6 +78,15 @@ server.registerResource(
   { title: 'Escadas de tier e o Enterprise Access Model', description: 'As seis escadas de tier por plataforma e os três níveis EAM. Curadoria editorial.', mimeType: 'application/json' },
   async (uri) => ({
     contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(TIER_REFERENCE, null, 2) }],
+  }),
+)
+
+server.registerResource(
+  'escalada-azure',
+  'iamscope://azure/privilege-escalation',
+  { title: 'Acoes do Azure que permitem escalar privilegio', description: 'A lista curta do que faz uma custom role parecer estreita sendo equivalente a Owner. Curadoria editorial.', mimeType: 'application/json' },
+  async (uri) => ({
+    contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(ESCALADA_REFERENCE, null, 2) }],
   }),
 )
 

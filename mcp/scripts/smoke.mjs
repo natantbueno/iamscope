@@ -102,9 +102,9 @@ try {
 
 console.log('\n── protocolo ──')
 const { tools } = await client.listTools()
-ok('7 ferramentas registradas', tools.length === 7, `veio ${tools.length}`)
+ok('11 ferramentas registradas', tools.length === 11, `veio ${tools.length}`)
 const { resources } = await client.listResources()
-ok('2 recursos registrados', resources.length === 2, `veio ${resources.length}`)
+ok('3 recursos registrados', resources.length === 3, `veio ${resources.length}`)
 
 console.log('\n── o guardrail: roles/bigquery.readOnly ──')
 // O nome canônico da alucinação. Plausível, e não existe.
@@ -261,6 +261,109 @@ ok('s3:GetObject MANTÉM os wildcards da AWS', s3.matches.some((m) => m.viaWildc
    s3.matches.filter((m) => m.viaWildcard).map((m) => m.permission).join(','))
 ok('  → e AdministratorAccess aparece por "*"',
    s3.matches.some((m) => m.permission === '*' && m.grantedBy.some((g) => g.name === 'AdministratorAccess')))
+
+console.log('\n── Azure: os numeros que o gerador ja verificou ──')
+// Estas quatro contagens vem das 7 verificacoes de scripts/build-azure-providers.js
+// e das 6 de build-effective-perms.js. Se as ferramentas novas nao as
+// reproduzirem, elas estao expandindo wildcard diferente do que gerou o dado — e
+// o sintoma disso nao e erro, e NUMERO ERRADO numa custom role.
+{
+  const cobre = async (p) => (await call(client, 'expand_azure_wildcard', { patterns: [p], sample: 0 })).totalCovered
+  ok('Owner: `*` cobre o universo inteiro', await cobre('*') === 17591, String(await cobre('*')))
+  ok('Reader: `*/read` cobre 8.006', await cobre('*/read') === 8006, String(await cobre('*/read')))
+  // O `*` do Azure ATRAVESSA a barra. Com a semantica errada isto daria quase zero.
+  ok('o `*` atravessa a barra: Microsoft.Authorization/*/read = 29',
+     await cobre('Microsoft.Authorization/*/read') === 29, String(await cobre('Microsoft.Authorization/*/read')))
+  const prov = await call(client, 'list_azure_providers', { limit: 1 })
+  ok('151 providers, nao 158 (14 chaves sao a mesma acao em dois cases)', prov.totalProviders === 151, String(prov.totalProviders))
+}
+
+console.log('\n── Azure: a Contributor de verdade, contra o numero do P1 ──')
+{
+  // Actions ["*"] menos as 11 NotActions publicadas. O P1 calculou 17.546.
+  const CONTRIBUTOR = {
+    Name: 'Contributor',
+    Actions: ['*'],
+    NotActions: [
+      'Microsoft.Authorization/*/Delete', 'Microsoft.Authorization/*/Write', 'Microsoft.Authorization/elevateAccess/Action',
+      'Microsoft.Blueprint/blueprintAssignments/write', 'Microsoft.Blueprint/blueprintAssignments/delete',
+      'Microsoft.Compute/galleries/share/action', 'Microsoft.Purview/consents/write', 'Microsoft.Purview/consents/delete',
+      'Microsoft.Resources/deploymentStacks/manageDenySetting/action',
+      'Microsoft.Subscription/cancel/action', 'Microsoft.Subscription/enable/action',
+    ],
+  }
+  const r = await call(client, 'check_azure_custom_role', { roleDefinition: JSON.stringify(CONTRIBUTOR) })
+  ok('efetivo = 17.546, o mesmo que build-effective-perms calculou', r.effective.controlPlane === 17546, String(r.effective.controlPlane))
+  ok('  → nenhuma acao inexistente', r.nonExistentActions.length === 0)
+  ok('  → nenhuma NotActions inocua', r.ineffectiveNotActions.length === 0)
+  // roleAssignments/write E negada pela NotActions — nao pode ser acusada.
+  ok('  → roleAssignments/write NAO e acusada (a NotActions a subtrai)',
+     !r.privilegeEscalation.some((e) => /roleAssignments/.test(e.action)),
+     JSON.stringify(r.privilegeEscalation.map((e) => e.action)))
+  // ...mas assign de identidade gerenciada E concedida, e e vetor conhecido.
+  ok('  → mas userAssignedIdentities/assign/action E acusada',
+     r.privilegeEscalation.some((e) => /userAssignedIdentities\/assign/.test(e.action)),
+     JSON.stringify(r.privilegeEscalation.map((e) => e.action)))
+}
+
+console.log('\n── Azure: o que uma custom role errada faz ──')
+{
+  const r = await call(client, 'check_azure_custom_role', { roleDefinition: JSON.stringify({
+    Name: 'Reiniciar VMs',
+    Actions: ['Microsoft.Compute/virtualMachines/restart/action', 'Microsoft.Compute/virtualMachines/reboot/action'],
+    NotActions: ['Microsoft.Storage/storageAccounts/delete'],
+  }) })
+  // `reboot` nao existe — o verbo do Azure e `restart`. Este e o erro que so
+  // aparece no `az role definition create`, com mensagem que nao diz a linha.
+  ok('acao inexistente e pega', r.nonExistentActions.some((n) => /reboot/.test(n.acao)), JSON.stringify(r.nonExistentActions))
+  ok('  → e o veredito e NAO_CRIAR', r.verdict === 'NAO_CRIAR', r.verdict)
+  // NotActions de Storage numa role que so concede Compute nao subtrai nada.
+  ok('  → NotActions que nao subtrai nada e pega',
+     r.ineffectiveNotActions.includes('Microsoft.Storage/storageAccounts/delete'),
+     JSON.stringify(r.ineffectiveNotActions))
+}
+
+console.log('\n── Azure: built-in que ja cobre torna a custom desnecessaria ──')
+{
+  const r = await call(client, 'check_azure_custom_role', { roleDefinition: JSON.stringify({
+    Name: 'So ler storage', Actions: ['Microsoft.Storage/storageAccounts/read'],
+  }) })
+  const cob = r.builtInRolesThatAlreadyCover
+  ok('dezenas de built-in cobrem uma acao comum, e o total e dito', cob.total > 10, String(cob.total))
+  // A sugestao util e a role que concede o MENOS alem do pedido — ordenar por
+  // nome devolvia "Avere Contributor", que nao ajuda ninguem.
+  ok('  → e as sugeridas sao as mais estreitas, nao as primeiras do alfabeto',
+     cob.narrowest[0].grantsInTotal <= cob.narrowest[cob.narrowest.length - 1].grantsInTotal,
+     JSON.stringify(cob.narrowest.map((b) => `${b.name}:${b.grantsInTotal}`)))
+  ok('  → nenhuma sugerida concede mais que a Owner', cob.narrowest.every((b) => b.grantsInTotal <= 17591))
+  // A prova de que a ordenacao serve: a primeira sugestao e MUITO mais estreita
+  // que a Reader (8.006). Ordenado por nome, vinha "Avere Contributor".
+  ok('  → e a mais estreita e bem menor que a Reader',
+     cob.narrowest[0].grantsInTotal < 100,
+     `${cob.narrowest[0].name}: ${cob.narrowest[0].grantsInTotal}`)
+  ok('  → e a nota diz para avisar antes de recomendar criar', /custo permanente/.test(r.note ?? ''))
+}
+
+console.log('\n── Azure: achar a acao pelo que ela faz ──')
+{
+  const r = await call(client, 'search_azure_actions', { query: 'restart', provider: 'Microsoft.Compute', verb: 'action', limit: 5 })
+  ok('acha restart de VM em Microsoft.Compute',
+     r.actions.some((a) => a.action === 'Microsoft.Compute/virtualMachines/restart/action'),
+     r.actions.map((a) => a.action).join(' | '))
+  ok('  → com a descricao oficial junto', r.actions.every((a) => typeof a.description === 'string'))
+  const k = await call(client, 'search_azure_actions', { query: 'listKeys', limit: 5 })
+  ok('acha listKeys sem dizer o provider', k.totalMatches > 0, String(k.totalMatches))
+  const nada = await call(client, 'search_azure_actions', { query: 'zzzzz-nao-existe' })
+  ok('busca sem resultado manda NAO inventar o identificador', /NAO invente/.test(nada.note ?? ''))
+}
+
+console.log('\n── Azure: o formato do ARM/Bicep tambem entra ──')
+{
+  const r = await call(client, 'check_azure_custom_role', { roleDefinition: JSON.stringify({
+    properties: { roleName: 'X', permissions: [{ actions: ['Microsoft.Storage/storageAccounts/read'], notActions: [] }] },
+  }) })
+  ok('permissions[0].actions e lido', r.effective.controlPlane === 1, JSON.stringify(r.effective))
+}
 
 console.log('\n── nada aqui supõe que o caminho é do Linux ──')
 // Custou um build no Windows: build.mjs derivava a própria pasta lendo a
