@@ -22,7 +22,9 @@ import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, Chevrons
 import AppShell from '@/components/AppShell'
 import ExportButton from '@/components/ExportButton'
 import { BetaNotice } from '@/components/BetaBadge'
-import { looksLikeConcreteAction, wildcardMatches } from '@/lib/wildcardMatch'
+import {
+  isUnanchoredPattern, looksLikeConcreteAction, namespaceKey, wildcardMatches,
+} from '@/lib/wildcardMatch'
 import { loadAwsUniverse, looksLikeAwsAction, isKnownAwsAction } from '@/lib/awsUniverse'
 import { CloudId, CLOUD_META, CLOUD_ORDER, getCloudUrl } from '@/data/compare/types'
 import {
@@ -196,6 +198,14 @@ function PermissionScopeContent() {
     const q = query.trim().toLowerCase()
     if (!q || !azureIndex) return []
     const expand = includeWildcard && looksLikeConcreteAction(q)
+    // Espaços de nomes que o índice do Azure ocupa, tirados dele mesmo. Sem
+    // isto, o `*` da Owner responde a busca por permissão do GCP e por action
+    // do Entra — o mesmo defeito que ./lib/permissionScope tinha. Ver
+    // `namespaceKey`; note que `microsoft.insights` e `microsoft.edge` estão
+    // no Azure E no Entra, e a consulta com esses prefixos é ambígua de fato.
+    const qNs = namespaceKey(q)
+    const nsAzure = new Set<string>()
+    for (const a of Object.keys(azureIndex.index)) if (!a.includes('*')) nsAzure.add(namespaceKey(a))
     const out: ScopeMatch[] = []
     for (const action of Object.keys(azureIndex.index)) {
       const literal = action.toLowerCase().includes(q)
@@ -203,7 +213,8 @@ function PermissionScopeContent() {
       // Contributor (que concedem `*`) e Reader não aparecem em busca nenhuma
       // por action concreta — nem na busca pela action que a própria página usa
       // de exemplo no placeholder.
-      const viaWildcard = !literal && expand && action.includes('*') && wildcardMatches(action, q)
+      const cobre = !isUnanchoredPattern(action) || nsAzure.has(qNs)
+      const viaWildcard = !literal && expand && action.includes('*') && cobre && wildcardMatches(action, q)
       if (!literal && !viaWildcard) continue
       // Contra o que a exclusão é medida: a action concreta que a pessoa
       // digitou, quando ela digitou uma; senão a própria chave do índice, que

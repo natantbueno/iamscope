@@ -18,7 +18,9 @@
 
 import { CloudId } from '@/data/compare/types'
 import { getAwsActions, getAwsActionsSync, getAwsDenyBySlug } from './awsActions'
-import { isWildcardPattern, looksLikeConcreteAction, wildcardMatches } from './wildcardMatch'
+import {
+  isUnanchoredPattern, isWildcardPattern, looksLikeConcreteAction, namespaceKey, wildcardMatches,
+} from './wildcardMatch'
 import { getGcpPermissions, getGcpPermissionsSync } from './gcpPermissions'
 
 export interface ScopeRoleRef {
@@ -163,6 +165,7 @@ export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
     await Promise.allSettled(pending)
     _cache = null // rebuild, agora com o que tiver chegado
     _wildcardCache = null
+    _nsCache = null
   }
   return getLocalPermissionIndex()
 }
@@ -180,6 +183,46 @@ function getWildcardEntries(): ScopeMatch[] {
   if (_wildcardCache) return _wildcardCache
   _wildcardCache = getLocalPermissionIndex().filter((m) => isWildcardPattern(m.permission))
   return _wildcardCache
+}
+
+/**
+ * Os espaços de nomes que cada nuvem de fato ocupa, tirados do próprio índice.
+ *
+ * O QUE ISTO CONSERTA
+ *   O `*` da AdministratorAccess casa com QUALQUER texto. Sem este filtro,
+ *   buscar `storage.buckets.delete` — uma permissão do GCP — devolvia a policy
+ *   da AWS, e buscar `microsoft.directory/users/create` devolvia a Owner do
+ *   Azure pelo `*` dela. Na tela a nuvem aparece agrupada e a linha se
+ *   denuncia; num retorno de ferramenta lido por modelo, não.
+ *
+ *   A lista NÃO é escrita à mão: sai das entradas literais do índice, então
+ *   acompanha a próxima coleta sozinha. Padrão não define espaço de nomes e
+ *   por isso fica de fora da construção.
+ */
+let _nsCache: Map<CloudId, Set<string>> | null = null
+
+function getNamespaceKeys(): Map<CloudId, Set<string>> {
+  if (_nsCache) return _nsCache
+  const porNuvem = new Map<CloudId, Set<string>>()
+  for (const m of getLocalPermissionIndex()) {
+    if (isWildcardPattern(m.permission)) continue
+    let set = porNuvem.get(m.cloud)
+    if (!set) { set = new Set<string>(); porNuvem.set(m.cloud, set) }
+    set.add(namespaceKey(m.permission))
+  }
+  _nsCache = porNuvem
+  return porNuvem
+}
+
+/**
+ * Este padrão pode falar sobre esta consulta, ou é de outra nuvem?
+ *
+ * Padrão com prefixo literal passa direto: a própria regex já o prende ao
+ * espaço de nomes dele. Só o padrão sem âncora precisa da pergunta.
+ */
+function patternCanCover(m: ScopeMatch, qNs: string): boolean {
+  if (!isUnanchoredPattern(m.permission)) return true
+  return getNamespaceKeys().get(m.cloud)?.has(qNs) ?? false
 }
 
 /**
@@ -250,8 +293,10 @@ function collectHits(q: string, includeWildcard: boolean): ScopeMatch[] {
   // vezes, uma delas dizendo "via wildcard" para um casamento que foi textual.
   const seen = new Set(literal.map((m) => `${m.cloud}|${m.permission}`))
   const out = literal.slice()
+  const qNs = namespaceKey(q)
   for (const m of getWildcardEntries()) {
     if (seen.has(`${m.cloud}|${m.permission}`)) continue
+    if (!patternCanCover(m, qNs)) continue
     if (wildcardMatches(m.permission, q)) out.push({ ...m, viaWildcard: true })
   }
   return dropDenied(out, q)

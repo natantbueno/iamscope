@@ -68,3 +68,47 @@ export function wildcardMatches(pattern: string, action: string): boolean {
   if (!isWildcardPattern(pattern)) return false
   return toRegExp(pattern).test(action.trim())
 }
+
+/**
+ * O padrão NÃO carrega texto da própria nuvem?
+ *
+ * `s3:Get*` só casa com quem começa em `s3:`; `Microsoft.Authorization/*\/read`
+ * só casa com quem começa naquele provedor. Esses se defendem sozinhos — o
+ * prefixo literal é a fronteira. Já um padrão que COMEÇA com `*` não afirma
+ * nada sobre o identificador, e é por ele que uma nuvem invade a outra.
+ *
+ * Medido nos índices em 25/08/2026: dos 1.267 padrões da AWS, exatamente UM é
+ * assim (`*`); dos 750 do Azure, DOIS. O Entra ID não tem padrão nenhum (670
+ * actions) e o GCP também não (13.701 permissões). O vazamento inteiro cabe em
+ * três strings — e é por isso que a correção filtra estas, em vez de mexer no
+ * casamento dos outros 2.014.
+ */
+export function isUnanchoredPattern(pattern: string): boolean {
+  return pattern.trimStart().startsWith('*')
+}
+
+/**
+ * A que espaço de nomes um identificador pertence.
+ *
+ * Não é "cara de action": é o separador, e ele separa as nuvens de verdade
+ * porque foi medido, não suposto (25/08/2026):
+ *
+ *   `:`  16.422 das 16.423 actions da AWS têm — a única exceção é o próprio
+ *        `*`. NENHUMA permissão de GCP, Azure ou Entra tem `:`.
+ *   `/`  o prefixo antes da primeira barra. Têm barra: 2.696 das 2.697 chaves
+ *        do Azure, as 670 do Entra, e 138 do GCP
+ *        (`cloudonefs.isiloncloud.com/clusters.create` e vizinhas — foi o dado
+ *        que derrubou a regra ingênua de "barra = Microsoft").
+ *   `.`  o resto do GCP, pontilhado, sem separador de família.
+ *
+ * **Entra e Azure colidem em dois prefixos** — `microsoft.edge` e
+ * `microsoft.insights` existem nos dois catálogos. Consulta com um desses é
+ * ambígua de verdade, e o chamador a trata como pertencente às duas nuvens:
+ * inventar um desempate seria escolher por palpite.
+ */
+export function namespaceKey(identifier: string): string {
+  const s = identifier.trim().toLowerCase()
+  if (s.includes(':')) return ':'
+  const i = s.indexOf('/')
+  return i > 0 ? s.slice(0, i) : '.'
+}
