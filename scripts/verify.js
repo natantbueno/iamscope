@@ -82,19 +82,17 @@ const azul = (s) => c(36, s)
  *   some de vista, que é o oposto do que ela serve.
  */
 const CONHECIDOS_QUEBRADOS = {
-  'build-assessment-catalog.js': {
-    desde: '2026-08-25',
-    porque:
-      'refRole() so conhece entra-id e assume Azure para todo o resto. O SoD virou ' +
-      'multi-cloud em 07/08 (190 regras em 5 plataformas), entao as referencias de ' +
-      'AWS, GCP, Workspace e IBM caem no else, sao procuradas no mapa do Azure e nao ' +
-      'resolvem — 133 no total. O prefixo "azure-rbac:" da mensagem e hardcoded, por ' +
-      'isso a lista mostra slugs que obviamente nao sao do Azure.',
-    efeito:
-      'public/iamscope-catalog.json, que alimenta os dois .ps1 de assessment, esta ' +
-      'sem as regras de SoD dessas quatro plataformas desde 07/08.',
-    conserto: 'estender refRole() em scripts/build-assessment-catalog.js (~linha 87) para as 6 clouds',
-  },
+  // VAZIO desde 26/08/2026.
+  //
+  // A entrada que morava aqui era o build-assessment-catalog.js: o refRole()
+  // mandava toda plataforma que não fosse 'entra-id' para o mapa do Azure, e
+  // com o SoD multi-cloud isso virou 133 referências "não resolvidas" que
+  // abortavam o script. O efeito era maior do que a nota dizia — o
+  // iamscope-catalog.json não era só incompleto, ele tinha PARADO de ser
+  // gerado, congelado em 01/08/2026 com 96 regras.
+  //
+  // Corrigido: RESOLVEDORES conhece as cinco plataformas, EXPORTADAS declara
+  // quais entram, e o corte sai no campo `sodScope` do JSON.
 }
 
 /**

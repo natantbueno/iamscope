@@ -79,23 +79,97 @@ const azure = AZURE_ROLES.map((r) => ({
   permissionCount: r.permissionCount ?? 0,
 }))
 
-// Regras de SoD com os GUIDs resolvidos (mesma lógica de build-sod-rules-json)
+// ── Regras de SoD ───────────────────────────────────────────────────────────
+//
+// O CORTE, E POR QUE ELE É DECLARADO EM VEZ DE SILENCIOSO
+//   Os dois .ps1 de assessment falam com o Microsoft Graph e com o Azure
+//   Resource Manager. Eles não enumeram conta AWS, projeto GCP nem tenant do
+//   Google Workspace — então exportar regra dessas plataformas faria o
+//   relatório dizer "0 conflitos" sobre o que o script sequer visitou, que é
+//   pior do que dizer que não cobre. É a mesma decisão, e o mesmo campo
+//   `scope`, de build-sod-rules-json.js.
+//
+//   Mudar de ideia é mudar ESTA lista; o resto do arquivo se ajusta sozinho.
+const EXPORTADAS = ['entra-id', 'azure-rbac']
+
 const entraBySlug = new Map(ROLES.map((r) => [r.slug, r]))
 const azureBySlug = new Map(AZURE_ROLES.map((r) => [r.slug, r]))
+
+/**
+ * Uma entrada por plataforma que o SoD pode citar — inclusive as que este
+ * catálogo não exporta, que resolvem para `null` de propósito.
+ *
+ * ISTO EXISTE POR CAUSA DE UM BUG REAL. A versão anterior tratava 'entra-id'
+ * e mandava TODO o resto para o mapa do Azure, num `else`. Quando o SoD virou
+ * multi-cloud em 07/08/2026 (190 regras, 5 plataformas), as 133 referências de
+ * AWS, GCP e Workspace passaram a ser procuradas entre roles do Azure e, é
+ * claro, não resolviam — e como referência não resolvida aborta o script,
+ * `public/iamscope-catalog.json` PAROU DE SER GERADO. Ficou congelado em
+ * 01/08/2026, com tier e privilégio de datasets que já foram recoletados
+ * desde então. O sintoma anunciado era "faltam regras de SoD"; o efeito real
+ * era o arquivo inteiro parado.
+ *
+ * Por isso plataforma sem entrada aqui é ERRO ALTO, e não um `else` que chuta:
+ * foi exatamente o `else` que escondeu o problema por dezoito dias.
+ */
+const RESOLVEDORES = {
+  'entra-id':   (id) => {
+    const r = entraBySlug.get(id)
+    return r ? { cloud: 'entra-id', name: r.name, templateId: r.id, slug: r.slug } : null
+  },
+  'azure-rbac': (id) => {
+    const r = azureBySlug.get(id)
+    return r ? { cloud: 'azure-rbac', name: r.name, roleDefinitionId: r.id, slug: r.slug } : null
+  },
+  // Fora do escopo dos .ps1 — conhecidas, e por isso silenciosas em vez de erro.
+  'aws':              () => null,
+  'gcp':              () => null,
+  'google-workspace': () => null,
+}
+
+/**
+ * Plataforma nova em SoDPlatform tem de PARAR este script.
+ *
+ * A checagem roda sobre as 190 regras, antes e independente do filtro de
+ * escopo — se dependesse dele, uma plataforma nova simplesmente cairia fora de
+ * EXPORTADAS e sumiria em silêncio, que é o mesmo desfecho do `else` que
+ * causou o bug original. Aqui a pergunta é outra: "este script SABE que esta
+ * plataforma existe?". Ele precisa saber de todas, inclusive das que não
+ * exporta.
+ */
+const plataformasDesconhecidas = [...new Set(
+  SOD_RULES.flatMap((r) => [r.roleA.cloud, r.roleB.cloud]).filter((c) => !(c in RESOLVEDORES)),
+)]
+if (plataformasDesconhecidas.length) {
+  console.error(`\nPlataforma de SoD que este script não conhece: ${plataformasDesconhecidas.join(', ')}`)
+  console.error('Acrescente uma entrada em RESOLVEDORES — e decida se ela entra em EXPORTADAS.')
+  process.exitCode = 1
+  return
+}
+
 const naoResolvidas = []
 
 function refRole(ref) {
-  if (ref.cloud === 'entra-id') {
-    const r = entraBySlug.get(ref.id)
-    if (!r) { naoResolvidas.push(`entra-id:${ref.id}`); return null }
-    return { cloud: 'entra-id', name: r.name, templateId: r.id, slug: r.slug }
+  const resolver = RESOLVEDORES[ref.cloud]
+  if (!resolver) {
+    // SoDPlatform ganhou um valor novo e ninguém avisou este script.
+    naoResolvidas.push(`plataforma desconhecida "${ref.cloud}" (${ref.id}) — acrescente-a em RESOLVEDORES`)
+    return null
   }
-  const r = azureBySlug.get(ref.id)
-  if (!r) { naoResolvidas.push(`azure-rbac:${ref.id}`); return null }
-  return { cloud: 'azure-rbac', name: r.name, roleDefinitionId: r.id, slug: r.slug }
+  const r = resolver(ref.id)
+  // O prefixo vem da própria referência. Era 'azure-rbac:' cravado, o que
+  // fazia a lista de erro anunciar slug de GCP como se fosse do Azure.
+  if (!r && EXPORTADAS.includes(ref.cloud)) naoResolvidas.push(`${ref.cloud}:${ref.id}`)
+  return r
 }
 
-const sod = SOD_RULES.map((rule) => ({
+/** A regra inteira entra só se as DUAS pontas estiverem no escopo exportado. */
+const noEscopo = (rule) =>
+  EXPORTADAS.includes(rule.roleA.cloud) && EXPORTADAS.includes(rule.roleB.cloud)
+
+const foraDoEscopo = SOD_RULES.filter((rule) => !noEscopo(rule))
+
+const sod = SOD_RULES.filter(noEscopo).map((rule) => ({
   id: rule.id,
   name: rule.name,
   severity: rule.severity,
@@ -107,8 +181,9 @@ const sod = SOD_RULES.map((rule) => ({
 }))
 
 if (naoResolvidas.length) {
-  console.error(`\n${naoResolvidas.length} referência(s) de role não resolvida(s):`)
+  console.error(`\n${naoResolvidas.length} referência(s) de role não resolvida(s) DENTRO do escopo:`)
   for (const u of [...new Set(naoResolvidas)]) console.error(`  - ${u}`)
+  console.error('\nIsto é erro de dado, não de escopo: a plataforma é exportada e o slug não existe.')
   process.exitCode = 1
   return
 }
@@ -123,6 +198,20 @@ const catalogo = {
   entraRoles: entra,
   azureRoles: azure,
   sodRules: sod,
+  /**
+   * O corte, dito no arquivo — o mesmo contrato de build-sod-rules-json.js.
+   * Sem isto o consumidor não tem como distinguir "nenhum conflito" de
+   * "plataforma não coberta".
+   */
+  sodScope: {
+    platforms: EXPORTADAS,
+    exportedRules: sod.length,
+    catalogRules: SOD_RULES.length,
+    skippedRules: foraDoEscopo.length,
+    note: 'Os .ps1 enumeram apenas Microsoft Entra ID e Azure RBAC. Regras de AWS, '
+      + 'GCP e Google Workspace existem no catalogo do site e ficam fora daqui de '
+      + 'proposito: relatar "0 conflitos" sobre plataforma nao visitada seria falso.',
+  },
 }
 
 const porNivel = (arr) => arr.reduce((a, r) => { a[r.tierLevel] = (a[r.tierLevel] ?? 0) + 1; return a }, {})
@@ -131,7 +220,9 @@ console.log(`Entra roles       : ${entra.length}  (${entra.filter((r) => r.isPri
 console.log(`  por tier level  : ${JSON.stringify(porNivel(entra))}`)
 console.log(`Azure roles       : ${azure.length}  (${azure.filter((r) => r.isPrivileged).length} privilegiadas)`)
 console.log(`  por tier level  : ${JSON.stringify(porNivel(azure))}`)
-console.log(`Regras de SoD     : ${sod.length}`)
+console.log(`Regras de SoD     : ${sod.length} de ${SOD_RULES.length} do catálogo`)
+console.log(`  escopo          : ${EXPORTADAS.join(', ')}`)
+console.log(`  fora do escopo  : ${foraDoEscopo.length} regra(s) — declarado em sodScope`)
 
 if (DRY) { console.log('\n--dry-run: nada escrito.'); return }
 
