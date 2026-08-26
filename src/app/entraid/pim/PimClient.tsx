@@ -7,10 +7,13 @@ import EamTierBadge from '@/components/EamTierBadge'
 import { ExternalLink, ShieldCheck, Timer } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
 import { useT } from '@/i18n/LanguageProvider'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
+import { ENTRA_ROLES_COUNT } from '@/data/counts'
 import { Rich } from '@/i18n/Rich'
 
 export default function PimClient() {
   const t = useT()
+  const fmt = useNumberFormat()
 
   // As roles Control Plane privilegiadas são as melhores candidatas a eligible assignment em PIM.
   const topControlPlaneRoles = ROLES
@@ -38,7 +41,10 @@ export default function PimClient() {
               {t('pim.whatOneC')}
             </p>
             <p className="text-note text-fg-muted leading-relaxed">
-              <Rich text={t('pim.whatTwo')} className="text-gray-800 dark:text-gray-200" />
+              <Rich
+                text={t('pim.whatTwo').replace('{n}', fmt(ENTRA_ROLES_COUNT))}
+                className="text-gray-800 dark:text-gray-200"
+              />
             </p>
             <Note>
               <Rich text={t('pim.whatNoteA')} />{' '}

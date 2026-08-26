@@ -5,6 +5,8 @@ import AppShell from '@/components/AppShell'
 import { useT } from '@/i18n/LanguageProvider'
 import { KPI_TONE } from '@/lib/kpiTone'
 import { IBM_ROLES, IBM_TIER_META, IbmTier } from '@/data/ibmCloud'
+import { IBM_CLASSIC_PERMISSIONS_COUNT } from '@/data/counts'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
 import Link from 'next/link'
 import { ShieldAlert, Key, Server, Database, Cloud, Shield, ShieldCheck, Network, Lock, HardDrive, Settings, Activity, Box, Cpu, ChevronRight } from 'lucide-react'
 import { Rich } from '@/i18n/Rich'
@@ -27,6 +29,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 export default function IbmCloudDashboard() {
   const t = useT()
+  const fmt = useNumberFormat()
   const total        = IBM_ROLES.length
   const privileged   = IBM_ROLES.filter(r => r.isPrivileged).length
   const accountAdmin = IBM_ROLES.filter(r => r.tier === 'AccountAdmin').length
@@ -98,7 +101,7 @@ export default function IbmCloudDashboard() {
               className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
               <div className="text-stat font-bold leading-none mb-1.5 themed-color" style={themedText('#6b7280', undefined, 3)}>4</div>
               <div className="text-tiny font-semibold text-gray-700 dark:text-gray-300">Classic Infrastructure</div>
-              <p className="text-3xs text-fg-subtle mt-1 leading-relaxed">{t('ibm.classicDesc')}</p>
+              <p className="text-3xs text-fg-subtle mt-1 leading-relaxed">{t('ibm.classicDesc').replace('{n}', fmt(IBM_CLASSIC_PERMISSIONS_COUNT))}</p>
             </Link>
           </div>
 

@@ -2,6 +2,8 @@
 
 import { Info } from 'lucide-react'
 import { useT } from '@/i18n/LanguageProvider'
+import { useNumberFormat } from '@/i18n/useNumberFormat'
+import { IBM_CLASSIC_PERMISSIONS_COUNT } from '@/data/counts'
 
 /**
  * Aviso de escopo do SoD Analyzer.
@@ -34,6 +36,7 @@ export default function SoDScopeNotice({
   platformCount, crossCloudCount,
 }: { platformCount: number; crossCloudCount: number }) {
   const t = useT()
+  const fmt = useNumberFormat()
   return (
     <div className="px-4 py-2.5 border-b border-surface-border dark:border-gray-800 bg-surface-faint dark:bg-gray-800/40 shrink-0">
       <div className="flex items-start gap-2">
@@ -43,7 +46,7 @@ export default function SoDScopeNotice({
             {t('sod.scopeTitle')} {platformCount} {t('sod.scopePlatforms')}
           </span>{' '}
           Entra ID, Azure RBAC, AWS IAM, GCP IAM, Google Workspace.{' '}
-          {t('sod.scopeIbm')}{' '}
+          {t('sod.scopeIbm').replace('{n}', fmt(IBM_CLASSIC_PERMISSIONS_COUNT))}{' '}
           <span className="text-fg-subtle">
             {t('sod.scopeCrossA')} {crossCloudCount} {t('sod.scopeCrossB')}
           </span>

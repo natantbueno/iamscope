@@ -123,11 +123,17 @@ const PROSA_HISTORICA = {
   'chlog.azureCountBody':  '"504 é a contagem oficial" — o número É o assunto da frase',
   'chlog.awsOfficialBody': '1.553 policies — narrativa da recoleta das descrições oficiais',
 }
-const A_INTERPOLAR = {
-  'pim.whatTwo':     'as 144 directory roles — deveria ler ENTRA_ROLES_COUNT',
-  'sod.scopeIbm':    'as 71 permissões clássicas — deveria ler IBM_CLASSIC_PERMISSIONS_COUNT',
-  'ibm.classicDesc': 'as 71 permissões clássicas — idem',
-}
+// VAZIO desde 25/08/2026 — e é para continuar assim.
+//
+// As três dívidas que moravam aqui (`pim.whatTwo`, `sod.scopeIbm`,
+// `ibm.classicDesc`) foram pagas: a frase recebeu `{n}` e o chamador preenche
+// de counts.ts, como `adv.howCoverage` já fazia. Com a lista vazia, um número
+// igual a uma contagem atual volta a ser ERRO — que é o ponto.
+//
+// O mecanismo fica de pé: dívida nova entra aqui, aparece impressa em toda
+// rodada, e não derruba o build enquanto não for paga. Registrar é barato;
+// deixar a interface mentir, não.
+const A_INTERPOLAR = {}
 
 /** Qual chave do dicionário contém um dado deslocamento do arquivo. */
 function chaveDoDicionario(src, idx) {
