@@ -1,0 +1,17 @@
+{
+  "name": "iamscope-agente",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Agente de linha de comando que responde perguntas de IAM usando o servidor MCP do IAM Scope.",
+  "bin": { "iamscope-agente": "agente.mjs" },
+  "scripts": {
+    "start": "node agente.mjs",
+    "test": "node teste.mjs"
+  },
+  "engines": { "node": ">=18.17" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.120.0",
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  }
+}

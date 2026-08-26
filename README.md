@@ -206,7 +206,7 @@ Isso é consequência do export estático, **não é uma interface**. Esses arqu
 - têm a forma que o coletor que os escreveu deu a eles, e mudam quando o coletor muda;
 - carregam campos derivados que podem estar defasados — o `actions` de `aws-policy-docs/*.json` ainda vem do coletor antigo e inclui `Deny`, e é por isso que `src/lib/awsActions.ts` lê o `document`, não esse campo;
 - respondem com o cabeçalho `X-IAMScope-Contract: internal-unstable`;
-- **não têm CORS, de propósito** — um navegador de terceiro não consegue lê-los, e é isso que impede uma dependência acidental de virar quebra silenciosa na próxima coleta.
+- **restringem o CORS à origem do site, de propósito** — `Access-Control-Allow-Origin: https://iamscope.cloud`, para que um navegador de terceiro não consiga lê-los. A restrição precisa ser **explícita**: a Vercel serve todo arquivo estático com `Access-Control-Allow-Origin: *` por padrão, e `headers` do `vercel.json` só acrescenta cabeçalho — nunca remove. Não declarar nada deixa os arquivos abertos, que foi como ficaram até 25/08/2026. E vale lembrar o alcance: **CORS só restringe navegador** — `curl`, CI e cliente MCP nunca foram afetados. Fora do navegador, o que evita dependência acidental é o contrato declarado, não o cabeçalho.
 
 O contrato público será `/api/v1/`: CORS aberto, versionado no caminho, com checador travando o build. O `vercel.json` já está preparado para ele. **Enquanto `/api/v1/` não existir, não há interface pública de dados neste projeto** — quem precisa de dado estável usa os exports em CSV/JSON da própria interface.
 
@@ -339,7 +339,7 @@ Funciona no **Vercel** (recomendado), Netlify ou qualquer host estático. Para V
 Só cabeçalhos — não altera build command nem diretório de saída. Faz duas coisas:
 
 1. **Abre CORS em `/api/(.*)`**, com cache curto no manifesto (`index.json`, 5 min) e longo nos dados (1 h + `stale-while-revalidate`). Sem essa configuração nenhum navegador de terceiro consegue ler a API, por mais pública que a URL seja.
-2. **Marca os arquivos internos** de `public/` com `X-IAMScope-Contract: internal-unstable`, e deliberadamente **não** dá CORS a eles.
+2. **Marca os arquivos internos** de `public/` com `X-IAMScope-Contract: internal-unstable` e **restringe o CORS deles à origem do site**. Tem de ser explícito, porque a Vercel já entrega todo estático com `Access-Control-Allow-Origin: *` e a configuração de `headers` não tem como remover cabeçalho.
 
 Em host que não seja Vercel, esses cabeçalhos precisam ser reproduzidos na configuração equivalente (`_headers` no Netlify e no Cloudflare Pages), senão a API sai sem CORS e sem cache.
 

@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Roda a verificação completa antes de qualquer push.
+#
+# Ativação (uma vez por clone — .git/hooks não é versionado):
+#     git config core.hooksPath .githooks
+#
+# Para pular num caso específico:  git push --no-verify
+#
+# O que roda está em scripts/verify.js: os índices derivados e os dez
+# checadores. Coletores NÃO rodam aqui — eles puxam rede e reescrevem os
+# datasets, e isso é ato deliberado, não efeito colateral de um push.
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "pre-push: node não está no PATH; pulando a verificação." >&2
+  exit 0
+fi
+
+exec node "$(dirname "$0")/../scripts/verify.js"

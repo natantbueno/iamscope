@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/build-changelog.js && next build",
+    "verify": "node scripts/verify.js",
+    "build": "node scripts/build-changelog.js && node scripts/build-api.js && node scripts/check-api-contract.js && next build",
     "start": "next start"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "lucide-react": "^0.469.0",
-    "next": "^15.0.0",
+    "next": "^15.5.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

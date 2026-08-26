@@ -3,12 +3,12 @@
 Cross-cloud IAM role catalog as versioned static JSON. No key, no signup, no rate
 limit, no backend.
 
-> **Status: specification, not yet live.**
-> `/api/v1/` returns 404 today. This document is the contract that
-> `scripts/build-api.js` implements in Phase 1 — every field, filename and count
-> below is binding on that script, and the `check-api-contract.js` checker fails
-> the build when they drift. Nothing here should be published on the site before
-> the files actually respond. Last revised 2026-08-22.
+> **How these files come to exist.** `/api/v1/` is generated at build time by
+> `scripts/build-api.js` from the same datasets the site renders, and
+> `scripts/check-api-contract.js` fails the build when the output drifts from
+> this document. The files are not committed — `public/api/` is in
+> `.gitignore`, and the deploy regenerates them. Every field, filename, count
+> and size below was read off a real build. Last revised 2026-08-25.
 
 ---
 
@@ -31,7 +31,7 @@ This API is that table, kept current, with the raw provider data attached:
 
 - **Not a query API.** There is no search endpoint, no filtering, no pagination.
   You download a file and filter it yourself. The whole catalog without permission
-  arrays is ~250 KB gzipped — smaller than most single-page JavaScript bundles.
+  arrays is 289 KB gzipped — smaller than most single-page JavaScript bundles.
 - **Not an authority.** `eamLevel`, `category` and `isPrivileged` are editorial
   classification by IAM Scope. No cloud provider publishes them. See
   [Classification is editorial](#classification-is-editorial).
@@ -64,22 +64,25 @@ That is the entire learning curve. There is no step 4.
 
 Base URL: `https://iamscope.cloud/api/v1/`
 
-| File | Records | Approx. size |
-|---|---:|---:|
-| `index.json` | — | 4 KB |
-| `roles/all.json` | 4,640 | 1.5 MB (250 KB gz) |
-| `roles/entra.json` | 144 | 60 KB |
-| `roles/azure.json` | 504 | 190 KB |
-| `roles/aws.json` | 1,582 | 620 KB |
-| `roles/gcp.json` | 2,389 | 780 KB |
-| `roles/workspace.json` | 14 | 12 KB |
-| `roles/ibm.json` | 7 | 8 KB |
-| `permissions/aws.json` | 16,423 actions | 900 KB |
-| `permissions/gcp.json` | 13,701 permissions | 1.2 MB |
-| `permissions/azure.json` | 17,605 with descriptions | 2.1 MB |
-| `permissions/entra.json` | 1,504 Graph API permissions | 640 KB |
-| `meta/sources.json` | — | 12 KB |
-| `meta/tiers.json` | — | 6 KB |
+| File | Records | Size | Over the wire (gzip) |
+|---|---:|---:|---:|
+| `index.json` | — | 2.4 KB | 1.1 KB |
+| `roles/all.json` | 4,640 | 3.3 MB | **289 KB** |
+| `roles/entra.json` | 144 | 346 KB | 28 KB |
+| `roles/azure.json` | 504 | 320 KB | 40 KB |
+| `roles/aws.json` | 1,582 | 1.4 MB | 127 KB |
+| `roles/gcp.json` | 2,389 | 1.5 MB | 109 KB |
+| `roles/workspace.json` | 14 | 12 KB | 2.7 KB |
+| `roles/ibm.json` | 7 | 4.8 KB | 0.9 KB |
+| `permissions/aws.json` | 16,423 actions | 1.1 MB | 167 KB |
+| `permissions/gcp.json` | 13,701 permissions | 1.4 MB | 141 KB |
+| `permissions/azure.json` | 17,605 with descriptions | 2.3 MB | 235 KB |
+| `permissions/entra.json` | 1,504 Graph API permissions | 820 KB | 77 KB |
+| `meta/sources.json` | 8 datasets | 6.2 KB | 2.7 KB |
+| `meta/tiers.json` | — | 2.2 KB | 0.8 KB |
+
+Everything is served compressed, so the gzip column is what you actually
+download.
 
 `roles/all.json` is the six platform files concatenated, **without** the
 `permissions` array on each record. Use it when you need breadth; use a platform
@@ -93,14 +96,17 @@ anything large:
 ```json
 {
   "apiVersion": "v1",
-  "generatedAt": "2026-08-22T18:54:36Z",
+  "classification": "iamscope-editorial",
   "license": "CC-BY-4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
   "attribution": "IAM Scope — https://iamscope.cloud",
+  "generatedAt": "2026-08-25T20:04:24Z",
+  "site": "https://iamscope.cloud",
   "counts": { "roles": 4640, "platforms": 6, "sodRules": 190 },
   "files": [
     {
       "path": "roles/aws.json",
-      "bytes": 634112,
+      "bytes": 1456404,
       "sha256": "9f2c…",
       "count": 1582,
       "lastSynced": "2026-08-21"
@@ -111,6 +117,50 @@ anything large:
 
 Compare the `sha256` you stored against the one in the manifest. If it matches,
 you already have the current file and you can skip the download entirely.
+
+**`generatedAt` exists only here, deliberately.** If the build timestamp were
+stamped into every file, every file's digest would change on every deploy even
+when no data moved, and the manifest would lose the one thing that makes it
+worth fetching. The data files carry `lastSynced` instead, which changes when
+the data does.
+
+### The permissions files have a different shape
+
+`roles/*.json` is a list of records. `permissions/*.json` is a map, because the
+useful question there is "which roles grant this action", and repeating the role
+slug on every one of 16,423 entries would quadruple the file.
+
+```json
+{
+  "apiVersion": "v1",
+  "platform": "aws",
+  "dataset": "permissions",
+  "classification": "provider-data",
+  "count": 16423,
+  "roleSlugs": ["accessanalyzerservicerolepolicy", "administratoraccess", "..."],
+  "permissions": {
+    "s3:GetObject":         { "grantedBy": [1, 47, 512] },
+    "profile:CreateDomain": { "grantedBy": [880], "deniedBy": [880] }
+  }
+}
+```
+
+`grantedBy` and `deniedBy` are **indices into `roleSlugs`**, not names. Resolve
+them with `roleSlugs[i]`. Note the second entry: the same policy appears in both
+lists, which is [trap 2](#2-exclusion-is-per-principal-not-per-entry) in the raw.
+
+- `permissions/aws.json` and `permissions/gcp.json` follow this exactly. GCP has
+  no `deniedBy` — GCP roles do not carry exclusions.
+- `permissions/azure.json` adds a `description` per action, and its keys are
+  **uppercased**, because that is how the provider publishes the action catalog.
+  Uppercase your lookups against it.
+- `permissions/entra.json` is the exception: Graph API permissions are records
+  with their own identity, so it is an `items` array like the role files, with
+  `nativeTier` and `eamLevel` on each.
+
+These files are marked `"classification": "provider-data"` rather than
+`iamscope-editorial`: which role grants which action is the provider's fact, not
+our judgment.
 
 ---
 
@@ -156,7 +206,7 @@ are added, never substituted.
 |---|---|---|
 | `platform` | `entra` \| `azure` \| `aws` \| `gcp` \| `workspace` \| `ibm` | |
 | `kind` | `role` \| `managed-policy` | AWS entries are policies, not roles. Everything else is a role. |
-| `id` | string | The provider's own identifier: GUID for Entra and Azure, ARN for AWS, `roles/x.y` for GCP. **Stable.** |
+| `id` | string | The provider's own identifier: GUID for Entra and Azure, ARN for AWS, `roles/x.y` for GCP. **Stable.** Google Workspace and IBM Cloud publish no stable id for their roles, so there `id` equals `slug` — `meta/tiers.json` records that in `idNote`. |
 | `slug` | string | Our URL segment. Stable within a major version. |
 | `name` | string | The provider's name, verbatim, never translated. |
 | `description` | string | The provider's description, verbatim, never translated. |
@@ -367,7 +417,7 @@ console.log(`${tier0.length} of ${items.length} GCP roles are control plane`)
 
 > The internal files at the site root — `gcp-roles-official.json`,
 > `search-index.json`, `azure-perms-index.json` and the rest — respond with
-> `X-IAMScope-Contract: internal-unstable` and **deliberately have no CORS**.
+> `X-IAMScope-Contract: internal-unstable` and **restrict CORS to the site's own origin** (the host serves static files with `Access-Control-Allow-Origin: *` unless told otherwise).
 > They are the site's own working files, they change shape whenever a collector
 > changes, and they are not covered by any of the guarantees in this document.
 > `/api/v1/` is the contract. Nothing else is.
