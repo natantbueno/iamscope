@@ -153,12 +153,50 @@ export function getLocalPermissionIndex(): ScopeMatch[] {
  * chamada, uma busca feita antes de os índices chegarem devolveria zero
  * resultados dessas clouds silenciosamente — pior do que demorar um instante.
  */
+/**
+ * As quatro fontes que este índice junta, numa lista só.
+ *
+ * Estavam escritas duas vezes — uma para disparar o carregamento, outra
+ * implícita em quem sabia checar o resultado. Fonte nova exigia lembrar dos
+ * dois lugares, e esquecer o segundo não quebra nada: só faz a cloud sumir da
+ * busca em silêncio, que é o defeito que esta seção inteira existe para
+ * fechar.
+ */
+const FONTES: Array<{
+  cloud: CloudId
+  pronto: () => unknown | null
+  carregar: () => Promise<unknown>
+}> = [
+  { cloud: 'gcp',             pronto: getGcpPermissionsSync, carregar: getGcpPermissions },
+  { cloud: 'aws',             pronto: getAwsActionsSync,     carregar: getAwsActions },
+  { cloud: 'entraId',         pronto: getEntraActionsSync,   carregar: loadEntraActions },
+  { cloud: 'googleWorkspace', pronto: getGwsPermissionsSync, carregar: loadGwsPermissions },
+]
+
+let _ausentes: CloudId[] = []
+
+/**
+ * As clouds cujo índice NÃO carregou — vazio quando está tudo em pé.
+ *
+ * POR QUE ISTO PRECISA EXISTIR
+ *   O `Promise.allSettled` abaixo é o desenho certo: uma cloud falhar não pode
+ *   derrubar a página. Mas ele engole a falha, e aí "esta permissão não
+ *   existe" e "o índice desta cloud não carregou" saem da busca com a MESMA
+ *   cara — zero resultados. Quem lê conclui a primeira, que é falsa.
+ *
+ *   O pacote MCP já tratava isso como ERRO (`INDEX_NOT_LOADED`), porque lá um
+ *   modelo lê o vazio e afirma que ninguém concede a action. Na tela o risco é
+ *   o mesmo, só mais lento: a pessoa fecha a aba com a conclusão errada.
+ *
+ *   Medido pelo estado final, não pela promessa: uma fonte que resolve mas
+ *   deixa o cache nulo conta como ausente do mesmo jeito.
+ */
+export function getMissingPermissionIndexes(): CloudId[] {
+  return _ausentes
+}
+
 export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
-  const pending: Promise<unknown>[] = []
-  if (getGcpPermissionsSync() === null) pending.push(getGcpPermissions())
-  if (getAwsActionsSync() === null) pending.push(getAwsActions())
-  if (getEntraActionsSync() === null) pending.push(loadEntraActions())
-  if (getGwsPermissionsSync() === null) pending.push(loadGwsPermissions())
+  const pending = FONTES.filter((f) => f.pronto() === null).map((f) => f.carregar())
 
   if (pending.length) {
     // allSettled: se o índice de uma cloud falhar, as outras continuam valendo
@@ -167,6 +205,8 @@ export async function ensureLocalPermissionIndex(): Promise<ScopeMatch[]> {
     _wildcardCache = null
     _nsCache = null
   }
+  // Fora do `if`: mesmo sem nada pendente a resposta tem de ser verdadeira.
+  _ausentes = FONTES.filter((f) => f.pronto() === null).map((f) => f.cloud)
   return getLocalPermissionIndex()
 }
 

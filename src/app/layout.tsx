@@ -14,6 +14,19 @@ export const metadata: Metadata = {
   // crawlers de preview (Slack, WhatsApp, LinkedIn) não conseguem seguir.
   metadataBase: new URL(SITE_URL),
 
+  /*
+    Canônica por rota.
+
+    O `'./'` é resolvido pelo Next contra o pathname da própria página, então
+    uma única linha no layout dá canônica correta às ~7.900 rotas. Escrever
+    `SITE_URL` aqui apontaria o site inteiro para a home, que é pior que não ter
+    tag nenhuma.
+
+    Nenhuma página declara `alternates` própria (conferido em 25/08/2026); no
+    dia em que uma declarar, a dela vence — e é o comportamento certo.
+  */
+  alternates: { canonical: './' },
+
   // Padrão único de título de aba para o site inteiro.
   // `default` vale para a home e para qualquer rota sem título próprio;
   // `template` sufixa a marca em todas as demais — cada página declara apenas
@@ -50,7 +63,10 @@ export const metadata: Metadata = {
     siteName: 'IAM Scope',
     title: 'IAM Scope — Multi-Cloud IAM Reference',
     description: DESCRICAO,
-    url: '/',
+    // Mesma resolução relativa da canônica acima. Era `'/'` fixo, o que fazia
+    // as ~7.900 páginas anunciarem a home como og:url — o preview do Slack e do
+    // LinkedIn apontava para o lugar errado em toda página que não a inicial.
+    url: './',
     locale: 'pt_BR',
     alternateLocale: ['en_US'],
     images: [{

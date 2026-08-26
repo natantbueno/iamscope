@@ -31,6 +31,7 @@ import {
   ScopeMatch, ScopeRoleRef, CLOUD_TERMS,
   searchLocalPermissions, countLocalMatches, getLocalIndexStats,
   ensureLocalPermissionIndex,
+  getMissingPermissionIndexes,
 } from '@/lib/permissionScope'
 
 interface AzurePermIndex {
@@ -137,6 +138,19 @@ function PermissionScopeContent() {
       .finally(() => { if (alive) setGcpReady(true) })
     return () => { alive = false }
   }, [query, gcpReady])
+
+  /**
+   * Quais índices não chegaram, para a tela poder dizer isso.
+   *
+   * Depende de `gcpReady` porque só depois do `ensureLocalPermissionIndex` a
+   * resposta vale — antes dele, "ausente" e "ainda carregando" são a mesma
+   * coisa, e avisar cedo seria alarme falso a cada tecla.
+   */
+  const indicesAusentes = useMemo(
+    () => (gcpReady ? getMissingPermissionIndexes() : []),
+    [gcpReady],
+  )
+  const nomesAusentes = indicesAusentes.map((c) => CLOUD_META[c].label).join(', ')
 
   /**
    * Universo de actions da AWS — só entra em cena no estado VAZIO.
@@ -477,6 +491,11 @@ function PermissionScopeContent() {
                   {t('perm.azureIndexFailed')}
                 </span>
               )}
+              {hasQuery && indicesAusentes.length > 0 && (
+                <div className="mt-1 text-red-500">
+                  {t('perm.indexesFailed')} <strong>{nomesAusentes}</strong>
+                </div>
+              )}
               {hasQuery && !azureLoading && !azureError && (
                 <span className="text-gray-600 dark:text-gray-300">
                   <strong>{fmt(totalPermsFound)}</strong> {t('perm.matchedPerms')} ·{' '}
@@ -490,9 +509,15 @@ function PermissionScopeContent() {
           {hasQuery && grouped.size === 0 && !azureLoading && (
             <div className="flex flex-col items-center justify-center py-16 text-fg-muted">
               <Search size={28} className="mb-2 opacity-40" />
-              <p className="text-body">Nenhuma permissão encontrada para “{query}”.</p>
+              <p className="text-body">{t('perm.noneFoundFor')} “{query}”.</p>
               {universoPronto && isKnownAwsAction(query.trim()) ? (
                 <p className="text-tiny mt-2 max-w-lg text-center text-fg">{t('perm.notGrantedByManaged')}</p>
+              ) : indicesAusentes.length > 0 ? (
+                // "tente um termo mais curto" é conselho ERRADO quando o índice
+                // é que não veio: encurtar não traz o que não foi carregado.
+                <p className="text-tiny mt-2 max-w-lg text-center text-red-500">
+                  {t('perm.indexesFailed')} <strong>{nomesAusentes}</strong>
+                </p>
               ) : (
                 <p className="text-tiny mt-1">{t('perm.scopeTryShorter')}</p>
               )}
