@@ -13,6 +13,8 @@ import { IBM_ROLES, IBM_TIER_META, IbmTier, IbmCategory, IbmRoleKind } from '@/d
 import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
 import StatsBar, { StatItem } from '@/components/StatsBar'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const TIERS: IbmTier[] = ['AccountAdmin', 'PlatformAdmin', 'PlatformOperator', 'ServiceManager', 'ReadOnly']
 
@@ -34,14 +36,16 @@ const ROLE_KINDS: { value: IbmRoleKind | 'all'; label: string }[] = [
 function IbmRolesContent() {
   const t = useT()
   const params = useSearchParams()
-  const [query, setQuery]           = useState('')
+  const [query, setQuery]           = useInlineQuery('/ibm-cloud/roles')
   const [activeTier, setActiveTier] = useState<IbmTier | 'all' | 'privileged'>('all')
   const [activeCategory, setActiveCategory] = useState<IbmCategory | null>(null)
   const [activeKind, setActiveKind] = useState<IbmRoleKind | 'all'>('all')
   const { widths, onMouseDown } = useColumnResize([200, 240, 120, 130, 100, 60])
 
-  // Mesmo motivo do GCP: a URL manda nos três filtros, inclusive quando o
-  // parâmetro sai. Sem isso o "Total" da legenda deixava o chip anterior aceso.
+  // Mesmo motivo do GCP: a URL manda nos filtros de tier/categoria/tipo,
+  // inclusive quando o parâmetro sai. Sem isso o "Total" da legenda deixava o
+  // chip anterior aceso. A busca (`q`) não entra mais aqui — vem direto de
+  // useInlineQuery, que já lê a URL a cada render.
   useEffect(() => {
     const filter = params.get('filter')
     const cat    = params.get('category')
@@ -51,7 +55,6 @@ function IbmRolesContent() {
       : 'all')
     setActiveCategory(cat ? (cat as IbmCategory) : null)
     setActiveKind(kind ? (kind as IbmRoleKind) : 'all')
-    setQuery(params.get('q') ?? '')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.toString()])
 
@@ -93,15 +96,6 @@ function IbmRolesContent() {
           { label: t('count.privileged'), value: IBM_ROLES.filter((r) => r.isPrivileged).length,                   color: 'red',    href: '/ibm-cloud/roles?filter=privileged' },
         ] as StatItem[]).filter((s) => s.value !== 0)} />
 
-        {/* Search chip */}
-        {query && (
-          <div className="px-4 sm:px-6 py-2 bg-csp-ibm/10 border-b border-csp-ibm/30 flex items-center gap-2 shrink-0">
-            <span className="text-tiny text-csp-ibm-onLight dark:text-csp-ibm-onDark">Busca: <strong>"{query}"</strong></span>
-            <button onClick={() => { setQuery(''); }} className="text-3xs text-csp-ibm-onLight dark:text-csp-ibm-onDark hover:underline ml-1">{t('action.clearInline')}</button>
-            <span className="ml-auto text-3xs text-fg-subtle">{filtered.length} resultado(s)</span>
-          </div>
-        )}
-
         {/* Tier filter bar */}
         <div className="px-4 sm:px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap rolagem-chips shrink-0">
           <ClassificationBadge size="sm" className="mr-1" />
@@ -121,7 +115,10 @@ function IbmRolesContent() {
               {tier === 'all' ? t('filter.allFem') : tier === 'privileged' ? t('count.privileged') : IBM_TIER_META[tier].label}
             </button>
           ))}
-          <span className="ml-auto text-tiny text-fg-muted">{filtered.length} roles</span>
+          <div className="ml-auto flex items-center gap-2.5">
+            <span className="text-tiny text-fg-muted whitespace-nowrap">{filtered.length} roles</span>
+            <InlineListFilter value={query} onChange={setQuery} placeholder={t('action.search')} />
+          </div>
         </div>
 
         {/* Tipo de role + categoria */}
@@ -154,7 +151,7 @@ function IbmRolesContent() {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-body border-collapse" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
             <colgroup>
               <col style={{ width: widths[0] }} />

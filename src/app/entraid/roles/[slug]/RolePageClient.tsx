@@ -307,7 +307,7 @@ function StatCard({ icon, label, value, accent }: {
         {icon}
         <span className="text-2xs font-semibold uppercase tracking-wider">{label}</span>
       </div>
-      <span className="text-stat font-bold" style={{ color: accent }}>{value}</span>
+      <span className="text-stat font-extrabold" style={{ color: accent }}>{value}</span>
     </div>
   )
 }

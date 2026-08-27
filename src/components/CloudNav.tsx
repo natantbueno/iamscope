@@ -9,6 +9,7 @@ import { GLOBAL_HREFS } from './Sidebar'
 import { useT } from '@/i18n/LanguageProvider'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeToggle from './ThemeToggle'
+import CommandPalette from './CommandPalette'
 
 // A cor de cada cloud vem de src/lib/cloudColors.ts — este arquivo já não
 // declara hex nenhum. Antes mantinha uma segunda lista que divergia dos tokens
@@ -118,6 +119,11 @@ export default function CloudNav() {
       </nav>
 
       <div className="flex items-center gap-1 sm:gap-2 pl-1.5 pr-1.5 sm:pl-2 sm:pr-3 shrink-0 border-l border-line">
+        {/* Busca global — sempre cruza as 6 clouds e sempre navega (⌘K de
+            qualquer tela). Filtrar a lista que já está na tela é um campo à
+            parte, embutido na própria tabela (InlineListFilter). */}
+        <CommandPalette />
+        <div className="w-px self-stretch bg-line mx-0.5" aria-hidden="true" />
         {/* O mesmo destino do botão ao lado do logo na sidebar. Fica nos dois
             lugares de propósito: a sidebar some no celular, e é justamente
             quem chega pelo celular que mais precisa do "o que é isto". */}

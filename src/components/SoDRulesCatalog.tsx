@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useCallback, useState } from 'react'
+import { Fragment, useMemo, useCallback, useState } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -243,8 +243,8 @@ export default function SoDRulesCatalog() {
                    detalhe expandido diz de onde cada role vem. */
                 const cross = isCrossPlatform(rule)
                 return (
-                  <>
-                    <tr key={rule.id}
+                  <Fragment key={rule.id}>
+                    <tr
                       onClick={() => toggleExpand(rule.id)}
                       className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors cursor-pointer">
                       <td className="px-4 py-2.5 align-top"><SoDSeverityBadge severity={rule.severity} /></td>
@@ -279,7 +279,7 @@ export default function SoDRulesCatalog() {
                       </td>
                     </tr>
                     {isOpen && (
-                      <tr key={`${rule.id}-detail`}>
+                      <tr>
                         <td colSpan={7} className="px-4 pb-4 pt-0 bg-gray-50/60 dark:bg-gray-900/40 border-b border-gray-100 dark:border-gray-800">
                           <div className="pt-3">
                             <SoDRuleDetailCard rule={rule} compact />
@@ -290,7 +290,7 @@ export default function SoDRulesCatalog() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 )
               })}
             </tbody>

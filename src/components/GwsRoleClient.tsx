@@ -76,7 +76,7 @@ export default function GwsRoleClient({ slug }: { slug: string }) {
             <span className="text-base font-bold text-[#93c5fd]">{role.category}</span>
           </StatCard>
           <StatCard icon={<CheckSquare size={13} />} label={t('label.privileges')}  accent={KPI_TONE_VALUE.accent}>
-            <span className="text-stat font-bold text-success-fg">{role.privileges.length}</span>
+            <span className="text-stat font-extrabold text-success-fg">{role.privileges.length}</span>
           </StatCard>
         </div>
 

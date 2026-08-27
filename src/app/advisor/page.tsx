@@ -7,7 +7,6 @@ import {
   Ban, Filter, HelpCircle, AlertTriangle, ChevronDown, Clock,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
-import { BetaNotice } from '@/components/BetaBadge'
 import { searchRoles, getIndexSize, AdvisorPlatform, AdvisorResponse } from '@/lib/roleAdvisor'
 import { useT } from '@/i18n/LanguageProvider'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
@@ -161,10 +160,6 @@ export default function AdvisorPage() {
               </button>
             ))}
             {loading && <Loader2 size={14} className="ml-2 text-fg-subtle animate-spin" />}
-          </div>
-
-          <div className="mt-3">
-            <BetaNotice items={['beta.advOne', 'beta.advTwo', 'beta.advThree']} />
           </div>
 
           {/*

@@ -168,7 +168,7 @@ function AzurePermissionsContent() {
         </div>
 
         {/* Tabela */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           {error && (
             <div className="flex items-center justify-center h-48 text-red-400 text-body">
               Falha ao carregar o índice de permissões.

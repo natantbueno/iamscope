@@ -1,8 +1,7 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
-import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { getAwsActions, type AwsActionEntry } from '@/lib/awsActions'
@@ -16,13 +15,14 @@ import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'Operator', 'Specialized', 'ReadOnly']
 
 function AwsActionsContent() {
   const t = useT()
-  const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
+  const [q, setQ] = useInlineQuery('/aws/actions')
 
   // O índice de actions vive em public/aws-actions-index.json (fora do
   // bundle) — carrega sob demanda, como as páginas de Azure e GCP.
@@ -141,12 +141,15 @@ function AwsActionsContent() {
                 <X size={12} /> limpar
               </button>
             )}
-            <span className="text-2xs text-fg-muted ml-auto">{filtered.length} actions</span>
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="text-2xs text-fg-muted whitespace-nowrap">{filtered.length} actions</span>
+              <InlineListFilter value={q} onChange={setQ} placeholder={t('action.search')} />
+            </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-alt border-b border-line-strong">
@@ -162,8 +165,8 @@ function AwsActionsContent() {
                 const meta = AWS_TIER_META[a.tier]
                 const isExp = expanded === a.action
                 return (
-                  <>
-                    <tr key={a.action}
+                  <Fragment key={a.action}>
+                    <tr
                       className="border-b border-line hover:bg-surface-alt/60 transition-colors cursor-pointer"
                       onClick={() => setExpanded(isExp ? null : a.action)}>
                       <td className="px-4 py-2.5 align-middle text-gray-600">
@@ -186,7 +189,7 @@ function AwsActionsContent() {
                       <td className="px-4 py-2.5 align-middle text-fg-muted">{a.usedByPolicies.length}</td>
                     </tr>
                     {isExp && (
-                      <tr key={a.action + '-exp'} className="border-b border-line bg-surface/60">
+                      <tr className="border-b border-line bg-surface/60">
                         <td colSpan={5} className="px-8 py-2.5">
                           <p className="text-2xs text-fg-muted uppercase tracking-wider mb-1.5">Concedida pelas policies:</p>
                           <div className="flex flex-wrap gap-1.5">
@@ -200,7 +203,7 @@ function AwsActionsContent() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 )
               })}
             </tbody>

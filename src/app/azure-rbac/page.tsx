@@ -9,6 +9,8 @@ import {
   Shield, ShieldAlert, Database, HardDrive, Network, Eye, Cpu, Boxes,
   ChevronRight, ExternalLink, Info,
 } from 'lucide-react'
+import { useTheme } from '@/components/ThemeProvider'
+import { resolveTierAccent, CLOUD_TIER_ACCENT_TEXT, cloudInfoBarStyle } from '@/lib/cloudTierAccent'
 
 const TIER_ORDER: AzureRbacTier[] = ['FullControl', 'AccessManagement', 'Contributor', 'DataPlane', 'Reader', 'Specialized']
 
@@ -30,6 +32,8 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 export default function AzureRbacDashboard() {
   const t = useT()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const total       = AZURE_ROLES.length
   const privileged  = AZURE_ROLES.filter((r) => r.isPrivileged).length
   const categories  = [...new Set(AZURE_ROLES.map((r) => r.category))]
@@ -62,7 +66,7 @@ export default function AzureRbacDashboard() {
                 <span className="min-w-0 break-words">{s.label}</span>
                 <ChevronRight size={10} className="reveal-on-hover shrink-0 mt-0.5" />
               </p>
-              <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
+              <p className={`text-stat font-extrabold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
             </Link>
           ))}
         </div>
@@ -72,36 +76,52 @@ export default function AzureRbacDashboard() {
           <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
             <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.riskTierDist')}</h2>
             <div className="space-y-3">
-              {byTier.map(({ tier, count, meta }) => (
+              {byTier.map(({ tier, count, meta }) => {
+                // Checagem de "é o tier de topo" sempre pelo hex canônico
+                // (textColor); darkText/-Dark são só a variante de SAÍDA do
+                // mesmo tier, e nunca coincidem com os cinzas neutros — usá-los
+                // na checagem faria todo tier parecer "de topo" no escuro.
+                const neutral = isDark ? meta.darkText : meta.textColor
+                const graphicColor = resolveTierAccent('azureRbac', meta.textColor, neutral, isDark)
+                const textColor = resolveTierAccent('azureRbac', meta.textColor, neutral, isDark, 'text')
+                return (
                 <Link key={tier} href={`/azure-rbac/roles?tier=${tier}`} className="block group">
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ background: meta.darkText }} />
+                      <span className="w-2 h-2 rounded-full" style={{ background: graphicColor }} />
                       <span className="text-tiny text-fg-muted group-hover:underline">{meta.label}</span>
                     </div>
-                    <span className="text-tiny font-semibold" style={{ color: meta.darkText }}>{count}</span>
+                    <span className="text-tiny font-semibold" style={{ color: textColor }}>{count}</span>
                   </div>
                   <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
                     <div className="h-1 rounded-full transition-all"
-                      style={{ width: `${(count / total) * 100}%`, backgroundColor: meta.darkText }} />
+                      style={{ width: `${(count / total) * 100}%`, backgroundColor: graphicColor }} />
                   </div>
                 </Link>
-              ))}
+                )
+              })}
             </div>
           </div>
 
           <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
-            <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
-              <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
+              </h2>
+              <Link href="/azure-rbac/roles?filter=privileged" className="text-3xs" style={{ color: CLOUD_TIER_ACCENT_TEXT.azureRbac[isDark ? 'dark' : 'light'] }}>{t('action.seeAll')}</Link>
+            </div>
             <div className="space-y-1 max-h-56 overflow-y-auto">
-              {AZURE_ROLES.filter((r) => r.isPrivileged).slice(0, 8).map((role) => {
+              {privileged === 0 && <p className="text-tiny text-fg-muted px-2 py-1">Nenhuma role privilegiada catalogada.</p>}
+              {AZURE_ROLES.filter((r) => r.isPrivileged).slice(0, 12).map((role) => {
                 const meta = AZURE_TIER_META[role.tier]
+                const neutral = isDark ? meta.darkText : meta.textColor
+                const pillColor = resolveTierAccent('azureRbac', meta.textColor, neutral, isDark)
+                const pillText = resolveTierAccent('azureRbac', meta.textColor, neutral, isDark, 'text')
                 return (
                   <Link key={role.slug} href={`/azure-rbac/roles/${role.slug}`}
                     className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group">
                     <span className="text-3xs text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 truncate mr-2">{role.name}</span>
-                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: meta.darkBg, color: meta.darkText }}>
+                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0 font-medium" style={{ background: `${pillColor}26`, color: pillText }}>
                       {meta.short}
                     </span>
                   </Link>
@@ -120,10 +140,10 @@ export default function AzureRbacDashboard() {
               return (
                 <Link key={cat} href={`/azure-rbac/roles?category=${cat}`}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-brand-soft dark:hover:bg-brand-activeBg hover:border-brand-mid dark:hover:border-brand-activeRing transition-colors">
-                  <span className="text-brand-strong dark:text-brand-onDark shrink-0">{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
+                  <span className="shrink-0" style={{ color: CLOUD_TIER_ACCENT_TEXT.azureRbac[isDark ? 'dark' : 'light'] }}>{CATEGORY_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
                     <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
-                    <p className="text-2xs text-fg-subtle">{count} roles</p>
+                    <p className="text-2xs" style={{ color: CLOUD_TIER_ACCENT_TEXT.azureRbac[isDark ? 'dark' : 'light'] }}>{count} roles</p>
                   </div>
                 </Link>
               )
@@ -132,15 +152,20 @@ export default function AzureRbacDashboard() {
         </div>
 
         {/* ── Info bar ── */}
-        <div className="rounded-xl border border-brand/30 bg-brand/5 dark:bg-brand/10 px-5 py-4 flex items-start gap-3">
-          <Info size={15} className="text-brand-strong dark:text-brand-onDark mt-0.5 shrink-0" />
-          <p className="text-tiny text-brand-strong dark:text-brand-onDark leading-relaxed">
+        {(() => {
+          const bar = cloudInfoBarStyle('azureRbac', isDark)
+          return (
+        <div className="rounded-xl border px-5 py-4 flex items-start gap-3" style={{ borderColor: bar.border, background: bar.background }}>
+          <Info size={15} className="mt-0.5 shrink-0" style={{ color: bar.text }} />
+          <p className="text-tiny leading-relaxed" style={{ color: bar.text }}>
             <strong>Assignable Scopes</strong> — roles são atribuídas em escopos específicos: Management Group, Subscription, Resource Group ou Resource individual.
             O escopo efetivo de cada role está visível na página de detalhes. Use{' '}
-            <code className="font-mono text-3xs bg-brand/10 dark:bg-brand/20 px-1 rounded">az role assignment list --all</code>{' '}
+            <code className="font-mono text-3xs px-1 rounded" style={{ background: bar.codeBackground }}>az role assignment list --all</code>{' '}
             para listar atribuições ativas no seu tenant.
           </p>
         </div>
+          )
+        })()}
 
       </div>
       </div>

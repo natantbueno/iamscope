@@ -11,6 +11,8 @@ import { usePagination } from '@/hooks/usePagination'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 import ExportButton from '@/components/ExportButton'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 type SortCol = 'name' | 'service' | 'sensitivity'
 type SortDir = 'asc' | 'desc'
@@ -40,6 +42,7 @@ function GwsScopesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  const [query, setQuery]                 = useInlineQuery('/google-workspace/api-permissions')
   const [activeService, setActiveService] = useState<GwsService | 'all'>('all')
   const [activeSens, setActiveSens]       = useState<GwsScopeSensitivity | 'all'>('all')
   const [sortCol, setSortCol]             = useState<SortCol>('sensitivity')
@@ -54,11 +57,15 @@ function GwsScopesContent() {
     setActiveSens(SENSITIVITIES.includes(sens as GwsScopeSensitivity) ? (sens as GwsScopeSensitivity) : 'all')
   }, [searchParams])
 
-  const filtered = useMemo(() => GWS_SCOPES.filter((s) => {
-    const matchSvc  = activeService === 'all' || s.service === activeService
-    const matchSens = activeSens    === 'all' || s.sensitivity === activeSens
-    return matchSvc && matchSens
-  }), [activeService, activeSens])
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return GWS_SCOPES.filter((s) => {
+      const matchSvc  = activeService === 'all' || s.service === activeService
+      const matchSens = activeSens    === 'all' || s.sensitivity === activeSens
+      const matchQuery = !q || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.scope.toLowerCase().includes(q)
+      return matchSvc && matchSens && matchQuery
+    })
+  }, [activeService, activeSens, query])
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => {
     const SENS_ORDER: Record<GwsScopeSensitivity, number> = { restricted: 0, sensitive: 1, standard: 2 }
@@ -121,7 +128,10 @@ function GwsScopesContent() {
                   }>{m.label}</button>
               )
             })}
-            <span className="text-tiny text-fg-muted ml-auto">{sorted.length}</span>
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="text-tiny text-fg-muted whitespace-nowrap">{sorted.length}</span>
+              <InlineListFilter value={query} onChange={setQuery} placeholder={t('action.search')} />
+            </div>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap rolagem-chips">
             <button onClick={() => pushSvc('all')}
@@ -137,7 +147,7 @@ function GwsScopesContent() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
             <colgroup>
               <col style={{ width: widths[0] }} />

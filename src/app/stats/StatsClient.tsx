@@ -16,12 +16,17 @@
  *   mesmo desenho de counts.ts. A prosa recebe `{n}` e o chamador preenche.
  *
  * COR
- *   O site é monocromático por decisão de 06/08/2026, e gráfico não é exceção.
- *   As barras de tier usam a cor que o próprio TIER_META da plataforma declara
- *   (vermelho só no topo, um cinza único no resto); as demais usam token
- *   semântico. Nenhuma escala de matiz por categoria é introduzida aqui — foi
- *   justamente ela que saiu, depois de se medir que `#7c3aed` significava
- *   "Specialized" em quatro clouds e "Developer" no GCP.
+ *   O site é monocromático por decisão de 06/08/2026, e esta página seguia a
+ *   regra à risca — inclusive nas barras de "Tiers nativos", que usavam
+ *   vermelho genérico (`#dc2626`) para o tier de topo de qualquer cloud e cinza
+ *   único no resto.
+ *
+ *   Reversão pontual, pedida e aprovada (26/08/2026): SÓ o tier de topo de cada
+ *   cloud passa a usar a cor de marca daquela cloud em vez do vermelho
+ *   genérico — ver `src/lib/cloudTierAccent.ts` para as cores verificadas e o
+ *   raciocínio completo de por que isto não repete o erro medido em 06/08.
+ *   Mesma fonte usada na Sidebar (Risk Tier / EAM), para a cor de cada cloud
+ *   ser sempre a mesma em toda a interface.
  */
 
 import AppShell from '@/components/AppShell'
@@ -40,6 +45,8 @@ import { useT } from '@/i18n/LanguageProvider'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
 import { Rich } from '@/i18n/Rich'
 import type { TranslationKey } from '@/i18n/dictionary'
+import { useTheme } from '@/components/ThemeProvider'
+import { resolveTierAccent } from '@/lib/cloudTierAccent'
 
 /**
  * Os três níveis do EAM, com o tom de cada um.
@@ -110,11 +117,16 @@ function Barra({ pct, fill }: { pct: number; fill: string }) {
 export default function StatsClient() {
   const t = useT()
   const fmt = useNumberFormat()
+  const { theme } = useTheme()
 
   const clouds = STATS_ORDER.map((id) => [id, STATS_CLOUDS[id]] as const)
 
   const rotuloTier = (tier: StatsTier) =>
     tier.labelKey ? t(tier.labelKey as TranslationKey) : tier.label
+
+  /** Cor de uma barra de "Tiers nativos" — ver src/lib/cloudTierAccent.ts. */
+  const corDoTier = (cloudId: StatsCloudId, tier: StatsTier) =>
+    resolveTierAccent(cloudId, tier.color, tier.color, theme === 'dark')
 
   // Datas de frescor: a mais antiga é a garantia real do catálogo, não a mais bonita.
   const datas = DATA_SYNC.map((d) => d.lastSynced).sort()
@@ -180,7 +192,7 @@ export default function StatsClient() {
                     <span className="min-w-0 break-words">{s.label}</span>
                     <ChevronRight size={10} className="reveal-on-hover shrink-0 mt-0.5" />
                   </p>
-                  <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{fmt(s.value)}</p>
+                  <p className={`text-stat font-extrabold leading-none ${KPI_TONE[s.tone]}`}>{fmt(s.value)}</p>
                 </Link>
               ))}
             </div>
@@ -259,7 +271,7 @@ export default function StatsClient() {
                             <span className="text-3xs text-fg-muted truncate">{rotuloTier(tier)}</span>
                             <span className="text-3xs font-semibold text-fg tabular-nums">{fmt(tier.count)}</span>
                           </div>
-                          <Barra pct={(tier.count / maior) * 100} fill={tier.color} />
+                          <Barra pct={(tier.count / maior) * 100} fill={corDoTier(id, tier)} />
                         </div>
                       ))}
                     </div>

@@ -176,7 +176,9 @@ export default function TierComparisonClient() {
             {/* name/description vêm de src/data/compare/tiers.json, que está só
                 em português — ver a nota no relatório sobre texto editorial
                 que mora em src/data/ e não aparece no find-untranslated. */}
-            <div className="p-3 rounded-lg" style={{ background: tier0.bg, borderLeft: `3px solid ${tier0.color}` }}>
+            {/* Background tint alone carries the tier's color signal — a colored
+                left border here is the "side-tab" AI-slop tell the detector flags. */}
+            <div className="p-3 rounded-lg" style={{ background: tier0.bg }}>
               <p className="text-tiny font-semibold">{tier0.name}</p>
               <p className="text-tiny text-fg-muted leading-relaxed mt-1">{tier0.description}</p>
             </div>

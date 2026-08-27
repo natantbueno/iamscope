@@ -10,6 +10,8 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import type { RoleCategory, EamTier } from '@/data/roles'
 import { CLOUD_MARK } from '@/lib/cloudColors'
+import { resolveTierAccent } from '@/lib/cloudTierAccent'
+import { useTheme } from './ThemeProvider'
 // Contagens vêm de counts.ts, não dos datasets: a Sidebar envolve TODAS as
 // páginas, então importar os arrays jogaria 2,5 MB no chunk compartilhado.
 import {
@@ -42,8 +44,6 @@ export type View = 'dashboard' | 'roles' | 'apiPermissions' | 'roleActions' | 'r
 interface SidebarProps {
   platform: Platform
   view: View
-  /** Rota de listagem para onde a busca navega/atualiza ?q= (depende de plataforma+view). */
-  searchBasePath: string
   totalRoles: number
   totalApiPerms: number
   totalRoleActions: number
@@ -258,12 +258,14 @@ function useSectionOpen(key: string, fallback = true): [boolean, () => void] {
 }
 
 export default function Sidebar({
-  platform, view, searchBasePath, totalRoles, totalApiPerms, totalRoleActions, totalAzureRoles = 0, totalIbmRoles = IBM_ROLES_COUNT,
+  platform, view, totalRoles, totalApiPerms, totalRoleActions, totalAzureRoles = 0, totalIbmRoles = IBM_ROLES_COUNT,
   onViewChange, onCategoryFilter,
 }: SidebarProps) {
   const t = useT()
   const router = useRouter()
   const pathname = usePathname()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const [tierOpen, toggleTier]         = useSectionOpen('tier')
   const [eamOpen, toggleEam]           = useSectionOpen('eam')
   const [gwsTierOpen, toggleGwsTier]   = useSectionOpen('gwsTier')
@@ -284,9 +286,13 @@ export default function Sidebar({
   return (
     <aside className="w-60 shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0">
 
-      {/* Logo */}
-      <div className="p-4 border-b border-line">
-        <div className="flex items-center justify-between">
+      {/* Logo — altura travada em 48px (h-12) para casar com a linha do
+          CloudNav do lado direito. Antes usava p-4 (padding, não altura fixa):
+          o botão "About" (27px + 2*16 de padding) dava 60px contra os 48px do
+          CloudNav, e a borda inferior das duas colunas ficava em alturas
+          diferentes — um degrau de 12px bem na costura sidebar/conteúdo. */}
+      <div className="h-12 px-4 border-b border-line flex items-center">
+        <div className="flex items-center justify-between w-full">
           <button onClick={() => router.push('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <EntraScopeIcon size={24} />
             <span className="text-body font-semibold text-fg">IAM Scope</span>
@@ -326,13 +332,16 @@ export default function Sidebar({
               onClick={() => router.push(href)}
               title={label}
               aria-current={active ? 'page' : undefined}
-              className={`flex items-center gap-2 rounded-md border-l-2 transition-colors ${
+              // Selected state reads through background + icon color, not a
+              // colored side border (that border-l pattern is flagged by the
+              // detector as the "side-tab" AI-slop tell — see Sidebar.tsx history).
+              className={`flex items-center gap-2 rounded-md transition-colors ${
                 active
-                  ? 'border-accent bg-surface-alt text-fg'
-                  : 'border-transparent text-fg-subtle hover:bg-surface-alt hover:text-fg'
+                  ? 'bg-surface-alt text-fg font-semibold'
+                  : 'text-fg-subtle hover:bg-surface-alt hover:text-fg'
               } w-full px-2.5 py-2 text-left`}
             >
-              <Icon size={14} className="shrink-0" />
+              <Icon size={14} className={`shrink-0 ${active ? 'text-accent' : ''}`} />
               <span className="flex-1 text-tiny font-medium">{label}</span>
             </button>
           )
@@ -439,7 +448,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => { onViewChange('roles'); router.push(`/entraid/roles?tier=${tier}`) }}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('entraId', m.textColor, isDark ? m.darkText : m.textColor, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )
@@ -483,7 +492,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => router.push(`/azure-rbac/roles?tier=${tier}`)}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('azureRbac', m.textColor, isDark ? m.darkText : m.textColor, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )
@@ -531,7 +540,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => router.push(`/google-workspace/roles?tier=${tier}`)}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.textColor }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('googleWorkspace', m.textColor, isDark ? m.darkText : m.textColor, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )
@@ -566,7 +575,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => router.push(`/gcp/roles?filter=${tier}`)}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('gcp', m.color, m.color, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )
@@ -616,7 +625,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => router.push(`/aws/policies?filter=${tier}`)}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('aws', m.color, m.color, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )
@@ -683,7 +692,7 @@ export default function Sidebar({
               return (
                 <button key={tier} onClick={() => router.push(`/ibm-cloud/roles?filter=${tier}`)}
                   className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-tiny text-fg-subtle hover:bg-surface-alt hover:text-fg transition-colors text-left">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: resolveTierAccent('ibmCloud', m.color, m.color, isDark) }} />
                   <span className="flex-1">{m.label}</span>
                 </button>
               )

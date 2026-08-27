@@ -232,7 +232,7 @@ export default function AzureProviderClient({ slug }: { slug: string }) {
         </div>
 
         {/* Tabela */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-alt border-b border-line-strong">

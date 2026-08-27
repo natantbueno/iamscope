@@ -13,6 +13,8 @@ import { usePagination } from '@/hooks/usePagination'
 import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 import ExportButton from '@/components/ExportButton'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 type SortCol = 'name' | 'category' | 'tier'
 type SortDir = 'asc' | 'desc'
@@ -33,7 +35,7 @@ function GwsRolesContent() {
   const [activeTier, setActiveTier]   = useState<GwsTier | 'all'>('all')
   const [activeCat, setActiveCat]     = useState<GwsCategory | 'all'>('all')
   const [privilegedOnly, setPriv]     = useState(false)
-  const [query, setQuery]             = useState('')
+  const [query, setQuery]             = useInlineQuery('/google-workspace/roles')
   const [sortCol, setSortCol]         = useState<SortCol>('tier')
   const [sortDir, setSortDir]         = useState<SortDir>('asc')
 
@@ -43,11 +45,9 @@ function GwsRolesContent() {
     const tier   = searchParams.get('tier') ?? 'all'
     const cat    = searchParams.get('category') ?? 'all'
     const filter = searchParams.get('filter') ?? ''
-    const q      = searchParams.get('q') ?? ''
     setActiveTier(TIERS.includes(tier as GwsTier) ? (tier as GwsTier) : 'all')
     setActiveCat(ALL_CATEGORIES.includes(cat as GwsCategory) ? (cat as GwsCategory) : 'all')
     setPriv(filter === 'privileged')
-    setQuery(q)
   }, [searchParams])
 
   const filtered = useMemo(() => {
@@ -110,16 +110,6 @@ function GwsRolesContent() {
           { label: t('count.privileged'),    value: GWS_ROLES.filter((r) => r.isPrivileged).length,               color: 'red',    href: '/google-workspace/roles?filter=privileged' },
         ]} />
 
-        {/* Search query chip */}
-        {query && (
-          <div className="px-4 py-2 bg-csp-gws/10 border-b border-csp-gws/30 flex items-center gap-2">
-            <span className="text-tiny text-success-fg">Busca: <strong>"{query}"</strong></span>
-            <button onClick={() => { setQuery(''); router.replace('/google-workspace/roles', { scroll: false }) }}
-              className="text-3xs text-csp-gws-onLight dark:text-csp-gws-onDark hover:text-white ml-1">{t('action.clearInline')}</button>
-            <span className="ml-auto text-3xs text-fg-subtle">{sorted.length} resultado(s)</span>
-          </div>
-        )}
-
         {/* Filter bar */}
         <div className="px-4 pt-3 pb-2 border-b border-line bg-surface">
           <div className="flex items-center gap-2 flex-wrap mb-2 rolagem-chips">
@@ -148,6 +138,7 @@ function GwsRolesContent() {
               <ShieldAlert size={11} /> Privilegiadas
             </button>
             <span className="text-tiny text-fg-muted">{sorted.length}</span>
+            <InlineListFilter value={query} onChange={setQuery} placeholder={t('action.search')} />
           </div>
           {/* Category chips */}
           <div className="flex items-center gap-1.5 flex-wrap rolagem-chips">
@@ -165,7 +156,7 @@ function GwsRolesContent() {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
             <colgroup>
               <col style={{ width: widths[0] }} />

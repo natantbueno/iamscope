@@ -247,6 +247,22 @@ html {
   }
 }
 
+/* Tabelas largas rolam no eixo X sem nenhum sinal visual de que ha mais coluna
+   fora da tela — testado em /entraid/roles a 375px: a tabela tem 892px de
+   conteudo, rola de verdade (overflow-auto + minWidth fixo), mas a borda do
+   container corta exatamente onde a viewport termina, sem nenhuma coluna
+   parcialmente visivel. Quem chega pelo celular ve "Role" e "Descricao" e não
+   tem motivo para achar que "Actions" e "EAM Tier" existem.
+
+   Mesma tecnica do .cloud-nav-scroll (mask-image na borda), só que mais
+   estreita (16px) para não apagar visivelmente o conteudo real de uma coluna
+   de dado — aqui é sinal de "tem mais", não decoração. */
+@media (max-width: 1023px) {
+  .table-scroll-x {
+    mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent 100%);
+  }
+}
+
 /* mobile: um ARN ou um "Microsoft.Compute/virtualMachines/read" e uma palavra
    so para o navegador — sem isto ele estica a tabela ate a palavra caber e o
    resto da tela some.

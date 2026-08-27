@@ -2,7 +2,6 @@
 
 import { Suspense, useMemo, useState } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
-import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { GWS_PRIVILEGES, GWS_SOURCES } from '@/data/googleWorkspace'
@@ -10,6 +9,8 @@ import { Info } from 'lucide-react'
 import ExportButton from '@/components/ExportButton'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 /**
  * Catálogo de privilégios do Admin console do Google Workspace.
@@ -30,8 +31,7 @@ const SECOES = ['Admin settings', 'Services'] as const
 
 function GwsPrivilegesContent() {
   const t = useT()
-  const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
+  const [q, setQ] = useInlineQuery('/google-workspace/privileges')
 
   const [secao, setSecao] = useState<string>('all')
   const [grupo, setGrupo] = useState<string>('all')
@@ -117,7 +117,10 @@ function GwsPrivilegesContent() {
                 {s}
               </button>
             ))}
-            <span className="ml-auto text-2xs text-fg-muted">{filtered.length} privilégios</span>
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="text-2xs text-fg-muted whitespace-nowrap">{filtered.length} privilégios</span>
+              <InlineListFilter value={q} onChange={setQ} placeholder={t('action.search')} />
+            </div>
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap rolagem-chips">
@@ -136,7 +139,7 @@ function GwsPrivilegesContent() {
         </div>
 
         {/* Tabela */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-alt border-b border-line-strong">

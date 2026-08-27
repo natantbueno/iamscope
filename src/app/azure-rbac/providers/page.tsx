@@ -14,7 +14,6 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { ChevronRight, Search, X } from 'lucide-react'
 
 import { useT } from '@/i18n/LanguageProvider'
@@ -24,6 +23,7 @@ import StatsBar from '@/components/StatsBar'
 import ExportButton from '@/components/ExportButton'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 import {
   getAzureProviderIndex,
   type AzureProviderIndex,
@@ -35,8 +35,6 @@ type Ordem = 'size' | 'name' | 'roles'
 function AzureProvidersContent() {
   const t = useT()
   const fmt = useNumberFormat()
-  const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
 
   // O índice vive em public/azure-providers/index.json (fora do bundle) —
   // carrega sob demanda, como as páginas de AWS e GCP.
@@ -51,14 +49,14 @@ function AzureProvidersContent() {
     return () => { alive = false }
   }, [])
 
-  const [busca, setBusca] = useState('')
+  const [busca, setBusca] = useInlineQuery('/azure-rbac/providers')
   const [ordem, setOrdem] = useState<Ordem>('size')
 
   const providers = data?.providers ?? []
   const meta = data?._meta
 
   const filtrados = useMemo(() => {
-    const termo = (busca || q).trim().toLowerCase()
+    const termo = busca.trim().toLowerCase()
     const base = termo
       ? providers.filter((p) => p.name.toLowerCase().includes(termo))
       : providers
@@ -69,10 +67,10 @@ function AzureProvidersContent() {
     if (ordem === 'roles') out.sort((a, b) => b.roles - a.roles || a.name.localeCompare(b.name))
     if (ordem === 'name') out.sort((a, b) => a.name.localeCompare(b.name))
     return out
-  }, [providers, busca, q, ordem])
+  }, [providers, busca, ordem])
 
   const { paginated, page, setPage, pageSize, setPageSize } = usePagination(filtrados)
-  useEffect(() => { setPage(1) }, [busca, q, ordem, setPage])
+  useEffect(() => { setPage(1) }, [busca, ordem, setPage])
 
   const maior = providers[0]?.actions ?? 1
 
@@ -153,7 +151,7 @@ function AzureProvidersContent() {
         </div>
 
         {/* Tabela */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-alt border-b border-line-strong">

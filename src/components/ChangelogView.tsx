@@ -180,6 +180,12 @@ export default function ChangelogView({
         </div>
       }
     >
+      {/* AppShell's <main> is `flex flex-1 min-h-0` — it deliberately has no
+          overflow of its own; every page supplies its own scroll region as the
+          direct child. This one didn't, so content past the viewport was
+          silently clipped by the shell's outer `overflow-hidden` with no
+          scrollbar at all. Same wrapper every other AppShell page uses. */}
+      <div className="flex-1 overflow-y-auto">
       <div className="space-y-6">
 
         {/* ── A ressalva. Primeiro elemento da página, de propósito. ───────── */}
@@ -345,6 +351,7 @@ export default function ChangelogView({
             <Link href="/changelog" className="text-accent hover:underline">{t('chg.allClouds')}</Link>
           </p>
         )}
+      </div>
       </div>
     </AppShell>
   )

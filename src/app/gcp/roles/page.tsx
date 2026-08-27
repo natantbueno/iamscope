@@ -15,13 +15,15 @@ import { useColumnResize } from '@/hooks/useColumnResize'
 import ExportButton from '@/components/ExportButton'
 import StatsBar from '@/components/StatsBar'
 import DeprecatedBadge from '@/components/DeprecatedBadge'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
 function GcpRolesContent() {
   const t = useT()
   const params = useSearchParams()
-  const [query, setQuery]               = useState('')
+  const [query, setQuery]               = useInlineQuery('/gcp/roles')
   const [activeTier, setActiveTier]     = useState<GcpTier | 'all' | 'privileged'>('all')
   const [activeCategory, setActiveCat]  = useState<GcpCategory | null>(null)
   const { widths, onMouseDown } = useColumnResize([200, 260, 120, 120, 110, 60])
@@ -29,7 +31,8 @@ function GcpRolesContent() {
   // Sincroniza a partir da URL nos DOIS sentidos. Antes o filtro só era lido
   // quando o parâmetro existia, então um link para /gcp/roles — o "Total" da
   // legenda — não limpava o tier escolhido: a lista voltava cheia e o chip
-  // continuava aceso.
+  // continuava aceso. A busca (`q`) não entra mais aqui — vem direto de
+  // useInlineQuery, que já lê a URL a cada render.
   useEffect(() => {
     const filter = params.get('filter')
     const cat    = params.get('category')
@@ -37,7 +40,6 @@ function GcpRolesContent() {
       : filter && filter !== 'all' ? (filter as GcpTier)
       : 'all')
     setActiveCat(cat ? (cat as GcpCategory) : null)
-    setQuery(params.get('q') ?? '')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.toString()])
 
@@ -81,25 +83,6 @@ function GcpRolesContent() {
           { label: t('count.privileged'), value: GCP_ROLES.filter((r) => r.isPrivileged).length,              color: 'red',    href: '/gcp/roles?filter=privileged' },
         ]} />
 
-        {/* Search chip */}
-        {query && (
-          <div className="px-4 sm:px-6 py-2 bg-csp-gcp/10 border-b border-csp-gcp/30 flex items-center gap-2 shrink-0">
-            <span className="text-tiny text-csp-gcp-onLight dark:text-csp-gcp-onDark">Busca: <strong>"{query}"</strong></span>
-            <button onClick={() => setQuery('')} className="text-3xs text-csp-gcp-onLight dark:text-csp-gcp-onDark hover:underline ml-1">{t('action.clearInline')}</button>
-            <span className="ml-auto text-3xs text-fg-subtle">{filtered.length} resultado(s)</span>
-          </div>
-        )}
-
-        {/* Search input */}
-        <div className="px-4 sm:px-6 py-3 border-b border-surface-border dark:border-gray-800 shrink-0">
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder={t('ph.searchRoleFields')}
-            className="w-full max-w-md text-body px-3 py-1.5 rounded-lg border border-surface-border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:border-csp-gcp transition-colors"
-          />
-        </div>
-
         {/* Tier filter bar */}
         <div className="px-4 sm:px-6 py-3 border-b border-surface-border dark:border-gray-800 flex items-center gap-2 flex-wrap rolagem-chips shrink-0">
           <ClassificationBadge size="sm" className="mr-1" />
@@ -119,7 +102,10 @@ function GcpRolesContent() {
               {tier === 'all' ? t('filter.allFem') : tier === 'privileged' ? t('count.privileged') : GCP_TIER_META[tier].label}
             </button>
           ))}
-          <span className="ml-auto text-tiny text-fg-muted">{filtered.length} roles</span>
+          <div className="ml-auto flex items-center gap-2.5">
+            <span className="text-tiny text-fg-muted whitespace-nowrap">{filtered.length} roles</span>
+            <InlineListFilter value={query} onChange={setQuery} placeholder={t('action.search')} />
+          </div>
         </div>
 
         {/* Category chips */}
@@ -135,7 +121,7 @@ function GcpRolesContent() {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-body border-collapse" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
             <colgroup>
               <col style={{ width: widths[0] }} />

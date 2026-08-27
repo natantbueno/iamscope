@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { ChevronDown, ChevronUp, Minus } from 'lucide-react'
@@ -74,8 +74,8 @@ export default function CompareTable({ equivalences, visibleClouds, sortBy = 'ti
             const rowBg     = idx % 2 === 0 ? '' : 'bg-gray-50/40 dark:bg-gray-900/40'
 
             return (
-              <>
-                <tr key={eq.id}
+              <Fragment key={eq.id}>
+                <tr
                   className={`border-b border-gray-50 dark:border-gray-900 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 cursor-pointer transition-colors ${rowBg}`}
                   onClick={() => toggle(eq.id)}>
 
@@ -170,7 +170,7 @@ export default function CompareTable({ equivalences, visibleClouds, sortBy = 'ti
 
                 {/* Expanded panel */}
                 {isOpen && (
-                  <tr key={`${eq.id}-detail`} className={rowBg}>
+                  <tr className={rowBg}>
                     <td colSpan={visibleClouds.length + 3} className="px-0 pb-0 pt-0">
                       <div className="mx-2 mb-3 border border-gray-100 dark:border-gray-800 rounded-lg overflow-hidden">
                         {/* Description */}
@@ -235,7 +235,7 @@ export default function CompareTable({ equivalences, visibleClouds, sortBy = 'ti
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             )
           })}
         </tbody>

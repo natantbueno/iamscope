@@ -10,6 +10,7 @@ import { API_PERMISSIONS } from '@/data/apiPermissions'
 import { EamTier } from '@/data/roles'
 import EamTierBadge from './EamTierBadge'
 import { deriveApiPermDescription } from '@/lib/descriptions'
+import InlineListFilter from './InlineListFilter'
 
 type ApiFilter = 'all' | EamTier
 type PermType  = 'all' | 'Application' | 'Delegated'
@@ -51,7 +52,7 @@ const ACTION_COLORS: Record<string, { bg: string; text: string }> = {
 }
 
 
-export default function ApiPermissionsTable({ search, initialTier = 'all' }: { search: string; initialTier?: string }) {
+export default function ApiPermissionsTable({ search, onSearchChange, initialTier = 'all' }: { search: string; onSearchChange: (v: string) => void; initialTier?: string }) {
   const t = useT()
   const [tier, setTier] = useState<ApiFilter>(
     ['ControlPlane', 'ManagementPlane', 'UserAccess', 'Unclassified'].includes(initialTier)
@@ -155,7 +156,8 @@ export default function ApiPermissionsTable({ search, initialTier = 'all' }: { s
             <option value="all">{t('filter.allFem')} ({categories.length})</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <span className="text-tiny text-fg-muted ml-2">{filtered.length.toLocaleString()} perm.</span>
+          <span className="text-tiny text-fg-muted ml-2 whitespace-nowrap">{filtered.length.toLocaleString()} perm.</span>
+          <InlineListFilter value={search} onChange={onSearchChange} placeholder={t('action.search')} />
         </div>
       </div>
 

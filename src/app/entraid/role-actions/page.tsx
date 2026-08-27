@@ -1,18 +1,17 @@
 'use client'
 
 import { Suspense, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import RoleActionsTable from '@/components/RoleActionsTable'
 import StatsBar from '@/components/StatsBar'
 import ExportMenu from '@/components/ExportMenu'
 import { getRoleActions, getUniqueNamespaces, getUniqueVerbs, getUniqueCategories } from '@/lib/roleActions'
 import { useT } from '@/i18n/LanguageProvider'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 function RoleActionsContent() {
   const t = useT()
-  const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
+  const [q, setQ] = useInlineQuery('/entraid/role-actions')
 
   const actions = useMemo(() => getRoleActions(), [])
   const namespaces = useMemo(() => getUniqueNamespaces(), [])
@@ -51,6 +50,7 @@ function RoleActionsContent() {
           verbs={verbs}
           categories={categories}
           search={q}
+          onSearchChange={setQ}
         />
       </div>
     </AppShell>

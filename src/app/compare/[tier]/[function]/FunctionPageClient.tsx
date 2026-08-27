@@ -38,7 +38,7 @@ export default function FunctionPageClient({ tier, funcId }: { tier: string; fun
         </Link>
       }
     >
-      <div className="flex flex-col flex-1 overflow-auto">
+      <div className="flex flex-col flex-1 overflow-auto table-scroll-x">
         {/* Header card */}
         <div className="px-4 py-4 border-b border-surface-border dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
           <div className="flex items-center gap-3 mb-1">

@@ -14,6 +14,8 @@ import ExportButton from '@/components/ExportButton'
 import StatsBar from '@/components/StatsBar'
 import DeprecatedBadge from '@/components/DeprecatedBadge'
 import { useT } from '@/i18n/LanguageProvider'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const TIERS: AwsTier[] = ['FullAccess', 'PowerUser', 'ReadOnly', 'Operator', 'Specialized']
 const TYPES: AwsPolicyType[] = ['managed', 'service-role', 'permission-set', 'permission-boundary']
@@ -32,18 +34,13 @@ function AwsPoliciesContent() {
 
   const initFilter = searchParams.get('filter') ?? 'all'
   const initCategory = searchParams.get('category') ?? ''
-  const initQ = searchParams.get('q') ?? ''
 
   const [activeTier, setActiveTier] = useState<string>(initFilter)
   const [activeCategory, setActiveCategory] = useState<string>(initCategory)
   const [activeType, setActiveType] = useState<string>('all')
-  // Termo de busca — vem da barra global (?q=), não há mais campo nesta página.
-  // O filtro continua aqui porque é ele que faz a busca global significar algo
-  // ao cair em /aws/policies.
-  const [query, setQuery] = useState(initQ)
+  const [query, setQuery] = useInlineQuery('/aws/policies')
 
   useEffect(() => {
-    const q = searchParams.get('q') ?? ''; setQuery(q)
     const f = searchParams.get('filter') ?? 'all'; setActiveTier(f)
     const c = searchParams.get('category') ?? ''; setActiveCategory(c)
   }, [searchParams])
@@ -111,6 +108,9 @@ function AwsPoliciesContent() {
                 </button>
               )
             })}
+            <div className="ml-auto">
+              <InlineListFilter value={query} onChange={setQuery} placeholder={t('action.search')} />
+            </div>
           </div>
 
           {/* Type filter */}
@@ -148,7 +148,7 @@ function AwsPoliciesContent() {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-body border-collapse" style={{ tableLayout: 'fixed', minWidth: colWidths.reduce((a, b) => a + b, 0) }}>
             <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
               <tr>

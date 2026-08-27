@@ -8,6 +8,8 @@ import { Rich } from '@/i18n/Rich'
 import { GCP_ROLES, GCP_TIER_META, GcpTier, GCP_CATEGORIES } from '@/data/gcp'
 import Link from 'next/link'
 import { ShieldAlert, Cloud, Database, Server, Key, Shield, Network, Lock, HardDrive, Box, Zap, BrainCircuit, BarChart2, Activity, CreditCard, Settings, Code, Cpu, ChevronRight } from 'lucide-react'
+import { useTheme } from '@/components/ThemeProvider'
+import { resolveTierAccent, CLOUD_TIER_ACCENT_TEXT, cloudInfoBarStyle } from '@/lib/cloudTierAccent'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
@@ -21,6 +23,8 @@ const CAT_ICONS: Record<string, React.ReactNode> = {
 
 export default function GcpDashboard() {
   const t = useT()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const total      = GCP_ROLES.length
   const privileged = GCP_ROLES.filter(r => r.isPrivileged).length
   const adminRoles = GCP_ROLES.filter(r => r.tier === 'Admin' || r.tier === 'ProjectOwner').length
@@ -58,7 +62,7 @@ export default function GcpDashboard() {
                   <span className="min-w-0 break-words">{s.label}</span>
                   <ChevronRight size={10} className="reveal-on-hover shrink-0 mt-0.5" />
                 </p>
-                <p className={`text-stat font-bold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
+                <p className={`text-stat font-extrabold leading-none ${KPI_TONE[s.tone]}`}>{s.value}</p>
               </Link>
             ))}
           </div>
@@ -68,37 +72,49 @@ export default function GcpDashboard() {
             <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
               <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-4">{t('section.tierDistribution')}</h2>
               <div className="space-y-3">
-                {tierCounts.map(({ tier, count, meta }) => (
+                {tierCounts.map(({ tier, count, meta }) => {
+                  const graphicColor = resolveTierAccent('gcp', meta.color, meta.color, isDark)
+                  return (
                   <div key={tier}>
                     <div className="flex items-center justify-between mb-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full" style={{ background: meta.color }} />
+                        <span className="w-2 h-2 rounded-full" style={{ background: graphicColor }} />
                         <span className="text-tiny text-fg-muted">{meta.label}</span>
                       </div>
-                      <span className="text-tiny font-semibold themed-color" style={themedText(meta.color)}>{count}</span>
+                      <span className="text-tiny font-semibold themed-color" style={themedText(graphicColor)}>{count}</span>
                     </div>
                     <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1">
-                      <div className="h-1 rounded-full" style={{ width: `${(count / total) * 100}%`, background: meta.color }} />
+                      <div className="h-1 rounded-full" style={{ width: `${(count / total) * 100}%`, background: graphicColor }} />
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 
             <div className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-5">
-              <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-1.5">
-                <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
-              </h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-body font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                  <ShieldAlert size={13} className="text-red-500" /> Roles Privilegiadas
+                </h2>
+                <Link href="/gcp/roles?filter=privileged" className="text-3xs" style={{ color: CLOUD_TIER_ACCENT_TEXT.gcp[isDark ? 'dark' : 'light'] }}>{t('action.seeAll')}</Link>
+              </div>
               <div className="space-y-1 max-h-56 overflow-y-auto">
-                {GCP_ROLES.filter(r => r.isPrivileged).map(r => (
+                {privileged === 0 && <p className="text-tiny text-fg-muted px-2 py-1">Nenhuma role privilegiada catalogada.</p>}
+                {GCP_ROLES.filter(r => r.isPrivileged).slice(0, 12).map(r => {
+                  const meta = GCP_TIER_META[r.tier]
+                  const pillColor = resolveTierAccent('gcp', meta.color, meta.color, isDark)
+                  const pillText = resolveTierAccent('gcp', meta.color, meta.color, isDark, 'text')
+                  return (
                   <Link key={r.slug} href={`/gcp/roles/${r.slug}`}
                     className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group">
                     <span className="text-3xs text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 truncate mr-2">{r.name}</span>
-                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0 themed-color" style={{ background: GCP_TIER_META[r.tier].bg, ...themedText(GCP_TIER_META[r.tier].color, GCP_TIER_META[r.tier].bg) }}>
-                      {GCP_TIER_META[r.tier].label}
+                    <span className="text-2xs px-1.5 py-0.5 rounded-full shrink-0 font-medium" style={{ background: `${pillColor}26`, color: pillText }}>
+                      {meta.label}
                     </span>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -110,10 +126,10 @@ export default function GcpDashboard() {
               {catCounts.map(({ cat, count }) => (
                 <Link key={cat} href={`/gcp/roles?category=${cat}`}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-border dark:border-gray-700 bg-surface-faint dark:bg-gray-800 hover:bg-[#e8f4f0] dark:hover:bg-success-soft hover:border-csp-gcp/40 transition-colors">
-                  <span className="shrink-0 text-fg-subtle">{CAT_ICONS[cat] ?? <Shield size={15} />}</span>
+                  <span className="shrink-0" style={{ color: CLOUD_TIER_ACCENT_TEXT.gcp[isDark ? 'dark' : 'light'] }}>{CAT_ICONS[cat] ?? <Shield size={15} />}</span>
                   <div className="min-w-0">
                     <p className="text-3xs font-medium text-gray-800 dark:text-gray-100 truncate">{cat}</p>
-                    <p className="text-2xs text-fg-subtle">{count} roles</p>
+                    <p className="text-2xs" style={{ color: CLOUD_TIER_ACCENT_TEXT.gcp[isDark ? 'dark' : 'light'] }}>{count} roles</p>
                   </div>
                 </Link>
               ))}
@@ -121,12 +137,17 @@ export default function GcpDashboard() {
           </div>
 
           {/* Info bar */}
-          <div className="rounded-xl border border-csp-gcp/30 bg-csp-gcp/5 dark:bg-csp-gcp/10 px-5 py-4 flex items-start gap-3">
-            <Cloud size={15} className="text-csp-gcp-onLight dark:text-csp-gcp-onDark mt-0.5 shrink-0" />
-            <p className="text-tiny text-csp-gcp-onLight dark:text-csp-gcp-onDark leading-relaxed">
+          {(() => {
+            const bar = cloudInfoBarStyle('gcp', isDark)
+            return (
+          <div className="rounded-xl border px-5 py-4 flex items-start gap-3" style={{ borderColor: bar.border, background: bar.background }}>
+            <Cloud size={15} className="mt-0.5 shrink-0" style={{ color: bar.text }} />
+            <p className="text-tiny leading-relaxed" style={{ color: bar.text }}>
               <Rich text={t('gcp.modelBody')} />
             </p>
           </div>
+            )
+          })()}
 
         </div>
       </div>

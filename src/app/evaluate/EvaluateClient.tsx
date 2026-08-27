@@ -6,7 +6,6 @@ import { ShieldCheck, HelpCircle, ChevronDown, ChevronRight } from 'lucide-react
 import AppShell from '@/components/AppShell'
 import RoleInput from '@/components/RoleInput'
 import EvaluationResult from '@/components/EvaluationResult'
-import { BetaNotice } from '@/components/BetaBadge'
 import {
   evaluateRole, evaluateRoleCandidate, getResultForSlug,
   EvaluateCloud, EvaluationResultData, EVALUATE_CLOUDS,
@@ -144,6 +143,7 @@ export default function EvaluateClient() {
               onClear={handleClear}
               parseError={parseError}
               cloudNotDetected={cloudNotDetected}
+              loading={status === 'loading'}
             />
           </div>
 
@@ -171,10 +171,7 @@ export default function EvaluateClient() {
             {result && status === 'result' && <EvaluationResult data={result} />}
           </div>
 
-          {/* Ocupa a grade inteira: valem para as duas colunas. */}
-          <div className="lg:col-span-5">
-            <BetaNotice items={['beta.evalOne', 'beta.evalTwo', 'beta.evalThree', 'beta.evalFour']} />
-          </div>
+          {/* Ocupa a grade inteira: vale para as duas colunas. */}
           <HowItWorks />
         </div>
       </div>

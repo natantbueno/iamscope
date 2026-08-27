@@ -15,6 +15,8 @@ import { useColumnResize } from '@/hooks/useColumnResize'
 import StatsBar from '@/components/StatsBar'
 import AzureEffectiveCount, { useFloorNote } from '@/components/AzureEffectiveCount'
 import { AZURE_EFFECTIVE } from '@/data/azureEffective'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 type SortCol = 'name' | 'category' | 'tier' | 'permissionCount' | 'effectiveActions'
 type SortDir = 'asc' | 'desc'
@@ -35,7 +37,7 @@ function AzureRbacRolesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const [search, setSearch]           = useState('')
+  const [search, setSearch]           = useInlineQuery('/azure-rbac/roles')
   const [activeTier, setActiveTier]   = useState<AzureRbacTier | 'all'>('all')
   const [activeCat, setActiveCat]     = useState<AzureRbacCategory | 'all'>('all')
   const [privilegedOnly, setPriv]     = useState(false)
@@ -46,11 +48,9 @@ function AzureRbacRolesContent() {
 
   // Sync state from URL params — fires on every navigation (sidebar clicks)
   useEffect(() => {
-    const q      = searchParams.get('q') ?? ''
     const tier   = searchParams.get('tier') ?? 'all'
     const cat    = searchParams.get('category') ?? 'all'
     const filter = searchParams.get('filter') ?? ''
-    setSearch(q)
     setActiveTier(TIERS.includes(tier as AzureRbacTier) ? (tier as AzureRbacTier) : 'all')
     setActiveCat(ALL_CATEGORIES.includes(cat as AzureRbacCategory) ? (cat as AzureRbacCategory) : 'all')
     setPriv(filter === 'privileged')
@@ -159,6 +159,7 @@ function AzureRbacRolesContent() {
               <ShieldAlert size={11} /> Privilegiadas
             </button>
             <span className="text-tiny text-fg-muted">{sorted.length}</span>
+            <InlineListFilter value={search} onChange={setSearch} placeholder={t('action.search')} />
           </div>
 
           {/* Row 2: Category chips */}
@@ -198,7 +199,7 @@ function AzureRbacRolesContent() {
         </p>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="text-tiny border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: widths.reduce((a, b) => a + b, 0) }}>
             <colgroup>
               <col style={{ width: widths[0] }} />

@@ -63,6 +63,7 @@ function RolesContent() {
 
   const handleTierChange = (f: FilterType) => { setActiveTier(f); syncUrl(f, activeCategory, q) }
   const handleCategoryChange = (c: RoleCategory | null) => { setActiveCategory(c); syncUrl(activeTier, c, q) }
+  const handleSearchChange = (v: string) => syncUrl(activeTier, activeCategory, v)
 
   const filteredRoles = useMemo(() => {
     const query = q.toLowerCase()
@@ -110,6 +111,8 @@ function RolesContent() {
           activeCategory={activeCategory}
           onTierChange={handleTierChange}
           onCategoryChange={handleCategoryChange}
+          search={q}
+          onSearchChange={handleSearchChange}
         />
       </div>
     </AppShell>

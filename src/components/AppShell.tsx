@@ -6,7 +6,6 @@ import { Menu } from 'lucide-react'
 import Sidebar, { Platform, View, GLOBAL_HREFS } from './Sidebar'
 import { BetaBadge } from './BetaBadge'
 import CloudNav from './CloudNav'
-import GlobalSearch from './GlobalSearch'
 import type { RoleCategory } from '@/data/roles'
 import { useT } from '@/i18n/LanguageProvider'
 // Contagens vindas de counts.ts: o AppShell envolve TODAS as páginas, então
@@ -164,54 +163,6 @@ export default function AppShell({
     if (path) router.push(path)
   }
 
-  /**
-   * Rota-alvo da busca global. O estado vive na URL (?q=), dentro de
-   * GlobalSearch — aqui só se decide PARA ONDE a busca aponta.
-   *
-   * Três casos:
-   *
-   * 1. Entra ID — respeita a view atual, porque cada uma tem sua própria lista
-   *    (roles, API permissions, role actions).
-   * 2. Demais clouds — cai na listagem principal (roles/policies).
-   * 3. Páginas SEM lista onde filtrar — home e as ferramentas (SoD, Compare,
-   *    Assessment, Permission Scope, Evaluator, Advisor, Tier 0). Antes caíam
-   *    em '/', e digitar na busca simplesmente não fazia nada: a pessoa via o
-   *    campo aceitar o texto e a tela não reagir. Agora vão para /search, que
-   *    procura nas 4.603 roles e policies das seis clouds.
-   */
-  const SEM_LISTA = ['/sod', '/compare', '/assessment', '/permission-scope',
-                     '/evaluate', '/advisor', '/tier-comparison', '/info']
-  const paginaSemLista = pathname === '/' || SEM_LISTA.some((r) => pathname.startsWith(r))
-
-  /**
-   * Views que TÊM uma lista onde filtrar. A busca de uma dessas fica na
-   * própria view; qualquer outra (dashboard, reference, PIM, SCP, clássico,
-   * access groups) cai na lista principal da cloud.
-   *
-   * Antes, só o Entra ID respeitava a view atual. As outras cinco clouds
-   * caíam direto no `ROUTES[platform].roles` — então digitar na busca estando
-   * em `/aws/actions` jogava a pessoa em `/aws/policies`, e em
-   * `/gcp/permissions` jogava em `/gcp/roles`. A busca não estava errada: ela
-   * ia para o lugar errado, e levava o texto junto.
-   *
-   * As quatro rotas de destino já leem `?q=` — o que faltava era mandar a
-   * busca para elas.
-   */
-  const VIEWS_COM_LISTA: View[] = ['roles', 'apiPermissions', 'roleActions', 'actions']
-
-  const rotasDaPlataforma = ROUTES[platform]
-  const rotaDaViewAtual = VIEWS_COM_LISTA.includes(view)
-    ? rotasDaPlataforma[view]
-    : undefined
-
-  const searchBasePath =
-    pathname.startsWith('/search') ? '/search'
-    : paginaSemLista ? '/search'
-    : rotaDaViewAtual
-      ?? rotasDaPlataforma.roles
-      ?? rotasDaPlataforma.dashboard
-      ?? '/search'
-
   const handleCategoryFilter = (cat: RoleCategory) => {
     router.push(`/entraid/roles?category=${encodeURIComponent(cat)}`)
   }
@@ -220,7 +171,6 @@ export default function AppShell({
     <Sidebar
       platform={platform}
       view={view}
-      searchBasePath={searchBasePath}
       totalRoles={ENTRA_ROLES_COUNT}
       totalApiPerms={ENTRA_API_PERMISSIONS_COUNT}
       totalRoleActions={totalRoleActions}
@@ -251,21 +201,6 @@ export default function AppShell({
 
       <div className="flex flex-col flex-1 min-w-0">
         <CloudNav />
-        {/*
-          Busca logo abaixo do menu de clouds, alinhada à esquerda sob o "Home".
-          Saiu da sidebar porque ali competia com a navegação e sumia com o menu
-          recolhido.
-
-          O padding px-6 não é arbitrário: reproduz o recuo do primeiro item do
-          CloudNav (px-2 do contêiner + px-4 do link = 24px), para o campo
-          começar na mesma vertical do rótulo "Home". Se o espaçamento do
-          CloudNav mudar, este precisa mudar junto.
-        */}
-        <div className="bg-surface border-b border-line px-6 py-2 shrink-0">
-          <div className="w-full max-w-md">
-            <GlobalSearch basePath={searchBasePath} />
-          </div>
-        </div>
         <header className="bg-surface border-b border-line px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 shrink-0">
           <button
             type="button"

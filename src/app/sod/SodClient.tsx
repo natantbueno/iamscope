@@ -1,18 +1,30 @@
 'use client'
 
 import { useCallback, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import { useT } from '@/i18n/LanguageProvider'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ShieldAlert, Cloud, LayoutGrid } from 'lucide-react'
 import AppShell from '@/components/AppShell'
-import { BetaNotice } from '@/components/BetaBadge'
 import SoDTabs, { SoDTab } from '@/components/SoDTabs'
 import SoDScopeNotice from '@/components/SoDScopeNotice'
-import SoDRulesCatalog from '@/components/SoDRulesCatalog'
-import SoDMatrix from '@/components/SoDMatrix'
-import SoDUserEvaluator from '@/components/SoDUserEvaluator'
 import SoDSeverityBadge from '@/components/SoDSeverityBadge'
 import SodScriptCard from '@/components/SodScriptCard'
+
+/*
+ * /sod é a página mais pesada do site (324 kB First Load JS, medido no build
+ * de 26/08/2026 — a segunda mais pesada, /aws/policies/[slug], fica em
+ * 302 kB). Catálogo, Matriz e Avaliação são 917 linhas somadas e só UMA
+ * aparece por vez (`activeTab`) — as outras duas eram peso morto no bundle
+ * inicial. Cada aba agora carrega sob demanda, no clique, não no load da
+ * página. `ssr: false` porque o site é `output: 'export'` — não há
+ * servidor para pré-renderizar estes componentes, e todos os três já são
+ * 100% client-side por natureza (o próprio ponto do SoD Analyzer).
+ */
+const TAB_LOADING = <div className="p-6 text-tiny text-fg-muted">Carregando…</div>
+const SoDRulesCatalog = dynamic(() => import('@/components/SoDRulesCatalog'), { ssr: false, loading: () => TAB_LOADING })
+const SoDMatrix = dynamic(() => import('@/components/SoDMatrix'), { ssr: false, loading: () => TAB_LOADING })
+const SoDUserEvaluator = dynamic(() => import('@/components/SoDUserEvaluator'), { ssr: false, loading: () => TAB_LOADING })
 import {
   SOD_RULES, SOD_CATEGORY_META, SOD_PROVIDER_META, SOD_PROVIDERS, SOD_PLATFORMS,
   SoDSeverity, SoDCategory, SoDProvider, ruleProvider, isCrossPlatform,
@@ -116,9 +128,6 @@ export default function SodClient() {
           já sabe o que quer — nunca o veria.
         */}
         <SoDScopeNotice platformCount={SOD_PLATFORMS.length} crossCloudCount={metrics.crossCloud} />
-        <div className="px-4 pb-3">
-          <BetaNotice items={['beta.sodOne', 'beta.sodTwo', 'beta.sodThree']} />
-        </div>
         <SoDTabs active={activeTab} onChange={setTab} />
         {activeTab === 'catalog' && <SoDRulesCatalog />}
         {activeTab === 'matrix' && <SoDMatrix />}

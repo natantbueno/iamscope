@@ -11,6 +11,7 @@ import type { RoleActionEntry } from '@/lib/roleActions'
 import { EamTier, EAM_META } from '@/data/roles'
 import EamTierBadge from './EamTierBadge'
 import { deriveRoleActionDescription } from '@/lib/descriptions'
+import InlineListFilter from './InlineListFilter'
 
 type SortCol = 'action' | 'namespace' | 'verb' | 'tier' | 'category' | 'count'
 type SortDir = 'asc' | 'desc'
@@ -37,9 +38,10 @@ interface Props {
   verbs: string[]
   categories: string[]
   search: string
+  onSearchChange: (v: string) => void
 }
 
-export default function RoleActionsTable({ actions, namespaces, verbs, categories, search }: Props) {
+export default function RoleActionsTable({ actions, namespaces, verbs, categories, search, onSearchChange }: Props) {
   const t = useT()
   const [tier, setTier] = useState<'all' | EamTier>('all')
   const [namespace, setNamespace] = useState('all')
@@ -128,15 +130,17 @@ export default function RoleActionsTable({ actions, namespaces, verbs, categorie
             </span>
           </label>
 
-          <span className="ml-auto text-tiny text-fg-muted">
-            {filtered.length.toLocaleString()} actions
-          </span>
-
-          {hasActiveFilter && (
-            <button onClick={resetFilters} className="text-3xs text-brand-strong dark:text-brand-onDark hover:underline">
-              Limpar filtros
-            </button>
-          )}
+          <div className="ml-auto flex items-center gap-2.5">
+            <span className="text-tiny text-fg-muted whitespace-nowrap">
+              {filtered.length.toLocaleString()} actions
+            </span>
+            {hasActiveFilter && (
+              <button onClick={resetFilters} className="text-3xs text-brand-strong dark:text-brand-onDark hover:underline whitespace-nowrap">
+                Limpar filtros
+              </button>
+            )}
+            <InlineListFilter value={search} onChange={onSearchChange} placeholder={t('action.search')} />
+          </div>
         </div>
 
         {/* Dropdown filters */}

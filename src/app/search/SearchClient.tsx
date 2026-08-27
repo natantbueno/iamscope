@@ -11,6 +11,7 @@ import { usePagination } from '@/hooks/usePagination'
 import ExportButton from '@/components/ExportButton'
 import ClassificationBadge from '@/components/ClassificationBadge'
 import { useT } from '@/i18n/LanguageProvider'
+import { type Indice, type Resultado, pareceAction, ranquear, carregarIndice } from '@/lib/searchIndex'
 
 /**
  * Busca global — todas as roles e policies das 6 clouds num lugar só.
@@ -33,75 +34,6 @@ import { useT } from '@/i18n/LanguageProvider'
  *   — e a tela aponta para lá quando o termo parece um identificador de action.
  */
 
-interface Indice {
-  generatedAt: string
-  campos: string[]
-  clouds: Record<string, { label: string; base: string; noun: string; color: string; text: string; total: number }>
-  tiers: Record<string, Record<string, { label: string; color: string }>>
-  itens: [string, string, string, string, string, string, string, string, number, number][]
-}
-
-interface Resultado {
-  cloud: string
-  name: string
-  slug: string
-  id: string
-  description: string
-  tier: string
-  tierLabel: string
-  category: string
-  privileged: boolean
-  deprecated: boolean
-  /** Menor = melhor. Ver `pontuar`. */
-  score: number
-}
-
-/**
- * Ordena por qualidade da correspondência, não alfabeticamente.
- *
- * Quem busca "global admin" espera Global Administrator primeiro, não a
- * primeira role em ordem alfabética que contenha "admin" na descrição. Sem
- * isso o resultado útil fica na página 4.
- */
-function pontuar(termo: string, nome: string, slug: string, id: string, desc: string): number {
-  const n = nome.toLowerCase()
-  if (n === termo) return 0                       // nome exato
-  if (slug.toLowerCase() === termo) return 1      // slug exato
-  if (id.toLowerCase() === termo) return 2        // GUID / ARN exato
-  if (n.startsWith(termo)) return 3               // começa com
-  if (n.includes(termo)) return 4                 // contém no nome
-  if (slug.toLowerCase().includes(termo)) return 5
-  if (id.toLowerCase().includes(termo)) return 6
-  if (desc.toLowerCase().includes(termo)) return 7 // só na descrição
-
-  /*
-    Última tentativa: todas as palavras presentes, em qualquer ordem.
-
-    Sem isto, "admin global" devolvia zero enquanto "global admin" achava a
-    Global Administrator — a busca dependia da ordem em que a pessoa lembrou
-    das palavras, o que não é razoável. Fica por último no ranking porque é a
-    correspondência mais frouxa.
-  */
-  const palavras = termo.split(/\s+/).filter(Boolean)
-  if (palavras.length > 1) {
-    const texto = `${n} ${slug.toLowerCase()} ${desc.toLowerCase()}`
-    if (palavras.every((p) => texto.includes(p))) return 8
-  }
-  return 99
-}
-
-/**
- * Parece identificador de action/permission? Então o lugar é o Permission Scope.
- *
- * O `[a-z][a-z0-9]*` do segundo padrão não é preciosismo: com `[a-z]+` o
- * `s3:GetObject` não casava, porque o `+` para no "s" e o dígito quebra a
- * sequência. Serviços da AWS com número no nome (s3, ec2, route53) são
- * exatamente os mais buscados.
- */
-function pareceAction(termo: string): boolean {
-  return /^[a-z][\w.]*\/[\w*/.]+$/i.test(termo) || /^[a-z][a-z0-9]*:[a-zA-Z]/.test(termo)
-}
-
 export default function SearchClient() {
   const t = useT()
   const searchParams = useSearchParams()
@@ -116,28 +48,15 @@ export default function SearchClient() {
   // deve custar 1,2 MB de download.
   useEffect(() => {
     if (!q.trim() || indice) return
-    fetch('/search-index.json')
-      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() })
-      .then((d: Indice) => { setIndice(d); setErro(false) })
+    carregarIndice()
+      .then((d) => { setIndice(d); setErro(false) })
       .catch(() => setErro(true))
   }, [q, indice])
 
   const resultados = useMemo<Resultado[]>(() => {
     const termo = q.trim().toLowerCase()
     if (!termo || !indice) return []
-
-    const out: Resultado[] = []
-    for (const [cloud, name, slug, id, description, tier, tierLabel, category, priv, dep] of indice.itens) {
-      const score = pontuar(termo, name, slug, id, description)
-      if (score === 99) continue
-      out.push({
-        cloud, name, slug, id, description, tier, tierLabel, category,
-        privileged: !!priv, deprecated: !!dep, score,
-      })
-    }
-    // Empate no score resolve por nome, para a ordem ser estável entre buscas.
-    out.sort((a, b) => a.score - b.score || a.name.localeCompare(b.name))
-    return out
+    return ranquear(indice, termo)
   }, [q, indice])
 
   const porCloud = useMemo(() => {
@@ -259,7 +178,7 @@ export default function SearchClient() {
             </div>
 
             {/* Resultados — lista, não tabela: os campos variam por cloud */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto table-scroll-x">
               {paginated.map((r) => {
                 const c = indice.clouds[r.cloud]
                 const tier = indice.tiers[r.cloud]?.[r.tier]

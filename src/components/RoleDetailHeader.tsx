@@ -123,7 +123,7 @@ export default function RoleDetailHeader({
   return (
     <div className="mb-5">
       <div className="flex items-start gap-3 flex-wrap mb-2">
-        <h1 className="text-title font-semibold text-fg">{name}</h1>
+        <h1 className="text-title font-bold text-fg">{name}</h1>
         {isPrivileged && (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-3xs font-semibold bg-danger/10 text-danger border border-danger/30 mt-1.5">
             <ShieldAlert size={12} /> {t('label.privilegedAdj')}

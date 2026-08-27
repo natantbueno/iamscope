@@ -21,7 +21,6 @@ import { Search, X, ShieldAlert, ScanSearch, ChevronRight, ChevronDown, Chevrons
 
 import AppShell from '@/components/AppShell'
 import ExportButton from '@/components/ExportButton'
-import { BetaNotice } from '@/components/BetaBadge'
 import {
   isUnanchoredPattern, looksLikeConcreteAction, namespaceKey, wildcardMatches,
 } from '@/lib/wildcardMatch'
@@ -468,10 +467,6 @@ function PermissionScopeContent() {
                 <Asterisk size={11} /> {t('perm.wildcardToggle')}
               </button>
               <span className="text-3xs text-fg-muted">{t('perm.wildcardHint')}</span>
-            </div>
-
-            <div className="mt-3">
-              <BetaNotice items={['beta.scopeOne', 'beta.scopeTwo', 'beta.scopeThree', 'beta.scopeFour']} />
             </div>
 
             {/* Estado */}

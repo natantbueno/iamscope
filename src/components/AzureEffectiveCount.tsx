@@ -74,7 +74,7 @@ export default function AzureEffectiveCount({
   if (!eff) return <span className={`text-fg-subtle ${className}`}>—</span>
 
   const tip = floor('azeff.tip')
-  const size = variant === 'stat' ? 'text-stat font-bold' : 'text-tiny font-semibold tabular-nums'
+  const size = variant === 'stat' ? 'text-stat font-extrabold' : 'text-tiny font-semibold tabular-nums'
 
   return (
     <span
@@ -139,7 +139,7 @@ export function AzureEffectivePanel({
               {t('azeff.noDenominator')}
             </span>
           ) : (
-            <span className="text-stat font-bold text-fg-muted">{fmt(eff.effectiveDataActions)}</span>
+            <span className="text-stat font-extrabold text-fg-muted">{fmt(eff.effectiveDataActions)}</span>
           )}
         </div>
 
@@ -147,7 +147,7 @@ export function AzureEffectivePanel({
           <p className="text-2xs font-semibold uppercase tracking-wider mb-1.5 text-fg-subtle">
             {t('azeff.definitionLabel')}
           </p>
-          <span title={t('azeff.nativeTip')} className="text-stat font-bold text-fg-subtle cursor-help">
+          <span title={t('azeff.nativeTip')} className="text-stat font-extrabold text-fg-subtle cursor-help">
             {fmt(nativeCount)}
           </span>
         </div>

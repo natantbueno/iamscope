@@ -219,6 +219,16 @@ const SHARED = {
   'search.looksLikeAction': { pt: 'Isso parece uma action ou permission — a busca certa para esse caso é o',
                               en: 'That looks like an action or permission — the right tool for it is' },
 
+  // ── Paleta de comando (⌘K) ──────────────────────────────────────────────────
+  'search.paletteTrigger':   { pt: 'Buscar',                              en: 'Search' },
+  'search.palettePlaceholder': { pt: 'Buscar roles e policies nas 6 clouds...',
+                                en: 'Search roles and policies across 6 clouds...' },
+  'search.paletteHint':      { pt: 'Achar em qualquer lugar. Para filtrar só esta lista, use o campo na tabela.',
+                                en: 'Find anything, anywhere. To filter just this list, use the field on the table.' },
+  'search.paletteViewAll':   { pt: 'Ver todos os {n} resultados',         en: 'View all {n} results' },
+  'search.paletteError':     { pt: 'Não foi possível carregar o índice de busca.',
+                                en: 'Could not load the search index.' },
+
   // ── Proveniência do dado ──────────────────────────────────────────────────
   'origin.official':      { pt: 'Texto oficial do provedor, mantido em inglês',
                             en: 'Official text from the provider' },

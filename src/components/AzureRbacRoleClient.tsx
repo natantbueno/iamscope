@@ -264,7 +264,7 @@ function StatCard({ label, value, accent }: { label: string; value: number; acce
   return (
     <div className="bg-surface border border-line rounded-lg p-3.5">
       <p className="text-2xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: accent }}>{label}</p>
-      <span className="text-stat font-bold" style={{ color: accent }}>{value}</span>
+      <span className="text-stat font-extrabold" style={{ color: accent }}>{value}</span>
     </div>
   )
 }

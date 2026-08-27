@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
-import { Play, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Play, Trash2, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
 import { previewInput, EvaluateCloud, EVALUATE_CLOUDS } from '@/lib/evaluate'
 import { CLOUD_META } from '@/data/compare/types'
 import { useTheme } from './ThemeProvider'
@@ -114,10 +114,14 @@ interface RoleInputProps {
   onClear: () => void
   parseError: string | null
   cloudNotDetected: boolean
+  /** Avaliação em andamento (o delay de 300ms + o chunk do catálogo). Sem
+   * isto o botão ficava clicável durante a espera — clique duplo disparava
+   * duas avaliações concorrentes da mesma entrada. */
+  loading?: boolean
 }
 
 export default function RoleInput({
-  value, onChange, manualCloud, onManualCloudChange, onEvaluate, onClear, parseError, cloudNotDetected,
+  value, onChange, manualCloud, onManualCloudChange, onEvaluate, onClear, parseError, cloudNotDetected, loading = false,
 }: RoleInputProps) {
   const t = useT()
   const { theme } = useTheme()
@@ -229,14 +233,16 @@ export default function RoleInput({
       <div className="flex items-center gap-2">
         <button
           onClick={onEvaluate}
-          disabled={!value.trim()}
+          disabled={!value.trim() || loading}
+          aria-busy={loading}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand hover:bg-[#006cbe] disabled:opacity-40 disabled:cursor-not-allowed text-white text-body font-medium transition-colors"
         >
-          <Play size={14} /> {t('action.evaluateRole')}
+          {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />} {t('action.evaluateRole')}
         </button>
         <button
           onClick={onClear}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-fg-muted text-body font-medium transition-colors"
+          disabled={loading}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-fg-muted text-body font-medium transition-colors"
         >
           <Trash2 size={14} /> Limpar
         </button>

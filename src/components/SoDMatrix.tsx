@@ -132,10 +132,10 @@ export default function SoDMatrix() {
       )}
       {checked && roleA && roleB && !sameRole && !crossProvider && (
         result ? (
-          <div className="border border-red-200 dark:border-red-900/50 rounded-xl p-5 bg-red-50/40 dark:bg-red-950/20">
+          <div className="border border-danger/30 rounded-xl p-5 bg-danger/10">
             <div className="flex items-center gap-2 mb-4">
-              <ShieldAlert size={16} className="text-red-500" />
-              <span className="text-body font-bold uppercase tracking-wider text-red-600 dark:text-red-400">{t('sod.conflictFound')}</span>
+              <ShieldAlert size={16} className="text-danger" />
+              <span className="text-body font-bold uppercase tracking-wider text-danger">{t('sod.conflictFound')}</span>
               <SoDSeverityBadge severity={result.severity} />
             </div>
             <SoDRuleDetailCard rule={result} compact />
@@ -144,9 +144,12 @@ export default function SoDMatrix() {
             </Link>
           </div>
         ) : (
-          <div className="border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-5 bg-emerald-50/40 dark:bg-emerald-950/20">
+          <div className="border border-success/30 rounded-xl p-5 bg-success/10">
             <div className="flex items-center gap-2 mb-2">
               <ShieldCheck size={16} className="text-fg-subtle" />
+              {/* success.DEFAULT (#1a7f4b) only clears ~3.5:1 on the dark surface —
+                  below the 4.5:1 body-text minimum. text-emerald-600/400 is the
+                  verified pair already used elsewhere for this exact state. */}
               <span className="text-body font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{t('sod.noConflictCaps')}</span>
             </div>
             <p className="text-tiny text-fg-muted">{t('sod.noConflictBody')}</p>
@@ -165,8 +168,8 @@ export default function SoDMatrix() {
               const other = r.roleA.name.toLowerCase() === roleA.name.toLowerCase() && r.roleA.cloud === roleA.cloud ? r.roleB : r.roleA
               return (
                 <Link key={r.id} href={`/sod/rules/${r.id}`}
-                  className="flex items-center gap-2 text-tiny px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                  <ShieldAlert size={12} className="text-red-400 shrink-0" />
+                  className="flex items-center gap-2 text-tiny px-3 py-1.5 rounded-lg border border-line hover:bg-surface-alt transition-colors">
+                  <ShieldAlert size={12} className="text-danger shrink-0" />
                   <span className="text-gray-600 dark:text-gray-300">+ {other.name}</span>
                   {other.cloud !== roleA.cloud && <SoDCloudBadge cloud={other.cloud} />}
                   <span className="ml-auto shrink-0"><SoDSeverityBadge severity={r.severity} /></span>
@@ -215,21 +218,25 @@ export default function SoDMatrix() {
                   {matrixRoles.map((colRole) => {
                     const cellId = `${rowRole.cloud}:${rowRole.name}|${colRole.cloud}:${colRole.name}`
                     if (rowRole.name === colRole.name && rowRole.cloud === colRole.cloud) {
-                      return <td key={cellId} className="p-0"><div className="w-8 h-8 bg-gray-100 dark:bg-gray-800" /></td>
+                      return <td key={cellId} className="p-0"><div className="w-8 h-8 bg-surface-alt" /></td>
                     }
                     const rule = checkConflict(rowRole.name, rowRole.cloud, colRole.name, colRole.cloud)
                     return (
                       <td key={cellId} className="p-0">
+                        {/* Only the real signal (a conflict) gets color; the majority
+                            "no conflict" cells stay neutral so the eye lands on what
+                            matters instead of reading a checkerboard of red/green. */}
                         <Link
                           href={rule ? `/sod/rules/${rule.id}` : '#'}
                           onClick={(e) => { if (!rule) e.preventDefault() }}
                           onMouseEnter={() => setHoverCell(rule ? rule.name : null)}
                           onMouseLeave={() => setHoverCell(null)}
                           title={rule ? rule.name : t('sod.noConflictCaps')}
-                          className="w-8 h-8 flex items-center justify-center transition-transform hover:scale-110"
-                          style={{ background: rule ? '#ef444440' : '#22c55e30', cursor: rule ? 'pointer' : 'default' }}
+                          className={`w-8 h-8 flex items-center justify-center transition-transform hover:scale-110 ${
+                            rule ? 'bg-danger/25 cursor-pointer' : 'bg-surface-alt cursor-default'
+                          }`}
                         >
-                          {rule && <ShieldAlert size={11} className="text-red-500" />}
+                          {rule && <ShieldAlert size={11} className="text-danger" />}
                         </Link>
                       </td>
                     )

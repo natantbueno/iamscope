@@ -8,6 +8,7 @@ import ApiPermissionsTable from '@/components/ApiPermissionsTable'
 import StatsBar from '@/components/StatsBar'
 import ExportMenu from '@/components/ExportMenu'
 import { API_PERMISSIONS } from '@/data/apiPermissions'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const GLOBAL_STATS = {
   total:       API_PERMISSIONS.length,
@@ -21,7 +22,7 @@ const GLOBAL_STATS = {
 function ApiContent() {
   const t = useT()
   const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
+  const [q, setQ] = useInlineQuery('/entraid/api-permissions')
   const tier = searchParams.get('tier') ?? 'all'
 
   return (
@@ -39,7 +40,7 @@ function ApiContent() {
           { label: 'Management Plane', value: GLOBAL_STATS.management, color: 'orange' },
           { label: 'User Access', value: GLOBAL_STATS.userAccess, color: 'green' },
         ]} />
-        <ApiPermissionsTable search={q} initialTier={tier} />
+        <ApiPermissionsTable search={q} onSearchChange={setQ} initialTier={tier} />
       </div>
     </AppShell>
   )

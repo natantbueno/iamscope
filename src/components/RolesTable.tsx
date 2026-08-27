@@ -12,6 +12,7 @@ import { EntraRole, RoleCategory, EamTier } from '@/data/roles'
 import CategoryBadge from './CategoryBadge'
 import EamTierBadge from './EamTierBadge'
 import { useColumnResize } from '@/hooks/useColumnResize'
+import InlineListFilter from './InlineListFilter'
 
 export type FilterType = 'all' | 'privileged' | EamTier
 
@@ -24,6 +25,8 @@ interface RolesTableProps {
   activeCategory: RoleCategory | null
   onTierChange: (f: FilterType) => void
   onCategoryChange: (c: RoleCategory | null) => void
+  search: string
+  onSearchChange: (v: string) => void
 }
 
 const TIER_FILTERS: { label: TranslationKey; value: FilterType }[] = [
@@ -38,7 +41,7 @@ const TIER_ORDER: Record<EamTier, number> = {
   ControlPlane: 0, ManagementPlane: 1, UserAccess: 2, Unclassified: 3,
 }
 
-export default function RolesTable({ roles, activeTier, activeCategory, onTierChange, onCategoryChange }: RolesTableProps) {
+export default function RolesTable({ roles, activeTier, activeCategory, onTierChange, onCategoryChange, search, onSearchChange }: RolesTableProps) {
   const t = useT()
   const [sortCol, setSortCol] = useState<SortCol>('tier')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -94,10 +97,13 @@ export default function RolesTable({ roles, activeTier, activeCategory, onTierCh
             {t(f.label)}
           </button>
         ))}
-        <span className="ml-auto text-tiny text-fg-muted">{roles.length} roles</span>
+        <div className="ml-auto flex items-center gap-2.5">
+          <span className="text-tiny text-fg-muted whitespace-nowrap">{roles.length} roles</span>
+          <InlineListFilter value={search} onChange={onSearchChange} placeholder={t('action.search')} />
+        </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto table-scroll-x">
         {roles.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-48 text-fg-muted">
             <p className="text-note">{t('empty.roles')}</p>

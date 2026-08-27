@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useT } from '@/i18n/LanguageProvider'
-import { useSearchParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import StatsBar from '@/components/StatsBar'
 import { getGcpPermissions, type GcpPermEntry } from '@/lib/gcpPermissions'
@@ -17,14 +16,15 @@ import ExportButton from '@/components/ExportButton'
 import Pagination from '@/components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
 import { useNumberFormat } from '@/i18n/useNumberFormat'
+import InlineListFilter from '@/components/InlineListFilter'
+import { useInlineQuery } from '@/hooks/useInlineQuery'
 
 const TIERS: GcpTier[] = ['ProjectOwner', 'Admin', 'Editor', 'Operator', 'Developer', 'Viewer', 'Specialized']
 
 function GcpPermissionsContent() {
   const t = useT()
   const fmt = useNumberFormat()
-  const searchParams = useSearchParams()
-  const q = searchParams.get('q') ?? ''
+  const [q, setQ] = useInlineQuery('/gcp/permissions')
 
   // O índice de permissões vive em public/gcp-perms-index.json (fora do
   // bundle) — por isso carrega sob demanda, como a página da Azure.
@@ -161,14 +161,17 @@ function GcpPermissionsContent() {
               </button>
             )}
 
-            <span className="text-2xs text-fg-muted ml-auto">
-              {fmt(filtered.length)} {t('noun.permissions')}
-            </span>
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="text-2xs text-fg-muted whitespace-nowrap">
+                {fmt(filtered.length)} {t('noun.permissions')}
+              </span>
+              <InlineListFilter value={q} onChange={setQ} placeholder={t('action.search')} />
+            </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto table-scroll-x">
           <table className="w-full text-tiny border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-alt border-b border-line-strong">

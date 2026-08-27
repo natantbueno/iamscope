@@ -84,7 +84,7 @@ export default function InfoClient() {
           <section className="bg-white dark:bg-gray-900 border border-surface-border dark:border-gray-800 rounded-xl p-8 flex flex-col items-center text-center gap-4">
             <EntraScopeIcon size={56} />
             <div>
-              <h1 className="text-stat font-bold text-gray-900 dark:text-gray-100 mb-1">IAM Scope</h1>
+              <h1 className="text-stat font-extrabold text-gray-900 dark:text-gray-100 mb-1">IAM Scope</h1>
               <p className="text-body text-fg-muted">
                 {t('info.tagline')}
               </p>
@@ -160,7 +160,7 @@ export default function InfoClient() {
             </div>
             <div className="flex flex-col sm:flex-row gap-5">
               <div className="w-16 h-16 rounded-full bg-brand-soft dark:bg-brand-activeBg border-2 border-brand dark:border-brand-onDark flex items-center justify-center shrink-0">
-                <span className="text-stat font-bold text-brand-strong dark:text-brand-onDark">N</span>
+                <span className="text-stat font-extrabold text-brand-strong dark:text-brand-onDark">N</span>
               </div>
               <div className="flex-1">
                 <h3 className="text-lead font-semibold text-gray-900 dark:text-gray-100 mb-1">Natan Tomaz</h3>
