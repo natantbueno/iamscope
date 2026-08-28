@@ -33,13 +33,13 @@ export interface ApiPermission {
 //   Microsoft Graph permissions reference (conferência editorial)
 //     https://learn.microsoft.com/en-us/graph/permissions-reference
 //
-// Snapshot de 2026-08-04, do service principal 00000003-0000-0000-c000-000000000000
+// Snapshot de 2026-08-27, do service principal 00000003-0000-0000-c000-000000000000
 // (Microsoft Graph).
 //
 // COBERTURA
-//   Application : 707 de 707
-//   Delegated   : 797 de 797
-//   Total       : 1504
+//   Application : 729 de 729
+//   Delegated   : 807 de 807
+//   Total       : 1536
 //
 // name, id, type, description, consentType são OFICIAIS.
 // category e eamTier são CLASSIFICAÇÃO EDITORIAL do IAM Scope, no modelo
@@ -49,7 +49,7 @@ export interface ApiPermission {
 // Este arquivo substituiu a coleta de 30/06/2026, que tinha 692 Application e
 // só 162 dos 797 escopos delegados. Ver docs/AUDITORIA-api-permissions-2026-08-04.md.
 
-export const API_PERMISSIONS_FETCHED_AT = '2026-08-04'
+export const API_PERMISSIONS_FETCHED_AT = '2026-08-27'
 
 const BLOCO_1: ApiPermission[] = [
   {
@@ -1860,6 +1860,48 @@ const BLOCO_1: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'LifecyclePolicies-AgentId.Read.All',
+    id: '6343d63f-034f-45b5-832d-9f9d7632e182',
+    type: 'Application',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read identity lifecycle policies for agent identities in the organization, without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'LifecyclePolicies-AgentId.Read.All',
+    id: '65857db0-62ac-4279-aa73-c2b5dab186f5',
+    type: 'Delegated',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read identity lifecycle policies for agent identities that the signed-in user has access to in the organization.',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
+    name: 'LifecyclePolicies-AgentId.ReadWrite.All',
+    id: '00d1c504-8dc7-461b-8a0b-dc15c8f1bd5a',
+    type: 'Application',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read, create, update and delete identity lifecycle policies for agent identities in the organization, without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'LifecyclePolicies-AgentId.ReadWrite.All',
+    id: 'f2292ca5-46fc-4195-9b4d-16491bf9bf7f',
+    type: 'Delegated',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read, create, update and delete identity lifecycle policies for agent identities that the signed-in user has access to in the organization.',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
     name: 'LifecycleWorkflows-CustomExt.ReadWrite.All',
     id: '3351c766-bacc-4d93-94fa-f2c8b1986ee7',
     type: 'Application',
@@ -2734,6 +2776,16 @@ const BLOCO_1: ApiPermission[] = [
   },
   {
     name: 'Policy.ReadWrite.Recovery',
+    id: '795fc94d-3deb-4632-b1eb-e6d1a5f44918',
+    type: 'Application',
+    category: 'Tenant Policy Management',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to read and update the organization\'s recovery policy without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'Policy.ReadWrite.Recovery',
     id: '1e7a2f4c-e602-4b1b-9547-304dd65c4cc2',
     type: 'Delegated',
     category: 'Tenant Policy Management',
@@ -2782,6 +2834,27 @@ const BLOCO_1: ApiPermission[] = [
     eamTier: 'ControlPlane',
     resource: 'Microsoft Graph',
     description: 'Allows the app to read and write your organization\'s trust framework policies on behalf of the signed-in user.',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
+    name: 'PreAuthorizationGrant.Read.All',
+    id: '66ae8ecc-328f-47f6-97ca-4d9e952df081',
+    type: 'Application',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read preauthorization grants for service principals without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'PreAuthorizationGrant.Read.All',
+    id: '9c98cbde-410c-4719-9058-166504f17863',
+    type: 'Delegated',
+    category: 'Application and Workload Identity',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read preauthorization grants for service principals on behalf of the signed-in user.',
     consentType: 'Admin',
     tierSource: 'inherited',
   },
@@ -4183,6 +4256,9 @@ const BLOCO_1: ApiPermission[] = [
     description: 'Allows the app to read and update user profiles without a signed in user.',
     tierSource: 'curated',
   },
+]
+
+const BLOCO_2: ApiPermission[] = [
   {
     name: 'User.ReadWrite.All',
     id: '204e0828-b5ca-4ad8-b9f3-f32a958e7cc4',
@@ -4226,6 +4302,16 @@ const BLOCO_1: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthenticationMethod.Delete.All',
+    id: '712f5e0d-bc8d-4ae5-8242-cfb9a4921ed3',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to delete authentication methods of all users in your organization, without a signed-in user. Authentication methods include things like a user\'s phone numbers and Authenticator app settings. This does not allow the app to read, create, or modify authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthenticationMethod.Read',
     id: '1f6b61c5-2f65-4135-9c9f-31c0f8d32b52',
     type: 'Delegated',
@@ -4257,9 +4343,6 @@ const BLOCO_1: ApiPermission[] = [
     description: 'Allows the application to read and write authentication methods of all users in your organization, without a signed-in user.                       Authentication methods include things like a user\'s phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods',
     tierSource: 'curated',
   },
-]
-
-const BLOCO_2: ApiPermission[] = [
   {
     name: 'UserAuthenticationMethod.ReadWrite.All',
     id: 'b7887744-6746-4312-813d-72daeaee7e2d',
@@ -4270,6 +4353,16 @@ const BLOCO_2: ApiPermission[] = [
     description: ' Allows the app to read and write authentication methods of all users in your organization that the signed-in user has access to.                       Authentication methods include things like a user\'s phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-Email.Delete.All',
+    id: 'f0e9adfd-ed6b-45f5-b969-324a75286a39',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete email methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify email methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-Email.Read',
@@ -4315,6 +4408,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-External.Delete.All',
+    id: '7fa6d39e-1e4e-44be-bf9c-e8260b12e1f5',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete external authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify external authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-External.Read',
     id: 'd1739827-146b-4f7f-b52c-1c509253aa57',
     type: 'Delegated',
@@ -4356,6 +4459,16 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read and write external authentication methods of all users in your organization that the signed-in user has access to. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-HardwareOATH.Delete.All',
+    id: '9d8eb432-7ea3-491a-9ed7-e6361b308f08',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete HardwareOATH authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify HardwareOATH authentication methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-HardwareOATH.Read',
@@ -4401,6 +4514,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-MicrosoftAuthApp.Delete.All',
+    id: 'ae494ca6-9612-417a-972a-ef52efaf2de3',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete Microsoft Authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Microsoft Authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-MicrosoftAuthApp.Read',
     id: 'f14a567b-3280-4124-95a0-eca86006967e',
     type: 'Delegated',
@@ -4442,6 +4565,16 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read and write Microsoft Authentication methods of all users in your organization that the signed-in user has access to. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-Passkey.Delete.All',
+    id: '9563fbd0-03a7-466e-8042-63d668b7d1a3',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete passkey authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify passkey authentication methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-Passkey.Read',
@@ -4508,6 +4641,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-Phone.Delete.All',
+    id: '59f17651-8b6c-494e-a269-4ac582fbbca0',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete phone methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify phone methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-Phone.ReadWrite.All',
     id: '6e85d483-7092-4375-babe-0a94a8213a58',
     type: 'Application',
@@ -4527,6 +4670,16 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read and write Phone methods of all users in your organization that the signed-in user has access to. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.',
     consentType: 'User',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-PlatformCred.Delete.All',
+    id: 'bd760918-651f-4e67-b66f-8f614384dec2',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete platform credentials methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify platform credentials methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-PlatformCred.Read',
@@ -4572,6 +4725,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-QR.Delete.All',
+    id: 'e1c34213-26ac-400b-9548-a749f1b1a4e0',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete QR authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify QR authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-QR.Read',
     id: 'd6893c31-9187-405c-8dfc-f700c8fc161a',
     type: 'Delegated',
@@ -4615,6 +4778,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-ResourceKey.Delete.All',
+    id: 'a71aecaf-82f1-47c5-ad0a-5e63503b928f',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete resource key authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify resource key authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-ResourceKey.Read.All',
     id: '94ed018c-a499-47e0-beef-803b93873ece',
     type: 'Application',
@@ -4655,6 +4828,16 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read and delete the keys associated with the user representing a resource account.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-SoftwareOATH.Delete.All',
+    id: 'e5676e10-1a16-452b-ad10-71f54b755852',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete SoftwareOATH authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify SoftwareOATH authentication methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-SoftwareOATH.Read',
@@ -4700,6 +4883,16 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'UserAuthMethod-TAP.Delete.All',
+    id: '4f872e9d-d232-4ecd-ab9c-337cbdb184e5',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete Temporary Access Pass authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Temporary Access Pass authentication methods.',
+    tierSource: 'declared',
+  },
+  {
     name: 'UserAuthMethod-TAP.Read',
     id: '84ded88f-26ba-49d6-b776-efec398de692',
     type: 'Delegated',
@@ -4741,6 +4934,16 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read and write Temporary Access Pass authentication methods of all users in your organization that the signed-in user has access to. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'UserAuthMethod-WindowsHello.Delete.All',
+    id: 'f3197110-aa7f-4acd-a0fd-71981ad68d42',
+    type: 'Application',
+    category: 'Authentication',
+    eamTier: 'ControlPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to delete Windows Hello authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Windows Hello authentication methods.',
+    tierSource: 'declared',
   },
   {
     name: 'UserAuthMethod-WindowsHello.Read',
@@ -4847,6 +5050,48 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows an app to read all acronyms that the signed-in user can access.',
     consentType: 'User',
     tierSource: 'curated',
+  },
+  {
+    name: 'AgentCommunicationConfiguration.Read',
+    id: '57ff8075-2fb3-4879-8693-5d51ee8d5e9e',
+    type: 'Delegated',
+    category: 'Application and Workload Identity',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read the communication configuration of agent blueprints on behalf of the signed-in user.',
+    consentType: 'Admin',
+    tierSource: 'declared',
+  },
+  {
+    name: 'AgentCommunicationConfiguration.Read.All',
+    id: 'eccf3f2d-f81a-4718-95d7-ef4a0c42ac43',
+    type: 'Application',
+    category: 'Application and Workload Identity',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read the communication configuration of agent blueprints without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'AgentCommunicationConfiguration.ReadWrite',
+    id: '15e0db35-0641-4175-b014-c2cb39286338',
+    type: 'Delegated',
+    category: 'Application and Workload Identity',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read and update the communication configuration of agent blueprints on behalf of the signed-in user.',
+    consentType: 'Admin',
+    tierSource: 'declared',
+  },
+  {
+    name: 'AgentCommunicationConfiguration.ReadWrite.All',
+    id: '9c72696d-c77b-4d8d-b59e-dfca4792c9ec',
+    type: 'Application',
+    category: 'Application and Workload Identity',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read and update the communication configuration of agent blueprints without a signed-in user.',
+    tierSource: 'declared',
   },
   {
     name: 'AgentIdentity.Create.All',
@@ -7152,6 +7397,48 @@ const BLOCO_2: ApiPermission[] = [
     tierSource: 'inherited',
   },
   {
+    name: 'DeviceManagementDeploymentPlans.Read.All',
+    id: 'c5825671-0390-4bf2-b99b-80496fd4b673',
+    type: 'Application',
+    category: 'Microsoft 365 Platform Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read properties of Microsoft Intune-managed deployment plans and their ring configurations, without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'DeviceManagementDeploymentPlans.Read.All',
+    id: '700bfe0b-b3bd-4fa4-bec2-6849edd7fb7b',
+    type: 'Delegated',
+    category: 'Microsoft 365 Platform Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read properties of Microsoft Intune-managed deployment plans and their ring configurations.',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
+    name: 'DeviceManagementDeploymentPlans.ReadWrite.All',
+    id: '68356fd1-028d-4ce3-b724-241dec11127a',
+    type: 'Application',
+    category: 'Microsoft 365 Platform Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read and write properties of Microsoft Intune-managed deployment plans and their ring configurations, without a signed-in user.',
+    tierSource: 'declared',
+  },
+  {
+    name: 'DeviceManagementDeploymentPlans.ReadWrite.All',
+    id: '9d95843d-67b9-48b2-8e20-e42372db8549',
+    type: 'Delegated',
+    category: 'Microsoft 365 Platform Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the app to read and write properties of Microsoft Intune-managed deployment plans and their ring configurations.',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
     name: 'DeviceManagementManagedDevices.Read.All',
     id: '2f51be20-0bb4-4fed-bf7b-db946066c75e',
     type: 'Application',
@@ -8168,6 +8455,9 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read conversations of the groups this app has access to without a signed-in user.',
     tierSource: 'curated',
   },
+]
+
+const BLOCO_3: ApiPermission[] = [
   {
     name: 'Group-Conversation.Read.All',
     id: 'c92fbbc2-50e0-4842-93ef-385c3293ea3d',
@@ -8462,9 +8752,6 @@ const BLOCO_2: ApiPermission[] = [
     description: 'Allows the app to read your organization\'s user flows, without a signed-in user.',
     tierSource: 'curated',
   },
-]
-
-const BLOCO_3: ApiPermission[] = [
   {
     name: 'IdentityUserFlow.Read.All',
     id: '2903d63d-4611-4d43-99ce-a33f3f52e343',
@@ -9373,7 +9660,7 @@ const BLOCO_3: ApiPermission[] = [
     category: 'Exchange Online',
     eamTier: 'ManagementPlane',
     resource: 'Microsoft Graph',
-    description: 'Allows the app to backup, restore, and modify mailbox items on behalf of the signed-in user.',
+    description: 'Allows the app to export and import the user\'s mailbox items, on behalf of the the signed-in user.',
     consentType: 'Admin',
     tierSource: 'declared',
   },
@@ -9384,7 +9671,7 @@ const BLOCO_3: ApiPermission[] = [
     category: 'Exchange Online',
     eamTier: 'ManagementPlane',
     resource: 'Microsoft Graph',
-    description: 'Allows the app to backup, restore, and modify all mailbox items without a signed-in user.',
+    description: 'Allows the app to export and import all the users\' mailbox items, without signed-in user.',
     tierSource: 'curated',
   },
   {
@@ -10844,6 +11131,49 @@ const BLOCO_3: ApiPermission[] = [
     description: 'Allows the app to read and query your provisioning log activities, on behalf of the signed-in user.',
     consentType: 'Admin',
     tierSource: 'inherited',
+  },
+  {
+    name: 'PullPrintPrinter.FullControl.All',
+    id: 'ef6b83cd-f762-47ff-97d7-6f6f2d0486ea',
+    type: 'Delegated',
+    category: 'Printer Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to create, read, update and delete pull-print printers and manage member printers on behalf of the signed-in user.',
+    consentType: 'Admin',
+    tierSource: 'declared',
+  },
+  {
+    name: 'PullPrintPrinter.Read.All',
+    id: 'f369d3b8-fe98-4772-85e1-b23e7cf41982',
+    type: 'Application',
+    category: 'Printer Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to read pull-print printers without a signed-in user. ',
+    tierSource: 'declared',
+  },
+  {
+    name: 'PullPrintPrinter.Read.All',
+    id: 'deac7994-79bc-44c9-8828-01c1a9a96618',
+    type: 'Delegated',
+    category: 'Printer Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to read pull-print printers on behalf of the signed-in user. ',
+    consentType: 'Admin',
+    tierSource: 'inherited',
+  },
+  {
+    name: 'PullPrintPrinter.ReadWrite.All',
+    id: 'c628c397-5d7f-4c93-ae0f-4680282fd6d5',
+    type: 'Delegated',
+    category: 'Printer Management',
+    eamTier: 'ManagementPlane',
+    resource: 'Microsoft Graph',
+    description: 'Allows the application to read and update pull-print printers on behalf of the signed-in user. Does not allow creating or deleting  pull-print printers or managing member printers.',
+    consentType: 'Admin',
+    tierSource: 'declared',
   },
   {
     name: 'QnA.Read.All',
@@ -12322,6 +12652,9 @@ const BLOCO_3: ApiPermission[] = [
     consentType: 'Admin',
     tierSource: 'declared',
   },
+]
+
+const BLOCO_4: ApiPermission[] = [
   {
     name: 'TeamsAppInstallation.ManageSelectedForTeam.All',
     id: 'b448d252-1f26-4227-b6ff-21ab510975a2',
@@ -12656,9 +12989,6 @@ const BLOCO_3: ApiPermission[] = [
     description: 'Allows the app to read, install, upgrade, and uninstall Teams apps for any user, without a signed-in user. Does not give the ability to read application-specific settings.',
     tierSource: 'curated',
   },
-]
-
-const BLOCO_4: ApiPermission[] = [
   {
     name: 'TeamsAppInstallation.ReadWriteSelectedForChat',
     id: '690aa3b6-4b71-41c2-a990-77a8c4768d2b',

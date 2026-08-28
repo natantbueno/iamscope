@@ -159,5 +159,23 @@ console.log(`Privilegiadas: ${itens.filter((i) => i[8]).length}  ·  Descontinua
 
 if (DRY) { console.log('\n--dry-run: nada escrito.'); return }
 
-fs.writeFileSync(OUT, json)
-console.log(`\nEscrito: public/search-index.json`)
+// Só regrava quando campos/clouds/tiers/itens de fato mudam. Achado em
+// 27/08/2026: generatedAt levava new Date() em toda execução, então este
+// arquivo (versionado) virava "modificado" em todo build mesmo com os
+// 4.640 itens idênticos byte a byte — diff eterno que ensina a ignorar diff.
+let anterior = null
+if (fs.existsSync(OUT)) {
+  try { anterior = JSON.parse(fs.readFileSync(OUT, 'utf8')) } catch {}
+}
+const mudouConteudo = !anterior
+  || JSON.stringify(anterior.campos) !== JSON.stringify(indice.campos)
+  || JSON.stringify(anterior.clouds) !== JSON.stringify(indice.clouds)
+  || JSON.stringify(anterior.tiers) !== JSON.stringify(indice.tiers)
+  || JSON.stringify(anterior.itens) !== JSON.stringify(indice.itens)
+
+if (mudouConteudo) {
+  fs.writeFileSync(OUT, json)
+  console.log(`\nEscrito: public/search-index.json`)
+} else {
+  console.log(`\npublic/search-index.json sem mudança de conteúdo — generatedAt preservado, nada escrito.`)
+}

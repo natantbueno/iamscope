@@ -579,8 +579,22 @@ function run() {
     JSON.stringify({ meta, events }, null, 0))
 
   // ── data/changelog/quarantine.json — fila de revisão humana ───────────────
-  fs.writeFileSync(path.join(CHG_DIR, 'quarantine.json'),
-    `${JSON.stringify({ generatedAt: new Date().toISOString(), open: quarantine }, null, 2)}\n`)
+  //
+  // Só regrava quando a lista `open` de fato muda. Achado em 27/08/2026: o
+  // arquivo é versionado (não está no .gitignore, ao contrário de
+  // changelog.json e feeds/), mas `generatedAt` levava `new Date()` em TODA
+  // execução — então todo `npm run verify` marcava o arquivo como modificado
+  // mesmo sem nenhuma remoção nova retida. `generatedAt` passa a significar
+  // "quando a quarentena mudou pela última vez", não "quando o script rodou".
+  const quarantinePath = path.join(CHG_DIR, 'quarantine.json')
+  let quarantineAnterior = null
+  if (fs.existsSync(quarantinePath)) {
+    try { quarantineAnterior = JSON.parse(fs.readFileSync(quarantinePath, 'utf8')).open } catch {}
+  }
+  if (JSON.stringify(quarantineAnterior) !== JSON.stringify(quarantine)) {
+    fs.writeFileSync(quarantinePath,
+      `${JSON.stringify({ generatedAt: new Date().toISOString(), open: quarantine }, null, 2)}\n`)
+  }
 
   // ── public/feeds/*.xml — 13 feeds ─────────────────────────────────────────
   const feedsDir = path.join(PUBLIC, 'feeds')

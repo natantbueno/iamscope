@@ -38,3 +38,7 @@ Thumbs.db
 # Env
 .env
 .env*.local
+
+# Config/cache local de ferramentas de agente — não é código do projeto
+.claude/
+.impeccable/

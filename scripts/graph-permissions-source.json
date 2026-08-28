@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-08-04",
+ "fetchedAt": "2026-08-27",
  "servicePrincipal": {
   "appId": "00000003-0000-0000-c000-000000000000",
   "displayName": "Microsoft Graph"
@@ -19,20 +19,6 @@
   }
  ],
  "appRoles": [
-  {
-   "value": "APIConnectors.Read.All",
-   "id": "b86848a7-d5b1-41eb-a9b4-54a4e6306e97",
-   "displayName": "Read API connectors for authentication flows",
-   "description": "Allows the app to read the API connectors used in user authentication flows, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "APIConnectors.ReadWrite.All",
-   "id": "1dfe531a-24a6-4f1b-80f4-7a0dc5a0a171",
-   "displayName": "Read and write API connectors for authentication flows",
-   "description": "Allows the app to read, create and manage the API connectors used in user authentication flows, without a signed-in user.",
-   "isEnabled": true
-  },
   {
    "value": "AccessReview.Read.All",
    "id": "d07a8cc0-3d51-4b77-b3b0-32704d1f69fa",
@@ -139,17 +125,17 @@
    "isEnabled": true
   },
   {
-   "value": "AgentIdUser.ReadWrite.All",
-   "id": "b782c9ad-6f2b-4894-a21b-72bf22417f0a",
-   "displayName": "Read and write all agent ID users' full profiles",
-   "description": "Allows the app to create agent users, read and update agent ID user profiles and read basic company properties, delete and restore agent users without a signed in user.",
+   "value": "AgentCommunicationConfiguration.Read.All",
+   "id": "eccf3f2d-f81a-4718-95d7-ef4a0c42ac43",
+   "displayName": "Read all agent communication configurations",
+   "description": "Allows the app to read the communication configuration of agent blueprints without a signed-in user.",
    "isEnabled": true
   },
   {
-   "value": "AgentIdUser.ReadWrite.IdentityParentedBy",
-   "id": "4aa6e624-eee0-40ab-bdd8-f9639038a614",
-   "displayName": "Read and write full profiles of agent ID users under an agent blueprint",
-   "description": "Allows the app to create agent users, read and update agent ID user profiles, delete and restore agent users under an agent blueprint, and read basic company properties without a signed-in user.",
+   "value": "AgentCommunicationConfiguration.ReadWrite.All",
+   "id": "9c72696d-c77b-4d8d-b59e-dfca4792c9ec",
+   "displayName": "Read and write all agent communication configurations",
+   "description": "Allows the app to read and update the communication configuration of agent blueprints without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -279,6 +265,20 @@
    "isEnabled": true
   },
   {
+   "value": "AgentIdUser.ReadWrite.All",
+   "id": "b782c9ad-6f2b-4894-a21b-72bf22417f0a",
+   "displayName": "Read and write all agent ID users' full profiles",
+   "description": "Allows the app to create agent users, read and update agent ID user profiles and read basic company properties, delete and restore agent users without a signed in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "AgentIdUser.ReadWrite.IdentityParentedBy",
+   "id": "4aa6e624-eee0-40ab-bdd8-f9639038a614",
+   "displayName": "Read and write full profiles of agent ID users under an agent blueprint",
+   "description": "Allows the app to create agent users, read and update agent ID user profiles, delete and restore agent users under an agent blueprint, and read basic company properties without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "AgentInstance.Read.All",
    "id": "799a4732-85b8-4c67-b048-75f0e88a232b",
    "displayName": "Read all agent instances in Agent Registry",
@@ -342,6 +342,20 @@
    "isEnabled": true
   },
   {
+   "value": "APIConnectors.Read.All",
+   "id": "b86848a7-d5b1-41eb-a9b4-54a4e6306e97",
+   "displayName": "Read API connectors for authentication flows",
+   "description": "Allows the app to read the API connectors used in user authentication flows, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "APIConnectors.ReadWrite.All",
+   "id": "1dfe531a-24a6-4f1b-80f4-7a0dc5a0a171",
+   "displayName": "Read and write API connectors for authentication flows",
+   "description": "Allows the app to read, create and manage the API connectors used in user authentication flows, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "AppCatalog.Read.All",
    "id": "e12dae10-5a57-4817-b79d-dfbec5348930",
    "displayName": "Read all app catalogs",
@@ -353,13 +367,6 @@
    "id": "dc149144-f292-421e-b185-5953f2e98d7f",
    "displayName": "Read and write to all app catalogs",
    "description": "Allows the app to create, read, update, and delete apps in the app catalogs without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "AppRoleAssignment.ReadWrite.All",
-   "id": "06b708a9-e830-4db3-a914-8e69da51d44f",
-   "displayName": "Manage app permission grants and app role assignments",
-   "description": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -395,6 +402,13 @@
    "id": "18a4783c-866b-4cc7-a460-3d5e5662c884",
    "displayName": "Manage apps that this app creates or owns",
    "description": "Allows the app to create other applications, and fully manage those applications (read, update, update application secrets and delete), without a signed-in user.  It cannot update any apps that it is not an owner of.",
+   "isEnabled": true
+  },
+  {
+   "value": "AppRoleAssignment.ReadWrite.All",
+   "id": "06b708a9-e830-4db3-a914-8e69da51d44f",
+   "displayName": "Manage app permission grants and app role assignments",
+   "description": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -755,13 +769,6 @@
    "isEnabled": true
   },
   {
-   "value": "CallTranscripts.Read.All",
-   "id": "4cd61b6d-8692-40bf-9d90-7f38db5e5fce",
-   "displayName": "Read all call transcripts",
-   "description": "Allows the app to read call transcripts for all calls without a signed-in user.",
-   "isEnabled": true
-  },
-  {
    "value": "Calls.AccessMedia.All",
    "id": "a7a681dc-756e-4909-b988-f160edc6655f",
    "displayName": "Access media streams in a call as an app",
@@ -801,6 +808,13 @@
    "id": "050b0d28-840a-4ff6-bdf9-cc6221acbc1f",
    "displayName": "Report synthetic media detections in calls",
    "description": "Allows the app to report synthetic media detections for participants in calls, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "CallTranscripts.Read.All",
+   "id": "4cd61b6d-8692-40bf-9d90-7f38db5e5fce",
+   "displayName": "Read all call transcripts",
+   "description": "Allows the app to read call transcripts for all calls without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -1350,6 +1364,20 @@
    "isEnabled": true
   },
   {
+   "value": "DeviceManagementDeploymentPlans.Read.All",
+   "id": "c5825671-0390-4bf2-b99b-80496fd4b673",
+   "displayName": "Read Microsoft Intune Deployment Plans",
+   "description": "Allows the app to read properties of Microsoft Intune-managed deployment plans and their ring configurations, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "DeviceManagementDeploymentPlans.ReadWrite.All",
+   "id": "68356fd1-028d-4ce3-b724-241dec11127a",
+   "displayName": "Read and write Microsoft Intune Deployment Plans",
+   "description": "Allows the app to read and write properties of Microsoft Intune-managed deployment plans and their ring configurations, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "DeviceManagementManagedDevices.PrivilegedOperations.All",
    "id": "5b07b0dd-2377-4e44-a38d-703f09a0dc3c",
    "displayName": "Perform user-impacting remote actions on Microsoft Intune devices",
@@ -1487,6 +1515,20 @@
    "id": "7e05723c-0bb0-42da-be95-ae9f08a6e53c",
    "displayName": "Read and write domains",
    "description": "Allows the app to read and write all domain properties without a signed in user.  Also allows the app to add,  verify and remove domains.",
+   "isEnabled": true
+  },
+  {
+   "value": "eDiscovery.Read.All",
+   "id": "50180013-6191-4d1e-a373-e590ff4e66af",
+   "displayName": "Read all eDiscovery objects",
+   "description": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "eDiscovery.ReadWrite.All",
+   "id": "b2620db1-3bf7-4c5b-9cb9-576d29eac736",
+   "displayName": "Read and write all eDiscovery objects",
+   "description": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -1756,20 +1798,6 @@
    "isEnabled": true
   },
   {
-   "value": "FileStorageContainer.Selected",
-   "id": "40dc41bc-0f7e-42ff-89bd-d9516947e474",
-   "displayName": "Access selected file storage containers",
-   "description": "Allows the application to utilize the file storage container platform to manage containers, without a signed-in user. The specific file storage containers and the permissions granted to them will be configured in Microsoft 365 by the developer of each container type.",
-   "isEnabled": true
-  },
-  {
-   "value": "FileStorageContainerTypeReg.Selected",
-   "id": "2dcc6599-bd30-442b-8f11-90f88ad441dc",
-   "displayName": "Access selected file storage container type registrations",
-   "description": "Allows the application to manage file storage container type registrations without a signed-in user.",
-   "isEnabled": true
-  },
-  {
    "value": "Files.Read.All",
    "id": "01d4889c-1287-42c6-ac1f-5d1e02578ef6",
    "displayName": "Read files in all site collections",
@@ -1795,6 +1823,20 @@
    "id": "bd61925e-3bf4-4d62-bc0b-06b06c96d95c",
    "displayName": "Access selected Files without a signed in user.",
    "description": "Allow the application to access a subset of files without a signed in user.  The specific files and the permissions granted will be configured in SharePoint Online or OneDrive.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainer.Selected",
+   "id": "40dc41bc-0f7e-42ff-89bd-d9516947e474",
+   "displayName": "Access selected file storage containers",
+   "description": "Allows the application to utilize the file storage container platform to manage containers, without a signed-in user. The specific file storage containers and the permissions granted to them will be configured in Microsoft 365 by the developer of each container type.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainerTypeReg.Selected",
+   "id": "2dcc6599-bd30-442b-8f11-90f88ad441dc",
+   "displayName": "Access selected file storage container type registrations",
+   "description": "Allows the application to manage file storage container type registrations without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -2218,6 +2260,20 @@
    "isEnabled": true
   },
   {
+   "value": "LifecyclePolicies-AgentId.Read.All",
+   "id": "6343d63f-034f-45b5-832d-9f9d7632e182",
+   "displayName": "Read identity lifecycle policies for agent identities",
+   "description": "Allows the app to read identity lifecycle policies for agent identities in the organization, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "LifecyclePolicies-AgentId.ReadWrite.All",
+   "id": "00d1c504-8dc7-461b-8a0b-dc15c8f1bd5a",
+   "displayName": "Read and write identity lifecycle policies for agent identities",
+   "description": "Allows the app to read, create, update and delete identity lifecycle policies for agent identities in the organization, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "LifecycleWorkflows-CustomExt.Read.All",
    "id": "2cb19e7d-9012-40bf-9a22-69fc776af8b0",
    "displayName": "Read all Lifecycle workflows custom task extensionss",
@@ -2337,13 +2393,6 @@
    "isEnabled": true
   },
   {
-   "value": "MailTips.ReadBasic.All",
-   "id": "a2c9652d-4d7f-4e4e-9d75-ac32fdc6f413",
-   "displayName": "Read mail tips for all users",
-   "description": "Allows the app to read mail tips for all users in the organization without a signed-in user. Mail tips include automatic replies, mailbox status, custom tips, and delivery information.",
-   "isEnabled": true
-  },
-  {
    "value": "MailboxConfigItem.Read",
    "id": "27d9d776-f4d2-426d-80ad-5f22f2b01b0a",
    "displayName": "Read all users' UserConfiguration objects",
@@ -2381,8 +2430,8 @@
   {
    "value": "MailboxItem.ImportExport.All",
    "id": "76577085-e73d-4f1d-b26a-85fb33892327",
-   "displayName": "Allows the app to perform backup and restore for all mailbox items",
-   "description": "Allows the app to backup, restore, and modify all mailbox items without a signed-in user.",
+   "displayName": "Export and import all the users' mailbox items",
+   "description": "Allows the app to export and import all the users' mailbox items, without signed-in user.",
    "isEnabled": true
   },
   {
@@ -2411,6 +2460,13 @@
    "id": "6931bccd-447a-43d1-b442-00a195474933",
    "displayName": "Read and write all user mailbox settings",
    "description": "Allows the app to create, read, update, and delete user's mailbox settings without a signed-in user. Does not include permission to send mail.",
+   "isEnabled": true
+  },
+  {
+   "value": "MailTips.ReadBasic.All",
+   "id": "a2c9652d-4d7f-4e4e-9d75-ac32fdc6f413",
+   "displayName": "Read mail tips for all users",
+   "description": "Allows the app to read mail tips for all users in the organization without a signed-in user. Mail tips include automatic replies, mailbox status, custom tips, and delivery information.",
    "isEnabled": true
   },
   {
@@ -2519,27 +2575,6 @@
    "isEnabled": true
   },
   {
-   "value": "OnPremDirectorySynchronization.Read.All",
-   "id": "bb70e231-92dc-4729-aff5-697b3f04be95",
-   "displayName": "Read all on-premises directory synchronization information",
-   "description": "Allows the app to read all on-premises directory synchronization information for the organization, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "OnPremDirectorySynchronization.ReadWrite.All",
-   "id": "c22a92cc-79bf-4bb1-8b6c-e0a05d3d80ce",
-   "displayName": "Read and write all on-premises directory synchronization information",
-   "description": "Allows the app to read and write all on-premises directory synchronization information for the organization, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "OnPremisesPublishingProfiles.ReadWrite.All",
-   "id": "0b57845e-aa49-4e6f-8109-ce654fffa618",
-   "displayName": "Manage on-premises published resources",
-   "description": "Allows the app to create, view, update and delete on-premises published resources, on-premises agents and agent groups, as part of a hybrid identity configuration, without a signed in user.",
-   "isEnabled": true
-  },
-  {
    "value": "OnlineMeetingAiInsight.Read.All",
    "id": "c0cf7895-985f-42d4-a693-b618f36674ad",
    "displayName": "Read all AI Insights for online meetings.",
@@ -2568,13 +2603,6 @@
    "isEnabled": true
   },
   {
-   "value": "OnlineMeetingTranscript.Read.All",
-   "id": "a4a80d8d-d283-4bd8-8504-555ec3870630",
-   "displayName": "Read all transcripts of online meetings.",
-   "description": "Allows the app to read all transcripts of all online meetings, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
    "value": "OnlineMeetings.Read.All",
    "id": "c1684f21-1984-47fa-9d61-2dc8c296bb70",
    "displayName": "Read online meeting details",
@@ -2586,6 +2614,62 @@
    "id": "b8bb2037-6e08-44ac-a4ea-4674e010e2a4",
    "displayName": "Read and create online meetings",
    "description": "Allows the app to read and create online meetings as an application in your organization.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnlineMeetingTranscript.Read.All",
+   "id": "a4a80d8d-d283-4bd8-8504-555ec3870630",
+   "displayName": "Read all transcripts of online meetings.",
+   "description": "Allows the app to read all transcripts of all online meetings, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremDirectorySynchronization.Read.All",
+   "id": "bb70e231-92dc-4729-aff5-697b3f04be95",
+   "displayName": "Read all on-premises directory synchronization information",
+   "description": "Allows the app to read all on-premises directory synchronization information for the organization, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremDirectorySynchronization.ReadWrite.All",
+   "id": "c22a92cc-79bf-4bb1-8b6c-e0a05d3d80ce",
+   "displayName": "Read and write all on-premises directory synchronization information",
+   "description": "Allows the app to read and write all on-premises directory synchronization information for the organization, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremisesPublishingProfiles.ReadWrite.All",
+   "id": "0b57845e-aa49-4e6f-8109-ce654fffa618",
+   "displayName": "Manage on-premises published resources",
+   "description": "Allows the app to create, view, update and delete on-premises published resources, on-premises agents and agent groups, as part of a hybrid identity configuration, without a signed in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "Organization.Read.All",
+   "id": "498476ce-e0fe-48b0-b801-37ba7e2685c6",
+   "displayName": "Read organization information",
+   "description": "Allows the app to read the organization and related resources, without a signed-in user. Related resources include things like subscribed skus and tenant branding information.",
+   "isEnabled": true
+  },
+  {
+   "value": "Organization.ReadWrite.All",
+   "id": "292d869f-3427-49a8-9dab-8c70152b74e9",
+   "displayName": "Read and write organization information",
+   "description": "Allows the app to read and write the organization and related resources, without a signed-in user. Related resources include things like subscribed skus and tenant branding information.",
+   "isEnabled": true
+  },
+  {
+   "value": "OrganizationalBranding.Read.All",
+   "id": "eb76ac34-0d62-4454-b97c-185e4250dc20",
+   "displayName": "Read organizational branding information",
+   "description": "Allows the app to read the organizational branding information, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "OrganizationalBranding.ReadWrite.All",
+   "id": "d2ebfbc1-a5f8-424b-83a6-56ab5927a73c",
+   "displayName": "Read and write organizational branding information",
+   "description": "Allows the app to read and write the organizational branding information, without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -2663,34 +2747,6 @@
    "id": "5febc9da-e0d0-4576-bd13-ae70b2179a39",
    "displayName": "Read and write organization-wide Microsoft To Do settings",
    "description": "Allows the app to read and write organization-wide Microsoft To Do settings, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "Organization.Read.All",
-   "id": "498476ce-e0fe-48b0-b801-37ba7e2685c6",
-   "displayName": "Read organization information",
-   "description": "Allows the app to read the organization and related resources, without a signed-in user. Related resources include things like subscribed skus and tenant branding information.",
-   "isEnabled": true
-  },
-  {
-   "value": "Organization.ReadWrite.All",
-   "id": "292d869f-3427-49a8-9dab-8c70152b74e9",
-   "displayName": "Read and write organization information",
-   "description": "Allows the app to read and write the organization and related resources, without a signed-in user. Related resources include things like subscribed skus and tenant branding information.",
-   "isEnabled": true
-  },
-  {
-   "value": "OrganizationalBranding.Read.All",
-   "id": "eb76ac34-0d62-4454-b97c-185e4250dc20",
-   "displayName": "Read organizational branding information",
-   "description": "Allows the app to read the organizational branding information, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "OrganizationalBranding.ReadWrite.All",
-   "id": "d2ebfbc1-a5f8-424b-83a6-56ab5927a73c",
-   "displayName": "Read and write organizational branding information",
-   "description": "Allows the app to read and write the organizational branding information, without a signed-in user.",
    "isEnabled": true
   },
   {
@@ -2960,6 +3016,13 @@
    "isEnabled": true
   },
   {
+   "value": "Policy.ReadWrite.Recovery",
+   "id": "795fc94d-3deb-4632-b1eb-e6d1a5f44918",
+   "displayName": "Read and write your organization's recovery policy",
+   "description": "Allows the application to read and update the organization's recovery policy without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "Policy.ReadWrite.SecurityDefaults",
    "id": "1c6e93a6-28e2-4cbb-9f64-1a46a821124d",
    "displayName": "Read and write your organization's security defaults policy",
@@ -2974,6 +3037,13 @@
    "isEnabled": true
   },
   {
+   "value": "PreAuthorizationGrant.Read.All",
+   "id": "66ae8ecc-328f-47f6-97ca-4d9e952df081",
+   "displayName": "Read all preauthorization grants",
+   "description": "Allows the app to read preauthorization grants for service principals without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "Presence.Read.All",
    "id": "a70e0c2d-e793-494c-94c4-118fa0a67f42",
    "displayName": "Read presence information for all users",
@@ -2985,6 +3055,20 @@
    "id": "83cded22-8297-4ff6-a7fa-e97e9545a259",
    "displayName": "Read and write presence information for all users",
    "description": "Allows the app to read all presence information and write activity and availability of all users in the directory without a signed-in user. Presence information includes activity, availability, status note, calendar out-of-office message, time zone and location.",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.Read.All",
+   "id": "9709bb33-4549-49d4-8ed9-a8f65e45bb0f",
+   "displayName": "Read printers",
+   "description": "Allows the application to read printers without a signed-in user. ",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.ReadWrite.All",
+   "id": "f5b3f73d-6247-44df-a74c-866173fddab0",
+   "displayName": "Read and update printers",
+   "description": "Allows the application to read and update printers without a signed-in user. Does not allow creating (registering) or deleting (unregistering) printers.",
    "isEnabled": true
   },
   {
@@ -3034,20 +3118,6 @@
    "id": "456b71a7-0ee0-4588-9842-c123fcc8f664",
    "displayName": "Read, write and update print task definitions",
    "description": "Allows the application to read and update print task definitions without a signed-in user. ",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.Read.All",
-   "id": "9709bb33-4549-49d4-8ed9-a8f65e45bb0f",
-   "displayName": "Read printers",
-   "description": "Allows the application to read printers without a signed-in user. ",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.ReadWrite.All",
-   "id": "f5b3f73d-6247-44df-a74c-866173fddab0",
-   "displayName": "Read and update printers",
-   "description": "Allows the application to read and update printers without a signed-in user. Does not allow creating (registering) or deleting (unregistering) printers.",
    "isEnabled": true
   },
   {
@@ -3240,6 +3310,13 @@
    "isEnabled": true
   },
   {
+   "value": "PullPrintPrinter.Read.All",
+   "id": "f369d3b8-fe98-4772-85e1-b23e7cf41982",
+   "displayName": "Read pull-print printers",
+   "description": "Allows the application to read pull-print printers without a signed-in user. ",
+   "isEnabled": true
+  },
+  {
    "value": "QnA.Read.All",
    "id": "ee49e170-1dd1-4030-b44c-61ad6e98f743",
    "displayName": "Read all Question and Answers ",
@@ -3275,6 +3352,13 @@
    "isEnabled": true
   },
   {
+   "value": "Reports.Read.All",
+   "id": "230c1aed-a721-4c5d-9cb4-a90514e508ef",
+   "displayName": "Read all usage reports",
+   "description": "Allows an app to read all service usage reports without a signed-in user.  Services that provide usage reports include Office 365 and Azure Active Directory.",
+   "isEnabled": true
+  },
+  {
    "value": "ReportSettings.Read.All",
    "id": "ee353f83-55ef-4b78-82da-555bfa2b4b95",
    "displayName": "Read all admin report settings",
@@ -3286,13 +3370,6 @@
    "id": "2a60023f-3219-47ad-baa4-40e17cd02a1d",
    "displayName": "Read and write all admin report settings",
    "description": "Allows the app to read and update all admin report settings, such as whether to display concealed information in reports, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "Reports.Read.All",
-   "id": "230c1aed-a721-4c5d-9cb4-a90514e508ef",
-   "displayName": "Read all usage reports",
-   "description": "Allows an app to read all service usage reports without a signed-in user.  Services that provide usage reports include Office 365 and Azure Active Directory.",
    "isEnabled": true
   },
   {
@@ -4003,27 +4080,6 @@
    "isEnabled": true
   },
   {
-   "value": "TeamSettings.Read.All",
-   "id": "242607bd-1d2c-432c-82eb-bdb27baa23ab",
-   "displayName": "Read all teams' settings",
-   "description": "Read all team's settings, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "TeamSettings.ReadWrite.All",
-   "id": "bdd80a03-d9bc-451d-b7c4-ce7c63fe3c8f",
-   "displayName": "Read and change all teams' settings",
-   "description": "Read and change all teams' settings, without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "TeamTemplates.Read.All",
-   "id": "6323133e-1f6e-46d4-9372-ac33a0870636",
-   "displayName": "Read all available Teams Templates",
-   "description": "Allows the app to read all available Teams Templates, without a signed-user.",
-   "isEnabled": true
-  },
-  {
    "value": "TeamsActivity.Read.All",
    "id": "70dec828-f620-4914-aa83-a29117306807",
    "displayName": "Read all users' teamwork activity feed",
@@ -4213,6 +4269,20 @@
    "isEnabled": true
   },
   {
+   "value": "TeamSettings.Read.All",
+   "id": "242607bd-1d2c-432c-82eb-bdb27baa23ab",
+   "displayName": "Read all teams' settings",
+   "description": "Read all team's settings, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
+   "value": "TeamSettings.ReadWrite.All",
+   "id": "bdd80a03-d9bc-451d-b7c4-ce7c63fe3c8f",
+   "displayName": "Read and change all teams' settings",
+   "description": "Read and change all teams' settings, without a signed-in user.",
+   "isEnabled": true
+  },
+  {
    "value": "TeamsPolicyUserAssign.ReadWrite.All",
    "id": "1801e8f4-cf09-4c4e-a1b5-036dfcca6c90",
    "displayName": "Read and Write Teams policy user assignment and unassigment for all policy types.",
@@ -4308,6 +4378,13 @@
    "id": "a91eadaf-2c3c-4362-908b-fb172d208fc6",
    "displayName": "Read Teams user configurations",
    "description": "Allows the app to read your tenant's user configurations, without a signed-in user. User configuration may include attributes related to user, such as telephone number, assigned policies, etc.",
+   "isEnabled": true
+  },
+  {
+   "value": "TeamTemplates.Read.All",
+   "id": "6323133e-1f6e-46d4-9372-ac33a0870636",
+   "displayName": "Read all available Teams Templates",
+   "description": "Allows the app to read all available Teams Templates, without a signed-user.",
    "isEnabled": true
   },
   {
@@ -4661,6 +4738,34 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthenticationMethod.Delete.All",
+   "id": "712f5e0d-bc8d-4ae5-8242-cfb9a4921ed3",
+   "displayName": "Delete all users' authentication methods",
+   "description": "Allows the app to delete authentication methods of all users in your organization, without a signed-in user. Authentication methods include things like a user's phone numbers and Authenticator app settings. This does not allow the app to read, create, or modify authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthenticationMethod.Read.All",
+   "id": "38d9df27-64da-44fd-b7c5-a6fbac20248f",
+   "displayName": "Read all users' authentication methods",
+   "description": "Allows the app to read authentication methods of all users in your organization, without a signed-in user. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthenticationMethod.ReadWrite.All",
+   "id": "50483e42-d915-4231-9639-7fdb7fd190e5",
+   "displayName": "Read and write all users' authentication methods ",
+   "description": "Allows the application to read and write authentication methods of all users in your organization, without a signed-in user.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-Email.Delete.All",
+   "id": "f0e9adfd-ed6b-45f5-b969-324a75286a39",
+   "displayName": "Delete all users' email methods",
+   "description": "Allows the application to delete email methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify email methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-Email.Read.All",
    "id": "a1e58be0-1095-422b-b067-73434bd7d40f",
    "displayName": "Read all users' email methods",
@@ -4672,6 +4777,13 @@
    "id": "e8ecb853-1435-4a49-95ba-ec5b31b11672",
    "displayName": "Read and write all users' email methods",
    "description": "Allows the application to read and write email methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-External.Delete.All",
+   "id": "7fa6d39e-1e4e-44be-bf9c-e8260b12e1f5",
+   "displayName": "Delete all users' external authentication methods",
+   "description": "Allows the application to delete external authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify external authentication methods.",
    "isEnabled": true
   },
   {
@@ -4689,6 +4801,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-HardwareOATH.Delete.All",
+   "id": "9d8eb432-7ea3-491a-9ed7-e6361b308f08",
+   "displayName": "Delete all users' HardwareOATH authentication methods",
+   "description": "Allows the application to delete HardwareOATH authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify HardwareOATH authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-HardwareOATH.Read.All",
    "id": "7b544555-7811-49ff-8223-a56be870e33a",
    "displayName": "Read all users' HardwareOATH authentication methods",
@@ -4703,6 +4822,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-MicrosoftAuthApp.Delete.All",
+   "id": "ae494ca6-9612-417a-972a-ef52efaf2de3",
+   "displayName": "Delete all users' Microsoft Authentication methods",
+   "description": "Allows the application to delete Microsoft Authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Microsoft Authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-MicrosoftAuthApp.Read.All",
    "id": "a9c5f16e-e5ca-4e33-89ad-903fcfc01c23",
    "displayName": "Read all users' Microsoft authentication methods",
@@ -4714,6 +4840,13 @@
    "id": "c833c349-a1ab-4b6d-94a2-fa9a8674420c",
    "displayName": "Read and write all users' Microsoft Authentication methods",
    "description": "Allows the application to read and write Microsoft Authentication methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-Passkey.Delete.All",
+   "id": "9563fbd0-03a7-466e-8042-63d668b7d1a3",
+   "displayName": "Delete all users' passkey authentication methods",
+   "description": "Allows the application to delete passkey authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify passkey authentication methods.",
    "isEnabled": true
   },
   {
@@ -4745,6 +4878,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-Phone.Delete.All",
+   "id": "59f17651-8b6c-494e-a269-4ac582fbbca0",
+   "displayName": "Delete all users' phone methods",
+   "description": "Allows the application to delete phone methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify phone methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-Phone.Read.All",
    "id": "f529a223-ea70-43ec-b268-5012de2fbaa2",
    "displayName": "Read all users' phone authentication methods",
@@ -4756,6 +4896,13 @@
    "id": "6e85d483-7092-4375-babe-0a94a8213a58",
    "displayName": "Read and write all users' phone methods",
    "description": "Allows the application to read and write phone methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-PlatformCred.Delete.All",
+   "id": "bd760918-651f-4e67-b66f-8f614384dec2",
+   "displayName": "Delete all users' platform credentials methods",
+   "description": "Allows the application to delete platform credentials methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify platform credentials methods.",
    "isEnabled": true
   },
   {
@@ -4773,6 +4920,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-QR.Delete.All",
+   "id": "e1c34213-26ac-400b-9548-a749f1b1a4e0",
+   "displayName": "Delete all users' QR authentication methods",
+   "description": "Allows the application to delete QR authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify QR authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-QR.Read.All",
    "id": "9a45bc50-cddd-4ebe-bd9c-4f2eacf646ae",
    "displayName": "Read all users' QR methods",
@@ -4784,6 +4938,13 @@
    "id": "4869299f-18c3-40c8-98f2-222657e67db1",
    "displayName": "Read and write all users' QR methods",
    "description": "Allows the application to read and write QR authentication methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-ResourceKey.Delete.All",
+   "id": "a71aecaf-82f1-47c5-ad0a-5e63503b928f",
+   "displayName": "Delete all users' resource key authentication methods",
+   "description": "Allows the application to delete resource key authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify resource key authentication methods.",
    "isEnabled": true
   },
   {
@@ -4801,6 +4962,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-SoftwareOATH.Delete.All",
+   "id": "e5676e10-1a16-452b-ad10-71f54b755852",
+   "displayName": "Delete all users' SoftwareOATH authentication methods",
+   "description": "Allows the application to delete SoftwareOATH authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify SoftwareOATH authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-SoftwareOATH.Read.All",
    "id": "a6b423df-a0c8-411d-a809-a4a5985d2939",
    "displayName": "Read all users' SoftwareOATH methods",
@@ -4812,6 +4980,13 @@
    "id": "787442d4-3c6e-4e99-aa95-8ccca20a48ff",
    "displayName": "Read and write all users' SoftwareOATH methods",
    "description": "Allows the application to read and write SoftwareOATH authentication methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthMethod-TAP.Delete.All",
+   "id": "4f872e9d-d232-4ecd-ab9c-337cbdb184e5",
+   "displayName": "Delete all users' Temporary Access Pass authentication methods",
+   "description": "Allows the application to delete Temporary Access Pass authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Temporary Access Pass authentication methods.",
    "isEnabled": true
   },
   {
@@ -4829,6 +5004,13 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthMethod-WindowsHello.Delete.All",
+   "id": "f3197110-aa7f-4acd-a0fd-71981ad68d42",
+   "displayName": "Delete all users' Windows Hello authentication methods",
+   "description": "Allows the application to delete Windows Hello authentication methods of all users in your organization, without a signed-in user. This does not allow the app to read, create, or modify Windows Hello authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-WindowsHello.Read.All",
    "id": "9b8dd4c7-8cca-4ef5-a34a-9c2c75fcc934",
    "displayName": "Read all users' Windows Hello methods",
@@ -4840,20 +5022,6 @@
    "id": "f14eee8a-713e-45aa-8223-2ab74632db1a",
    "displayName": "Read and write all users' Windows Hello authentication methods",
    "description": "Allows the application to read and write Windows Hello authentication methods of all users in your organization, without a signed-in user. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "isEnabled": true
-  },
-  {
-   "value": "UserAuthenticationMethod.Read.All",
-   "id": "38d9df27-64da-44fd-b7c5-a6fbac20248f",
-   "displayName": "Read all users' authentication methods",
-   "description": "Allows the app to read authentication methods of all users in your organization, without a signed-in user. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "isEnabled": true
-  },
-  {
-   "value": "UserAuthenticationMethod.ReadWrite.All",
-   "id": "50483e42-d915-4231-9639-7fdb7fd190e5",
-   "displayName": "Read and write all users' authentication methods ",
-   "description": "Allows the application to read and write authentication methods of all users in your organization, without a signed-in user.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods",
    "isEnabled": true
   },
   {
@@ -4953,43 +5121,9 @@
    "displayName": "Read and write workforce integrations",
    "description": "Allows the app to manage workforce integrations to synchronize data from Microsoft Teams Shifts, without a signed-in user.",
    "isEnabled": true
-  },
-  {
-   "value": "eDiscovery.Read.All",
-   "id": "50180013-6191-4d1e-a373-e590ff4e66af",
-   "displayName": "Read all eDiscovery objects",
-   "description": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects without a signed-in user.",
-   "isEnabled": true
-  },
-  {
-   "value": "eDiscovery.ReadWrite.All",
-   "id": "b2620db1-3bf7-4c5b-9cb9-576d29eac736",
-   "displayName": "Read and write all eDiscovery objects",
-   "description": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects without a signed-in user.",
-   "isEnabled": true
   }
  ],
  "delegatedScopes": [
-  {
-   "value": "APIConnectors.Read.All",
-   "id": "1b6ff35f-31df-4332-8571-d31ea5a4893f",
-   "consentType": "Admin",
-   "adminDisplayName": "Read API connectors for authentication flows",
-   "adminDescription": "Allows the app to read the API connectors used in user authentication flows, on behalf of the signed-in user.",
-   "userDisplayName": "Read API connectors for authentication flows",
-   "userDescription": "Allows the app to read the API connectors used in user authentication flows, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "APIConnectors.ReadWrite.All",
-   "id": "c67b52c5-7c69-48b6-9d48-7b3af3ded914",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write API connectors for authentication flows",
-   "adminDescription": "Allows the app to read, create and manage the API connectors used in user authentication flows, on behalf of the signed-in user.",
-   "userDisplayName": "Read and write API connectors for authentication flows",
-   "userDescription": "Allows the app to read, create and manage the API connectors used in user authentication flows, on your behalf.",
-   "isEnabled": true
-  },
   {
    "value": "AccessReview.Read.All",
    "id": "ebfcd32b-babb-40f4-a14b-42706e83bd28",
@@ -5151,23 +5285,23 @@
    "isEnabled": true
   },
   {
-   "value": "AgentIdUser.ReadWrite.All",
-   "id": "ad57fb88-4658-4fd6-ab7d-e43184b08e4e",
+   "value": "AgentCommunicationConfiguration.Read",
+   "id": "57ff8075-2fb3-4879-8693-5d51ee8d5e9e",
    "consentType": "Admin",
-   "adminDisplayName": "Read and write all agent ID users' full profiles",
-   "adminDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users, delete and restore agent users in your organization, and read basic company properties, on behalf of the signed-in user.",
-   "userDisplayName": "Read and write all agent ID users' full profiles",
-   "userDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users, delete and restore agent users in your organization, and read basic company properties, on your behalf.",
+   "adminDisplayName": "Read agent communication configuration",
+   "adminDescription": "Allows the app to read the communication configuration of agent blueprints on behalf of the signed-in user.",
+   "userDisplayName": "Read agent communication configuration",
+   "userDescription": "Allows the app to read the communication configuration of agent blueprints on your behalf.",
    "isEnabled": true
   },
   {
-   "value": "AgentIdUser.ReadWrite.IdentityParentedBy",
-   "id": "52a417d9-0b3c-4466-9a3b-66960de73d74",
+   "value": "AgentCommunicationConfiguration.ReadWrite",
+   "id": "15e0db35-0641-4175-b014-c2cb39286338",
    "consentType": "Admin",
-   "adminDisplayName": "Read and write full profiles of agent ID users under an agent blueprint",
-   "adminDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users in your organization, delete and restore agent users under an agent blueprint, and read basic company properties, on behalf of the signed-in user.",
-   "userDisplayName": "Read and write full profiles of agent ID users under an agent blueprint",
-   "userDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users in your organization, delete and restore agent users under an agent blueprint, and read basic company properties, on your behalf.",
+   "adminDisplayName": "Read and write agent communication configuration",
+   "adminDescription": "Allows the app to read and update the communication configuration of agent blueprints on behalf of the signed-in user.",
+   "userDisplayName": "Read and write agent communication configuration",
+   "userDescription": "Allows the app to read and update the communication configuration of agent blueprints on your behalf.",
    "isEnabled": true
   },
   {
@@ -5341,6 +5475,26 @@
    "isEnabled": true
   },
   {
+   "value": "AgentIdUser.ReadWrite.All",
+   "id": "ad57fb88-4658-4fd6-ab7d-e43184b08e4e",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write all agent ID users' full profiles",
+   "adminDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users, delete and restore agent users in your organization, and read basic company properties, on behalf of the signed-in user.",
+   "userDisplayName": "Read and write all agent ID users' full profiles",
+   "userDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users, delete and restore agent users in your organization, and read basic company properties, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "AgentIdUser.ReadWrite.IdentityParentedBy",
+   "id": "52a417d9-0b3c-4466-9a3b-66960de73d74",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write full profiles of agent ID users under an agent blueprint",
+   "adminDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users in your organization, delete and restore agent users under an agent blueprint, and read basic company properties, on behalf of the signed-in user.",
+   "userDisplayName": "Read and write full profiles of agent ID users under an agent blueprint",
+   "userDescription": "Allows the app to create agent users, read and write the full set of profile properties, reports, and managers of agent ID users in your organization, delete and restore agent users under an agent blueprint, and read basic company properties, on your behalf.",
+   "isEnabled": true
+  },
+  {
    "value": "AgentInstance.Read.All",
    "id": "4c3c738a-2df0-4877-bf4a-f796950ff34c",
    "consentType": "Admin",
@@ -5441,6 +5595,26 @@
    "isEnabled": true
   },
   {
+   "value": "APIConnectors.Read.All",
+   "id": "1b6ff35f-31df-4332-8571-d31ea5a4893f",
+   "consentType": "Admin",
+   "adminDisplayName": "Read API connectors for authentication flows",
+   "adminDescription": "Allows the app to read the API connectors used in user authentication flows, on behalf of the signed-in user.",
+   "userDisplayName": "Read API connectors for authentication flows",
+   "userDescription": "Allows the app to read the API connectors used in user authentication flows, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "APIConnectors.ReadWrite.All",
+   "id": "c67b52c5-7c69-48b6-9d48-7b3af3ded914",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write API connectors for authentication flows",
+   "adminDescription": "Allows the app to read, create and manage the API connectors used in user authentication flows, on behalf of the signed-in user.",
+   "userDisplayName": "Read and write API connectors for authentication flows",
+   "userDescription": "Allows the app to read, create and manage the API connectors used in user authentication flows, on your behalf.",
+   "isEnabled": true
+  },
+  {
    "value": "AppCatalog.Read.All",
    "id": "88e58d74-d3df-44f3-ad47-e89edf4472e4",
    "consentType": "User",
@@ -5491,16 +5665,6 @@
    "isEnabled": true
   },
   {
-   "value": "AppRoleAssignment.ReadWrite.All",
-   "id": "84bccea3-f856-4a8a-967b-dbe0a3d53a64",
-   "consentType": "Admin",
-   "adminDisplayName": "Manage app permission grants and app role assignments",
-   "adminDescription": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, on behalf of the signed-in user.",
-   "userDisplayName": "Manage app permission grants and app role assignments",
-   "userDescription": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, on your behalf.",
-   "isEnabled": true
-  },
-  {
    "value": "Application-RemoteDesktopConfig.ReadWrite.All",
    "id": "ffa91d43-2ad8-45cc-b592-09caddeb24bb",
    "consentType": "Admin",
@@ -5538,6 +5702,16 @@
    "adminDescription": "Allows the app to create, read, update and delete applications and service principals on behalf of the signed-in user. Allows management of app role assignments, except those exposed by Microsoft Graph. Does not allow management of delegated permission grants.",
    "userDisplayName": "Read and write applications",
    "userDescription": "Allows the app to create, read, update and delete applications and service principals on your behalf. Allows management of app role assignments, except those exposed by Microsoft Graph. Does not allow management of delegated permission grants.",
+   "isEnabled": true
+  },
+  {
+   "value": "AppRoleAssignment.ReadWrite.All",
+   "id": "84bccea3-f856-4a8a-967b-dbe0a3d53a64",
+   "consentType": "Admin",
+   "adminDisplayName": "Manage app permission grants and app role assignments",
+   "adminDescription": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, on behalf of the signed-in user.",
+   "userDisplayName": "Manage app permission grants and app role assignments",
+   "userDescription": "Allows the app to manage permission grants for application permissions to any API (including Microsoft Graph) and application assignments for any app, on your behalf.",
    "isEnabled": true
   },
   {
@@ -6931,6 +7105,26 @@
    "isEnabled": true
   },
   {
+   "value": "DeviceManagementDeploymentPlans.Read.All",
+   "id": "700bfe0b-b3bd-4fa4-bec2-6849edd7fb7b",
+   "consentType": "Admin",
+   "adminDisplayName": "Read Microsoft Intune Deployment Plans",
+   "adminDescription": "Allows the app to read properties of Microsoft Intune-managed deployment plans and their ring configurations.",
+   "userDisplayName": "Read Microsoft Intune Deployment Plans",
+   "userDescription": "Allows the app to read properties of Microsoft Intune-managed deployment plans and their ring configurations.",
+   "isEnabled": true
+  },
+  {
+   "value": "DeviceManagementDeploymentPlans.ReadWrite.All",
+   "id": "9d95843d-67b9-48b2-8e20-e42372db8549",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write Microsoft Intune Deployment Plans",
+   "adminDescription": "Allows the app to read and write properties of Microsoft Intune-managed deployment plans and their ring configurations.",
+   "userDisplayName": "Read and write Microsoft Intune Deployment Plans",
+   "userDescription": "Allows the app to read and write properties of Microsoft Intune-managed deployment plans and their ring configurations.",
+   "isEnabled": true
+  },
+  {
    "value": "DeviceManagementManagedDevices.PrivilegedOperations.All",
    "id": "3404d2bf-2b13-457e-a330-c24615765193",
    "consentType": "Admin",
@@ -7151,13 +7345,23 @@
    "isEnabled": true
   },
   {
-   "value": "EWS.AccessAsUser.All",
-   "id": "9769c687-087d-48ac-9cb3-c37dde652038",
-   "consentType": "User",
-   "adminDisplayName": "Access mailboxes as the signed-in user via Exchange Web Services",
-   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.",
-   "userDisplayName": "Access your mailboxes",
-   "userDescription": "Allows the app full access to your mailboxes on your behalf.",
+   "value": "eDiscovery.Read.All",
+   "id": "99201db3-7652-4d5a-809a-bdb94f85fe3c",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all eDiscovery objects",
+   "adminDescription": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects on behalf of the signed-in user.",
+   "userDisplayName": "Read all eDiscovery objects",
+   "userDescription": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "eDiscovery.ReadWrite.All",
+   "id": "acb8f680-0834-4146-b69e-4ab1b39745ad",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write all eDiscovery objects",
+   "adminDescription": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects on behalf of the signed-in user.",
+   "userDisplayName": "Read and write all eDiscovery objects",
+   "userDescription": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects on your behalf.",
    "isEnabled": true
   },
   {
@@ -7268,6 +7472,16 @@
    "adminDescription": "Allows the app to read and write the structure of schools and classes in an organization's roster and education-specific information about users to be read and written on behalf of the user.",
    "userDisplayName": "View and modify your school, class and user information",
    "userDescription": "Allows the app to view and modify information about schools and classes in your organization and education-related information about you and other users on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "email",
+   "id": "64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0",
+   "consentType": "User",
+   "adminDisplayName": "View users' email address",
+   "adminDescription": "Allows the app to read your users' primary email address",
+   "userDisplayName": "View your email address",
+   "userDescription": "Allows the app to read your primary email address",
    "isEnabled": true
   },
   {
@@ -7411,6 +7625,16 @@
    "isEnabled": true
   },
   {
+   "value": "EWS.AccessAsUser.All",
+   "id": "9769c687-087d-48ac-9cb3-c37dde652038",
+   "consentType": "User",
+   "adminDisplayName": "Access mailboxes as the signed-in user via Exchange Web Services",
+   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.",
+   "userDisplayName": "Access your mailboxes",
+   "userDescription": "Allows the app full access to your mailboxes on your behalf.",
+   "isEnabled": true
+  },
+  {
    "value": "ExchangeMessageTrace.Read.All",
    "id": "b2e7d27e-14e7-41ad-bb15-a88ceb9c3e90",
    "consentType": "Admin",
@@ -7511,56 +7735,6 @@
    "isEnabled": true
   },
   {
-   "value": "FileStorageContainer.Manage.All",
-   "id": "527b6d64-cdf5-4b8b-b336-4aa0b8ca2ce5",
-   "consentType": "Admin",
-   "adminDisplayName": "Manage all file storage containers",
-   "adminDescription": "Allows the application to utilize the file storage container administration capabilities on behalf of an administrator user.",
-   "userDisplayName": "Manage all file storage containers",
-   "userDescription": "Allows the application to utilize the file storage container administration capabilities on behalf of an administrator user.",
-   "isEnabled": true
-  },
-  {
-   "value": "FileStorageContainer.Selected",
-   "id": "085ca537-6565-41c2-aca7-db852babc212",
-   "consentType": "User",
-   "adminDisplayName": "Access selected file storage containers",
-   "adminDescription": "Allows the application to utilize the file storage container platform to manage containers on behalf of the signed in user. The specific file storage containers and the permissions granted to them will be configured in Microsoft 365 by the developer of each container type.",
-   "userDisplayName": "Access selected file storage containers",
-   "userDescription": "Allows the app to access a subset of Storage Containers on your behalf. The specific file storage containers and the permissions granted will be configured in Microsoft 365 by the developer of each container type.",
-   "isEnabled": true
-  },
-  {
-   "value": "FileStorageContainerType.Manage.All",
-   "id": "8e6ec84c-5fcd-4cc7-ac8a-2296efc0ed9b",
-   "consentType": "User",
-   "adminDisplayName": "Manage file storage container types on behalf of the signed in user",
-   "adminDescription": "Allows the application to manage file storage container types on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
-   "userDisplayName": "Manage file storage container types on your behalf",
-   "userDescription": "Allows the app to access a subset of storage container types on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
-   "isEnabled": true
-  },
-  {
-   "value": "FileStorageContainerTypeReg.Manage.All",
-   "id": "c319a7df-930e-44c0-a43b-7e5e9c7f4f24",
-   "consentType": "User",
-   "adminDisplayName": "Manage file storage container type registrations on behalf of the signed in user",
-   "adminDescription": "Allows the application to manage file storage container type registrations on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
-   "userDisplayName": "Manage file storage container type registrations on your behalf",
-   "userDescription": "Allows the app to access a subset of storage container type registrations on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
-   "isEnabled": true
-  },
-  {
-   "value": "FileStorageContainerTypeReg.Selected",
-   "id": "d1e4f63a-1569-475c-b9b2-bdc140405e38",
-   "consentType": "User",
-   "adminDisplayName": "Access selected file storage container type registrations.",
-   "adminDescription": "Allows the application to manage selected file storage container type registrations on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
-   "userDisplayName": "Access selected file storage container type registrations.",
-   "userDescription": "Allows the application to manage selected file storage container type registrations on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
-   "isEnabled": true
-  },
-  {
    "value": "Files.Read",
    "id": "10465720-29dd-4523-a11a-6a75c743c9d9",
    "consentType": "User",
@@ -7638,6 +7812,56 @@
    "adminDescription": "Allow the application to access files explicitly permissioned to the application on behalf of the signed in user.  The specific files and the permissions granted will be configured in SharePoint Online or OneDrive.",
    "userDisplayName": "Access selected Files, on behalf of the signed-in user",
    "userDescription": "Allow the application to access files explicitly permissioned to the application on behalf of the signed in user.  The specific files and the permissions granted will be configured in SharePoint Online or OneDrive.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainer.Manage.All",
+   "id": "527b6d64-cdf5-4b8b-b336-4aa0b8ca2ce5",
+   "consentType": "Admin",
+   "adminDisplayName": "Manage all file storage containers",
+   "adminDescription": "Allows the application to utilize the file storage container administration capabilities on behalf of an administrator user.",
+   "userDisplayName": "Manage all file storage containers",
+   "userDescription": "Allows the application to utilize the file storage container administration capabilities on behalf of an administrator user.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainer.Selected",
+   "id": "085ca537-6565-41c2-aca7-db852babc212",
+   "consentType": "User",
+   "adminDisplayName": "Access selected file storage containers",
+   "adminDescription": "Allows the application to utilize the file storage container platform to manage containers on behalf of the signed in user. The specific file storage containers and the permissions granted to them will be configured in Microsoft 365 by the developer of each container type.",
+   "userDisplayName": "Access selected file storage containers",
+   "userDescription": "Allows the app to access a subset of Storage Containers on your behalf. The specific file storage containers and the permissions granted will be configured in Microsoft 365 by the developer of each container type.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainerType.Manage.All",
+   "id": "8e6ec84c-5fcd-4cc7-ac8a-2296efc0ed9b",
+   "consentType": "User",
+   "adminDisplayName": "Manage file storage container types on behalf of the signed in user",
+   "adminDescription": "Allows the application to manage file storage container types on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
+   "userDisplayName": "Manage file storage container types on your behalf",
+   "userDescription": "Allows the app to access a subset of storage container types on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainerTypeReg.Manage.All",
+   "id": "c319a7df-930e-44c0-a43b-7e5e9c7f4f24",
+   "consentType": "User",
+   "adminDisplayName": "Manage file storage container type registrations on behalf of the signed in user",
+   "adminDescription": "Allows the application to manage file storage container type registrations on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
+   "userDisplayName": "Manage file storage container type registrations on your behalf",
+   "userDescription": "Allows the app to access a subset of storage container type registrations on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
+   "isEnabled": true
+  },
+  {
+   "value": "FileStorageContainerTypeReg.Selected",
+   "id": "d1e4f63a-1569-475c-b9b2-bdc140405e38",
+   "consentType": "User",
+   "adminDisplayName": "Access selected file storage container type registrations.",
+   "adminDescription": "Allows the application to manage selected file storage container type registrations on behalf of the signed in user. The user must be a SharePoint Embedded Admin or Global Admin.",
+   "userDisplayName": "Access selected file storage container type registrations.",
+   "userDescription": "Allows the application to manage selected file storage container type registrations on your behalf. You must be a SharePoint Embedded Admin or Global Admin.",
    "isEnabled": true
   },
   {
@@ -7831,16 +8055,6 @@
    "isEnabled": true
   },
   {
-   "value": "IMAP.AccessAsUser.All",
-   "id": "652390e4-393a-48de-9484-05f9b1212954",
-   "consentType": "User",
-   "adminDisplayName": "Read and write access to mailboxes via IMAP.",
-   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via IMAP protocol.",
-   "userDisplayName": "Read and write access to your mail.",
-   "userDescription": "Allows the app to read, update, create and delete email in your mailbox. Does not include permission to send mail.",
-   "isEnabled": true
-  },
-  {
    "value": "IdentityNotifications.Read.All",
    "id": "59cd3e28-aa9c-4f72-a734-1b592eb06853",
    "consentType": "Admin",
@@ -7978,6 +8192,16 @@
    "adminDescription": "Allows the app to read or write your organization's user flows, on behalf of the signed-in user.",
    "userDisplayName": "Read and write all identity user flows",
    "userDescription": "Allows the app to read or write your organization's user flows, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "IMAP.AccessAsUser.All",
+   "id": "652390e4-393a-48de-9484-05f9b1212954",
+   "consentType": "User",
+   "adminDisplayName": "Read and write access to mailboxes via IMAP.",
+   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via IMAP protocol.",
+   "userDisplayName": "Read and write access to your mail.",
+   "userDescription": "Allows the app to read, update, create and delete email in your mailbox. Does not include permission to send mail.",
    "isEnabled": true
   },
   {
@@ -8251,6 +8475,26 @@
    "isEnabled": true
   },
   {
+   "value": "LifecyclePolicies-AgentId.Read.All",
+   "id": "65857db0-62ac-4279-aa73-c2b5dab186f5",
+   "consentType": "Admin",
+   "adminDisplayName": "Read identity lifecycle policies for agent identities",
+   "adminDescription": "Allows the app to read identity lifecycle policies for agent identities that the signed-in user has access to in the organization.",
+   "userDisplayName": "Read identity lifecycle policies for agent identities",
+   "userDescription": "Allows the app to read identity lifecycle policies for agent identities that you have access to.",
+   "isEnabled": true
+  },
+  {
+   "value": "LifecyclePolicies-AgentId.ReadWrite.All",
+   "id": "f2292ca5-46fc-4195-9b4d-16491bf9bf7f",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write identity lifecycle policies for agent identities",
+   "adminDescription": "Allows the app to read, create, update and delete identity lifecycle policies for agent identities that the signed-in user has access to in the organization.",
+   "userDisplayName": "Read and write identity lifecycle policies for agent identities",
+   "userDescription": "Allows the app to read, create, update and delete identity lifecycle policies for agent identities that you have access to.",
+   "isEnabled": true
+  },
+  {
    "value": "LifecyclePolicies-Guests.Read.All",
    "id": "1bbb7916-b98a-449f-8ee4-c68bfcba5724",
    "consentType": "Admin",
@@ -8481,16 +8725,6 @@
    "isEnabled": true
   },
   {
-   "value": "MailTips.ReadBasic.Shared",
-   "id": "4776cae1-54bd-4dfd-823c-e5861ed49a98",
-   "consentType": "User",
-   "adminDisplayName": "Read mail tips for mailboxes you can access",
-   "adminDescription": "Allows the app to read mail tips on behalf of the signed-in user for mailboxes they have access to. Mail tips include automatic replies, mailbox status, custom tips, and delivery information.",
-   "userDisplayName": "Read mail tips for mailboxes you can access",
-   "userDescription": "Allows the app to read mail tips on your behalf for mailboxes you have access to, including your own mailbox.",
-   "isEnabled": true
-  },
-  {
    "value": "MailboxConfigItem.Read",
    "id": "dce2e6fc-0f4b-40da-94e2-14b4477f3d92",
    "consentType": "Admin",
@@ -8544,10 +8778,10 @@
    "value": "MailboxItem.ImportExport",
    "id": "df96e8a0-f4e1-4ecf-8d83-a429f822cbd6",
    "consentType": "Admin",
-   "adminDisplayName": "Allows the app to perform backup and restore of mailbox items",
-   "adminDescription": "Allows the app to backup, restore, and modify mailbox items on behalf of the signed-in user.",
-   "userDisplayName": "Allows the app to perform backup and restore of mailbox items",
-   "userDescription": "Allows the app to backup, restore, and modify your mailbox items on your behalf.",
+   "adminDisplayName": "Export and import a user's mailbox items",
+   "adminDescription": "Allows the app to export and import the user's mailbox items, on behalf of the the signed-in user.",
+   "userDisplayName": "Export and import your mailbox items",
+   "userDescription": "Allows the app to export and import your mailbox items, on your behalf",
    "isEnabled": true
   },
   {
@@ -8588,6 +8822,16 @@
    "adminDescription": "Allows the app to create, read, update, and delete user's mailbox settings. Does not include permission to send mail.",
    "userDisplayName": "Read and write to your mailbox settings",
    "userDescription": "Allows the app to read, update, create, and delete your mailbox settings.",
+   "isEnabled": true
+  },
+  {
+   "value": "MailTips.ReadBasic.Shared",
+   "id": "4776cae1-54bd-4dfd-823c-e5861ed49a98",
+   "consentType": "User",
+   "adminDisplayName": "Read mail tips for mailboxes you can access",
+   "adminDescription": "Allows the app to read mail tips on behalf of the signed-in user for mailboxes they have access to. Mail tips include automatic replies, mailbox status, custom tips, and delivery information.",
+   "userDisplayName": "Read mail tips for mailboxes you can access",
+   "userDescription": "Allows the app to read mail tips on your behalf for mailboxes you have access to, including your own mailbox.",
    "isEnabled": true
   },
   {
@@ -8811,33 +9055,13 @@
    "isEnabled": true
   },
   {
-   "value": "OnPremDirectorySynchronization.Read.All",
-   "id": "f6609722-4100-44eb-b747-e6ca0536989d",
-   "consentType": "Admin",
-   "adminDisplayName": "Read all on-premises directory synchronization information",
-   "adminDescription": "Allows the app to read all on-premises directory synchronization information for the organization, on behalf of the signed-in user.",
-   "userDisplayName": "Read all on-premises directory synchronization information",
-   "userDescription": "Allows the app to read all on-premises directory synchronization information for the organization, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "OnPremDirectorySynchronization.ReadWrite.All",
-   "id": "c2d95988-7604-4ba1-aaed-38a5f82a51c7",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write all on-premises directory synchronization information",
-   "adminDescription": "Allows the app to read and write all on-premises directory synchronization information for the organization, on behalf of the signed-in user.",
-   "userDisplayName": "Read and write all on-premises directory synchronization information",
-   "userDescription": "Allows the app to read and write all on-premises directory synchronization information for the organization, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "OnPremisesPublishingProfiles.ReadWrite.All",
-   "id": "8c4d5184-71c2-4bf8-bb9d-bc3378c9ad42",
-   "consentType": "Admin",
-   "adminDisplayName": "Manage on-premises published resources",
-   "adminDescription": "Allows the app to manage hybrid identity service configuration by creating, viewing, updating and deleting on-premises published resources, on-premises agents and agent groups, on behalf of the signed-in user.",
-   "userDisplayName": "Manage on-premises published resources",
-   "userDescription": "Allows the app to manage hybrid identity service configuration by creating, viewing, updating and deleting on-premises published resources, on-premises agents and agent groups, on your behalf.",
+   "value": "offline_access",
+   "id": "7427e0e9-2fba-42fe-b0c0-848c9e6a8182",
+   "consentType": "User",
+   "adminDisplayName": "Maintain access to data you have given it access to",
+   "adminDescription": "Allows the app to see and update the data you gave it access to, even when users are not currently using the app. This does not give the app any additional permissions.",
+   "userDisplayName": "Maintain access to data you have given it access to",
+   "userDescription": "Allows the app to see and update the data you gave it access to, even when you are not currently using the app. This does not give the app any additional permissions.",
    "isEnabled": true
   },
   {
@@ -8871,16 +9095,6 @@
    "isEnabled": true
   },
   {
-   "value": "OnlineMeetingTranscript.Read.All",
-   "id": "30b87d18-ebb1-45db-97f8-82ccb1f0190c",
-   "consentType": "Admin",
-   "adminDisplayName": "Read all transcripts of online meetings.",
-   "adminDescription": "Allows the app to read all transcripts of online meetings, on behalf of the signed-in user.",
-   "userDisplayName": "Read all transcripts of online meetings.",
-   "userDescription": "Allows the app to read all transcripts of online meetings, on your behalf.",
-   "isEnabled": true
-  },
-  {
    "value": "OnlineMeetings.Read",
    "id": "9be106e1-f4e3-4df5-bdff-e4bc531cbe43",
    "consentType": "User",
@@ -8898,6 +9112,96 @@
    "adminDescription": "Allows the app to read and create online meetings on behalf of the signed-in user.",
    "userDisplayName": "Read and create your online meetings",
    "userDescription": "Allows the app to read and create online meetings on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnlineMeetingTranscript.Read.All",
+   "id": "30b87d18-ebb1-45db-97f8-82ccb1f0190c",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all transcripts of online meetings.",
+   "adminDescription": "Allows the app to read all transcripts of online meetings, on behalf of the signed-in user.",
+   "userDisplayName": "Read all transcripts of online meetings.",
+   "userDescription": "Allows the app to read all transcripts of online meetings, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremDirectorySynchronization.Read.All",
+   "id": "f6609722-4100-44eb-b747-e6ca0536989d",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all on-premises directory synchronization information",
+   "adminDescription": "Allows the app to read all on-premises directory synchronization information for the organization, on behalf of the signed-in user.",
+   "userDisplayName": "Read all on-premises directory synchronization information",
+   "userDescription": "Allows the app to read all on-premises directory synchronization information for the organization, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremDirectorySynchronization.ReadWrite.All",
+   "id": "c2d95988-7604-4ba1-aaed-38a5f82a51c7",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write all on-premises directory synchronization information",
+   "adminDescription": "Allows the app to read and write all on-premises directory synchronization information for the organization, on behalf of the signed-in user.",
+   "userDisplayName": "Read and write all on-premises directory synchronization information",
+   "userDescription": "Allows the app to read and write all on-premises directory synchronization information for the organization, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "OnPremisesPublishingProfiles.ReadWrite.All",
+   "id": "8c4d5184-71c2-4bf8-bb9d-bc3378c9ad42",
+   "consentType": "Admin",
+   "adminDisplayName": "Manage on-premises published resources",
+   "adminDescription": "Allows the app to manage hybrid identity service configuration by creating, viewing, updating and deleting on-premises published resources, on-premises agents and agent groups, on behalf of the signed-in user.",
+   "userDisplayName": "Manage on-premises published resources",
+   "userDescription": "Allows the app to manage hybrid identity service configuration by creating, viewing, updating and deleting on-premises published resources, on-premises agents and agent groups, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "openid",
+   "id": "37f7f235-527c-4136-accd-4a02d197296e",
+   "consentType": "User",
+   "adminDisplayName": "Sign users in",
+   "adminDescription": "Allows users to sign in to the app with their work or school accounts and allows the app to see basic user profile information.",
+   "userDisplayName": "Sign in as you",
+   "userDescription": "Allows you to sign in to the app with your work or school account and allows the app to read your basic profile information.",
+   "isEnabled": true
+  },
+  {
+   "value": "Organization.Read.All",
+   "id": "4908d5b9-3fb2-4b1e-9336-1888b7937185",
+   "consentType": "Admin",
+   "adminDisplayName": "Read organization information",
+   "adminDescription": "Allows the app to read the organization and related resources, on behalf of the signed-in user. Related resources include things like subscribed skus and tenant branding information.",
+   "userDisplayName": "Read organization information",
+   "userDescription": "Allows the app to read the organization and related resources, on your behalf. Related resources include things like subscribed skus and tenant branding information.",
+   "isEnabled": true
+  },
+  {
+   "value": "Organization.ReadWrite.All",
+   "id": "46ca0847-7e6b-426e-9775-ea810a948356",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write organization information",
+   "adminDescription": "Allows the app to read and write the organization and related resources, on behalf of the signed-in user. Related resources include things like subscribed skus and tenant branding information.",
+   "userDisplayName": "Read and write organization information",
+   "userDescription": "Allows the app to read and write the organization and related resources, on your behalf. Related resources include things like subscribed skus and tenant branding information.",
+   "isEnabled": true
+  },
+  {
+   "value": "OrganizationalBranding.Read.All",
+   "id": "9082f138-6f02-4f3a-9f4d-5f3c2ce5c688",
+   "consentType": "Admin",
+   "adminDisplayName": "Read organizational branding information",
+   "adminDescription": "Allows the app to read the organizational branding information, on behalf of the signed-in user.",
+   "userDisplayName": "Read organizational branding information",
+   "userDescription": "Allows the app to read the organizational branding information, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "OrganizationalBranding.ReadWrite.All",
+   "id": "15ce63de-b141-4c9a-a9a5-241bf27c6aaf",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write organizational branding information",
+   "adminDescription": "Allows the app to read and write the organizational branding information, on behalf of the signed-in user.",
+   "userDisplayName": "Read and write organizational branding information",
+   "userDescription": "Allows the app to read and write the organizational branding information, on your behalf.",
    "isEnabled": true
   },
   {
@@ -9008,56 +9312,6 @@
    "adminDescription": "Allows the app to read and write organization-wide Microsoft To Do settings on behalf of the signed-in user.",
    "userDisplayName": "Read and write organization-wide Microsoft To Do settings",
    "userDescription": "Allows the app to read and write organization-wide Microsoft To Do settings on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "Organization.Read.All",
-   "id": "4908d5b9-3fb2-4b1e-9336-1888b7937185",
-   "consentType": "Admin",
-   "adminDisplayName": "Read organization information",
-   "adminDescription": "Allows the app to read the organization and related resources, on behalf of the signed-in user. Related resources include things like subscribed skus and tenant branding information.",
-   "userDisplayName": "Read organization information",
-   "userDescription": "Allows the app to read the organization and related resources, on your behalf. Related resources include things like subscribed skus and tenant branding information.",
-   "isEnabled": true
-  },
-  {
-   "value": "Organization.ReadWrite.All",
-   "id": "46ca0847-7e6b-426e-9775-ea810a948356",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write organization information",
-   "adminDescription": "Allows the app to read and write the organization and related resources, on behalf of the signed-in user. Related resources include things like subscribed skus and tenant branding information.",
-   "userDisplayName": "Read and write organization information",
-   "userDescription": "Allows the app to read and write the organization and related resources, on your behalf. Related resources include things like subscribed skus and tenant branding information.",
-   "isEnabled": true
-  },
-  {
-   "value": "OrganizationalBranding.Read.All",
-   "id": "9082f138-6f02-4f3a-9f4d-5f3c2ce5c688",
-   "consentType": "Admin",
-   "adminDisplayName": "Read organizational branding information",
-   "adminDescription": "Allows the app to read the organizational branding information, on behalf of the signed-in user.",
-   "userDisplayName": "Read organizational branding information",
-   "userDescription": "Allows the app to read the organizational branding information, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "OrganizationalBranding.ReadWrite.All",
-   "id": "15ce63de-b141-4c9a-a9a5-241bf27c6aaf",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write organizational branding information",
-   "adminDescription": "Allows the app to read and write the organizational branding information, on behalf of the signed-in user.",
-   "userDisplayName": "Read and write organizational branding information",
-   "userDescription": "Allows the app to read and write the organizational branding information, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "POP.AccessAsUser.All",
-   "id": "d7b7f2d9-0f45-4ea1-9d42-e50810c06991",
-   "consentType": "User",
-   "adminDisplayName": "Read and write access to mailboxes via POP.",
-   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via POP protocol.",
-   "userDisplayName": "Read and write access to your mail.",
-   "userDescription": "Allows the app to read, update, create and delete email in your mailbox. Does not include permission to send mail.",
    "isEnabled": true
   },
   {
@@ -9481,6 +9735,26 @@
    "isEnabled": true
   },
   {
+   "value": "POP.AccessAsUser.All",
+   "id": "d7b7f2d9-0f45-4ea1-9d42-e50810c06991",
+   "consentType": "User",
+   "adminDisplayName": "Read and write access to mailboxes via POP.",
+   "adminDescription": "Allows the app to have the same access to mailboxes as the signed-in user via POP protocol.",
+   "userDisplayName": "Read and write access to your mail.",
+   "userDescription": "Allows the app to read, update, create and delete email in your mailbox. Does not include permission to send mail.",
+   "isEnabled": true
+  },
+  {
+   "value": "PreAuthorizationGrant.Read.All",
+   "id": "9c98cbde-410c-4719-9058-166504f17863",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all preauthorization grants",
+   "adminDescription": "Allows the app to read preauthorization grants for service principals on behalf of the signed-in user.",
+   "userDisplayName": "Read all preauthorization grants",
+   "userDescription": "Allows the app to read preauthorization grants for service principals on your behalf.",
+   "isEnabled": true
+  },
+  {
    "value": "Presence.Read",
    "id": "76bc735e-aecd-4a1d-8b4c-2b915deabb79",
    "consentType": "User",
@@ -9528,6 +9802,76 @@
    "adminDescription": "Allows the application to read and write print connectors on behalf of the signed-in user.",
    "userDisplayName": "Read and write print connectors",
    "userDescription": "Allows the application to read and write print connectors on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.Create",
+   "id": "90c30bed-6fd1-4279-bf39-714069619721",
+   "consentType": "Admin",
+   "adminDisplayName": "Register printers  ",
+   "adminDescription": "Allows the application to create (register) printers on behalf of the signed-in user. ",
+   "userDisplayName": "Register printers  ",
+   "userDescription": "Allows the application to create (register) printers on your behalf. ",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.FullControl.All",
+   "id": "93dae4bd-43a1-4a23-9a1a-92957e1d9121",
+   "consentType": "Admin",
+   "adminDisplayName": "Register, read, update, and unregister printers",
+   "adminDescription": "Allows the application to create (register), read, update, and delete (unregister) printers on behalf of the signed-in user. ",
+   "userDisplayName": "Register, read, update, and unregister printers",
+   "userDescription": "Allows the application to create (register), read, update, and delete (unregister) printers on your behalf.  ",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.Read.All",
+   "id": "3a736c8a-018e-460a-b60c-863b2683e8bf",
+   "consentType": "Admin",
+   "adminDisplayName": "Read printers",
+   "adminDescription": "Allows the application to read printers on behalf of the signed-in user. ",
+   "userDisplayName": "Read printers",
+   "userDescription": "Allows the application to read printers on your behalf. ",
+   "isEnabled": true
+  },
+  {
+   "value": "Printer.ReadWrite.All",
+   "id": "89f66824-725f-4b8f-928e-e1c5258dc565",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and update printers",
+   "adminDescription": "Allows the application to read and update printers on behalf of the signed-in user. Does not allow creating (registering) or deleting (unregistering) printers.",
+   "userDisplayName": "Read and update printers",
+   "userDescription": "Allows the application to read and update printers on your behalf. Does not allow creating (registering) or deleting (unregistering) printers.",
+   "isEnabled": true
+  },
+  {
+   "value": "PrinterShare.Read.All",
+   "id": "ed11134d-2f3f-440d-a2e1-411efada2502",
+   "consentType": "User",
+   "adminDisplayName": "Read printer shares",
+   "adminDescription": "Allows the application to read printer shares on behalf of the signed-in user. ",
+   "userDisplayName": "Read printer shares",
+   "userDescription": "Allows the application to read printer shares on your behalf. ",
+   "isEnabled": true
+  },
+  {
+   "value": "PrinterShare.ReadBasic.All",
+   "id": "5fa075e9-b951-4165-947b-c63396ff0a37",
+   "consentType": "User",
+   "adminDisplayName": "Read basic information about printer shares",
+   "adminDescription": "Allows the application to read basic information about printer shares on behalf of the signed-in user. Does not allow reading access control information.",
+   "userDisplayName": "Read basic information about printer shares",
+   "userDescription": "Allows the application to read basic information about printer shares on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "PrinterShare.ReadWrite.All",
+   "id": "06ceea37-85e2-40d7-bec3-91337a46038f",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write printer shares",
+   "adminDescription": "Allows the application to read and update printer shares on behalf of the signed-in user. ",
+   "userDisplayName": "Read and update printer shares",
+   "userDescription": "Allows the application to read and update printer shares on your behalf. ",
    "isEnabled": true
   },
   {
@@ -9638,76 +9982,6 @@
    "adminDescription": "Allows the application to read and write tenant-wide print settings on behalf of the signed-in user.",
    "userDisplayName": "Read and write tenant-wide print settings",
    "userDescription": "Allows the application to read and write tenant-wide print settings on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.Create",
-   "id": "90c30bed-6fd1-4279-bf39-714069619721",
-   "consentType": "Admin",
-   "adminDisplayName": "Register printers  ",
-   "adminDescription": "Allows the application to create (register) printers on behalf of the signed-in user. ",
-   "userDisplayName": "Register printers  ",
-   "userDescription": "Allows the application to create (register) printers on your behalf. ",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.FullControl.All",
-   "id": "93dae4bd-43a1-4a23-9a1a-92957e1d9121",
-   "consentType": "Admin",
-   "adminDisplayName": "Register, read, update, and unregister printers",
-   "adminDescription": "Allows the application to create (register), read, update, and delete (unregister) printers on behalf of the signed-in user. ",
-   "userDisplayName": "Register, read, update, and unregister printers",
-   "userDescription": "Allows the application to create (register), read, update, and delete (unregister) printers on your behalf.  ",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.Read.All",
-   "id": "3a736c8a-018e-460a-b60c-863b2683e8bf",
-   "consentType": "Admin",
-   "adminDisplayName": "Read printers",
-   "adminDescription": "Allows the application to read printers on behalf of the signed-in user. ",
-   "userDisplayName": "Read printers",
-   "userDescription": "Allows the application to read printers on your behalf. ",
-   "isEnabled": true
-  },
-  {
-   "value": "Printer.ReadWrite.All",
-   "id": "89f66824-725f-4b8f-928e-e1c5258dc565",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and update printers",
-   "adminDescription": "Allows the application to read and update printers on behalf of the signed-in user. Does not allow creating (registering) or deleting (unregistering) printers.",
-   "userDisplayName": "Read and update printers",
-   "userDescription": "Allows the application to read and update printers on your behalf. Does not allow creating (registering) or deleting (unregistering) printers.",
-   "isEnabled": true
-  },
-  {
-   "value": "PrinterShare.Read.All",
-   "id": "ed11134d-2f3f-440d-a2e1-411efada2502",
-   "consentType": "User",
-   "adminDisplayName": "Read printer shares",
-   "adminDescription": "Allows the application to read printer shares on behalf of the signed-in user. ",
-   "userDisplayName": "Read printer shares",
-   "userDescription": "Allows the application to read printer shares on your behalf. ",
-   "isEnabled": true
-  },
-  {
-   "value": "PrinterShare.ReadBasic.All",
-   "id": "5fa075e9-b951-4165-947b-c63396ff0a37",
-   "consentType": "User",
-   "adminDisplayName": "Read basic information about printer shares",
-   "adminDescription": "Allows the application to read basic information about printer shares on behalf of the signed-in user. Does not allow reading access control information.",
-   "userDisplayName": "Read basic information about printer shares",
-   "userDescription": "Allows the application to read basic information about printer shares on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "PrinterShare.ReadWrite.All",
-   "id": "06ceea37-85e2-40d7-bec3-91337a46038f",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write printer shares",
-   "adminDescription": "Allows the application to read and update printer shares on behalf of the signed-in user. ",
-   "userDisplayName": "Read and update printer shares",
-   "userDescription": "Allows the application to read and update printer shares on your behalf. ",
    "isEnabled": true
   },
   {
@@ -9891,6 +10165,16 @@
    "isEnabled": true
   },
   {
+   "value": "profile",
+   "id": "14dad69e-099b-42c9-810b-d002981feec1",
+   "consentType": "User",
+   "adminDisplayName": "View users' basic profile",
+   "adminDescription": "Allows the app to see your users' basic profile (e.g., name, picture, user name, email address)",
+   "userDisplayName": "View your basic profile",
+   "userDescription": "Allows the app to see your basic profile (e.g., name, picture, user name, email address)",
+   "isEnabled": true
+  },
+  {
    "value": "ProfilePhoto.Read.All",
    "id": "469cd065-729e-4dee-b1fa-d92e0fab6310",
    "consentType": "Admin",
@@ -9981,6 +10265,36 @@
    "isEnabled": true
   },
   {
+   "value": "PullPrintPrinter.FullControl.All",
+   "id": "ef6b83cd-f762-47ff-97d7-6f6f2d0486ea",
+   "consentType": "Admin",
+   "adminDisplayName": "Create, read, update and delete pull-print printers and manage member printers",
+   "adminDescription": "Allows the application to create, read, update and delete pull-print printers and manage member printers on behalf of the signed-in user.",
+   "userDisplayName": "Create, read, update and delete pull-print printers and manage member printers",
+   "userDescription": "Allows the application to create, read, update and delete pull-print printers and manage member printers on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "PullPrintPrinter.Read.All",
+   "id": "deac7994-79bc-44c9-8828-01c1a9a96618",
+   "consentType": "Admin",
+   "adminDisplayName": "Read pull-print printers",
+   "adminDescription": "Allows the application to read pull-print printers on behalf of the signed-in user. ",
+   "userDisplayName": "Read pull-print printers",
+   "userDescription": "Allows the application to read pull-print printers on your behalf. ",
+   "isEnabled": true
+  },
+  {
+   "value": "PullPrintPrinter.ReadWrite.All",
+   "id": "c628c397-5d7f-4c93-ae0f-4680282fd6d5",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and update pull-print printers",
+   "adminDescription": "Allows the application to read and update pull-print printers on behalf of the signed-in user. Does not allow creating or deleting  pull-print printers or managing member printers.",
+   "userDisplayName": "Read and update pull-print printers",
+   "userDescription": "Allows the application to read and update pull-print printers on your behalf. Does not allow creating or deleting pull-print printers or managing member printers.",
+   "isEnabled": true
+  },
+  {
    "value": "QnA.Read.All",
    "id": "f73fa04f-b9a5-4df9-8843-993ce928925e",
    "consentType": "User",
@@ -10031,6 +10345,16 @@
    "isEnabled": true
   },
   {
+   "value": "Reports.Read.All",
+   "id": "02e97553-ed7b-43d0-ab3c-f8bace0d040c",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all usage reports",
+   "adminDescription": "Allows an app to read all service usage reports on behalf of the signed-in user.  Services that provide usage reports include Office 365 and Azure Active Directory.",
+   "userDisplayName": "Read all usage reports",
+   "userDescription": "Allows an app to read all service usage reports on your behalf. Services that provide usage reports include Office 365 and Azure Active Directory.",
+   "isEnabled": true
+  },
+  {
    "value": "ReportSettings.Read.All",
    "id": "84fac5f4-33a9-4100-aa38-a20c6d29e5e7",
    "consentType": "Admin",
@@ -10048,16 +10372,6 @@
    "adminDescription": "Allows the app to read and update admin report settings, such as whether to display concealed information in reports, on behalf of the signed-in user.",
    "userDisplayName": "Read and write admin report settings",
    "userDescription": "Allows the app to read and update admin report settings, such as whether to display concealed information in reports, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "Reports.Read.All",
-   "id": "02e97553-ed7b-43d0-ab3c-f8bace0d040c",
-   "consentType": "Admin",
-   "adminDisplayName": "Read all usage reports",
-   "adminDescription": "Allows an app to read all service usage reports on behalf of the signed-in user.  Services that provide usage reports include Office 365 and Azure Active Directory.",
-   "userDisplayName": "Read all usage reports",
-   "userDescription": "Allows an app to read all service usage reports on your behalf. Services that provide usage reports include Office 365 and Azure Active Directory.",
    "isEnabled": true
   },
   {
@@ -10338,16 +10652,6 @@
    "adminDescription": "Allows the app to manage policies in Privileged Identity Management for App Roles, on behalf of the signed-in user.",
    "userDisplayName": "Manage all policies in PIM for App Roles",
    "userDescription": "Allows the app to manage policies in Privileged Identity Management for App Roles, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "SMTP.Send",
-   "id": "258f6531-6087-4cc4-bb90-092c5fb3ed3f",
-   "consentType": "User",
-   "adminDisplayName": "Send emails from mailboxes using SMTP AUTH.",
-   "adminDescription": "Allows the app to be able to send emails from the user’s mailbox using the SMTP AUTH client submission protocol.",
-   "userDisplayName": "Access to sending emails from your mailbox.",
-   "userDescription": "Allows the app to send emails on your behalf from your mailbox.",
    "isEnabled": true
   },
   {
@@ -10931,6 +11235,16 @@
    "isEnabled": true
   },
   {
+   "value": "SMTP.Send",
+   "id": "258f6531-6087-4cc4-bb90-092c5fb3ed3f",
+   "consentType": "User",
+   "adminDisplayName": "Send emails from mailboxes using SMTP AUTH.",
+   "adminDescription": "Allows the app to be able to send emails from the user’s mailbox using the SMTP AUTH client submission protocol.",
+   "userDisplayName": "Access to sending emails from your mailbox.",
+   "userDescription": "Allows the app to send emails on your behalf from your mailbox.",
+   "isEnabled": true
+  },
+  {
    "value": "SpiffeTrustDomain.Read.All",
    "id": "9b4aa4b1-aaf3-41b7-b743-698b27e77ff6",
    "consentType": "Admin",
@@ -11118,36 +11432,6 @@
    "adminDescription": "Add and remove members from all teams, on behalf of the signed-in user. Does not allow adding or removing a member with the owner role. Additionally, does not allow the app to elevate an existing member to the owner role.",
    "userDisplayName": "Add and remove members with non-owner role for all teams",
    "userDescription": "Add and remove members from all teams, on your behalf. Does not allow adding or removing a member with the owner role. Additionally, does not allow the app to elevate an existing member to the owner role.",
-   "isEnabled": true
-  },
-  {
-   "value": "TeamSettings.Read.All",
-   "id": "48638b3c-ad68-4383-8ac4-e6880ee6ca57",
-   "consentType": "Admin",
-   "adminDisplayName": "Read teams' settings",
-   "adminDescription": "Read all teams' settings, on behalf of the signed-in user.",
-   "userDisplayName": "Read teams' settings",
-   "userDescription": "Read all teams' settings, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "TeamSettings.ReadWrite.All",
-   "id": "39d65650-9d3e-4223-80db-a335590d027e",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and change teams' settings",
-   "adminDescription": "Read and change all teams' settings, on behalf of the signed-in user.",
-   "userDisplayName": "Read and change teams' settings",
-   "userDescription": "Read and change all teams' settings, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "TeamTemplates.Read",
-   "id": "cd87405c-5792-4f15-92f7-debc0db6d1d6",
-   "consentType": "User",
-   "adminDisplayName": "Read available Teams templates",
-   "adminDescription": "Allows the app to read the available Teams templates, on behalf of the signed-in user.",
-   "userDisplayName": "Read available Teams templates",
-   "userDescription": "Read available Teams templates, on your behalf.",
    "isEnabled": true
   },
   {
@@ -11411,6 +11695,26 @@
    "isEnabled": true
   },
   {
+   "value": "TeamSettings.Read.All",
+   "id": "48638b3c-ad68-4383-8ac4-e6880ee6ca57",
+   "consentType": "Admin",
+   "adminDisplayName": "Read teams' settings",
+   "adminDescription": "Read all teams' settings, on behalf of the signed-in user.",
+   "userDisplayName": "Read teams' settings",
+   "userDescription": "Read all teams' settings, on your behalf.",
+   "isEnabled": true
+  },
+  {
+   "value": "TeamSettings.ReadWrite.All",
+   "id": "39d65650-9d3e-4223-80db-a335590d027e",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and change teams' settings",
+   "adminDescription": "Read and change all teams' settings, on behalf of the signed-in user.",
+   "userDisplayName": "Read and change teams' settings",
+   "userDescription": "Read and change all teams' settings, on your behalf.",
+   "isEnabled": true
+  },
+  {
    "value": "TeamsPolicyUserAssign.ReadWrite.All",
    "id": "6997c35c-a586-440c-8a0b-4ffe5d118dc0",
    "consentType": "Admin",
@@ -11548,6 +11852,16 @@
    "adminDescription": "Allows the app to read your tenant's user configurations on behalf of the signed-in admin user. User configuration may include attributes related to user, such as telephone number, assigned policies, etc.",
    "userDisplayName": "Read Teams user configurations",
    "userDescription": "Allows the app to read your tenant's user configurations on behalf of the signed-in admin user. User configuration may include attributes related to user, such as telephone number, assigned policies, etc.",
+   "isEnabled": true
+  },
+  {
+   "value": "TeamTemplates.Read",
+   "id": "cd87405c-5792-4f15-92f7-debc0db6d1d6",
+   "consentType": "User",
+   "adminDisplayName": "Read available Teams templates",
+   "adminDescription": "Allows the app to read the available Teams templates, on behalf of the signed-in user.",
+   "userDisplayName": "Read available Teams templates",
+   "userDescription": "Read available Teams templates, on your behalf.",
    "isEnabled": true
   },
   {
@@ -12171,6 +12485,46 @@
    "isEnabled": true
   },
   {
+   "value": "UserAuthenticationMethod.Read",
+   "id": "1f6b61c5-2f65-4135-9c9f-31c0f8d32b52",
+   "consentType": "Admin",
+   "adminDisplayName": "Read user authentication methods.",
+   "adminDescription": "Allows the app to read the signed-in user's authentication methods, including phone numbers and Authenticator app settings. This does not allow the app to see secret information like the signed-in user's passwords, or to sign-in  or otherwise use the signed-in user's authentication methods.",
+   "userDisplayName": "Read your authentication methods.",
+   "userDescription": "Allows the app to read your authentication methods, including phone numbers and Authenticator app settings. This does not allow the app to see secret information like your passwords, or to sign-in or otherwise use your authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthenticationMethod.Read.All",
+   "id": "aec28ec7-4d02-4e8c-b864-50163aea77eb",
+   "consentType": "Admin",
+   "adminDisplayName": "Read all users' authentication methods",
+   "adminDescription": "Allows the app to read authentication methods of all users in your organization that the signed-in user has access to. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "userDisplayName": "Read all users' authentication methods",
+   "userDescription": "Allows the app to read authentication methods of all users you have access to in your organization. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthenticationMethod.ReadWrite",
+   "id": "48971fc1-70d7-4245-af77-0beb29b53ee2",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write user authentication methods",
+   "adminDescription": "Allows the app to read and write the signed-in user's authentication methods, including phone numbers and Authenticator app settings.                       This does not allow the app to see secret information like the signed-in user's passwords, or                      to sign-in or otherwise use the signed-in user's authentication methods.  ",
+   "userDisplayName": "Read and write your authentication methods",
+   "userDescription": "Allows the app to read and write your authentication methods, including phone numbers and Authenticator app settings.This does not allow the app to see secret information like your passwords, or to sign-in or otherwise use your authentication methods.",
+   "isEnabled": true
+  },
+  {
+   "value": "UserAuthenticationMethod.ReadWrite.All",
+   "id": "b7887744-6746-4312-813d-72daeaee7e2d",
+   "consentType": "Admin",
+   "adminDisplayName": "Read and write all users' authentication methods",
+   "adminDescription": " Allows the app to read and write authentication methods of all users in your organization that the signed-in user has access to.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "userDisplayName": "Read and write all users' authentication methods",
+   "userDescription": "Allows the app to read and write authentication methods of all users you have access to in your organization.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This does not allow                      the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
+   "isEnabled": true
+  },
+  {
    "value": "UserAuthMethod-Email.Read",
    "id": "12b23cea-90c1-4873-9094-f45c5f290f86",
    "consentType": "Admin",
@@ -12671,46 +13025,6 @@
    "isEnabled": true
   },
   {
-   "value": "UserAuthenticationMethod.Read",
-   "id": "1f6b61c5-2f65-4135-9c9f-31c0f8d32b52",
-   "consentType": "Admin",
-   "adminDisplayName": "Read user authentication methods.",
-   "adminDescription": "Allows the app to read the signed-in user's authentication methods, including phone numbers and Authenticator app settings. This does not allow the app to see secret information like the signed-in user's passwords, or to sign-in  or otherwise use the signed-in user's authentication methods.",
-   "userDisplayName": "Read your authentication methods.",
-   "userDescription": "Allows the app to read your authentication methods, including phone numbers and Authenticator app settings. This does not allow the app to see secret information like your passwords, or to sign-in or otherwise use your authentication methods.",
-   "isEnabled": true
-  },
-  {
-   "value": "UserAuthenticationMethod.Read.All",
-   "id": "aec28ec7-4d02-4e8c-b864-50163aea77eb",
-   "consentType": "Admin",
-   "adminDisplayName": "Read all users' authentication methods",
-   "adminDescription": "Allows the app to read authentication methods of all users in your organization that the signed-in user has access to. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "userDisplayName": "Read all users' authentication methods",
-   "userDescription": "Allows the app to read authentication methods of all users you have access to in your organization. Authentication methods include things like a user’s phone numbers and Authenticator app settings. This does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "isEnabled": true
-  },
-  {
-   "value": "UserAuthenticationMethod.ReadWrite",
-   "id": "48971fc1-70d7-4245-af77-0beb29b53ee2",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write user authentication methods",
-   "adminDescription": "Allows the app to read and write the signed-in user's authentication methods, including phone numbers and Authenticator app settings.                       This does not allow the app to see secret information like the signed-in user's passwords, or                      to sign-in or otherwise use the signed-in user's authentication methods.  ",
-   "userDisplayName": "Read and write your authentication methods",
-   "userDescription": "Allows the app to read and write your authentication methods, including phone numbers and Authenticator app settings.This does not allow the app to see secret information like your passwords, or to sign-in or otherwise use your authentication methods.",
-   "isEnabled": true
-  },
-  {
-   "value": "UserAuthenticationMethod.ReadWrite.All",
-   "id": "b7887744-6746-4312-813d-72daeaee7e2d",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write all users' authentication methods",
-   "adminDescription": " Allows the app to read and write authentication methods of all users in your organization that the signed-in user has access to.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This                      does not allow the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "userDisplayName": "Read and write all users' authentication methods",
-   "userDescription": "Allows the app to read and write authentication methods of all users you have access to in your organization.                       Authentication methods include things like a user's phone numbers and Authenticator app settings. This does not allow                      the app to see secret information like passwords, or to sign-in or otherwise use the authentication methods.",
-   "isEnabled": true
-  },
-  {
    "value": "UserCloudClipboard.Read",
    "id": "61e8a09a-087f-4e36-8c8c-1c77c5228017",
    "consentType": "User",
@@ -12878,66 +13192,6 @@
    "adminDescription": "Allows the app to manage workforce integrations, to synchronize data from Microsoft Teams Shifts, on behalf of the signed-in user.",
    "userDisplayName": "Read and write workforce integrations",
    "userDescription": "Allows the app to manage workforce integrations, to synchronize data from Microsoft Teams Shifts, on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "eDiscovery.Read.All",
-   "id": "99201db3-7652-4d5a-809a-bdb94f85fe3c",
-   "consentType": "Admin",
-   "adminDisplayName": "Read all eDiscovery objects",
-   "adminDescription": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects on behalf of the signed-in user.",
-   "userDisplayName": "Read all eDiscovery objects",
-   "userDescription": "Allows the app to read eDiscovery objects such as cases, custodians, review sets and other related objects on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "eDiscovery.ReadWrite.All",
-   "id": "acb8f680-0834-4146-b69e-4ab1b39745ad",
-   "consentType": "Admin",
-   "adminDisplayName": "Read and write all eDiscovery objects",
-   "adminDescription": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects on behalf of the signed-in user.",
-   "userDisplayName": "Read and write all eDiscovery objects",
-   "userDescription": "Allows the app to read and write eDiscovery objects such as cases, custodians, review sets and other related objects on your behalf.",
-   "isEnabled": true
-  },
-  {
-   "value": "email",
-   "id": "64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0",
-   "consentType": "User",
-   "adminDisplayName": "View users' email address",
-   "adminDescription": "Allows the app to read your users' primary email address",
-   "userDisplayName": "View your email address",
-   "userDescription": "Allows the app to read your primary email address",
-   "isEnabled": true
-  },
-  {
-   "value": "offline_access",
-   "id": "7427e0e9-2fba-42fe-b0c0-848c9e6a8182",
-   "consentType": "User",
-   "adminDisplayName": "Maintain access to data you have given it access to",
-   "adminDescription": "Allows the app to see and update the data you gave it access to, even when users are not currently using the app. This does not give the app any additional permissions.",
-   "userDisplayName": "Maintain access to data you have given it access to",
-   "userDescription": "Allows the app to see and update the data you gave it access to, even when you are not currently using the app. This does not give the app any additional permissions.",
-   "isEnabled": true
-  },
-  {
-   "value": "openid",
-   "id": "37f7f235-527c-4136-accd-4a02d197296e",
-   "consentType": "User",
-   "adminDisplayName": "Sign users in",
-   "adminDescription": "Allows users to sign in to the app with their work or school accounts and allows the app to see basic user profile information.",
-   "userDisplayName": "Sign in as you",
-   "userDescription": "Allows you to sign in to the app with your work or school account and allows the app to read your basic profile information.",
-   "isEnabled": true
-  },
-  {
-   "value": "profile",
-   "id": "14dad69e-099b-42c9-810b-d002981feec1",
-   "consentType": "User",
-   "adminDisplayName": "View users' basic profile",
-   "adminDescription": "Allows the app to see your users' basic profile (e.g., name, picture, user name, email address)",
-   "userDisplayName": "View your basic profile",
-   "userDescription": "Allows the app to see your basic profile (e.g., name, picture, user name, email address)",
    "isEnabled": true
   }
  ]

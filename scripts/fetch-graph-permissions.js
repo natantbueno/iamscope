@@ -126,6 +126,22 @@ const PREFIX_CLASSIFICATION = {
   // é leitura e também é ControlPlane — quem enumera o caminho para o
   // privilégio já está no plano de controle.
   PreAuthorizationGrant: ['Application and Workload Identity', 'ControlPlane'],
+  // Adicionadas em 27/08/2026: a coleta rodou, PreAuthorizationGrant entrou
+  // sem problema, mas o feed do Graph cresceu para 1.536 (de 1.505 esperado) e
+  // trouxe mais 4 famílias novas sem entrada aqui — a feature de Agent ID
+  // (identidade de agente) é dona de duas delas.
+  //
+  // AgentCommunicationConfiguration configura COMO um agente se comunica, não
+  // decide se ele existe ou quem pode chamá-lo — por isso ManagementPlane,
+  // apesar de estar na mesma categoria dos vizinhos acima.
+  AgentCommunicationConfiguration: ['Application and Workload Identity', 'ManagementPlane'],
+  // LifecyclePolicies-AgentId governa a POLÍTICA que cria/apaga identidades de
+  // agente na org inteira — mesmo peso de PreAuthorizationGrant e
+  // ResourceSpecificPermissionGrant acima, não o de LifecyclePolicies-Guests
+  // (Entitlement Management/ManagementPlane, mais abaixo), apesar do nome
+  // parecido: ali é ciclo de vida de conta de convidado, aqui é ciclo de vida
+  // de identidade de aplicação/workload.
+  'LifecyclePolicies-AgentId': ['Application and Workload Identity', 'ControlPlane'],
   TeamTemplates: ['Microsoft Teams', 'ManagementPlane'],
   TeamsActivity: ['Microsoft Teams', 'ManagementPlane'],
   TeamsAppInstallation: ['Microsoft Teams', 'ManagementPlane'],
@@ -197,6 +213,12 @@ const PREFIX_CLASSIFICATION = {
   'VerifiedId-Profile': ['Authentication', 'ManagementPlane'],
 
   // ── Dispositivo e experiência do usuário ──────────────────────────────────
+  // DeviceManagementDeploymentPlans (Intune, 27/08/2026): planos/anéis de
+  // rollout. Mesmo par de DeviceManagementApps.Read.All, que já está
+  // curated/ManagementPlane — agendar quem recebe o quê primeiro é
+  // configuração, não controle direto do dispositivo (esse já é o Device
+  // abaixo, ControlPlane).
+  DeviceManagementDeploymentPlans: ['Microsoft 365 Platform Management', 'ManagementPlane'],
   Device: ['Global Endpoint Management', 'ControlPlane'],
   UserActivity: ['Default Member', 'UserAccess'],
   UserCloudClipboard: ['Default Member', 'UserAccess'],
@@ -215,6 +237,9 @@ const PREFIX_CLASSIFICATION = {
   PrintSettings: ['Printer Management', 'ManagementPlane'],
   Printer: ['Printer Management', 'ManagementPlane'],
   PrinterShare: ['Printer Management', 'ManagementPlane'],
+  // PullPrintPrinter (27/08/2026): pull-print/Universal Print — mesmo recurso
+  // de impressão dos vizinhos acima, sem ambiguidade de tier.
+  PullPrintPrinter: ['Printer Management', 'ManagementPlane'],
 
   // ── Viva e Learning ───────────────────────────────────────────────────────
   EngagementRole: ['Microsoft Viva', 'ManagementPlane'],

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import {
   LayoutDashboard, ShieldCheck, Users, AppWindow, Lock,
-  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle, Info,
+  FileCheck, Monitor, BookOpen, AlertTriangle, KeyRound, Layers, ListTree, HelpCircle,
   ChevronDown, Shield, ChevronRight, Cpu, HardDrive, Network, Database, Eye, Boxes, BrainCircuit, Workflow, Settings2, Globe, Compass, FileJson,
   GitCompare, Timer, ShieldAlert, ScanSearch, Gauge, Server, BarChart3, History,
 } from 'lucide-react'
@@ -287,28 +287,13 @@ export default function Sidebar({
     <aside className="w-60 shrink-0 bg-surface border-r border-line flex flex-col h-screen sticky top-0">
 
       {/* Logo — altura travada em 48px (h-12) para casar com a linha do
-          CloudNav do lado direito. Antes usava p-4 (padding, não altura fixa):
-          o botão "About" (27px + 2*16 de padding) dava 60px contra os 48px do
-          CloudNav, e a borda inferior das duas colunas ficava em alturas
-          diferentes — um degrau de 12px bem na costura sidebar/conteúdo. */}
+          CloudNav do lado direito, evitando um degrau na borda inferior bem
+          na costura sidebar/conteúdo. */}
       <div className="h-12 px-4 border-b border-line flex items-center">
-        <div className="flex items-center justify-between w-full">
-          <button onClick={() => router.push('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <EntraScopeIcon size={24} />
-            <span className="text-body font-semibold text-fg">IAM Scope</span>
-          </button>
-          <button
-            onClick={() => router.push('/info')}
-            className={`p-1.5 rounded-md transition-colors ${
-              view === 'info'
-                ? 'text-brand-onDark bg-brand-activeBg'
-                : 'text-fg-muted hover:text-fg hover:bg-surface-alt'
-            }`}
-            title={t('sidebar.about')}
-          >
-            <Info size={15} />
-          </button>
-        </div>
+        <button onClick={() => router.push('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <EntraScopeIcon size={24} />
+          <span className="text-body font-semibold text-fg">IAM Scope</span>
+        </button>
       </div>
 
       {/* Ferramentas globais */}

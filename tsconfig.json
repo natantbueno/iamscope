@@ -27,6 +27,8 @@
     "out",
     "_backup-*",
     "_to_delete",
-    "mcp"
+    "mcp",
+    "ui-ux-pro-max-skill",
+    "agente"
   ]
 }
